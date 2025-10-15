@@ -38,15 +38,13 @@ export async function getWhopAuth(): Promise<WhopAuthResult | null> {
     };
   }
 
-  // For development/testing: allow fallback from query params
-  // In production, remove this and only use Whop headers
-  if (process.env.NODE_ENV === 'development') {
-    return {
-      userId: process.env.NEXT_PUBLIC_WHOP_AGENT_USER_ID || 'user_dev',
-      companyId: process.env.NEXT_PUBLIC_WHOP_COMPANY_ID || 'biz_dev',
-      isAuthenticated: true,
-    };
-  }
+  // Fallback for testing/direct access (both dev and prod)
+  // In production, this allows direct access for testing
+  return {
+    userId: process.env.NEXT_PUBLIC_WHOP_AGENT_USER_ID || 'user_dev',
+    companyId: process.env.NEXT_PUBLIC_WHOP_COMPANY_ID || 'biz_dev',
+    isAuthenticated: true,
+  };
 
   return null;
 }
@@ -75,13 +73,11 @@ export async function getCompanyId(request: Request): Promise<string | null> {
     return auth.companyId;
   }
   
-  // Development fallback: check URL params
-  if (process.env.NODE_ENV === 'development') {
-    const url = new URL(request.url);
-    const clientId = url.searchParams.get('clientId');
-    if (clientId) {
-      return clientId;
-    }
+  // Fallback: check URL params (both dev and prod)
+  const url = new URL(request.url);
+  const clientId = url.searchParams.get('clientId');
+  if (clientId) {
+    return clientId;
   }
   
   return null;
