@@ -15,11 +15,11 @@ import { getAllTiers, type TierName } from '@/lib/pricing/tiers';
 export const dynamic = 'force-dynamic';
 
 const planEmojis: Record<TierName, string> = {
-  free: '💡',
-  starter: '🧭',
-  growth: '🚀',
-  pro: '🏆',
-  enterprise: '💼',
+  atom: '⚛️',
+  core: '🧭',
+  pulse: '🚀',
+  surge: '🏆',
+  quantum: '💼',
 };
 
 function UpgradeContent() {
