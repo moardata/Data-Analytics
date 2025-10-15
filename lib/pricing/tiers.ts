@@ -42,7 +42,7 @@ export const PRICING_TIERS: Record<TierName, PricingTier> = {
     displayName: 'Atom',
     price: 0,
     currency: 'USD',
-    whopPlanId: 'prod_pfzbMoxvp5HHJ',
+    whopPlanId: 'plan_gDIQ1ypIFaZoQ',
     limits: {
       maxStudents: 20, // Perfect for testing/small courses
       maxForms: 2,
@@ -68,7 +68,7 @@ export const PRICING_TIERS: Record<TierName, PricingTier> = {
     displayName: 'Core',
     price: 20,
     currency: 'USD',
-    whopPlanId: 'prod_n8rHHckjTjJdD',
+    whopPlanId: 'plan_hnYnLn6egXRis',
     limits: {
       maxStudents: 200, // Small-medium courses
       maxForms: 10,
@@ -96,7 +96,7 @@ export const PRICING_TIERS: Record<TierName, PricingTier> = {
     displayName: 'Pulse',
     price: 100,
     currency: 'USD',
-    whopPlanId: 'prod_4ISBWlTlS81KL',
+    whopPlanId: 'plan_OvGPVPXu6sarv',
     limits: {
       maxStudents: 2000, // Medium-large communities
       maxForms: 50,
@@ -124,7 +124,7 @@ export const PRICING_TIERS: Record<TierName, PricingTier> = {
     displayName: 'Surge',
     price: 200,
     currency: 'USD',
-    whopPlanId: 'prod_6O1w6a9outgyO',
+    whopPlanId: 'plan_YWwjHKXiWT6vq',
     limits: {
       maxStudents: 10000, // Large communities
       maxForms: 100,
@@ -153,7 +153,7 @@ export const PRICING_TIERS: Record<TierName, PricingTier> = {
     displayName: 'Quantum',
     price: 400,
     currency: 'USD',
-    whopPlanId: 'prod_bm98P1RCFrFmF',
+    whopPlanId: 'plan_BcSpDXIeGcklw',
     limits: {
       maxStudents: 100000, // Mega communities
       maxForms: 500,

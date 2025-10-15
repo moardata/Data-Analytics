@@ -184,11 +184,11 @@ async function getOrCreateEntity(whopUserId: string, eventData: any) {
  * Map Whop plan IDs to tiers
  */
 const TIER_MAPPING: Record<string, string> = {
-	'prod_pfzbMoxvp5HHJ': 'atom',      // Atom (Free)
-	'prod_n8rHHckjTjJdD': 'core',      // Core ($20/month)
-	'prod_4ISBWlTlS81KL': 'pulse',     // Pulse ($100/month)
-	'prod_6O1w6a9outgyO': 'surge',     // Surge ($200/month)
-	'prod_bm98P1RCFrFmF': 'quantum',   // Quantum ($400/month)
+	'plan_gDIQ1ypIFaZoQ': 'atom',      // Atom (Free)
+	'plan_hnYnLn6egXRis': 'core',      // Core ($20/month)
+	'plan_OvGPVPXu6sarv': 'pulse',     // Pulse ($100/month)
+	'plan_YWwjHKXiWT6vq': 'surge',     // Surge ($200/month)
+	'plan_BcSpDXIeGcklw': 'quantum',   // Quantum ($400/month)
 };
 
 /**
