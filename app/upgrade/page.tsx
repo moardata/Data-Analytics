@@ -63,11 +63,9 @@ function UpgradeContent() {
       return;
     }
 
-    // For now, redirect to your Whop app's main page
-    // TODO: Create actual products in Whop dashboard
-    const whopAppUrl = 'https://whop.com/apps/app_qMCiZm0xUewsGe/';
-    alert(`To upgrade to ${tier.displayName}, please contact support or visit your Whop dashboard to set up pricing plans.`);
-    window.open(whopAppUrl, '_blank');
+    // Redirect to Whop's plan purchase page
+    const whopPlanUrl = `https://whop.com/checkout/${tier.whopPlanId}/`;
+    window.open(whopPlanUrl, '_blank');
   };
 
   const tiers = getAllTiers();
