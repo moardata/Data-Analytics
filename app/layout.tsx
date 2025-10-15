@@ -1,21 +1,19 @@
 import { WhopApp } from "@whop/react/components";
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Inter } from "next/font/google";
+import { ThemeProvider } from "@/providers/theme-provider";
+import { Sidebar } from "@/components/sidebar";
 import "./globals.css";
 
-const geistSans = Geist({
-	variable: "--font-geist-sans",
+const inter = Inter({
 	subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-	variable: "--font-geist-mono",
-	subsets: ["latin"],
+	display: "swap",
+	variable: "--font-inter",
 });
 
 export const metadata: Metadata = {
-	title: "Whop App",
-	description: "My Whop App",
+	title: "Creator Analytics - Whop",
+	description: "Modern analytics platform for Whop course creators",
 };
 
 export default function RootLayout({
@@ -25,10 +23,22 @@ export default function RootLayout({
 }>) {
 	return (
 		<html lang="en" suppressHydrationWarning>
-			<body
-				className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-			>
-				<WhopApp>{children}</WhopApp>
+			<body className={`${inter.variable} font-sans antialiased`}>
+				<ThemeProvider
+					attribute="class"
+					defaultTheme="dark"
+					enableSystem
+					disableTransitionOnChange
+				>
+					<WhopApp>
+						<div className="flex min-h-screen bg-gradient-to-b from-[#0d0f12] to-[#14171c]">
+							<Sidebar />
+							<main className="flex-1 ml-64">
+								{children}
+							</main>
+						</div>
+					</WhopApp>
+				</ThemeProvider>
 			</body>
 		</html>
 	);

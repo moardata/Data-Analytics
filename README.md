@@ -1,37 +1,145 @@
-This is a template for a whop app built in NextJS. Fork it and keep the parts you need for your app. 
+# Whop Creator Analytics
 
-# Whop NextJS App Template
+Modern analytics dashboard for Whop course creators to track students, revenue, engagement, and get AI-driven insights.
 
-To run this project: 
+## ✅ What's Working
 
-1. Install dependencies with: `pnpm i`
+- **Dashboard** - Real-time metrics and charts
+- **AI Insights** - Automated recommendations (OpenAI powered)
+- **Custom Forms** - Collect student feedback
+- **Revenue Tracking** - Monitor earnings
+- **Student Management** - View all learners
+- **Data Export** - CSV and PDF exports
+- **Webhooks** - Auto-sync with Whop events
+- **Multi-Tenancy** - Each company gets isolated data
 
-2. Create a Whop App on your [whop developer dashboard](https://whop.com/dashboard/developer/), then go to the "Hosting" section and:
-	- Ensure the "Base URL" is set to the domain you intend to deploy the site on.
-	- Ensure the "App path" is set to `/experiences/[experienceId]`
-	- Ensure the "Dashboard path" is set to `/dashboard/[companyId]` 
-	- Ensure the "Discover path" is set to `/discover` 
+## 🚀 Quick Start
 
-3. Copy the environment variables from the `.env.development` into a `.env.local`. Ensure to use real values from the whop dashboard.
+### 1. Install Dependencies
+```bash
+npm install
+```
 
-4. Go to a whop created in the same org as the app you created. Navigate to the tools section and add your app.
+### 2. Set Up Environment Variables
+Create `.env.local`:
+```bash
+# Supabase
+NEXT_PUBLIC_SUPABASE_URL=your_url
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your_key
 
-5. Run `pnpm dev` to start the dev server. Then in the top right of the window find a translucent settings icon. Select "localhost". The default port 3000 should work.
+# Whop
+NEXT_PUBLIC_WHOP_APP_ID=your_app_id
+WHOP_API_KEY=your_api_key
+WHOP_WEBHOOK_SECRET=your_webhook_secret
 
-## Deploying
+# OpenAI (optional)
+OPENAI_API_KEY=sk-proj-your-key
 
-1. Upload your fork / copy of this template to github. 
+# Session
+JWT_SECRET=random-secret-key-here
+```
 
-2. Go to [Vercel](https://vercel.com/new) and link the repository. Deploy your application with the environment variables from your `.env.local`
+### 3. Set Up Database
+Run in Supabase SQL Editor:
+1. `database/schema.sql` - Main tables
+2. `database/schema-ai-simple.sql` - AI tables
+3. `database/seed.sql` - Test data (optional)
 
-3. If necessary update you "Base Domain" and webhook callback urls on the app settings page on the whop dashboard.
+### 4. Run Development Server
+```bash
+npm run dev
+```
 
-## Troubleshooting
+Open http://localhost:3000/analytics
 
-**App not loading properly?** Make sure to set the "App path" in your Whop developer dashboard. The placeholder text in the UI does not mean it's set - you must explicitly enter `/experiences/[experienceId]` (or your chosen path name)
-a
+## 📦 Deploy to Vercel
 
-**Make sure to add env.local** Make sure to get the real app environment vairables from your whop dashboard and set them in .env.local
+1. Push to GitHub
+2. Import in Vercel
+3. Add environment variables
+4. Deploy
 
+Then update Whop dashboard:
+- **Base URL:** `https://your-app.vercel.app`
+- **Dashboard Path:** `/dashboard/[companyId]`
+- **Webhook URL:** `https://your-app.vercel.app/api/webhooks`
 
-For more info, see our docs at https://dev.whop.com/introduction
+## 🎯 How Multi-Tenancy Works
+
+When a company accesses your app through Whop:
+1. Whop sends them to `/dashboard/[companyId]`
+2. App redirects to `/analytics?companyId=xyz`
+3. All pages filter data by that companyId
+4. Each company sees only their own data
+
+## 🗂️ Project Structure
+
+```
+app/
+├── analytics/      # Main dashboard
+├── insights/       # AI insights
+├── forms/          # Form builder
+├── students/       # Student list
+├── revenue/        # Revenue tracking
+└── api/
+    ├── analytics/  # Metrics calculation
+    ├── insights/   # AI generation
+    ├── webhooks/   # Whop events
+    └── export/     # CSV/PDF exports
+
+components/
+├── DashboardCreatorAnalytics.tsx  # Main dashboard
+├── AIInsightsGrid.tsx             # Insights display
+└── FormBuilderEnhanced.tsx        # Form creator
+
+lib/
+├── supabase.ts         # Database client
+├── whop-sdk.ts         # Whop API
+├── ai/openai-*.ts      # AI integration
+└── utils/              # Helpers
+```
+
+## 📊 Features
+
+### Analytics Dashboard
+- Active students count
+- Engagement rate %
+- Revenue tracking
+- Completion rate
+- Sentiment analysis
+- Interactive charts
+
+### AI Insights
+- Weekly performance summaries
+- Actionable recommendations
+- Alerts for issues
+- Trend detection
+
+### Forms System
+- Custom form builder
+- Multiple field types
+- Response tracking
+- CSV export
+
+### Data Export
+- Events, subscriptions, students → CSV
+- Full dashboard → PDF
+
+## 🔧 Tech Stack
+
+- Next.js 15.3
+- React 19
+- Supabase (PostgreSQL)
+- Whop SDK
+- OpenAI API
+- Tailwind CSS v4
+- Recharts
+
+## 📞 Support
+
+- Whop Docs: https://dev.whop.com
+- Supabase Docs: https://supabase.com/docs
+
+## 📄 License
+
+MIT

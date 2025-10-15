@@ -1,48 +1,293 @@
+/**
+ * Enhanced Webhook Handler for Creator Analytics
+ * Processes Whop events (orders, subscriptions, activities) and stores them in the database
+ */
+
 import { waitUntil } from "@vercel/functions";
 import { makeWebhookValidator } from "@whop/api";
 import type { NextRequest } from "next/server";
+import { supabase } from "@/lib/supabase";
+import { normalizeWhopEvent, extractSubscriptionData, isValidWebhookEvent } from "@/lib/utils/normalizeEvent";
 
 const validateWebhook = makeWebhookValidator({
 	webhookSecret: process.env.WHOP_WEBHOOK_SECRET ?? "fallback",
 });
 
 export async function POST(request: NextRequest): Promise<Response> {
-	// Validate the webhook to ensure it's from Whop
-	const webhookData = await validateWebhook(request);
+	try {
+		// Validate the webhook to ensure it's from Whop
+		const webhookData = await validateWebhook(request);
 
-	// Handle the webhook event
-	if (webhookData.action === "payment.succeeded") {
-		const { id, final_amount, amount_after_fees, currency, user_id } =
-			webhookData.data;
+		// Validate event structure
+		if (!isValidWebhookEvent(webhookData)) {
+			console.error('Invalid webhook event structure:', webhookData);
+			return new Response("Invalid event structure", { status: 400 });
+		}
 
-		// final_amount is the amount the user paid
-		// amount_after_fees is the amount that is received by you, after card fees and processing fees are taken out
+		console.log(`Received webhook: ${webhookData.action}`, {
+			action: webhookData.action,
+			userId: (webhookData.data as any)?.user_id,
+		});
 
-		console.log(
-			`Payment ${id} succeeded for ${user_id} with amount ${final_amount} ${currency}`,
-		);
+		// Process the webhook in the background to respond quickly
+		waitUntil(processWebhookEvent(webhookData));
 
-		// if you need to do work that takes a long time, use waitUntil to run it in the background
-		waitUntil(
-			potentiallyLongRunningHandler(
-				user_id,
-				final_amount,
-				currency,
-				amount_after_fees,
-			),
-		);
+		// Return 200 immediately to acknowledge receipt
+		return new Response("OK", { status: 200 });
+	} catch (error) {
+		console.error('Webhook processing error:', error);
+		// Still return 200 to prevent retries for client errors
+		return new Response("Error", { status: 200 });
 	}
-
-	// Make sure to return a 2xx status code quickly. Otherwise the webhook will be retried.
-	return new Response("OK", { status: 200 });
 }
 
-async function potentiallyLongRunningHandler(
-	_user_id: string | null | undefined,
-	_amount: number,
-	_currency: string,
-	_amount_after_fees: number | null | undefined,
-) {
-	// This is a placeholder for a potentially long running operation
-	// In a real scenario, you might need to fetch user data, update a database, etc.
+/**
+ * Processes the webhook event and stores it in the database
+ */
+async function processWebhookEvent(webhookData: any) {
+	try {
+		const normalized = normalizeWhopEvent(webhookData);
+		const { userId } = normalized;
+
+		if (!userId) {
+			console.warn('No user ID in webhook event, skipping:', webhookData.action);
+			return;
+		}
+
+		// Get or create the entity (student/user)
+		const entity = await getOrCreateEntity(userId, webhookData.data);
+		if (!entity) {
+			console.error('Failed to get or create entity for user:', userId);
+			return;
+		}
+
+		const clientId = entity.client_id;
+
+		// Store the event
+		const { error: eventError } = await supabase
+			.from('events')
+			.insert({
+				client_id: clientId,
+				entity_id: entity.id,
+				event_type: normalized.eventType,
+				event_data: normalized.eventData,
+				whop_event_id: normalized.whopEventId,
+			});
+
+		if (eventError) {
+			console.error('Error storing event:', eventError);
+			return;
+		}
+
+		console.log(`Stored ${normalized.eventType} event for user ${userId}`);
+
+		// Handle specific event types
+		await handleSpecificEventType(webhookData, entity.id, clientId);
+
+	} catch (error) {
+		console.error('Error in processWebhookEvent:', error);
+	}
+}
+
+/**
+ * Handles event-type-specific logic
+ */
+async function handleSpecificEventType(webhookData: any, entityId: string, clientId: string) {
+	const { action, data } = webhookData;
+
+	// Handle payment success
+	if (action === 'payment.succeeded') {
+		console.log(`Payment succeeded: $${data.final_amount} ${data.currency} from user ${data.user_id}`);
+		// Could trigger email notifications, update user status, etc.
+	}
+
+	// Handle subscription events
+	if (action.startsWith('membership.')) {
+		const subscriptionData = extractSubscriptionData(webhookData);
+		
+		if (subscriptionData) {
+			if (action === 'membership.created' || action === 'membership.renewed') {
+				// Create or update subscription
+				await upsertSubscription(clientId, entityId, subscriptionData);
+			} else if (action === 'membership.cancelled') {
+				// Update subscription status to cancelled
+				await updateSubscriptionStatus(subscriptionData.whopSubscriptionId, 'cancelled');
+			} else if (action === 'membership.expired') {
+				// Update subscription status to expired
+				await updateSubscriptionStatus(subscriptionData.whopSubscriptionId, 'expired');
+			}
+		}
+	}
+
+	// Handle payment failures
+	if (action === 'payment.failed') {
+		console.warn(`Payment failed for user ${data.user_id}:`, data);
+		// Could trigger alerts, retry logic, or customer outreach
+	}
+}
+
+/**
+ * Gets an existing entity or creates a new one
+ * Also ensures the client (company) exists
+ */
+async function getOrCreateEntity(whopUserId: string, eventData: any) {
+	// First, try to find the entity
+	const { data: existing } = await supabase
+		.from('entities')
+		.select('*')
+		.eq('whop_user_id', whopUserId)
+		.single();
+
+	if (existing) {
+		return existing;
+	}
+
+	// Get company_id from event data
+	const companyId = eventData.company_id || eventData.owned_by;
+	
+	if (!companyId) {
+		console.error('No company_id found in webhook event data:', eventData);
+		return null;
+	}
+
+	// Get or create the client (company/creator)
+	let clientId = await getOrCreateClient(companyId, eventData);
+	
+	if (!clientId) {
+		console.error('Failed to get or create client');
+		return null;
+	}
+
+	// Create new entity (student/member)
+	const { data: newEntity, error } = await supabase
+		.from('entities')
+		.insert({
+			client_id: clientId,
+			whop_user_id: whopUserId,
+			email: eventData.email || null,
+			name: eventData.name || eventData.username || null,
+			metadata: {},
+		})
+		.select()
+		.single();
+
+	if (error) {
+		console.error('Error creating entity:', error);
+		return null;
+	}
+
+	console.log(`Created new entity for user ${whopUserId}`);
+	return newEntity;
+}
+
+/**
+ * Map Whop plan IDs to tiers
+ */
+const TIER_MAPPING: Record<string, string> = {
+	'plan_free': 'free',
+	'plan_starter_monthly': 'starter',
+	'plan_growth_monthly': 'growth',
+	'plan_pro_monthly': 'pro',
+	'plan_enterprise_monthly': 'enterprise',
+	// Add your actual Whop plan IDs here when created
+};
+
+/**
+ * Gets or creates a client (company/creator) record
+ */
+async function getOrCreateClient(whopCompanyId: string, eventData: any): Promise<string | null> {
+	// Determine tier from plan_id (if provided)
+	const planId = eventData.plan_id || eventData.membership_plan_id;
+	const tier = planId ? TIER_MAPPING[planId] || 'free' : 'free';
+
+	// Try to find existing client
+	const { data: existing } = await supabase
+		.from('clients')
+		.select('id')
+		.eq('company_id', whopCompanyId)
+		.single();
+
+	if (existing) {
+		// Update tier if they purchased a plan
+		if (planId) {
+			await supabase
+				.from('clients')
+				.update({
+					current_tier: tier,
+					whop_plan_id: planId,
+					subscription_status: eventData.status || 'active',
+				})
+				.eq('id', existing.id);
+			
+			console.log(`Updated client ${whopCompanyId} to tier: ${tier}`);
+		}
+		return existing.id;
+	}
+
+	// Create new client for this company
+	const { data: newClient, error } = await supabase
+		.from('clients')
+		.insert({
+			whop_user_id: whopCompanyId, // Company ID is the owner
+			company_id: whopCompanyId,
+			email: eventData.company_email || `company_${whopCompanyId}@whop.com`,
+			name: eventData.company_name || `Company ${whopCompanyId}`,
+			subscription_tier: 'free', // Legacy field
+			current_tier: tier, // New tier system
+			whop_plan_id: planId,
+			subscription_status: eventData.status || 'active',
+		})
+		.select('id')
+		.single();
+
+	if (error) {
+		console.error('Error creating client:', error);
+		return null;
+	}
+
+	console.log(`Created new client for company ${whopCompanyId} with tier: ${tier}`);
+	return newClient.id;
+}
+
+/**
+ * Creates or updates a subscription
+ */
+async function upsertSubscription(clientId: string, entityId: string, subscriptionData: any) {
+	const { error } = await supabase
+		.from('subscriptions')
+		.upsert({
+			client_id: clientId,
+			entity_id: entityId,
+			whop_subscription_id: subscriptionData.whopSubscriptionId,
+			plan_id: subscriptionData.planId,
+			status: subscriptionData.status,
+			amount: subscriptionData.amount,
+			currency: subscriptionData.currency,
+			started_at: subscriptionData.startedAt,
+			expires_at: subscriptionData.expiresAt,
+		}, {
+			onConflict: 'whop_subscription_id',
+		});
+
+	if (error) {
+		console.error('Error upserting subscription:', error);
+	} else {
+		console.log(`Upserted subscription ${subscriptionData.whopSubscriptionId}`);
+	}
+}
+
+/**
+ * Updates subscription status
+ */
+async function updateSubscriptionStatus(whopSubscriptionId: string, status: string) {
+	const { error } = await supabase
+		.from('subscriptions')
+		.update({ status })
+		.eq('whop_subscription_id', whopSubscriptionId);
+
+	if (error) {
+		console.error('Error updating subscription status:', error);
+	} else {
+		console.log(`Updated subscription ${whopSubscriptionId} to ${status}`);
+	}
 }

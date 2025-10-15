@@ -1,0 +1,223 @@
+# WHOP CREATOR ANALYTICS - TECH STACK REFERENCE
+# Use this for GPT code generation to ensure compatibility
+
+## FRAMEWORK & RUNTIME
+- Next.js 15.3.2 (App Router - NOT Pages Router)
+- React 19.0.0
+- Node.js (latest)
+- TypeScript 5
+
+## STYLING
+- Tailwind CSS 4 (latest)
+- NO styled-components, NO CSS modules
+- Framer Motion 12.23.24 (animations)
+- Lucide React 0.545.0 (icons - NOT react-icons, NOT heroicons)
+
+## UI COMPONENTS
+- shadcn/ui inspired components in components/ui/
+- @radix-ui/react-slot 1.2.3
+- class-variance-authority 0.7.1 (for component variants)
+- tailwind-merge 3.3.1 (for className merging)
+
+## BACKEND & DATABASE
+- Supabase (@supabase/supabase-js 2.45.0)
+- PostgreSQL (via Supabase)
+- Next.js API Routes (app/api/*/route.ts)
+
+## WHOP INTEGRATION
+- @whop/react 0.2.36
+- @whop/api 0.0.50
+- @whop-apps/dev-proxy 0.0.1-canary.116
+
+## CHARTS & DATA VIZ
+- Recharts 2.12.7 (NOT Chart.js, NOT Victory)
+
+## UTILITIES
+- date-fns 4.1.0 (date formatting)
+- clsx 2.1.1 (conditional classes)
+- csv-writer 1.6.0 (CSV export)
+- jspdf 2.5.2 + jspdf-autotable 3.8.3 (PDF export)
+
+## PROJECT STRUCTURE
+```
+app/
+  ├─ page.tsx                    # Home page
+  ├─ layout.tsx                  # Root layout with sidebar
+  ├─ analytics/page.tsx          # Dashboard
+  ├─ students/page.tsx           # Students list
+  ├─ forms/page.tsx              # Forms management
+  ├─ insights/page.tsx           # AI insights
+  ├─ revenue/page.tsx            # Revenue tracking
+  ├─ settings/page.tsx           # Settings
+  ├─ upgrade/page.tsx            # Pricing
+  └─ api/
+      ├─ webhooks/route.ts       # Whop webhook handler
+      ├─ analytics/metrics/route.ts
+      ├─ insights/generate/route.ts
+      ├─ export/csv/route.ts
+      └─ export/pdf/route.ts
+
+components/
+  ├─ DashboardEmerald.tsx        # Main dashboard component
+  ├─ ChartCardModern.tsx         # Chart cards
+  ├─ InsightsPanelModern.tsx     # AI insights panel
+  ├─ sidebar.tsx                 # Left navigation
+  └─ ui/
+      ├─ button.tsx
+      ├─ card.tsx
+      ├─ badge.tsx
+      └─ tabs.tsx
+
+lib/
+  ├─ supabase.ts                 # Database client
+  ├─ utils/
+  │   ├─ cn.ts                   # className utility
+  │   ├─ normalizeEvent.ts       # Event normalization
+  │   ├─ aiInsights.ts           # AI stub functions
+  │   └─ adaptDashboardData.ts   # Data adapter
+
+database/
+  ├─ schema.sql                  # PostgreSQL schema
+  └─ seed.sql                    # Sample data
+```
+
+## COMPONENT PATTERNS
+
+### File Convention:
+- Use .tsx for React components
+- Use .ts for utilities
+- 'use client' for client components
+- Server components by default in app/
+
+### Import Pattern:
+```typescript
+import { ComponentName } from '@/components/ComponentName'
+import { utilityName } from '@/lib/utils/utilityName'
+```
+
+### Styling Pattern:
+```typescript
+<div className="bg-[#0f1115] text-[#E5E7EB] p-4 rounded-2xl border border-[#2A2F36]">
+```
+
+### API Route Pattern:
+```typescript
+// app/api/example/route.ts
+import { NextRequest, NextResponse } from 'next/server';
+export async function GET(request: NextRequest) {
+  return NextResponse.json({ data: 'example' });
+}
+```
+
+## COLOR PALETTE (Dark Emerald Theme)
+- Background: #0f1115 (near-black)
+- Panels: #171A1F (deep grey)
+- Borders: #2A2F36 (subtle grey)
+- Text: #E5E7EB (light grey)
+- Subtext: #9AA4B2 (medium grey)
+- Accent: #10B981 (emerald green)
+- Hover: #1E2228 (lighter grey)
+
+## DATABASE TABLES
+- clients (creator accounts)
+- entities (students)
+- events (all activities)
+- subscriptions (memberships)
+- insights (AI recommendations)
+- form_templates (custom forms)
+- form_submissions (responses)
+
+## ENVIRONMENT VARIABLES (.env.local)
+```
+WHOP_API_KEY=
+NEXT_PUBLIC_WHOP_APP_ID=
+NEXT_PUBLIC_WHOP_COMPANY_ID=
+WHOP_WEBHOOK_SECRET=
+NEXT_PUBLIC_SUPABASE_URL=
+NEXT_PUBLIC_SUPABASE_ANON_KEY=
+```
+
+## CRITICAL RULES FOR CODE GENERATION
+
+1. ALWAYS use TypeScript (.tsx/.ts)
+2. ALWAYS use Tailwind classes (NO inline styles except for dynamic colors)
+3. ALWAYS use 'use client' for interactive components
+4. ALWAYS use Lucide React icons (import from 'lucide-react')
+5. NEVER use Pages Router syntax (use App Router: app/*/page.tsx)
+6. NEVER use CSS modules or styled-components
+7. ALWAYS use dark theme colors from palette above
+8. ALWAYS follow existing component patterns in components/ui/
+9. API routes MUST be in app/api/*/route.ts
+10. Database queries MUST use Supabase client from lib/supabase.ts
+
+## COMPONENT EXAMPLE
+```typescript
+'use client';
+
+import { useState } from 'react';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
+import { Users } from 'lucide-react';
+
+export default function ExamplePage() {
+  const [count, setCount] = useState(0);
+
+  return (
+    <div className="min-h-screen bg-[#0f1115] p-8">
+      <Card className="border border-[#2A2F36] bg-[#171A1F]">
+        <CardContent className="p-6">
+          <h1 className="text-2xl font-bold text-[#E5E7EB] mb-4 flex items-center gap-2">
+            <Users className="h-6 w-6 text-[#10B981]" />
+            Example Component
+          </h1>
+          <p className="text-[#9AA4B2] mb-4">Count: {count}</p>
+          <Button 
+            onClick={() => setCount(count + 1)}
+            className="bg-[#0B2C24] hover:bg-[#0E3A2F] text-white border border-[#17493A]"
+          >
+            Increment
+          </Button>
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
+```
+
+## API ROUTE EXAMPLE
+```typescript
+// app/api/example/route.ts
+import { NextRequest, NextResponse } from 'next/server';
+import { supabase } from '@/lib/supabase';
+
+export async function GET(request: NextRequest) {
+  const { searchParams } = new URL(request.url);
+  const id = searchParams.get('id');
+
+  const { data, error } = await supabase
+    .from('table_name')
+    .select('*')
+    .eq('id', id);
+
+  if (error) {
+    return NextResponse.json({ error: error.message }, { status: 500 });
+  }
+
+  return NextResponse.json({ data });
+}
+```
+
+## COMMANDS
+- Dev: `npm run dev` or `npx next dev`
+- Build: `npm run build`
+- Start: `npm start`
+
+## NOTES
+- This is a Whop-integrated analytics platform
+- Uses ngrok for local webhook testing
+- Revenue stored in cents (convert to dollars for display)
+- All pages use dark emerald theme consistently
+- No light mode toggle (dark-only)
+
+
+
