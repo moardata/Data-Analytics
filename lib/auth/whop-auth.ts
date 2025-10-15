@@ -40,13 +40,12 @@ export async function getWhopAuth(): Promise<WhopAuthResult | null> {
 
   // Fallback for testing/direct access (both dev and prod)
   // In production, this allows direct access for testing
+  // This only runs if Whop headers are NOT present
   return {
     userId: process.env.NEXT_PUBLIC_WHOP_AGENT_USER_ID || 'user_dev',
     companyId: process.env.NEXT_PUBLIC_WHOP_COMPANY_ID || 'biz_dev',
     isAuthenticated: true,
   };
-
-  return null;
 }
 
 /**
