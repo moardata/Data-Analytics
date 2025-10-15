@@ -184,12 +184,11 @@ async function getOrCreateEntity(whopUserId: string, eventData: any) {
  * Map Whop plan IDs to tiers
  */
 const TIER_MAPPING: Record<string, string> = {
-	'plan_free': 'free',
-	'plan_starter_monthly': 'starter',
-	'plan_growth_monthly': 'growth',
-	'plan_pro_monthly': 'pro',
-	'plan_enterprise_monthly': 'enterprise',
-	// Add your actual Whop plan IDs here when created
+	'prod_pfzbMoxvp5HHJ': 'atom',      // Atom (Free)
+	'prod_n8rHHckjTjJdD': 'core',      // Core ($20/month)
+	'prod_4ISBWlTlS81KL': 'pulse',     // Pulse ($100/month)
+	'prod_6O1w6a9outgyO': 'surge',     // Surge ($200/month)
+	'prod_bm98P1RCFrFmF': 'quantum',   // Quantum ($400/month)
 };
 
 /**
@@ -198,7 +197,7 @@ const TIER_MAPPING: Record<string, string> = {
 async function getOrCreateClient(whopCompanyId: string, eventData: any): Promise<string | null> {
 	// Determine tier from plan_id (if provided)
 	const planId = eventData.plan_id || eventData.membership_plan_id;
-	const tier = planId ? TIER_MAPPING[planId] || 'free' : 'free';
+	const tier = planId ? TIER_MAPPING[planId] || 'atom' : 'atom';
 
 	// Try to find existing client
 	const { data: existing } = await supabase

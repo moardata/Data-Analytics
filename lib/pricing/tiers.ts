@@ -3,7 +3,7 @@
  * Based on Whop group sizes and realistic creator needs
  */
 
-export type TierName = 'free' | 'starter' | 'growth' | 'pro' | 'enterprise';
+export type TierName = 'atom' | 'core' | 'pulse' | 'surge' | 'quantum';
 
 export interface PricingTier {
   name: TierName;
@@ -22,7 +22,7 @@ export interface PricingTier {
     customBranding: boolean;
   };
   features: string[];
-  whopPlanId?: string; // Whop membership plan ID
+  whopPlanId: string; // Whop product ID
 }
 
 /**
@@ -37,11 +37,12 @@ export interface PricingTier {
  * We set limits slightly above typical sizes to allow growth
  */
 export const PRICING_TIERS: Record<TierName, PricingTier> = {
-  free: {
-    name: 'free',
-    displayName: 'Free',
+  atom: {
+    name: 'atom',
+    displayName: 'Atom',
     price: 0,
     currency: 'USD',
+    whopPlanId: 'prod_pfzbMoxvp5HHJ',
     limits: {
       maxStudents: 20, // Perfect for testing/small courses
       maxForms: 2,
@@ -62,11 +63,12 @@ export const PRICING_TIERS: Record<TierName, PricingTier> = {
     ],
   },
 
-  starter: {
-    name: 'starter',
-    displayName: 'Starter',
+  core: {
+    name: 'core',
+    displayName: 'Core',
     price: 20,
     currency: 'USD',
+    whopPlanId: 'prod_n8rHHckjTjJdD',
     limits: {
       maxStudents: 200, // Small-medium courses
       maxForms: 10,
@@ -89,11 +91,12 @@ export const PRICING_TIERS: Record<TierName, PricingTier> = {
     ],
   },
 
-  growth: {
-    name: 'growth',
-    displayName: 'Growth',
+  pulse: {
+    name: 'pulse',
+    displayName: 'Pulse',
     price: 100,
     currency: 'USD',
+    whopPlanId: 'prod_4ISBWlTlS81KL',
     limits: {
       maxStudents: 2000, // Medium-large communities
       maxForms: 50,
@@ -116,11 +119,12 @@ export const PRICING_TIERS: Record<TierName, PricingTier> = {
     ],
   },
 
-  pro: {
-    name: 'pro',
-    displayName: 'Pro',
+  surge: {
+    name: 'surge',
+    displayName: 'Surge',
     price: 200,
     currency: 'USD',
+    whopPlanId: 'prod_6O1w6a9outgyO',
     limits: {
       maxStudents: 10000, // Large communities
       maxForms: 100,
@@ -144,11 +148,12 @@ export const PRICING_TIERS: Record<TierName, PricingTier> = {
     ],
   },
 
-  enterprise: {
-    name: 'enterprise',
-    displayName: 'Enterprise',
+  quantum: {
+    name: 'quantum',
+    displayName: 'Quantum',
     price: 400,
     currency: 'USD',
+    whopPlanId: 'prod_bm98P1RCFrFmF',
     limits: {
       maxStudents: 100000, // Mega communities
       maxForms: 500,
