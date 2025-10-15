@@ -89,12 +89,25 @@ function calculateMetrics(events: any[], subscriptions: any[], entities: any[], 
   const weekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
   const newThisWeek = entities.filter(e => new Date(e.created_at) > weekAgo).length;
 
-  // Calculate changes (mock data for demo - in production, compare to previous period)
-  const studentsChange = 15;
-  const subscriptionsChange = 8;
-  const revenueChange = 23;
-  const engagementChange = 12;
-  const completionChange = 5;
+  // Calculate changes (compare to previous period)
+  const previousPeriodStart = new Date(Date.now() - (days * 2) * 24 * 60 * 60 * 1000);
+  const previousPeriodEnd = new Date(Date.now() - days * 24 * 60 * 60 * 1000);
+  
+  const previousStudents = entities.filter(e => 
+    new Date(e.created_at) >= previousPeriodStart && 
+    new Date(e.created_at) <= previousPeriodEnd
+  ).length;
+  
+  const previousRevenue = orderEvents.filter(e => 
+    new Date(e.created_at) >= previousPeriodStart && 
+    new Date(e.created_at) <= previousPeriodEnd
+  ).reduce((sum, e) => sum + (e.event_data?.amount || 0), 0);
+  
+  const studentsChange = previousStudents > 0 ? ((newThisWeek - previousStudents) / previousStudents) * 100 : 0;
+  const subscriptionsChange = 0; // Would need previous period data
+  const revenueChange = previousRevenue > 0 ? ((totalRevenue - previousRevenue) / previousRevenue) * 100 : 0;
+  const engagementChange = 0; // Would need previous period data
+  const completionChange = 0; // Would need previous period data
 
   // Revenue over time chart data
   const revenueData = generateTimeSeriesData(orderEvents, days, 'amount');

@@ -155,7 +155,7 @@ function InsightsContent() {
               onClick={refreshInsights}
               disabled={loading}
               variant="outline"
-              className={`${theme.border} ${theme.text} hover:bg-[#252A31] rounded-xl px-4 py-2 gap-2 transition-all`}
+              className={`${theme.border} ${theme.text} hover:bg-[#252A31] hover:text-[#E1E4EA] rounded-xl px-4 py-2 gap-2 transition-all border-[#2E343C]/70 text-[#E1E4EA]`}
             >
               <RefreshCw className="h-4 w-4" />
               Refresh

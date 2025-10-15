@@ -203,43 +203,55 @@ Return JSON with 3-4 themes, a summary, and key takeaways:
  * Generate stub analysis when OpenAI is not available
  */
 function generateStubAnalysis(texts: any[]): AIAnalysisResult {
+  // Generate insights based on actual data patterns
+  const totalTexts = texts.length;
+  const hasData = totalTexts > 0;
+  
+  if (!hasData) {
+    return {
+      themes: [
+        {
+          title: 'No data available',
+          share_pct: 100,
+          sentiment: 'neutral',
+          suggested_action: 'Start collecting student feedback and engagement data to generate meaningful insights.',
+          urgency: 'low'
+        }
+      ],
+      summary: 'No student feedback data available yet. Start collecting responses to generate AI insights.',
+      key_takeaways: [
+        'Begin collecting student feedback through forms and surveys',
+        'Track student engagement and progress metrics',
+        'Set up regular data collection processes'
+      ]
+    };
+  }
+
+  // Generate insights based on actual data volume
+  const engagementLevel = totalTexts < 5 ? 'low' : totalTexts < 20 ? 'medium' : 'high';
+  
   return {
     themes: [
       {
-        title: 'Real-world case study demand',
-        share_pct: 35,
-        sentiment: 'neutral',
-        suggested_action: 'Create a dedicated library with 5-10 full deal walkthroughs showing actual numbers, negotiations, and outcomes from your students. Include both successful and failed deals for learning.',
-        urgency: 'medium'
-      },
-      {
-        title: 'Course delivery excellence',
-        share_pct: 55,
+        title: 'Data collection progress',
+        share_pct: 60,
         sentiment: 'positive',
-        suggested_action: 'Your teaching style and deal analysis framework are highly praised. Double down on this strength by creating advanced modules using the same clear explanation approach.',
+        suggested_action: `You have ${totalTexts} data points. Continue collecting feedback to improve insight quality.`,
         urgency: 'low'
       },
       {
-        title: 'Platform technical issues',
-        share_pct: 18,
-        sentiment: 'negative',
-        suggested_action: 'Immediate fixes needed: (1) Broken Deal Analysis spreadsheet download link, (2) Module 5 video crashes on mobile, (3) Video buffering issues. Consider CDN upgrade or video compression.',
-        urgency: 'high'
-      },
-      {
-        title: 'Community engagement structure',
-        share_pct: 22,
+        title: 'Engagement analysis needed',
+        share_pct: 40,
         sentiment: 'neutral',
-        suggested_action: 'Facebook group is valuable but too noisy. Create a tiered community: (1) Discord for organized discussions by topic, (2) Keep Facebook for casual networking, (3) Add monthly virtual meetups.',
+        suggested_action: `Your engagement level is ${engagementLevel}. Consider implementing more feedback collection methods.`,
         urgency: 'medium'
       }
     ],
-    summary: `Based on ${texts.length} responses, students report strong satisfaction with teaching quality and deal analysis tools (55% positive), but request more real-world case studies (35% want examples) and immediate platform fixes (18% report technical issues including broken links and mobile crashes).`,
+    summary: `Based on ${totalTexts} data points, your engagement level is ${engagementLevel}. Continue collecting data for better insights.`,
     key_takeaways: [
-      'Teaching methodology and deal analysis framework are major strengths - leverage this in advanced content',
-      'High demand for real-world case studies with actual numbers, negotiations, and outcomes',
-      'Critical platform issues need immediate attention: broken downloads, mobile crashes, buffering',
-      'Community is active but needs better organization - Discord/forum structure would improve engagement'
+      `You have ${totalTexts} data points collected`,
+      `Engagement level: ${engagementLevel}`,
+      'Continue collecting feedback for more detailed insights'
     ]
   };
 }
