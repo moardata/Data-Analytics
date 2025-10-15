@@ -69,6 +69,7 @@ export async function getCompanyId(request: Request): Promise<string | null> {
   const auth = await getWhopAuth();
   
   if (auth?.companyId) {
+    console.log('Using Whop auth companyId:', auth.companyId);
     return auth.companyId;
   }
   
@@ -76,9 +77,18 @@ export async function getCompanyId(request: Request): Promise<string | null> {
   const url = new URL(request.url);
   const clientId = url.searchParams.get('clientId');
   if (clientId) {
+    console.log('Using URL param clientId:', clientId);
     return clientId;
   }
   
+  // Final fallback: use environment variable
+  const envCompanyId = process.env.NEXT_PUBLIC_WHOP_COMPANY_ID;
+  if (envCompanyId) {
+    console.log('Using env companyId:', envCompanyId);
+    return envCompanyId;
+  }
+  
+  console.log('No companyId found - auth:', auth, 'env:', envCompanyId);
   return null;
 }
 
