@@ -9,8 +9,29 @@ import React from 'react';
 import { Settings as SettingsIcon, User, Bell, Key, Database } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { useRouter } from 'next/navigation';
 
 export default function SettingsPage() {
+  const router = useRouter();
+
+  const handleUpgrade = () => {
+    router.push('/upgrade');
+  };
+
+  const handleExportData = () => {
+    // TODO: Implement data export
+    alert('Data export feature coming soon!');
+  };
+
+  const handleSubmitFeedback = () => {
+    // TODO: Implement feedback form
+    alert('Feedback form coming soon!');
+  };
+
+  const handleContactSupport = () => {
+    // TODO: Implement support contact
+    alert('Support contact coming soon!');
+  };
   return (
     <div className="min-h-screen bg-gradient-to-b from-[#0d0f12] to-[#14171c] p-8">
       <div className="max-w-4xl mx-auto space-y-8">
@@ -41,7 +62,10 @@ export default function SettingsPage() {
               <div className="text-sm text-[#D1D5DB]">
                 <span className="font-bold">Students Tracked:</span> <span className="text-[#10B981]">4</span>
               </div>
-              <Button className="bg-[#0B2C24] hover:bg-[#0E3A2F] text-white border border-[#17493A]">
+              <Button 
+                onClick={handleUpgrade}
+                className="bg-[#0B2C24] hover:bg-[#0E3A2F] text-white border border-[#17493A]"
+              >
                 Upgrade Plan
               </Button>
             </CardContent>
@@ -97,7 +121,11 @@ export default function SettingsPage() {
                   <div className="w-4 h-4 bg-white rounded-full absolute right-1 top-1"></div>
                 </div>
               </div>
-              <Button variant="outline" className="border-[#2A2F36] text-[#9AA4B2] hover:bg-[#2A2F36]">
+              <Button 
+                onClick={handleExportData}
+                variant="outline" 
+                className="border-[#2A2F36] text-[#9AA4B2] hover:bg-[#2A2F36]"
+              >
                 Export Data
               </Button>
             </CardContent>
@@ -114,10 +142,17 @@ export default function SettingsPage() {
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-3">
-              <Button className="bg-[#0B2C24] hover:bg-[#0E3A2F] text-white border border-[#17493A] w-full">
+              <Button 
+                onClick={handleSubmitFeedback}
+                className="bg-[#0B2C24] hover:bg-[#0E3A2F] text-white border border-[#17493A] w-full"
+              >
                 Submit Feedback
               </Button>
-              <Button variant="outline" className="border-[#2A2F36] text-[#9AA4B2] hover:bg-[#2A2F36] w-full">
+              <Button 
+                onClick={handleContactSupport}
+                variant="outline" 
+                className="border-[#2A2F36] text-[#9AA4B2] hover:bg-[#2A2F36] w-full"
+              >
                 Contact Support
               </Button>
             </CardContent>

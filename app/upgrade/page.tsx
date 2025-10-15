@@ -51,9 +51,21 @@ function UpgradeContent() {
       return;
     }
 
-    // In production, redirect to Whop's pricing page
-    const whopAppUrl = 'https://whop.com/apps/app_qMCiZm0xUewsGe/install/';
-    window.open(whopAppUrl, '_blank');
+    if (tierName === currentTier) {
+      alert('You\'re already on this plan!');
+      return;
+    }
+
+    // Get the Whop plan ID for the selected tier
+    const tier = tiers.find(t => t.name === tierName);
+    if (!tier?.whopPlanId) {
+      alert('Plan not available yet. Please contact support.');
+      return;
+    }
+
+    // Redirect to Whop's plan purchase page
+    const whopPlanUrl = `https://whop.com/checkout/${tier.whopPlanId}/`;
+    window.open(whopPlanUrl, '_blank');
   };
 
   const tiers = getAllTiers();
