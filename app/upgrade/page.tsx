@@ -24,7 +24,7 @@ const planEmojis: Record<TierName, string> = {
 
 function UpgradeContent() {
   const searchParams = useSearchParams();
-  const clientId = searchParams.get('companyId') || process.env.NEXT_PUBLIC_WHOP_COMPANY_ID || 'default';
+  const clientId = searchParams.get('companyId') || process.env.NEXT_PUBLIC_WHOP_COMPANY_ID;
   
   const [currentTier, setCurrentTier] = useState<TierName>('atom');
   const [loading, setLoading] = useState(true);
