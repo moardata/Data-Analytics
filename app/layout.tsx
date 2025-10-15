@@ -1,7 +1,6 @@
 import { WhopApp } from "@whop/react/components";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
-import { ThemeProvider } from "@/providers/theme-provider";
 import { Sidebar } from "@/components/sidebar";
 import "./globals.css";
 
@@ -22,23 +21,16 @@ export default function RootLayout({
 	children: React.ReactNode;
 }>) {
 	return (
-		<html lang="en" suppressHydrationWarning>
+		<html lang="en" className="dark">
 			<body className={`${inter.variable} font-sans antialiased`}>
-				<ThemeProvider
-					attribute="class"
-					defaultTheme="dark"
-					enableSystem
-					disableTransitionOnChange
-				>
-					<WhopApp>
-						<div className="flex min-h-screen bg-gradient-to-b from-[#0d0f12] to-[#14171c]">
-							<Sidebar />
-							<main className="flex-1 ml-64">
-								{children}
-							</main>
-						</div>
-					</WhopApp>
-				</ThemeProvider>
+				<WhopApp>
+					<div className="flex min-h-screen bg-gradient-to-b from-[#0d0f12] to-[#14171c]">
+						<Sidebar />
+						<main className="flex-1 ml-64">
+							{children}
+						</main>
+					</div>
+				</WhopApp>
 			</body>
 		</html>
 	);

@@ -28,15 +28,21 @@ export default function SettingsPage() {
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-[#E5E7EB]">
                 <User className="h-5 w-5 text-[#10B981]" />
-                Account Settings
+                Analytics Settings
               </CardTitle>
               <CardDescription className="text-[#9AA4B2]">
-                Manage your account information
+                Configure your analytics preferences
               </CardDescription>
             </CardHeader>
-            <CardContent>
+            <CardContent className="space-y-3">
+              <div className="text-sm text-[#D1D5DB]">
+                <span className="font-bold">Current Plan:</span> <span className="text-[#10B981] font-bold">Atom (Free)</span>
+              </div>
+              <div className="text-sm text-[#D1D5DB]">
+                <span className="font-bold">Students Tracked:</span> <span className="text-[#10B981]">4</span>
+              </div>
               <Button className="bg-[#0B2C24] hover:bg-[#0E3A2F] text-white border border-[#17493A]">
-                Edit Profile
+                Upgrade Plan
               </Button>
             </CardContent>
           </Card>
@@ -48,32 +54,21 @@ export default function SettingsPage() {
                 Notifications
               </CardTitle>
               <CardDescription className="text-[#9AA4B2]">
-                Configure notification preferences
+                Get notified about insights and updates
               </CardDescription>
             </CardHeader>
-            <CardContent>
-              <Button className="bg-[#0B2C24] hover:bg-[#0E3A2F] text-white border border-[#17493A]">
-                Manage Notifications
-              </Button>
-            </CardContent>
-          </Card>
-
-          <Card className="border border-[#2A2F36] bg-[#171A1F] shadow-lg">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-[#E5E7EB]">
-                <Key className="h-5 w-5 text-[#10B981]" />
-                API Keys
-              </CardTitle>
-              <CardDescription className="text-[#9AA4B2]">
-                Manage your API credentials
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-2">
-              <div className="text-sm text-[#D1D5DB]">
-                <span className="font-bold">Whop API Key:</span> <span className="font-mono text-[#9AA4B2]">p5EW_xW20***</span>
+            <CardContent className="space-y-3">
+              <div className="flex items-center justify-between">
+                <span className="text-[#D1D5DB]">Email insights daily</span>
+                <div className="w-12 h-6 bg-[#10B981] rounded-full relative">
+                  <div className="w-4 h-4 bg-white rounded-full absolute right-1 top-1"></div>
+                </div>
               </div>
-              <div className="text-sm text-[#D1D5DB]">
-                <span className="font-bold">Supabase URL:</span> <span className="font-mono text-[#9AA4B2]">rdllbte***</span>
+              <div className="flex items-center justify-between">
+                <span className="text-[#D1D5DB]">Weekly summary</span>
+                <div className="w-12 h-6 bg-[#2A2F36] rounded-full relative">
+                  <div className="w-4 h-4 bg-white rounded-full absolute left-1 top-1"></div>
+                </div>
               </div>
             </CardContent>
           </Card>
@@ -82,17 +77,49 @@ export default function SettingsPage() {
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-[#E5E7EB]">
                 <Database className="h-5 w-5 text-[#10B981]" />
-                Database
+                Data & Privacy
               </CardTitle>
               <CardDescription className="text-[#9AA4B2]">
-                Database connection status
+                Manage your data and privacy settings
               </CardDescription>
             </CardHeader>
-            <CardContent>
-              <div className="flex items-center gap-2">
-                <div className="w-2 h-2 rounded-full bg-[#10B981]"></div>
-                <span className="text-[#D1D5DB] font-bold">Connected</span>
+            <CardContent className="space-y-3">
+              <div className="flex items-center justify-between">
+                <span className="text-[#D1D5DB]">Data retention</span>
+                <div className="flex items-center gap-2">
+                  <div className="w-2 h-2 rounded-full bg-[#10B981]"></div>
+                  <span className="text-[#10B981] font-bold">7 days</span>
+                </div>
               </div>
+              <div className="flex items-center justify-between">
+                <span className="text-[#D1D5DB]">Analytics tracking</span>
+                <div className="w-12 h-6 bg-[#10B981] rounded-full relative">
+                  <div className="w-4 h-4 bg-white rounded-full absolute right-1 top-1"></div>
+                </div>
+              </div>
+              <Button variant="outline" className="border-[#2A2F36] text-[#9AA4B2] hover:bg-[#2A2F36]">
+                Export Data
+              </Button>
+            </CardContent>
+          </Card>
+
+          <Card className="border border-[#2A2F36] bg-[#171A1F] shadow-lg">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-[#E5E7EB]">
+                <Bell className="h-5 w-5 text-[#10B981]" />
+                Support
+              </CardTitle>
+              <CardDescription className="text-[#9AA4B2]">
+                Get help and provide feedback
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              <Button className="bg-[#0B2C24] hover:bg-[#0E3A2F] text-white border border-[#17493A] w-full">
+                Submit Feedback
+              </Button>
+              <Button variant="outline" className="border-[#2A2F36] text-[#9AA4B2] hover:bg-[#2A2F36] w-full">
+                Contact Support
+              </Button>
             </CardContent>
           </Card>
         </div>

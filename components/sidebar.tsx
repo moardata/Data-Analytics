@@ -16,7 +16,6 @@ import {
   Users,
   Crown
 } from 'lucide-react'
-import { ThemeToggle } from './theme-toggle'
 import { Badge } from './ui/badge'
 import { cn } from '@/lib/utils/cn'
 
@@ -104,9 +103,6 @@ export function Sidebar() {
           )
         })}
         
-        <div className="px-3 py-2">
-          <ThemeToggle />
-        </div>
       </div>
     </aside>
   )
