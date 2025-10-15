@@ -16,7 +16,7 @@ type DateRange = 'week' | 'month' | 'quarter';
 
 function AnalyticsContent() {
   const searchParams = useSearchParams();
-  const companyId = searchParams.get('companyId') || process.env.NEXT_PUBLIC_WHOP_COMPANY_ID || 'default';
+  const companyId = searchParams.get('companyId') || process.env.NEXT_PUBLIC_WHOP_COMPANY_ID;
   
   const [dashboardData, setDashboardData] = useState<any>(null);
   const [range, setRange] = useState<DateRange>('week');

@@ -16,7 +16,7 @@ import { supabase } from '@/lib/supabase';
 
 function StudentsContent() {
   const searchParams = useSearchParams();
-  const clientId = searchParams.get('companyId') || process.env.NEXT_PUBLIC_WHOP_COMPANY_ID || '550e8400-e29b-41d4-a716-446655440000';
+  const clientId = searchParams.get('companyId') || process.env.NEXT_PUBLIC_WHOP_COMPANY_ID;
   
   const [students, setStudents] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
