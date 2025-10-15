@@ -116,10 +116,42 @@ export async function GET(request: NextRequest) {
       .single();
 
     if (!client) {
-      return NextResponse.json(
-        { error: 'Client not found' },
-        { status: 404 }
-      );
+      // Auto-create client if it doesn't exist
+      console.log('Client not found, creating new client for:', companyId);
+      const { data: newClient, error: createError } = await supabase
+        .from('clients')
+        .insert({
+          company_id: companyId,
+          current_tier: 'atom',
+          subscription_status: 'active',
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+        })
+        .select()
+        .single();
+
+      if (createError) {
+        console.error('Error creating client:', createError);
+        return NextResponse.json(
+          { error: 'Failed to create client' },
+          { status: 500 }
+        );
+      }
+
+      // Use the newly created client
+      const tier = (newClient.current_tier || 'atom') as TierName;
+      const tierData = getTier(tier);
+      const usage = await getClientUsage(companyId);
+
+      return NextResponse.json({
+        tier,
+        limits: tierData.limits,
+        usage,
+        subscription: {
+          status: newClient.subscription_status,
+          expiresAt: newClient.subscription_expires_at,
+        },
+      });
     }
 
     const tier = (client.current_tier || 'atom') as TierName;
