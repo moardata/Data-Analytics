@@ -57,7 +57,7 @@ interface RevenueDashboardProps {
 export default function RevenueDashboard({ revenueData, onExport }: RevenueDashboardProps) {
   const [range, setRange] = React.useState<'1D' | '7D' | '30D'>('7D');
 
-  // Calculate KPIs from real data or use demo data
+  // Calculate KPIs from real data or show empty state
   const revenue = React.useMemo(() => {
     if (revenueData && revenueData.length > 0) {
       // Use real revenue data
@@ -70,28 +70,34 @@ export default function RevenueDashboard({ revenueData, onExport }: RevenueDashb
         high: (order.event_data?.amount || 0) * 1.1,
       }));
     }
-    // Demo data
-    return mkSeries(5400, 1600).map((d)=>({ ...d, low: Math.round(d.forecast*0.9), high: Math.round(d.forecast*1.1) }));
+    // Empty state - no demo data
+    return [];
   }, [revenueData]);
 
-  const composition = days.map((d,i)=>({ day:d, subscriptions: 2600 + (i%3)*180, onetime: 1400 + (i%4)*220, upsells: 800 + (i%2)*160, bundles: 500 + (i%5)*90 }));
-  const engagementRevenue = days.map((d,i)=>({ day:d, engagement: 60 + Math.round(12*Math.sin(i*0.7)+i), revenueIndex: 70 + Math.round(15*Math.sin(i*0.7+0.8)+i*0.5) }));
+  // Only show data if we have real revenue data
+  const hasData = revenueData && revenueData.length > 0;
   
-  const profitability = 0.34;
+  const composition = hasData ? days.map((d,i)=>({ day:d, subscriptions: 2600 + (i%3)*180, onetime: 1400 + (i%4)*220, upsells: 800 + (i%2)*160, bundles: 500 + (i%5)*90 })) : [];
+  const engagementRevenue = hasData ? days.map((d,i)=>({ day:d, engagement: 60 + Math.round(12*Math.sin(i*0.7)+i), revenueIndex: 70 + Math.round(15*Math.sin(i*0.7+0.8)+i*0.5) })) : [];
+  
+  const profitability = hasData ? 0.34 : 0;
   
   const KPI = React.useMemo(() => {
+    if (!hasData) {
+      return { gross: 0, refundsPct: 0, net: 0, forecast30d: 0 };
+    }
     const gross = revenue.reduce((sum, d) => sum + (d.actual || 0), 0);
     const refundsPct = 0.018;
     const net = gross * (1 - refundsPct) - 8200;
     const forecast30d = Math.round(gross * 4.3);
     return { gross, refundsPct, net, forecast30d };
-  }, [revenue]);
+  }, [revenue, hasData]);
 
-  const insights = [
+  const insights = hasData ? [
     { title: 'Upsell promo lifted revenue +18%', body: '3-day bundle offer increased upsells share from 13% → 22%. Repeat "weekend bundle" each month.' },
     { title: 'High sentiment cohorts spend 1.7× more', body: 'Weeks with average feedback ≥ 4.5/5 correlated with higher ARPS. Expand Module 2 Q&A sessions.' },
     { title: 'Refunds concentrated on Structuring module', body: '57% of refunds cite confusion in deal financing. Add case study + checklist to reduce churn risk.' },
-  ];
+  ] : [];
 
   const displayedData = React.useMemo(() => {
     switch (range) {
@@ -105,6 +111,20 @@ export default function RevenueDashboard({ revenueData, onExport }: RevenueDashb
         return revenue;
     }
   }, [range, revenue]);
+
+  // Show empty state if no data
+  if (!hasData) {
+    return (
+      <div className="space-y-4">
+        <Panel>
+          <div className="text-center py-12">
+            <div className="text-2xl font-semibold text-white mb-2">No Revenue Data</div>
+            <div className="text-zinc-400">Start collecting revenue data to see analytics here.</div>
+          </div>
+        </Panel>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-4">
