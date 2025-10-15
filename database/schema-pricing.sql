@@ -4,7 +4,7 @@
  */
 
 -- Update clients table to track subscription tier
-ALTER TABLE clients ADD COLUMN IF NOT EXISTS current_tier TEXT DEFAULT 'free';
+ALTER TABLE clients ADD COLUMN IF NOT EXISTS current_tier TEXT DEFAULT 'atom';
 ALTER TABLE clients ADD COLUMN IF NOT EXISTS whop_plan_id TEXT;
 ALTER TABLE clients ADD COLUMN IF NOT EXISTS subscription_status TEXT DEFAULT 'active';
 ALTER TABLE clients ADD COLUMN IF NOT EXISTS subscription_expires_at TIMESTAMPTZ;
@@ -35,11 +35,11 @@ DECLARE
 BEGIN
   -- Get retention period based on tier
   CASE NEW.current_tier
-    WHEN 'free' THEN retention_days := 7;
-    WHEN 'starter' THEN retention_days := 30;
-    WHEN 'growth' THEN retention_days := 90;
-    WHEN 'pro' THEN retention_days := 180;
-    WHEN 'enterprise' THEN retention_days := 365;
+    WHEN 'atom' THEN retention_days := 7;
+    WHEN 'core' THEN retention_days := 30;
+    WHEN 'pulse' THEN retention_days := 90;
+    WHEN 'surge' THEN retention_days := 180;
+    WHEN 'quantum' THEN retention_days := 365;
     ELSE retention_days := 7;
   END CASE;
 

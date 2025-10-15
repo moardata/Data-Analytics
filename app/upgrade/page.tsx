@@ -26,7 +26,7 @@ function UpgradeContent() {
   const searchParams = useSearchParams();
   const clientId = searchParams.get('companyId') || process.env.NEXT_PUBLIC_WHOP_COMPANY_ID || 'default';
   
-  const [currentTier, setCurrentTier] = useState<TierName>('free');
+  const [currentTier, setCurrentTier] = useState<TierName>('atom');
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -37,7 +37,7 @@ function UpgradeContent() {
     try {
       const res = await fetch('/api/usage/check');
       const data = await res.json();
-      setCurrentTier(data.tier || 'free');
+      setCurrentTier(data.tier || 'atom');
     } catch (error) {
       console.error('Error fetching tier:', error);
     } finally {
@@ -46,7 +46,7 @@ function UpgradeContent() {
   };
 
   const handleUpgrade = (tierName: TierName) => {
-    if (tierName === 'free') {
+    if (tierName === 'atom') {
       alert('You\'re already on the free plan!');
       return;
     }
@@ -57,7 +57,7 @@ function UpgradeContent() {
   };
 
   const tiers = getAllTiers();
-  const isPopular = (tierName: TierName) => tierName === 'growth';
+  const isPopular = (tierName: TierName) => tierName === 'pulse';
   const isCurrentTier = (tierName: TierName) => tierName === currentTier;
 
   if (loading) {
@@ -143,7 +143,7 @@ function UpgradeContent() {
                         : 'bg-[#0B2C24]/40 hover:bg-[#0E3A2F]/60 border-[#17493A]'
                     )}
                   >
-                    {current ? 'Current Plan' : tier.name === 'free' ? 'Downgrade' : 'Upgrade'}
+                    {current ? 'Current Plan' : tier.name === 'atom' ? 'Downgrade' : 'Upgrade'}
                   </Button>
                 </CardContent>
               </Card>

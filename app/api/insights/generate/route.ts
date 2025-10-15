@@ -29,7 +29,7 @@ export async function POST(request: NextRequest) {
       .eq('company_id', clientId)
       .single();
 
-    const tier = (client?.current_tier || 'free') as any;
+    const tier = (client?.current_tier || 'atom') as any;
     const limitCheck = await checkLimit(clientId, tier, 'generateInsight');
 
     if (!limitCheck.allowed) {

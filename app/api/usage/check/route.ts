@@ -45,11 +45,11 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const tier = (client.current_tier || 'free') as TierName;
+    const tier = (client.current_tier || 'atom') as TierName;
     const tierData = getTier(tier);
 
     // Check if subscription is active (for paid tiers)
-    if (tier !== 'free' && client.subscription_status !== 'active') {
+    if (tier !== 'atom' && client.subscription_status !== 'active') {
       return NextResponse.json({
         allowed: false,
         reason: 'Your subscription is inactive. Please renew to continue using premium features.',
@@ -122,7 +122,7 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    const tier = (client.current_tier || 'free') as TierName;
+    const tier = (client.current_tier || 'atom') as TierName;
     const tierData = getTier(tier);
     const usage = await getClientUsage(companyId);
 
