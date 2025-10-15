@@ -52,7 +52,7 @@ function UpgradeContent() {
     }
 
     // In production, redirect to Whop's pricing page
-    const whopAppUrl = 'https://whop.com/your-app-name/pricing';
+    const whopAppUrl = 'https://whop.com/apps/app_qMCiZm0xUewsGe/install/';
     window.open(whopAppUrl, '_blank');
   };
 
