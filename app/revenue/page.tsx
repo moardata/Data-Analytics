@@ -25,10 +25,25 @@ function RevenueContent() {
 
   const fetchRevenue = async () => {
     try {
+      // First get the client record for this company
+      const { data: clientData } = await supabase
+        .from('clients')
+        .select('id')
+        .eq('company_id', clientId)
+        .single();
+
+      if (!clientData) {
+        console.log('No client found for company:', clientId);
+        setRevenue([]);
+        setLoading(false);
+        return;
+      }
+
+      // Now query events with the actual client UUID
       const { data } = await supabase
         .from('events')
         .select('*')
-        .eq('client_id', clientId)
+        .eq('client_id', clientData.id)
         .eq('event_type', 'order')
         .order('created_at', { ascending: false });
       
@@ -41,7 +56,7 @@ function RevenueContent() {
   };
 
   const handleExport = () => {
-    window.open(`/api/export/csv?clientId=${clientId}&type=revenue`, '_blank');
+    window.open(`/api/export/csv?companyId=${clientId}&type=revenue`, '_blank');
   };
 
   if (loading) {

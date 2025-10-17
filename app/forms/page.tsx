@@ -31,13 +31,32 @@ function FormsContent() {
   }, [clientId]);
 
   const fetchForms = async () => {
-    const { data } = await supabase
-      .from('form_templates')
-      .select('*')
-      .eq('client_id', clientId)
-      .eq('is_active', true);
-    
-    setForms(data || []);
+    try {
+      // First get the client record for this company
+      const { data: clientData } = await supabase
+        .from('clients')
+        .select('id')
+        .eq('company_id', clientId)
+        .single();
+
+      if (!clientData) {
+        console.log('No client found for company:', clientId);
+        setForms([]);
+        return;
+      }
+
+      // Now query form templates with the actual client UUID
+      const { data } = await supabase
+        .from('form_templates')
+        .select('*')
+        .eq('client_id', clientData.id)
+        .eq('is_active', true);
+      
+      setForms(data || []);
+    } catch (error) {
+      console.error('Error fetching forms:', error);
+      setForms([]);
+    }
   };
 
   const handleFormSubmit = async (responses: Record<string, any>) => {
@@ -49,7 +68,7 @@ function FormsContent() {
       body: JSON.stringify({
         formId: selectedForm.id,
         entityId: demoEntityId,
-        clientId,
+        companyId: clientId,
         responses,
       }),
     });

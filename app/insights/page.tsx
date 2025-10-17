@@ -38,7 +38,7 @@ function InsightsContent() {
   const fetchInsights = async () => {
     setLoading(true);
     try {
-      const response = await fetch(`/api/insights/generate?clientId=${clientId}&limit=20`);
+      const response = await fetch(`/api/insights/generate?companyId=${clientId}&limit=20`);
       const data = await response.json();
       setInsights(data.insights || []);
     } catch (error) {
@@ -55,7 +55,7 @@ function InsightsContent() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ 
-          clientId,
+          companyId: clientId,
           timeRange: 'week',
           includeAnomalies: true 
         }),
@@ -81,7 +81,7 @@ function InsightsContent() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ 
-          clientId,
+          companyId: clientId,
           force: true 
         }),
       });

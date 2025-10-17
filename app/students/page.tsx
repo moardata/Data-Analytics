@@ -27,10 +27,25 @@ function StudentsContent() {
 
   const fetchStudents = async () => {
     try {
+      // First get the client record for this company
+      const { data: clientData } = await supabase
+        .from('clients')
+        .select('id')
+        .eq('company_id', clientId)
+        .single();
+
+      if (!clientData) {
+        console.log('No client found for company:', clientId);
+        setStudents([]);
+        setLoading(false);
+        return;
+      }
+
+      // Now query entities with the actual client UUID
       const { data } = await supabase
         .from('entities')
         .select('*')
-        .eq('client_id', clientId)
+        .eq('client_id', clientData.id)
         .order('created_at', { ascending: false });
       
       setStudents(data || []);
