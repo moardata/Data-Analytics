@@ -10,6 +10,7 @@ import { Suspense, useState, useEffect } from 'react';
 import { useSearchParams } from 'next/navigation';
 import DashboardCreatorAnalytics from '@/components/DashboardCreatorAnalytics';
 import { adaptToCreatorAnalytics } from '@/lib/utils/adaptDashboardCreatorAnalytics';
+import { PermissionsBanner } from '@/components/PermissionsBanner';
 
 export const dynamic = 'force-dynamic';
 
@@ -24,6 +25,7 @@ function AnalyticsContent() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [accessError, setAccessError] = useState<string | null>(null);
+  const [missingPermissions, setMissingPermissions] = useState<string[]>([]);
 
   useEffect(() => {
     fetchData();
@@ -77,6 +79,14 @@ function AnalyticsContent() {
       }
 
       const apiData = await res.json();
+      
+      // Check for missing permissions in the response
+      if (apiData.missingPermissions && Array.isArray(apiData.missingPermissions)) {
+        setMissingPermissions(apiData.missingPermissions);
+      } else {
+        setMissingPermissions([]);
+      }
+      
       const adapted = adaptToCreatorAnalytics(apiData);
       setDashboardData(adapted);
     } catch (err) {
@@ -151,12 +161,17 @@ function AnalyticsContent() {
   }
 
   return (
-    <DashboardCreatorAnalytics
-      data={dashboardData}
-      onExportEventsCsv={handleExportEventsCsv}
-      onExportSubscriptionsCsv={handleExportSubscriptionsCsv}
-      onExportPdf={handleExportPdf}
-    />
+    <div className="min-h-screen bg-[#0f1115]">
+      <div className="max-w-[1600px] mx-auto p-6">
+        <PermissionsBanner missing={missingPermissions} />
+        <DashboardCreatorAnalytics
+          data={dashboardData}
+          onExportEventsCsv={handleExportEventsCsv}
+          onExportSubscriptionsCsv={handleExportSubscriptionsCsv}
+          onExportPdf={handleExportPdf}
+        />
+      </div>
+    </div>
   );
 }
 

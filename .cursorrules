@@ -1,0 +1,31 @@
+# Cursor AI Rules for Team Collaboration
+
+## Git Sync Reminders
+
+### Before Making Changes
+ALWAYS remind the user to pull the latest code first:
+```
+⚠️ REMINDER: Pull latest code before making changes:
+git pull --rebase
+```
+
+### After Making Changes
+ALWAYS remind the user to commit and push their changes:
+```
+✅ REMINDER: Commit and push your changes:
+git add .
+git commit -m "Description of changes"
+git push
+```
+
+## Why This Matters
+Multiple developers (and AI assistants) working on the same codebase can create conflicts. These reminders help maintain sync and prevent merge conflicts.
+
+## Workflow
+1. Pull before starting work
+2. Make your changes
+3. Commit and push when done
+4. Communicate with your team
+
+This ensures everyone stays in sync! 🔄
+

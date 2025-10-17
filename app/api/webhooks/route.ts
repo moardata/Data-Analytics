@@ -14,6 +14,8 @@ const validateWebhook = makeWebhookValidator({
 });
 
 export async function POST(request: NextRequest): Promise<Response> {
+	let webhookEventId: string | null = null;
+	
 	try {
 		// Validate the webhook to ensure it's from Whop
 		const webhookData = await validateWebhook(request);
@@ -29,13 +31,39 @@ export async function POST(request: NextRequest): Promise<Response> {
 			userId: (webhookData.data as any)?.user_id,
 		});
 
+		// Log webhook event to audit table
+		const { data: webhookEvent } = await supabase
+			.from('webhook_events')
+			.insert({
+				action: webhookData.action,
+				payload: webhookData,
+				status: 'received',
+			})
+			.select('id')
+			.single();
+
+		webhookEventId = webhookEvent?.id || null;
+
 		// Process the webhook in the background to respond quickly
-		waitUntil(processWebhookEvent(webhookData));
+		waitUntil(processWebhookEvent(webhookData, webhookEventId));
 
 		// Return 200 immediately to acknowledge receipt
 		return new Response("OK", { status: 200 });
 	} catch (error) {
 		console.error('Webhook processing error:', error);
+		
+		// Log error to webhook_events if we have an ID
+		if (webhookEventId) {
+			await supabase
+				.from('webhook_events')
+				.update({
+					status: 'failed',
+					error: error instanceof Error ? error.message : 'Unknown error',
+					processed_at: new Date().toISOString(),
+				})
+				.eq('id', webhookEventId);
+		}
+		
 		// Still return 200 to prevent retries for client errors
 		return new Response("Error", { status: 200 });
 	}
@@ -44,13 +72,33 @@ export async function POST(request: NextRequest): Promise<Response> {
 /**
  * Processes the webhook event and stores it in the database
  */
-async function processWebhookEvent(webhookData: any) {
+async function processWebhookEvent(webhookData: any, webhookEventId: string | null) {
 	try {
+		// Update status to processing
+		if (webhookEventId) {
+			await supabase
+				.from('webhook_events')
+				.update({ status: 'processing' })
+				.eq('id', webhookEventId);
+		}
+
 		const normalized = normalizeWhopEvent(webhookData);
 		const { userId } = normalized;
 
 		if (!userId) {
 			console.warn('No user ID in webhook event, skipping:', webhookData.action);
+			
+			// Mark as completed even if skipped
+			if (webhookEventId) {
+				await supabase
+					.from('webhook_events')
+					.update({
+						status: 'completed',
+						processed_at: new Date().toISOString(),
+						metadata: { skipped: true, reason: 'No user ID' },
+					})
+					.eq('id', webhookEventId);
+			}
 			return;
 		}
 
@@ -58,6 +106,18 @@ async function processWebhookEvent(webhookData: any) {
 		const entity = await getOrCreateEntity(userId, webhookData.data);
 		if (!entity) {
 			console.error('Failed to get or create entity for user:', userId);
+			
+			// Mark as failed
+			if (webhookEventId) {
+				await supabase
+					.from('webhook_events')
+					.update({
+						status: 'failed',
+						error: 'Failed to get or create entity',
+						processed_at: new Date().toISOString(),
+					})
+					.eq('id', webhookEventId);
+			}
 			return;
 		}
 
@@ -76,6 +136,18 @@ async function processWebhookEvent(webhookData: any) {
 
 		if (eventError) {
 			console.error('Error storing event:', eventError);
+			
+			// Mark as failed
+			if (webhookEventId) {
+				await supabase
+					.from('webhook_events')
+					.update({
+						status: 'failed',
+						error: `Failed to store event: ${eventError.message}`,
+						processed_at: new Date().toISOString(),
+					})
+					.eq('id', webhookEventId);
+			}
 			return;
 		}
 
@@ -84,8 +156,36 @@ async function processWebhookEvent(webhookData: any) {
 		// Handle specific event types
 		await handleSpecificEventType(webhookData, entity.id, clientId);
 
+		// Mark as completed
+		if (webhookEventId) {
+			await supabase
+				.from('webhook_events')
+				.update({
+					status: 'completed',
+					processed_at: new Date().toISOString(),
+					metadata: {
+						client_id: clientId,
+						entity_id: entity.id,
+						event_type: normalized.eventType,
+					},
+				})
+				.eq('id', webhookEventId);
+		}
+
 	} catch (error) {
 		console.error('Error in processWebhookEvent:', error);
+		
+		// Mark as failed
+		if (webhookEventId) {
+			await supabase
+				.from('webhook_events')
+				.update({
+					status: 'failed',
+					error: error instanceof Error ? error.message : 'Unknown error',
+					processed_at: new Date().toISOString(),
+				})
+				.eq('id', webhookEventId);
+		}
 	}
 }
 
