@@ -22,8 +22,8 @@ import { cn } from '@/lib/utils/cn'
 const navItems = [
   { href: '/analytics', label: 'Dashboard', icon: LayoutDashboard },
   { href: '/forms', label: 'Forms', icon: FileText },
-  { href: '/insights', label: 'AI Insights', icon: Sparkles, badge: '4' },
-  { href: '/students', label: 'Students', icon: Users, badge: '4' },
+  { href: '/insights', label: 'AI Insights', icon: Sparkles },
+  { href: '/students', label: 'Students', icon: Users },
   { href: '/revenue', label: 'Revenue', icon: TrendingUp },
 ]
 

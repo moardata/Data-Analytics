@@ -6,10 +6,10 @@
 'use client';
 
 import React from 'react';
+import { useRouter } from 'next/navigation';
 import { Settings as SettingsIcon, User, Bell, Key, Database } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { useRouter } from 'next/navigation';
 
 export default function SettingsPage() {
   const router = useRouter();
@@ -58,9 +58,6 @@ export default function SettingsPage() {
             <CardContent className="space-y-3">
               <div className="text-sm text-[#D1D5DB]">
                 <span className="font-bold">Current Plan:</span> <span className="text-[#10B981] font-bold">Atom (Free)</span>
-              </div>
-              <div className="text-sm text-[#D1D5DB]">
-                <span className="font-bold">Students Tracked:</span> <span className="text-[#10B981]">4</span>
               </div>
               <Button 
                 onClick={handleUpgrade}
