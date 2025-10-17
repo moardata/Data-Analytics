@@ -14,8 +14,19 @@ function getSupabaseServer(): SupabaseClient {
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
+  // Enhanced logging for debugging
+  console.log('🔍 Supabase Server Init Check:', {
+    hasUrl: !!supabaseUrl,
+    hasKey: !!supabaseServiceKey,
+    urlLength: supabaseUrl?.length || 0,
+    keyLength: supabaseServiceKey?.length || 0,
+    urlPreview: supabaseUrl ? `${supabaseUrl.substring(0, 20)}...` : 'missing',
+    keyPreview: supabaseServiceKey ? `${supabaseServiceKey.substring(0, 10)}...` : 'missing',
+    allEnvKeys: Object.keys(process.env).filter(k => k.includes('SUPABASE')),
+  });
+
   if (!supabaseUrl || !supabaseServiceKey) {
-    console.error('Missing Supabase credentials for server client:', {
+    console.error('❌ Missing Supabase credentials for server client:', {
       hasUrl: !!supabaseUrl,
       hasKey: !!supabaseServiceKey,
       urlLength: supabaseUrl?.length || 0,
