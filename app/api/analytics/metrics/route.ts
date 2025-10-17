@@ -51,7 +51,7 @@ export async function GET(request: NextRequest) {
     const clientId = clientData.id;
 
     // Fetch all data in parallel using the client_id
-    const [eventsResult, subscriptionsResult, entitiesResult] = await Promise.all([
+    const [eventsResult, subscriptionsResult, entitiesResult, coursesResult, enrollmentsResult] = await Promise.all([
       supabase
         .from('events')
         .select('*')
@@ -67,14 +67,26 @@ export async function GET(request: NextRequest) {
         .from('entities')
         .select('*')
         .eq('client_id', clientId),
+      
+      supabase
+        .from('courses')
+        .select('*')
+        .eq('client_id', clientId),
+      
+      supabase
+        .from('course_enrollments')
+        .select('*, lesson_interactions:lesson_interactions(is_completed)')
+        .eq('client_id', clientId),
     ]);
 
     const events = eventsResult.data || [];
     const subscriptions = subscriptionsResult.data || [];
     const entities = entitiesResult.data || [];
+    const courses = coursesResult.data || [];
+    const enrollments = enrollmentsResult.data || [];
 
     // Calculate metrics
-    const metrics = calculateMetrics(events, subscriptions, entities, days);
+    const metrics = calculateMetrics(events, subscriptions, entities, courses, enrollments, days);
 
     return NextResponse.json(metrics);
 
@@ -87,16 +99,34 @@ export async function GET(request: NextRequest) {
   }
 }
 
-function calculateMetrics(events: any[], subscriptions: any[], entities: any[], days: number) {
+function calculateMetrics(events: any[], subscriptions: any[], entities: any[], courses: any[], enrollments: any[], days: number) {
   // Basic counts
   const totalStudents = entities.length;
   const activeSubscriptions = subscriptions.filter(s => s.status === 'active').length;
 
-  // Revenue calculation
-  const orderEvents = events.filter(e => e.event_type === 'order');
-  const totalRevenue = orderEvents.reduce((sum, e) => {
-    return sum + (e.event_data?.amount || 0);
-  }, 0);
+  // Course metrics
+  const totalCourses = courses.length;
+  const totalEnrollments = enrollments.length;
+  const averageEnrollmentsPerCourse = courses.length > 0 ? enrollments.length / courses.length : 0;
+  
+  // Calculate completion rate
+  const completedEnrollments = enrollments.filter((e: any) => e.completed_at).length;
+  const courseCompletionRate = enrollments.length > 0 ? (completedEnrollments / enrollments.length) * 100 : 0;
+  
+  // Average course progress
+  const averageCourseProgress = enrollments.length > 0
+    ? enrollments.reduce((sum: number, e: any) => sum + (e.progress_percentage || 0), 0) / enrollments.length
+    : 0;
+
+  // Revenue calculation (including refunds and disputes)
+  const orderEvents = events.filter(e => e.event_type === 'order' || e.event_type === 'payment_succeeded');
+  const refundEvents = events.filter(e => e.event_type === 'payment_refunded');
+  const disputeEvents = events.filter(e => e.event_type === 'payment_disputed');
+  
+  const grossRevenue = orderEvents.reduce((sum, e) => sum + (e.event_data?.amount || 0), 0);
+  const refundedAmount = refundEvents.reduce((sum, e) => sum + (e.event_data?.amount || 0), 0);
+  const disputedAmount = disputeEvents.reduce((sum, e) => sum + (e.event_data?.amount || 0), 0);
+  const totalRevenue = grossRevenue - refundedAmount - disputedAmount;
 
   // Engagement calculation
   const activityEvents = events.filter(e => e.event_type === 'activity');
@@ -153,6 +183,12 @@ function calculateMetrics(events: any[], subscriptions: any[], entities: any[], 
     totalStudents,
     activeSubscriptions,
     totalRevenue,
+    grossRevenue,
+    refundedAmount,
+    disputedAmount,
+    netRevenue: totalRevenue,
+    refundCount: refundEvents.length,
+    disputeCount: disputeEvents.length,
     engagementRate,
     completionRate: avgProgress,
     newThisWeek,
@@ -165,6 +201,14 @@ function calculateMetrics(events: any[], subscriptions: any[], entities: any[], 
     engagementData,
     subscriptionData,
     progressData,
+    // Course metrics
+    totalCourses,
+    totalEnrollments,
+    averageEnrollmentsPerCourse,
+    courseCompletionRate,
+    averageCourseProgress,
+    completedCourses: completedEnrollments,
+    activeCourseEnrollments: enrollments.length - completedEnrollments,
   };
 }
 
