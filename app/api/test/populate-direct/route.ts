@@ -439,7 +439,7 @@ export async function POST(request: NextRequest) {
 
       const submissionsTable = await supabase.from('form_submissions');
       const { data: submission, error: submissionError } = await submissionsTable.insert({
-        form_template_id: formTemplate.id,
+        form_id: formTemplate.id,
         entity_id: student.id,
         client_id: clientId,
         responses: responses,
