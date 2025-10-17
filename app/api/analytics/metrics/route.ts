@@ -32,8 +32,6 @@ export async function GET(request: NextRequest) {
     
     let userId: string | undefined;
     
-    console.log('🔧 BYPASS_WHOP_AUTH env value:', process.env.BYPASS_WHOP_AUTH);
-    
     if (bypassAuth) {
       // Development bypass mode
       console.log('⚠️ Development bypass mode enabled');
@@ -46,10 +44,6 @@ export async function GET(request: NextRequest) {
         console.log('✅ Whop auth successful, userId:', userId);
       } catch (authError: any) {
         console.error('❌ Whop authentication failed:', authError.message);
-        
-        // Debug: Log available headers to help troubleshoot
-        const headerKeys = Array.from(h.keys());
-        console.log('📋 Available headers:', headerKeys);
         
         // Check if we're in a Whop iframe context (for better error messages)
         const referer = h.get('referer') || '';
@@ -64,8 +58,7 @@ export async function GET(request: NextRequest) {
         const detailedError = {
           error: errorMessage,
           authError: authError.message,
-          hint: 'For Whop iframe access: Enable dev proxy at whop.com/apps. For testing: Set BYPASS_WHOP_AUTH=true in environment variables.',
-          isWhopContext: isWhopIframe
+          hint: 'For Whop iframe access: Enable dev proxy at whop.com/apps. For testing: Set BYPASS_WHOP_AUTH=true in environment variables.'
         };
         
         return NextResponse.json(detailedError, { status: 401, headers: corsHeaders });
