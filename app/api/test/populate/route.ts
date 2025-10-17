@@ -53,6 +53,13 @@ export async function POST(request: NextRequest) {
       console.log('✅ Created new client');
     }
 
+    if (!client) {
+      return NextResponse.json(
+        { error: 'Failed to get or create client' },
+        { status: 500 }
+      );
+    }
+
     const clientId = client.id;
 
     // 2. Create students (entities)
