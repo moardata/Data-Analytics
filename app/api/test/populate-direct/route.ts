@@ -118,7 +118,7 @@ export async function POST(request: NextRequest) {
       if (clientError) {
         console.error('Error creating client:', clientError);
         return NextResponse.json(
-          { error: 'Failed to create client', details: clientError.message },
+          { error: 'Failed to create client', details: clientError instanceof Error ? clientError.message : String(clientError) },
           { status: 500 }
         );
       }
