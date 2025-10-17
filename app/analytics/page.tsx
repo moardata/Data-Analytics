@@ -207,11 +207,19 @@ function AnalyticsContent() {
       <div className="max-w-[1600px] mx-auto p-6">
         <PermissionsBanner missing={missingPermissions} />
         
-        {/* Iframe status indicator */}
+        {/* Status indicators */}
         {isInIframe && (
           <div className="bg-blue-500/10 border border-blue-500/20 rounded-lg p-3 mb-4">
             <div className="text-blue-300 text-sm">
               🔗 Running in iframe (Whop context detected)
+            </div>
+          </div>
+        )}
+        
+        {process.env.NODE_ENV === 'development' && (
+          <div className="bg-yellow-500/10 border border-yellow-500/20 rounded-lg p-3 mb-4">
+            <div className="text-yellow-300 text-sm">
+              🔧 Development mode (Whop auth bypassed)
             </div>
           </div>
         )}

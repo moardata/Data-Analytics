@@ -24,9 +24,21 @@ export async function OPTIONS() {
 
 export async function GET(request: NextRequest) {
   try {
-    // Verify Whop authentication first
-    const h = await headers();
-    const { userId } = await whopSdk.verifyUserToken(h);
+    // Check if we're in development mode (no Whop auth required)
+    const isDevelopment = process.env.NODE_ENV === 'development';
+    
+    let userId: string | undefined;
+    
+    if (!isDevelopment) {
+      // Verify Whop authentication first
+      const h = await headers();
+      const authResult = await whopSdk.verifyUserToken(h);
+      userId = authResult.userId;
+    } else {
+      // Development mode - use a mock user ID
+      userId = 'dev-user-123';
+      console.log('🔧 Development mode: Bypassing Whop authentication');
+    }
     
     const { searchParams } = new URL(request.url);
     const companyId = searchParams.get('companyId') || searchParams.get('clientId');
@@ -39,24 +51,28 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    // Verify user has access to this company
-    const access = await whopSdk.access.checkIfUserHasAccessToCompany({
-      userId,
-      companyId,
-    });
+    // Verify user has access to this company (skip in development)
+    if (!isDevelopment) {
+      const access = await whopSdk.access.checkIfUserHasAccessToCompany({
+        userId: userId!,
+        companyId,
+      });
 
-    if (!access.hasAccess) {
-      return NextResponse.json(
-        { error: 'Access denied: You do not have permission to view this company\'s data' },
-        { status: 403, headers: corsHeaders }
-      );
-    }
+      if (!access.hasAccess) {
+        return NextResponse.json(
+          { error: 'Access denied: You do not have permission to view this company\'s data' },
+          { status: 403, headers: corsHeaders }
+        );
+      }
 
-    if (access.accessLevel !== 'admin') {
-      return NextResponse.json(
-        { error: 'Access denied: Only admins can view analytics data' },
-        { status: 403, headers: corsHeaders }
-      );
+      if (access.accessLevel !== 'admin') {
+        return NextResponse.json(
+          { error: 'Access denied: Only admins can view analytics data' },
+          { status: 403, headers: corsHeaders }
+        );
+      }
+    } else {
+      console.log('🔧 Development mode: Skipping company access check');
     }
 
     // Calculate date range
