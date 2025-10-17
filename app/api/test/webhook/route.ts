@@ -32,15 +32,28 @@ export async function POST(request: NextRequest) {
     // Create mock webhook data based on event type
     const mockWebhookData = createMockWebhookData(eventType, companyId);
     
-    // Process the webhook (simulate the webhook handler)
-    const result = await processTestWebhook(mockWebhookData, companyId);
+    // Send to actual webhook handler with test header
+    const webhookUrl = new URL('/api/webhooks', request.url);
+    const webhookResponse = await fetch(webhookUrl.toString(), {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-test-webhook': 'true',
+      },
+      body: JSON.stringify(mockWebhookData),
+    });
+
+    const webhookResult = await webhookResponse.text();
 
     return NextResponse.json({
-      success: true,
+      success: webhookResponse.ok,
       eventType,
       companyId,
       mockData: mockWebhookData,
-      result,
+      webhookResponse: {
+        status: webhookResponse.status,
+        body: webhookResult,
+      },
     });
 
   } catch (error) {

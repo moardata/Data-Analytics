@@ -19,8 +19,17 @@ export async function POST(request: NextRequest): Promise<Response> {
 	let webhookData: any = null;
 	
 	try {
-		// Validate the webhook to ensure it's from Whop
-		webhookData = await validateWebhook(request);
+		// Check if this is a test webhook (development only)
+		const isTestWebhook = request.headers.get('x-test-webhook') === 'true';
+		
+		if (isTestWebhook && process.env.NODE_ENV !== 'production') {
+			// For test webhooks, parse the body directly without validation
+			webhookData = await request.json();
+			console.log('🧪 Test webhook received (bypassing validation)');
+		} else {
+			// Validate the webhook to ensure it's from Whop
+			webhookData = await validateWebhook(request);
+		}
 
 		// Validate event structure
 		if (!isValidWebhookEvent(webhookData)) {
@@ -52,10 +61,13 @@ export async function POST(request: NextRequest): Promise<Response> {
 		// Return 200 immediately to acknowledge receipt
 		return new Response("OK", { status: 200 });
 	} catch (error) {
-		console.error('Webhook processing error:', error);
+		const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+		const errorStack = error instanceof Error ? error.stack : undefined;
+		
+		console.error('❌ Webhook processing error:', errorMessage);
 		console.error('Error details:', {
-			message: error instanceof Error ? error.message : 'Unknown error',
-			stack: error instanceof Error ? error.stack : undefined,
+			message: errorMessage,
+			stack: errorStack,
 			webhookData: webhookData ? { action: webhookData.action, dataKeys: Object.keys(webhookData.data || {}) } : 'No webhook data',
 		});
 		
@@ -65,14 +77,21 @@ export async function POST(request: NextRequest): Promise<Response> {
 				.from('webhook_events')
 				.update({
 					status: 'failed',
-					error: error instanceof Error ? error.message : 'Unknown error',
+					error: errorMessage,
 					processed_at: new Date().toISOString(),
 				})
 				.eq('id', webhookEventId);
 		}
 		
-		// Still return 200 to prevent retries for client errors
-		return new Response("Error", { status: 200 });
+		// Return detailed error for debugging (still 200 to prevent retries)
+		return new Response(JSON.stringify({ 
+			error: errorMessage,
+			details: webhookData ? { action: webhookData.action } : 'No webhook data',
+			timestamp: new Date().toISOString()
+		}), { 
+			status: 200,
+			headers: { 'Content-Type': 'application/json' }
+		});
 	}
 }
 
