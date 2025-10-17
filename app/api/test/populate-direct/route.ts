@@ -96,10 +96,8 @@ export async function POST(request: NextRequest) {
     
     try {
       // Try to find existing client
-      const { data: existingClient } = await supabase
-        .from('clients')
-        .select('id')
-        .single();
+      const clientsTable = await supabase.from('clients');
+      const { data: existingClient } = await clientsTable.single();
 
       if (existingClient) {
         clientId = existingClient.id;
@@ -109,14 +107,13 @@ export async function POST(request: NextRequest) {
       }
     } catch (error) {
       // Create new client
-      const { data: newClient, error: clientError } = await supabase
-        .from('clients')
-        .insert({
-          company_id: companyId,
-          whop_user_id: `test_user_${Date.now()}`,
-          current_tier: 'core',
-          subscription_status: 'active',
-        });
+      const clientsTable = await supabase.from('clients');
+      const { data: newClient, error: clientError } = await clientsTable.insert({
+        company_id: companyId,
+        whop_user_id: `test_user_${Date.now()}`,
+        current_tier: 'core',
+        subscription_status: 'active',
+      });
 
       if (clientError) {
         console.error('Error creating client:', clientError);
@@ -142,14 +139,13 @@ export async function POST(request: NextRequest) {
       const email = `${name.toLowerCase().replace(' ', '.')}@example.com`;
       const userId = `test_user_${companyId}_${i}_${Date.now()}`;
 
-      const { data: entity, error: entityError } = await supabase
-        .from('entities')
-        .insert({
-          client_id: clientId,
-          whop_user_id: userId,
-          email: email,
-          metadata: { name, test_data: true },
-        });
+      const entitiesTable = await supabase.from('entities');
+      const { data: entity, error: entityError } = await entitiesTable.insert({
+        client_id: clientId,
+        whop_user_id: userId,
+        email: email,
+        metadata: { name, test_data: true },
+      });
 
       if (entityError) {
         console.error('Error creating entity:', entityError);
@@ -174,19 +170,18 @@ export async function POST(request: NextRequest) {
         const eventDate = new Date();
         eventDate.setDate(eventDate.getDate() - daysAgo);
 
-        const { data: event, error: eventError } = await supabase
-          .from('events')
-          .insert({
-            client_id: clientId,
-            entity_id: student.id,
-            event_type: eventType,
-            event_data: {
-              test_data: true,
-              action: eventType,
-              timestamp: eventDate.toISOString(),
-            },
-            created_at: eventDate.toISOString(),
-          });
+        const eventsTable = await supabase.from('events');
+        const { data: event, error: eventError } = await eventsTable.insert({
+          client_id: clientId,
+          entity_id: student.id,
+          event_type: eventType,
+          event_data: {
+            test_data: true,
+            action: eventType,
+            timestamp: eventDate.toISOString(),
+          },
+          created_at: eventDate.toISOString(),
+        });
 
         if (!eventError && event) {
           eventsCreated.push(event[0]);
@@ -211,15 +206,14 @@ export async function POST(request: NextRequest) {
       },
     };
 
-    const { data: insight, error: insightError } = await supabase
-      .from('insights')
-      .insert({
-        client_id: clientId,
-        insight_type: 'engagement',
-        content: insightData,
-        generated_by: 'direct_test_generator',
-        confidence_score: 0.85,
-      });
+    const insightsTable = await supabase.from('insights');
+    const { data: insight, error: insightError } = await insightsTable.insert({
+      client_id: clientId,
+      insight_type: 'engagement',
+      content: insightData,
+      generated_by: 'direct_test_generator',
+      confidence_score: 0.85,
+    });
 
     if (insight) {
       console.log('✅ Created AI insight');
