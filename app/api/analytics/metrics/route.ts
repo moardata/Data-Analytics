@@ -4,9 +4,11 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
+import { headers } from 'next/headers';
 import { supabaseServer as supabase } from '@/lib/supabase-server';
 import { format, subDays } from 'date-fns';
 import { getCompanyId } from '@/lib/auth/whop-auth';
+import { whopSdk } from '@/lib/whop-sdk';
 
 // Add CORS headers for iframe compatibility
 const corsHeaders = {
@@ -22,6 +24,10 @@ export async function OPTIONS() {
 
 export async function GET(request: NextRequest) {
   try {
+    // Verify Whop authentication first
+    const h = await headers();
+    const { userId } = await whopSdk.verifyUserToken(h);
+    
     const { searchParams } = new URL(request.url);
     const companyId = searchParams.get('companyId') || searchParams.get('clientId');
     const timeRange = searchParams.get('timeRange') || 'week';
@@ -30,6 +36,26 @@ export async function GET(request: NextRequest) {
       return NextResponse.json(
         { error: 'Missing companyId parameter' },
         { status: 400, headers: corsHeaders }
+      );
+    }
+
+    // Verify user has access to this company
+    const access = await whopSdk.access.checkIfUserHasAccessToCompany({
+      userId,
+      companyId,
+    });
+
+    if (!access.hasAccess) {
+      return NextResponse.json(
+        { error: 'Access denied: You do not have permission to view this company\'s data' },
+        { status: 403, headers: corsHeaders }
+      );
+    }
+
+    if (access.accessLevel !== 'admin') {
+      return NextResponse.json(
+        { error: 'Access denied: Only admins can view analytics data' },
+        { status: 403, headers: corsHeaders }
       );
     }
 
@@ -102,8 +128,24 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json(metrics, { headers: corsHeaders });
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error fetching metrics:', error);
+    
+    // Handle Whop authentication errors specifically
+    if (error.message?.includes('Whop user token not found')) {
+      return NextResponse.json(
+        { error: 'Whop user token not found. If you are the app developer, ensure you are developing in the whop.com iframe and have the dev proxy enabled.' },
+        { status: 401, headers: corsHeaders }
+      );
+    }
+    
+    if (error.message?.includes('Invalid token') || error.message?.includes('Unauthorized')) {
+      return NextResponse.json(
+        { error: 'Invalid or expired Whop authentication token' },
+        { status: 401, headers: corsHeaders }
+      );
+    }
+    
     return NextResponse.json(
       { error: 'Failed to fetch metrics' },
       { status: 500, headers: corsHeaders }
