@@ -28,7 +28,7 @@ export function Navigation() {
           <div className="flex">
             {/* Logo/Brand */}
             <div className="flex-shrink-0 flex items-center">
-              <span className="text-3xl font-bold">
+              <span className="text-4xl font-bold">
                 <span className="text-white">Creator</span>
                 <span className="text-[#10B981]">IQ</span>
               </span>

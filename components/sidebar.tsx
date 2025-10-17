@@ -38,16 +38,11 @@ export function Sidebar() {
     <aside className="fixed left-0 top-0 h-screen w-64 border-r border-[#2A2F36] bg-[#12151A] flex flex-col z-50">
       {/* Logo */}
       <div className="p-6 border-b border-[#2A2F36]">
-        <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-lg bg-[#10B981] flex items-center justify-center">
-            <TrendingUp className="h-5 w-5 text-white" />
-          </div>
-          <div>
-            <h1 className="text-base font-semibold">
-              <span className="text-white">Creator</span>
-              <span className="text-[#10B981]">IQ</span>
-            </h1>
-          </div>
+        <div className="flex items-center">
+          <h1 className="text-xl font-bold">
+            <span className="text-white">Creator</span>
+            <span className="text-[#10B981]">IQ</span>
+          </h1>
         </div>
       </div>
 
