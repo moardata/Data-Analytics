@@ -16,10 +16,11 @@ const validateWebhook = makeWebhookValidator({
 
 export async function POST(request: NextRequest): Promise<Response> {
 	let webhookEventId: string | null = null;
+	let webhookData: any = null;
 	
 	try {
 		// Validate the webhook to ensure it's from Whop
-		const webhookData = await validateWebhook(request);
+		webhookData = await validateWebhook(request);
 
 		// Validate event structure
 		if (!isValidWebhookEvent(webhookData)) {
