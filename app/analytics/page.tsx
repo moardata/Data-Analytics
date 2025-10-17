@@ -34,6 +34,11 @@ function AnalyticsContent() {
     setIsInIframe(inIframe);
     console.log('🔍 Iframe detection:', inIframe);
     
+    // For development: if no companyId, use a default one
+    if (!companyId && process.env.NODE_ENV === 'development') {
+      console.log('🔧 Development mode: Using default companyId');
+    }
+    
     fetchData();
   }, [range, companyId]);
 
@@ -65,6 +70,7 @@ function AnalyticsContent() {
 
   const fetchData = async () => {
     console.log('🚀 Starting fetchData with companyId:', companyId, 'range:', range);
+    console.log('🚀 Is in iframe:', isInIframe);
     setLoading(true);
     setError(null);
     setAccessError(null);
@@ -86,7 +92,11 @@ function AnalyticsContent() {
       
       if (!res.ok) {
         if (res.status === 401 || res.status === 403) {
-          setAccessError('You do not have permission to view analytics. Only company admins can access this dashboard.');
+          if (isInIframe) {
+            setAccessError('Whop authentication failed. Please ensure you are accessing this app through the Whop platform.');
+          } else {
+            setAccessError('You do not have permission to view analytics. Only company admins can access this dashboard.');
+          }
           return;
         }
         if (res.status === 404) {
