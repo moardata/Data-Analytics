@@ -16,7 +16,6 @@ import {
   Users,
   Crown
 } from 'lucide-react'
-import { Badge } from './ui/badge'
 import { cn } from '@/lib/utils/cn'
 
 const navItems = [
@@ -70,11 +69,6 @@ export function Sidebar() {
             >
               <Icon className="h-4 w-4" />
               <span>{item.label}</span>
-              {item.badge && (
-                <Badge variant="secondary" className="ml-auto text-xs">
-                  {item.badge}
-                </Badge>
-              )}
             </Link>
           )
         })}
