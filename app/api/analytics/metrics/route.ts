@@ -32,6 +32,8 @@ export async function GET(request: NextRequest) {
     
     let userId: string | undefined;
     
+    console.log('🔧 BYPASS_WHOP_AUTH env value:', process.env.BYPASS_WHOP_AUTH);
+    
     if (bypassAuth) {
       // Development bypass mode
       console.log('⚠️ Development bypass mode enabled');
