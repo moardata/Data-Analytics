@@ -44,7 +44,14 @@ export async function POST(request: NextRequest): Promise<Response> {
 		// Validate event structure
 		if (!isValidWebhookEvent(webhookData)) {
 			console.error('Invalid webhook event structure:', webhookData);
-			return new Response("Invalid event structure", { status: 400 });
+			return new Response(JSON.stringify({ 
+				error: "Invalid webhook event structure",
+				receivedData: webhookData,
+				expectedFormat: "action, data, id"
+			}), { 
+				status: 400,
+				headers: { 'Content-Type': 'application/json' }
+			});
 		}
 
 		console.log(`Received webhook: ${webhookData.action}`, {
