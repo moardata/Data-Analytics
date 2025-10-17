@@ -4,12 +4,12 @@
 
 'use client';
 
-import { useState } from 'react';
+import { useState, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 
-export default function SetupPage() {
+function SetupContent() {
   const searchParams = useSearchParams();
   const companyId = searchParams.get('companyId') || 'biz_3GYHNPbGkZCEky';
   
@@ -98,5 +98,17 @@ export default function SetupPage() {
         </CardContent>
       </Card>
     </div>
+  );
+}
+
+export default function SetupPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-[#0f1115] flex items-center justify-center">
+        <div className="text-[#9AA4B2]">Loading...</div>
+      </div>
+    }>
+      <SetupContent />
+    </Suspense>
   );
 }
