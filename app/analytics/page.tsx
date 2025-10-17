@@ -65,16 +65,12 @@ function AnalyticsContent() {
 
   const fetchData = async () => {
     console.log('🚀 Starting fetchData with companyId:', companyId, 'range:', range);
-    console.log('🚀 Window location:', window.location.href);
-    console.log('🚀 Is in iframe:', window !== window.parent);
-    console.log('🚀 User agent:', navigator.userAgent);
     setLoading(true);
     setError(null);
     setAccessError(null);
     try {
       // Use companyId from URL (passed from Whop)
       const apiUrl = `/api/analytics/metrics?companyId=${companyId}&timeRange=${range}`;
-      console.log('🚀 Making API call to:', apiUrl);
       
       // Add iframe-specific headers if needed
       const fetchOptions: RequestInit = {
@@ -87,7 +83,6 @@ function AnalyticsContent() {
       };
       
       const res = await fetch(apiUrl, fetchOptions);
-      console.log('🚀 API response status:', res.status, res.statusText);
       
       if (!res.ok) {
         if (res.status === 401 || res.status === 403) {
@@ -111,9 +106,7 @@ function AnalyticsContent() {
         setMissingPermissions([]);
       }
       
-      console.log('API Data received:', apiData);
       const adapted = adaptToCreatorAnalytics(apiData);
-      console.log('Adapted data:', adapted);
       setDashboardData(adapted);
     } catch (err) {
       console.error('❌ ERROR fetching dashboard data:', err);
