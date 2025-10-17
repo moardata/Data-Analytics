@@ -22,7 +22,7 @@ export async function GET(request: NextRequest) {
     // First, get the client record for this company
     const { data: clientData, error: clientError } = await supabase
       .from('clients')
-      .select('id, current_tier')
+      .select('id')
       .eq('company_id', companyId)
       .single();
 
@@ -34,21 +34,6 @@ export async function GET(request: NextRequest) {
     }
 
     const clientId = clientData.id; // This is the actual UUID
-    const tier = (clientData.current_tier || 'atom') as any;
-
-    // Check if tier allows data export
-    const { getTier } = await import('@/lib/pricing/tiers');
-    const tierData = getTier(tier);
-    
-    if (!tierData.limits.dataExport) {
-      return NextResponse.json(
-        { 
-          error: 'Data export not available on your current plan. Upgrade to export your data.',
-          upgrade: { message: 'Upgrade to enable data export', url: '/upgrade' },
-        },
-        { status: 403 } // Forbidden
-      );
-    }
 
     let csvContent = '';
     let filename = '';
