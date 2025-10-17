@@ -11,26 +11,36 @@ import { getCompanyId } from '@/lib/auth/whop-auth';
 export async function POST(request: NextRequest) {
   try {
     // Get companyId from Whop auth (with dev fallback)
-    const clientId = await getCompanyId(request);
+    const companyId = await getCompanyId(request);
     
-    if (!clientId) {
+    if (!companyId) {
       return NextResponse.json(
         { error: 'Unauthorized - No valid Whop authentication' },
         { status: 401 }
       );
     }
 
+    // First, get the client record for this company
+    const { data: clientData, error: clientError } = await supabase
+      .from('clients')
+      .select('id, current_tier')
+      .eq('company_id', companyId)
+      .single();
+
+    if (clientError || !clientData) {
+      return NextResponse.json(
+        { error: 'Client not found for this company' },
+        { status: 404 }
+      );
+    }
+
+    const clientId = clientData.id; // This is the actual UUID
+    const tier = (clientData.current_tier || 'atom') as any;
+
     // Check usage limits before generating insights
     const { checkLimit, trackAction } = await import('@/lib/pricing/usage-tracker');
     
-    const { data: client } = await supabase
-      .from('clients')
-      .select('current_tier')
-      .eq('company_id', clientId)
-      .single();
-
-    const tier = (client?.current_tier || 'atom') as any;
-    const limitCheck = await checkLimit(clientId, tier, 'generateInsight');
+    const limitCheck = await checkLimit(companyId, tier, 'generateInsight');
 
     if (!limitCheck.allowed) {
       return NextResponse.json(
@@ -51,7 +61,7 @@ export async function POST(request: NextRequest) {
     const insights = await generateInsightsForClient(clientId, timeRange);
 
     // Track usage
-    await trackAction(clientId, 'generateInsight');
+    await trackAction(companyId, 'generateInsight');
 
     // Optionally detect anomalies
     let anomalies: any[] = [];
@@ -78,14 +88,30 @@ export async function POST(request: NextRequest) {
 export async function GET(request: NextRequest) {
   try {
     // Get companyId from Whop auth (with dev fallback)
-    const clientId = await getCompanyId(request);
+    const companyId = await getCompanyId(request);
     
-    if (!clientId) {
+    if (!companyId) {
       return NextResponse.json(
         { error: 'Unauthorized - No valid Whop authentication' },
         { status: 401 }
       );
     }
+
+    // First, get the client record for this company
+    const { data: clientData, error: clientError } = await supabase
+      .from('clients')
+      .select('id')
+      .eq('company_id', companyId)
+      .single();
+
+    if (clientError || !clientData) {
+      return NextResponse.json(
+        { error: 'Client not found for this company' },
+        { status: 404 }
+      );
+    }
+
+    const clientId = clientData.id; // This is the actual UUID
 
     const { searchParams } = new URL(request.url);
     const limit = parseInt(searchParams.get('limit') || '10');

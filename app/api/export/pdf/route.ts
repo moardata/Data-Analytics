@@ -9,14 +9,30 @@ import { supabase } from '@/lib/supabase';
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
-    const clientId = searchParams.get('clientId');
+    const companyId = searchParams.get('companyId') || searchParams.get('clientId');
 
-    if (!clientId) {
+    if (!companyId) {
       return NextResponse.json(
-        { error: 'Client ID is required' },
+        { error: 'Company ID is required' },
         { status: 400 }
       );
     }
+
+    // First, get the client record for this company
+    const { data: clientData, error: clientError } = await supabase
+      .from('clients')
+      .select('id')
+      .eq('company_id', companyId)
+      .single();
+
+    if (clientError || !clientData) {
+      return NextResponse.json(
+        { error: 'Client not found for this company' },
+        { status: 404 }
+      );
+    }
+
+    const clientId = clientData.id; // This is the actual UUID
 
     // Note: For a full PDF implementation, you'd use jsPDF on the client-side
     // or a server-side library like Puppeteer or PDFKit
