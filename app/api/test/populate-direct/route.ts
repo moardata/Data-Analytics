@@ -154,12 +154,24 @@ export async function POST(request: NextRequest) {
       const email = `${firstName.toLowerCase()}.${lastName.toLowerCase()}${i > 39 ? i : ''}@example.com`;
       const userId = `test_user_${companyId}_${i}_${Date.now()}`;
 
+      // Generate realistic student progress and engagement data
+      const progress = Math.floor(Math.random() * 40) + 30; // 30-70% progress
+      const courses = ['Beginner Course', 'Intermediate Course', 'Advanced Course', 'Master Course'];
+      const course = courses[Math.floor(Math.random() * courses.length)];
+      
       const entitiesTable = await supabase.from('entities');
       const { data: entity, error: entityError } = await entitiesTable.insert({
         client_id: clientId,
         whop_user_id: userId,
         email: email,
-        metadata: { name, test_data: true },
+        metadata: { 
+          name, 
+          test_data: true,
+          progress: progress,
+          course: course,
+          last_active: new Date(Date.now() - Math.floor(Math.random() * 7) * 24 * 60 * 60 * 1000).toISOString(),
+          engagement_score: Math.floor(Math.random() * 30) + 70, // 70-100
+        },
       });
 
       if (entityError) {
@@ -177,35 +189,97 @@ export async function POST(request: NextRequest) {
 
     console.log(`✅ Created ${students.length} students`);
 
-    // 3. Create events
-    const eventTypes = ['order', 'subscription', 'activity', 'form_submission', 'custom'];
+    // 3. Create events with realistic revenue data
     const eventsCreated = [];
+    
+    console.log('Creating events with revenue tracking...');
 
-    for (const student of students) {
-      const eventCount = 3 + Math.floor(Math.random() * 3);
+    for (let i = 0; i < students.length; i++) {
+      const student = students[i];
+      
+      // Create 5-10 events per student for better engagement metrics
+      const eventCount = 5 + Math.floor(Math.random() * 6);
 
-      for (let i = 0; i < eventCount; i++) {
-        const eventType = eventTypes[Math.floor(Math.random() * eventTypes.length)];
-        const daysAgo = Math.floor(Math.random() * 30);
+      for (let j = 0; j < eventCount; j++) {
+        const daysAgo = Math.floor(Math.random() * 60); // Spread over 60 days
         const eventDate = new Date();
         eventDate.setDate(eventDate.getDate() - daysAgo);
+
+        // Weighted event distribution for realistic metrics
+        const rand = Math.random();
+        let eventType: string;
+        let eventData: any = {
+          test_data: true,
+          timestamp: eventDate.toISOString(),
+        };
+
+        if (rand < 0.15) {
+          // 15% - Order events with revenue
+          eventType = 'order';
+          const amounts = [1999, 2999, 4999, 9999, 19999]; // $19.99 to $199.99 in cents
+          const amount = amounts[Math.floor(Math.random() * amounts.length)];
+          eventData = {
+            ...eventData,
+            amount: amount,
+            currency: 'USD',
+            status: 'completed',
+            product: ['Course Bundle', 'Premium Course', 'Membership', 'Workshop'][Math.floor(Math.random() * 4)],
+          };
+        } else if (rand < 0.25) {
+          // 10% - Subscription events
+          eventType = 'subscription';
+          eventData = {
+            ...eventData,
+            action: ['started', 'renewed', 'upgraded'][Math.floor(Math.random() * 3)],
+            plan: ['atom', 'core', 'pulse', 'surge', 'quantum'][Math.floor(Math.random() * 5)],
+          };
+        } else if (rand < 0.75) {
+          // 50% - Activity events (engagement tracking)
+          eventType = 'activity';
+          const activities = [
+            { action: 'course_started', course: 'Module 1', duration: 600 },
+            { action: 'lesson_viewed', lesson: 'Introduction', duration: 300 },
+            { action: 'course_completed', course: 'Module 5', duration: 3600 },
+            { action: 'video_watched', video: 'Tutorial 3', duration: 1200 },
+            { action: 'quiz_completed', quiz: 'Chapter 2 Quiz', score: Math.floor(Math.random() * 30) + 70 },
+            { action: 'assignment_submitted', assignment: 'Week 3 Project', grade: Math.floor(Math.random() * 20) + 80 },
+          ];
+          const activity = activities[Math.floor(Math.random() * activities.length)];
+          eventData = { ...eventData, ...activity };
+        } else if (rand < 0.90) {
+          // 15% - Form submission events
+          eventType = 'form_submission';
+          eventData = {
+            ...eventData,
+            form_type: ['feedback', 'satisfaction', 'exit'][Math.floor(Math.random() * 3)],
+            rating: Math.floor(Math.random() * 2) + 4, // 4-5 stars
+            completed: true,
+          };
+        } else {
+          // 10% - Custom tracking events
+          eventType = 'custom';
+          eventData = {
+            ...eventData,
+            action: ['profile_updated', 'certificate_earned', 'badge_unlocked', 'comment_posted'][Math.floor(Math.random() * 4)],
+          };
+        }
 
         const eventsTable = await supabase.from('events');
         const { data: event, error: eventError } = await eventsTable.insert({
           client_id: clientId,
           entity_id: student.id,
           event_type: eventType,
-          event_data: {
-            test_data: true,
-            action: eventType,
-            timestamp: eventDate.toISOString(),
-          },
+          event_data: eventData,
           created_at: eventDate.toISOString(),
         });
 
         if (!eventError && event) {
           eventsCreated.push(event[0]);
         }
+      }
+
+      if ((i + 1) % 50 === 0) {
+        console.log(`Created events for ${i + 1}/${students.length} students...`);
       }
     }
 
