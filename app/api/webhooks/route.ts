@@ -122,7 +122,64 @@ async function handleSpecificEventType(webhookData: any, entityId: string, clien
 	// Handle payment failures
 	if (action === 'payment.failed') {
 		console.warn(`Payment failed for user ${data.user_id}:`, data);
-		// Could trigger alerts, retry logic, or customer outreach
+		// Store failed payment event
+		await supabase.from('events').insert({
+			client_id: clientId,
+			entity_id: entityId,
+			event_type: 'payment_failed',
+			event_data: {
+				amount: data.final_amount,
+				currency: data.currency,
+				reason: data.failure_reason,
+			},
+		});
+	}
+
+	// Handle refunds
+	if (action === 'payment.refunded') {
+		console.log(`Payment refunded: $${data.final_amount} ${data.currency} for user ${data.user_id}`);
+		await supabase.from('events').insert({
+			client_id: clientId,
+			entity_id: entityId,
+			event_type: 'payment_refunded',
+			event_data: {
+				amount: data.final_amount,
+				currency: data.currency,
+				refund_reason: data.refund_reason,
+				original_payment_id: data.payment_id,
+			},
+		});
+	}
+
+	// Handle disputes
+	if (action === 'payment.disputed') {
+		console.warn(`Payment disputed: $${data.final_amount} ${data.currency} for user ${data.user_id}`);
+		await supabase.from('events').insert({
+			client_id: clientId,
+			entity_id: entityId,
+			event_type: 'payment_disputed',
+			event_data: {
+				amount: data.final_amount,
+				currency: data.currency,
+				dispute_reason: data.dispute_reason,
+				payment_id: data.payment_id,
+			},
+		});
+	}
+
+	// Handle dispute resolutions
+	if (action === 'payment.dispute_resolved') {
+		console.log(`Dispute resolved for payment ${data.payment_id}: ${data.resolution}`);
+		await supabase.from('events').insert({
+			client_id: clientId,
+			entity_id: entityId,
+			event_type: 'payment_dispute_resolved',
+			event_data: {
+				payment_id: data.payment_id,
+				resolution: data.resolution,
+				amount: data.final_amount,
+			},
+		});
 	}
 }
 
