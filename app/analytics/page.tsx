@@ -59,12 +59,18 @@ function AnalyticsContent() {
 
   const fetchData = async () => {
     console.log('🚀 Starting fetchData with companyId:', companyId, 'range:', range);
+    console.log('🚀 Window location:', window.location.href);
+    console.log('🚀 Is in iframe:', window !== window.parent);
+    console.log('🚀 User agent:', navigator.userAgent);
     setLoading(true);
     setError(null);
     setAccessError(null);
     try {
       // Use companyId from URL (passed from Whop)
-      const res = await fetch(`/api/analytics/metrics?companyId=${companyId}&timeRange=${range}`);
+      const apiUrl = `/api/analytics/metrics?companyId=${companyId}&timeRange=${range}`;
+      console.log('🚀 Making API call to:', apiUrl);
+      const res = await fetch(apiUrl);
+      console.log('🚀 API response status:', res.status, res.statusText);
       
       if (!res.ok) {
         if (res.status === 401 || res.status === 403) {
