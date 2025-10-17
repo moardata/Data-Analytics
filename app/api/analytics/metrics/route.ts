@@ -45,20 +45,28 @@ export async function GET(request: NextRequest) {
       } catch (authError: any) {
         console.error('❌ Whop authentication failed:', authError.message);
         
+        // Debug: Log available headers to help troubleshoot
+        const headerKeys = Array.from(h.keys());
+        console.log('📋 Available headers:', headerKeys);
+        
         // Check if we're in a Whop iframe context (for better error messages)
         const referer = h.get('referer') || '';
         const origin = h.get('origin') || '';
         const isWhopIframe = referer.includes('whop.com') || origin.includes('whop.com');
         
-        return NextResponse.json(
-          { 
-            error: isWhopIframe 
-              ? 'Whop authentication failed. Please ensure you have proper permissions and try refreshing the page.'
-              : 'Authentication required. Please access this app through the Whop platform.',
-            authError: authError.message 
-          },
-          { status: 401, headers: corsHeaders }
-        );
+        // Provide detailed error message with instructions
+        const errorMessage = isWhopIframe 
+          ? 'Whop authentication failed. Please ensure you are accessing this app through the Whop developer interface with the dev proxy enabled.'
+          : 'Authentication required. Please access this app through the Whop platform.';
+        
+        const detailedError = {
+          error: errorMessage,
+          authError: authError.message,
+          hint: 'For Whop iframe access: Enable dev proxy at whop.com/apps. For testing: Set BYPASS_WHOP_AUTH=true in environment variables.',
+          isWhopContext: isWhopIframe
+        };
+        
+        return NextResponse.json(detailedError, { status: 401, headers: corsHeaders });
       }
     }
     
