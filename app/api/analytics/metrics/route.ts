@@ -30,9 +30,17 @@ export async function GET(request: NextRequest) {
       .from('clients')
       .select('id')
       .eq('company_id', companyId)
-      .single();
+      .maybeSingle();
 
-    if (clientError || !clientData) {
+    if (clientError) {
+      console.error('Error fetching client:', clientError);
+      return NextResponse.json(
+        { error: 'Database error' },
+        { status: 500 }
+      );
+    }
+
+    if (!clientData) {
       console.log('No client found for companyId:', companyId);
       return NextResponse.json(
         { error: 'Client not found - needs initialization' },

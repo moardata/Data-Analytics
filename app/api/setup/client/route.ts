@@ -18,11 +18,19 @@ export async function POST(request: NextRequest) {
     }
 
     // Check if client already exists
-    const { data: existing } = await supabase
+    const { data: existing, error: checkError } = await supabase
       .from('clients')
       .select('id')
       .eq('company_id', companyId)
-      .single();
+      .maybeSingle();
+
+    if (checkError) {
+      console.error('Error checking existing client:', checkError);
+      return NextResponse.json(
+        { error: 'Database error checking client' },
+        { status: 500 }
+      );
+    }
 
     if (existing) {
       return NextResponse.json({

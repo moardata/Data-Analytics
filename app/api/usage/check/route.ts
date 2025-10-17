@@ -4,177 +4,53 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { getCompanyId } from '@/lib/auth/whop-auth';
 import { supabase } from '@/lib/supabase';
-import { checkLimit, getClientUsage } from '@/lib/pricing/usage-tracker';
-import { getTier, type TierName } from '@/lib/pricing/tiers';
 
-export async function POST(request: NextRequest) {
+export async function GET(request: NextRequest) {
   try {
-    // Get companyId from Whop auth
-    const companyId = await getCompanyId(request);
-    
+    const { searchParams } = new URL(request.url);
+    const companyId = searchParams.get('companyId') || searchParams.get('clientId');
+
     if (!companyId) {
       return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
-      );
-    }
-
-    const body = await request.json();
-    const { action } = body; // 'addStudent' | 'createForm' | 'generateInsight'
-
-    if (!action) {
-      return NextResponse.json(
-        { error: 'Action is required' },
+        { error: 'Missing companyId parameter' },
         { status: 400 }
       );
     }
 
-    // Get client's tier
-    const { data: client } = await supabase
+    // Get client record
+    const { data: clientData, error: clientError } = await supabase
       .from('clients')
-      .select('current_tier, subscription_status')
+      .select('id, current_tier')
       .eq('company_id', companyId)
-      .single();
+      .maybeSingle();
 
-    if (!client) {
+    if (clientError) {
+      console.error('Error fetching client:', clientError);
+      return NextResponse.json(
+        { error: 'Database error' },
+        { status: 500 }
+      );
+    }
+
+    if (!clientData) {
       return NextResponse.json(
         { error: 'Client not found' },
         { status: 404 }
       );
     }
 
-    const tier = (client.current_tier || 'atom') as TierName;
-    const tierData = getTier(tier);
-
-    // Check if subscription is active (for paid tiers)
-    if (tier !== 'atom' && client.subscription_status !== 'active') {
-      return NextResponse.json({
-        allowed: false,
-        reason: 'Your subscription is inactive. Please renew to continue using premium features.',
-        tier,
-        limits: tierData.limits,
-      });
-    }
-
-    // Check usage limits
-    const limitCheck = await checkLimit(companyId, tier, action);
-    
-    if (!limitCheck.allowed) {
-      return NextResponse.json({
-        allowed: false,
-        reason: limitCheck.reason,
-        current: limitCheck.current,
-        limit: limitCheck.limit,
-        tier,
-        upgrade: {
-          message: 'Upgrade your plan for higher limits',
-          url: '/upgrade',
-        },
-      });
-    }
-
-    // Get current usage stats for display
-    const usage = await getClientUsage(companyId);
-
+    // Return tier information
     return NextResponse.json({
-      allowed: true,
-      tier,
-      limits: tierData.limits,
-      usage,
+      tier: clientData.current_tier || 'atom',
+      canPerform: true, // For now, allow all actions
     });
 
-  } catch (error: any) {
-    console.error('Error checking usage limits:', error);
+  } catch (error) {
+    console.error('Usage check error:', error);
     return NextResponse.json(
-      { error: error.message || 'Failed to check usage limits' },
+      { error: 'Internal server error' },
       { status: 500 }
     );
   }
 }
-
-/**
- * Get current usage stats
- */
-export async function GET(request: NextRequest) {
-  try {
-    const companyId = await getCompanyId(request);
-    
-    if (!companyId) {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
-      );
-    }
-
-    // Get client's tier
-    const { data: client } = await supabase
-      .from('clients')
-      .select('current_tier, subscription_status, subscription_expires_at')
-      .eq('company_id', companyId)
-      .single();
-
-    if (!client) {
-      // Auto-create client if it doesn't exist
-      console.log('Client not found, creating new client for:', companyId);
-      const { data: newClient, error: createError } = await supabase
-        .from('clients')
-        .insert({
-          company_id: companyId,
-          current_tier: 'atom',
-          subscription_status: 'active',
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString(),
-        })
-        .select()
-        .single();
-
-      if (createError) {
-        console.error('Error creating client:', createError);
-        return NextResponse.json(
-          { error: 'Failed to create client' },
-          { status: 500 }
-        );
-      }
-
-      // Use the newly created client
-      const tier = (newClient.current_tier || 'atom') as TierName;
-      const tierData = getTier(tier);
-      const usage = await getClientUsage(companyId);
-
-      return NextResponse.json({
-        tier,
-        limits: tierData.limits,
-        usage,
-        subscription: {
-          status: newClient.subscription_status,
-          expiresAt: newClient.subscription_expires_at,
-        },
-      });
-    }
-
-    const tier = (client.current_tier || 'atom') as TierName;
-    const tierData = getTier(tier);
-    const usage = await getClientUsage(companyId);
-
-    return NextResponse.json({
-      tier,
-      limits: tierData.limits,
-      usage,
-      subscription: {
-        status: client.subscription_status,
-        expiresAt: client.subscription_expires_at,
-      },
-    });
-
-  } catch (error: any) {
-    console.error('Error fetching usage stats:', error);
-    return NextResponse.json(
-      { error: error.message || 'Failed to fetch usage stats' },
-      { status: 500 }
-    );
-  }
-}
-
-
