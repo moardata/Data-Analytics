@@ -43,8 +43,9 @@ export function Sidebar() {
             <TrendingUp className="h-5 w-5 text-white" />
           </div>
           <div>
-            <h1 className="text-base font-semibold text-[#E5E7EB]">
-              Creator Analytics
+            <h1 className="text-base font-semibold">
+              <span className="text-white">Creator</span>
+              <span className="text-[#10B981]">IQ</span>
             </h1>
           </div>
         </div>

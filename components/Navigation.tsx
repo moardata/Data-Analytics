@@ -28,8 +28,9 @@ export function Navigation() {
           <div className="flex">
             {/* Logo/Brand */}
             <div className="flex-shrink-0 flex items-center">
-              <span className="text-3xl font-bold bg-gradient-to-r from-[#10B981] to-[#34D399] bg-clip-text text-transparent">
-                📈 Creator Analytics
+              <span className="text-3xl font-bold">
+                <span className="text-white">Creator</span>
+                <span className="text-[#10B981]">IQ</span>
               </span>
             </div>
 
