@@ -43,9 +43,9 @@ export function normalizeWhopEvent(webhookEvent: WhopWebhookEvent): NormalizedEv
     };
   }
 
-  // Subscription events
+  // Subscription events (including experience claims)
   if (action.startsWith('membership.')) {
-    const subAction = action.split('.')[1]; // 'created', 'cancelled', 'renewed', etc.
+    const subAction = action.split('.')[1]; // 'created', 'cancelled', 'renewed', 'experienced_claimed', etc.
     return {
       eventType: 'subscription',
       eventData: {
@@ -56,6 +56,7 @@ export function normalizeWhopEvent(webhookEvent: WhopWebhookEvent): NormalizedEv
         status: data.status,
         expiresAt: data.expires_at,
         renewalPeriod: data.renewal_period,
+        experienceId: data.experience_id, // For experienced_claimed events
       },
       whopEventId: id || data.id || null,
       userId: data.user_id || null,

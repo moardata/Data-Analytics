@@ -103,6 +103,23 @@ function createMockWebhookData(eventType: string, companyId: string) {
         id: `webhook_${Date.now()}`,
       };
 
+    case 'membership.experienced_claimed':
+      return {
+        action: 'membership.experienced_claimed',
+        data: {
+          ...baseData,
+          id: `membership_${Date.now()}`,
+          plan_id: 'plan_hnYnLn6egXRis',
+          status: 'active',
+          experience_id: `exp_${Date.now()}`,
+          amount: 0,
+          currency: 'USD',
+          valid_from: new Date().toISOString(),
+          expires_at: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
+        },
+        id: `webhook_${Date.now()}`,
+      };
+
     case 'payment.refunded':
       return {
         action: 'payment.refunded',

@@ -52,6 +52,11 @@ export async function POST(request: NextRequest): Promise<Response> {
 		return new Response("OK", { status: 200 });
 	} catch (error) {
 		console.error('Webhook processing error:', error);
+		console.error('Error details:', {
+			message: error instanceof Error ? error.message : 'Unknown error',
+			stack: error instanceof Error ? error.stack : undefined,
+			webhookData: webhookData ? { action: webhookData.action, dataKeys: Object.keys(webhookData.data || {}) } : 'No webhook data',
+		});
 		
 		// Log error to webhook_events if we have an ID
 		if (webhookEventId) {
@@ -216,6 +221,22 @@ async function handleSpecificEventType(webhookData: any, entityId: string, clien
 			} else if (action === 'membership.expired') {
 				// Update subscription status to expired
 				await updateSubscriptionStatus(subscriptionData.whopSubscriptionId, 'expired');
+			} else if (action === 'membership.experienced_claimed') {
+				// Handle experience claim - create or update subscription
+				console.log(`Experience claimed for user ${data.user_id}:`, data);
+				await upsertSubscription(clientId, entityId, subscriptionData);
+				
+				// Also create an activity event for engagement tracking
+				await supabase.from('events').insert({
+					client_id: clientId,
+					entity_id: entityId,
+					event_type: 'activity',
+					event_data: {
+						action: 'experience_claimed',
+						experience_id: data.experience_id,
+						subscription_id: data.id,
+					},
+				});
 			}
 		}
 	}
