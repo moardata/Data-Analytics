@@ -216,10 +216,10 @@ function AnalyticsContent() {
           </div>
         )}
         
-        {process.env.NODE_ENV === 'development' && (
+        {process.env.NEXT_PUBLIC_BYPASS_AUTH === 'true' && (
           <div className="bg-yellow-500/10 border border-yellow-500/20 rounded-lg p-3 mb-4">
             <div className="text-yellow-300 text-sm">
-              🔧 Development mode (Whop auth bypassed)
+              🔧 Auth bypass mode (Whop auth disabled)
             </div>
           </div>
         )}

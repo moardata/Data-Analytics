@@ -24,20 +24,20 @@ export async function OPTIONS() {
 
 export async function GET(request: NextRequest) {
   try {
-    // Check if we're in development mode (no Whop auth required)
-    const isDevelopment = process.env.NODE_ENV === 'development';
+    // Check if we should bypass Whop auth (for testing)
+    const bypassAuth = process.env.BYPASS_WHOP_AUTH === 'true';
     
     let userId: string | undefined;
     
-    if (!isDevelopment) {
+    if (!bypassAuth) {
       // Verify Whop authentication first
       const h = await headers();
       const authResult = await whopSdk.verifyUserToken(h);
       userId = authResult.userId;
     } else {
-      // Development mode - use a mock user ID
+      // Bypass mode - use a mock user ID
       userId = 'dev-user-123';
-      console.log('🔧 Development mode: Bypassing Whop authentication');
+      console.log('🔧 Bypass mode: Skipping Whop authentication');
     }
     
     const { searchParams } = new URL(request.url);
@@ -51,8 +51,8 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    // Verify user has access to this company (skip in development)
-    if (!isDevelopment) {
+    // Verify user has access to this company (skip if bypassing auth)
+    if (!bypassAuth) {
       const access = await whopSdk.access.checkIfUserHasAccessToCompany({
         userId: userId!,
         companyId,
@@ -72,7 +72,7 @@ export async function GET(request: NextRequest) {
         );
       }
     } else {
-      console.log('🔧 Development mode: Skipping company access check');
+      console.log('🔧 Bypass mode: Skipping company access check');
     }
 
     // Calculate date range
