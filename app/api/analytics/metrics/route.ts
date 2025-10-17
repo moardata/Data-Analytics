@@ -52,11 +52,21 @@ export async function GET(request: NextRequest) {
         // This is a workaround for Whop iframe authentication issues
         const referer = h.get('referer') || '';
         const userAgent = h.get('user-agent') || '';
+        const origin = h.get('origin') || '';
         
-        if (referer.includes('whop.com') || userAgent.includes('whop')) {
-          console.log('🔧 API: Detected Whop context, using fallback authentication');
+        // Only use fallback if we're clearly in a Whop iframe context
+        const isWhopIframe = (
+          referer.includes('whop.com') || 
+          origin.includes('whop.com') ||
+          (userAgent.includes('whop') && referer !== '')
+        );
+        
+        if (isWhopIframe) {
+          console.log('🔧 API: Detected Whop iframe context, using fallback authentication');
+          console.log('🔧 API: referer:', referer, 'origin:', origin, 'userAgent:', userAgent);
           userId = 'whop-fallback-user';
         } else {
+          console.log('🔧 API: Not in Whop iframe context, throwing auth error');
           throw authError;
         }
       }
