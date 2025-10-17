@@ -7,15 +7,20 @@
 import { createClient } from '@supabase/supabase-js';
 import type { SupabaseClient } from '@supabase/supabase-js';
 
-// Use service role key for server-side operations
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
-const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || '';
-
 let _supabaseServer: SupabaseClient | null = null;
 
 function getSupabaseServer(): SupabaseClient {
+  // Get env vars at runtime, not at module load time
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+
   if (!supabaseUrl || !supabaseServiceKey) {
-    console.error('Missing Supabase credentials for server client');
+    console.error('Missing Supabase credentials for server client:', {
+      hasUrl: !!supabaseUrl,
+      hasKey: !!supabaseServiceKey,
+      urlLength: supabaseUrl?.length || 0,
+      keyLength: supabaseServiceKey?.length || 0
+    });
     throw new Error('SUPABASE_SERVICE_ROLE_KEY is required for server operations');
   }
 
@@ -26,6 +31,7 @@ function getSupabaseServer(): SupabaseClient {
         persistSession: false,
       },
     });
+    console.log('✅ Supabase server client initialized successfully');
   }
 
   return _supabaseServer;
