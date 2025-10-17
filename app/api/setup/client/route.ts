@@ -6,6 +6,18 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabaseServer as supabase } from '@/lib/supabase-server';
 
+// Add CORS headers for iframe compatibility
+const corsHeaders = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+  'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-Requested-With',
+  'Access-Control-Allow-Credentials': 'true',
+};
+
+export async function OPTIONS() {
+  return new NextResponse(null, { status: 200, headers: corsHeaders });
+}
+
 export async function POST(request: NextRequest) {
   try {
     const { companyId, companyName, companyEmail } = await request.json();
@@ -13,7 +25,7 @@ export async function POST(request: NextRequest) {
     if (!companyId) {
       return NextResponse.json(
         { error: 'Missing companyId parameter' },
-        { status: 400 }
+        { status: 400, headers: corsHeaders }
       );
     }
 
@@ -28,7 +40,7 @@ export async function POST(request: NextRequest) {
       console.error('Error checking existing client:', checkError);
       return NextResponse.json(
         { error: 'Database error checking client' },
-        { status: 500 }
+        { status: 500, headers: corsHeaders }
       );
     }
 
@@ -36,7 +48,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({
         message: 'Client already exists',
         clientId: existing.id,
-      });
+      }, { headers: corsHeaders });
     }
 
     // Create new client record
@@ -58,20 +70,20 @@ export async function POST(request: NextRequest) {
       console.error('Error creating client:', error);
       return NextResponse.json(
         { error: 'Failed to create client record' },
-        { status: 500 }
+        { status: 500, headers: corsHeaders }
       );
     }
 
     return NextResponse.json({
       message: 'Client created successfully',
       clientId: newClient.id,
-    });
+    }, { headers: corsHeaders });
 
   } catch (error) {
     console.error('Setup client error:', error);
     return NextResponse.json(
       { error: 'Internal server error' },
-      { status: 500 }
+      { status: 500, headers: corsHeaders }
     );
   }
 }

@@ -7,6 +7,18 @@ import { headers } from "next/headers";
 import { NextResponse } from "next/server";
 import { whopSdk } from "@/lib/whop-sdk";
 
+// Add CORS headers for iframe compatibility
+const corsHeaders = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+  'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-Requested-With',
+  'Access-Control-Allow-Credentials': 'true',
+};
+
+export async function OPTIONS() {
+  return new NextResponse(null, { status: 200, headers: corsHeaders });
+}
+
 export async function GET(request: Request) {
   try {
     const h = await headers();
@@ -31,7 +43,7 @@ export async function GET(request: Request) {
           hasAccess: access.hasAccess,
           accessLevel: access.accessLevel,
         },
-      });
+      }, { headers: corsHeaders });
     }
     
     // Return just user info if no companyId
@@ -39,7 +51,7 @@ export async function GET(request: Request) {
       ok: true,
       userId,
       message: 'Add ?companyId=<id> to check company access',
-    });
+    }, { headers: corsHeaders });
     
   } catch (error: any) {
     console.error('Debug whoami error:', error);
@@ -48,7 +60,7 @@ export async function GET(request: Request) {
         ok: false,
         error: error.message || 'Failed to verify user',
       },
-      { status: 401 }
+      { status: 401, headers: corsHeaders }
     );
   }
 }

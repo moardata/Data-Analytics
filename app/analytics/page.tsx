@@ -26,8 +26,14 @@ function AnalyticsContent() {
   const [error, setError] = useState<string | null>(null);
   const [accessError, setAccessError] = useState<string | null>(null);
   const [missingPermissions, setMissingPermissions] = useState<string[]>([]);
+  const [isInIframe, setIsInIframe] = useState(false);
 
   useEffect(() => {
+    // Detect if running in iframe
+    const inIframe = window !== window.parent;
+    setIsInIframe(inIframe);
+    console.log('🔍 Iframe detection:', inIframe);
+    
     fetchData();
   }, [range, companyId]);
 
@@ -69,7 +75,18 @@ function AnalyticsContent() {
       // Use companyId from URL (passed from Whop)
       const apiUrl = `/api/analytics/metrics?companyId=${companyId}&timeRange=${range}`;
       console.log('🚀 Making API call to:', apiUrl);
-      const res = await fetch(apiUrl);
+      
+      // Add iframe-specific headers if needed
+      const fetchOptions: RequestInit = {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        // Add credentials for iframe context
+        credentials: isInIframe ? 'include' : 'same-origin',
+      };
+      
+      const res = await fetch(apiUrl, fetchOptions);
       console.log('🚀 API response status:', res.status, res.statusText);
       
       if (!res.ok) {
@@ -103,9 +120,17 @@ function AnalyticsContent() {
       console.error('❌ Error details:', {
         message: err instanceof Error ? err.message : 'Unknown error',
         stack: err instanceof Error ? err.stack : 'No stack trace',
-        type: typeof err
+        type: typeof err,
+        isInIframe,
+        userAgent: navigator.userAgent
       });
-      setError(err instanceof Error ? err.message : 'Failed to load dashboard');
+      
+      // Provide iframe-specific error messages
+      const errorMessage = isInIframe 
+        ? 'Dashboard failed to load in iframe. This may be due to CORS or authentication issues. Please check the console for details.'
+        : err instanceof Error ? err.message : 'Failed to load dashboard';
+        
+      setError(errorMessage);
     } finally {
       setLoading(false);
     }
@@ -178,6 +203,16 @@ function AnalyticsContent() {
     <div className="min-h-screen bg-[#0f1115]">
       <div className="max-w-[1600px] mx-auto p-6">
         <PermissionsBanner missing={missingPermissions} />
+        
+        {/* Iframe status indicator */}
+        {isInIframe && (
+          <div className="bg-blue-500/10 border border-blue-500/20 rounded-lg p-3 mb-4">
+            <div className="text-blue-300 text-sm">
+              🔗 Running in iframe (Whop context detected)
+            </div>
+          </div>
+        )}
+        
         <DashboardCreatorAnalytics
           data={dashboardData}
           onExportEventsCsv={handleExportEventsCsv}

@@ -8,6 +8,18 @@ import { supabaseServer as supabase } from '@/lib/supabase-server';
 import { format, subDays } from 'date-fns';
 import { getCompanyId } from '@/lib/auth/whop-auth';
 
+// Add CORS headers for iframe compatibility
+const corsHeaders = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+  'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-Requested-With',
+  'Access-Control-Allow-Credentials': 'true',
+};
+
+export async function OPTIONS() {
+  return new NextResponse(null, { status: 200, headers: corsHeaders });
+}
+
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
@@ -17,7 +29,7 @@ export async function GET(request: NextRequest) {
     if (!companyId) {
       return NextResponse.json(
         { error: 'Missing companyId parameter' },
-        { status: 400 }
+        { status: 400, headers: corsHeaders }
       );
     }
 
@@ -36,7 +48,7 @@ export async function GET(request: NextRequest) {
       console.error('Error fetching client:', clientError);
       return NextResponse.json(
         { error: 'Database error' },
-        { status: 500 }
+        { status: 500, headers: corsHeaders }
       );
     }
 
@@ -44,7 +56,7 @@ export async function GET(request: NextRequest) {
       console.log('No client found for companyId:', companyId);
       return NextResponse.json(
         { error: 'Client not found - needs initialization' },
-        { status: 404 }
+        { status: 404, headers: corsHeaders }
       );
     }
 
@@ -88,13 +100,13 @@ export async function GET(request: NextRequest) {
     // Calculate metrics
     const metrics = calculateMetrics(events, subscriptions, entities, courses, enrollments, days);
 
-    return NextResponse.json(metrics);
+    return NextResponse.json(metrics, { headers: corsHeaders });
 
   } catch (error) {
     console.error('Error fetching metrics:', error);
     return NextResponse.json(
       { error: 'Failed to fetch metrics' },
-      { status: 500 }
+      { status: 500, headers: corsHeaders }
     );
   }
 }
