@@ -8,6 +8,7 @@ import { makeWebhookValidator } from "@whop/api";
 import type { NextRequest } from "next/server";
 import { supabaseServer as supabase } from "@/lib/supabase-server";
 import { normalizeWhopEvent, extractSubscriptionData, isValidWebhookEvent } from "@/lib/utils/normalizeEvent";
+import { getBundleInfo } from '@/lib/pricing/bundles';
 
 const validateWebhook = makeWebhookValidator({
 	webhookSecret: process.env.WHOP_WEBHOOK_SECRET ?? "fallback",
@@ -338,24 +339,12 @@ async function getOrCreateEntity(whopUserId: string, eventData: any) {
 }
 
 /**
- * Map Whop plan IDs to tiers
- * Updated to match database constraints: 'free', 'pro', 'premium'
- */
-const TIER_MAPPING: Record<string, 'free' | 'pro' | 'premium'> = {
-	'plan_gDIQ1ypIFaZoQ': 'free',      // Free tier (Atom)
-	'plan_hnYnLn6egXRis': 'pro',       // Pro tier ($20-100/month)
-	'plan_OvGPVPXu6sarv': 'pro',       // Pro tier ($20-100/month)
-	'plan_YWwjHKXiWT6vq': 'premium',   // Premium tier ($100+/month)
-	'plan_BcSpDXIeGcklw': 'premium',   // Premium tier ($100+/month)
-};
-
-/**
  * Gets or creates a client (company/creator) record
  */
 async function getOrCreateClient(whopCompanyId: string, eventData: any): Promise<string | null> {
-	// Determine tier from plan_id (if provided)
+	// Determine tier and bundle from plan_id (if provided)
 	const planId = eventData.plan_id || eventData.membership_plan_id;
-	const tier = planId ? TIER_MAPPING[planId] || 'free' : 'free';
+	const { tier, bundle } = planId ? getBundleInfo(planId) : { tier: 'free' as const, bundle: 'atom' };
 
 	// Try to find existing client
 	const { data: existing } = await supabase
@@ -376,7 +365,7 @@ async function getOrCreateClient(whopCompanyId: string, eventData: any): Promise
 				})
 				.eq('id', existing.id);
 			
-			console.log(`Updated client ${whopCompanyId} to tier: ${tier}`);
+			console.log(`Updated client ${whopCompanyId} to tier: ${tier} (bundle: ${bundle})`);
 		}
 		return existing.id;
 	}
@@ -401,7 +390,7 @@ async function getOrCreateClient(whopCompanyId: string, eventData: any): Promise
 		return null;
 	}
 
-	console.log(`Created new client for company ${whopCompanyId} with tier: ${tier}`);
+	console.log(`Created new client for company ${whopCompanyId} with tier: ${tier} (bundle: ${bundle})`);
 	return newClient.id;
 }
 
