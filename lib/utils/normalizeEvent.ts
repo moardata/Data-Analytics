@@ -25,7 +25,7 @@ export function normalizeWhopEvent(webhookEvent: WhopWebhookEvent): NormalizedEv
   const { action, data, id } = webhookEvent;
 
   // Payment/Order events
-  if (action === 'payment.succeeded' || action === 'payment.failed') {
+  if (action === 'payment.succeeded' || action === 'payment.failed' || action === 'payment.refunded' || action === 'payment.disputed' || action === 'payment.dispute_resolved') {
     return {
       eventType: 'order',
       eventData: {
