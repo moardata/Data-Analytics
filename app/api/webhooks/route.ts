@@ -80,7 +80,15 @@ export async function POST(request: NextRequest): Promise<Response> {
 		waitUntil(processWebhookEvent(webhookData, webhookEventId));
 
 		// Return 200 immediately to acknowledge receipt
-		return new Response("OK", { status: 200 });
+		return new Response(JSON.stringify({
+			status: 'received',
+			action: webhookData.action,
+			version: 'v6-cleaned',
+			timestamp: new Date().toISOString()
+		}), { 
+			status: 200,
+			headers: { 'Content-Type': 'application/json' }
+		});
 	} catch (error) {
 		const errorMessage = error instanceof Error ? error.message : 'Unknown error';
 		const errorStack = error instanceof Error ? error.stack : undefined;
@@ -108,7 +116,9 @@ export async function POST(request: NextRequest): Promise<Response> {
 		return new Response(JSON.stringify({ 
 			error: errorMessage,
 			details: webhookData ? { action: webhookData.action } : 'No webhook data',
-			timestamp: new Date().toISOString()
+			timestamp: new Date().toISOString(),
+			version: 'v6-cleaned',
+			codeVersion: 'post-cleanup'
 		}), { 
 			status: 200,
 			headers: { 'Content-Type': 'application/json' }
