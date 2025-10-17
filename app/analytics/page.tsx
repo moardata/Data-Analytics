@@ -106,8 +106,11 @@ function AnalyticsContent() {
       
       if (!res.ok) {
         if (res.status === 401 || res.status === 403) {
+          const errorText = await res.text();
+          console.log('🔧 Frontend: Auth error response:', errorText);
+          
           if (isInIframe) {
-            setAccessError('Whop authentication failed. Please ensure you are accessing this app through the Whop platform.');
+            setAccessError('Whop authentication failed. Please ensure you are accessing this app through the Whop platform with proper permissions.');
           } else {
             setAccessError('You do not have permission to view analytics. Only company admins can access this dashboard.');
           }

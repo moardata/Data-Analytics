@@ -39,8 +39,16 @@ export async function GET(request: NextRequest) {
     if (!bypassAuth) {
       // Verify Whop authentication first
       const h = await headers();
-      const authResult = await whopSdk.verifyUserToken(h);
-      userId = authResult.userId;
+      console.log('🔧 API: Verifying Whop token, headers:', Object.keys(h));
+      
+      try {
+        const authResult = await whopSdk.verifyUserToken(h);
+        userId = authResult.userId;
+        console.log('🔧 API: Whop auth successful, userId:', userId);
+      } catch (authError: any) {
+        console.log('🔧 API: Whop auth failed:', authError.message);
+        throw authError;
+      }
     } else {
       // Bypass mode - use a mock user ID
       userId = 'dev-user-123';
