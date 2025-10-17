@@ -10,24 +10,53 @@ import { getCompanyId } from '@/lib/auth/whop-auth';
 
 export async function GET(request: NextRequest) {
   try {
-    // Get companyId from Whop auth (with dev fallback)
-    const clientId = await getCompanyId(request);
-    
-    if (!clientId) {
+    const { searchParams } = new URL(request.url);
+    const companyId = searchParams.get('companyId') || searchParams.get('clientId');
+    const timeRange = searchParams.get('timeRange') || 'week';
+
+    if (!companyId) {
       return NextResponse.json(
-        { error: 'Unauthorized - No valid Whop authentication' },
-        { status: 401 }
+        { error: 'Missing companyId parameter' },
+        { status: 400 }
       );
     }
-    
-    const { searchParams } = new URL(request.url);
-    const timeRange = searchParams.get('timeRange') || 'week';
 
     // Calculate date range
     const days = timeRange === 'week' ? 7 : timeRange === 'month' ? 30 : 90;
     const startDate = subDays(new Date(), days).toISOString();
 
-    // Fetch all data in parallel
+    // First, get the client record for this company
+    const { data: clientData, error: clientError } = await supabase
+      .from('clients')
+      .select('id')
+      .eq('company_id', companyId)
+      .single();
+
+    if (clientError || !clientData) {
+      console.log('No client found for companyId:', companyId);
+      // Return empty metrics if no client found
+      return NextResponse.json({
+        totalStudents: 0,
+        activeSubscriptions: 0,
+        totalRevenue: 0,
+        engagementRate: 0,
+        completionRate: 0,
+        newThisWeek: 0,
+        studentsChange: 0,
+        subscriptionsChange: 0,
+        revenueChange: 0,
+        engagementChange: 0,
+        completionChange: 0,
+        revenueData: [],
+        engagementData: [],
+        subscriptionData: [],
+        progressData: [],
+      });
+    }
+
+    const clientId = clientData.id;
+
+    // Fetch all data in parallel using the client_id
     const [eventsResult, subscriptionsResult, entitiesResult] = await Promise.all([
       supabase
         .from('events')
