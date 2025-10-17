@@ -75,8 +75,16 @@ function AnalyticsContent() {
     setError(null);
     setAccessError(null);
     try {
+      // Check if bypassAuth is in the URL
+      const urlParams = new URLSearchParams(window.location.search);
+      const bypassAuth = urlParams.get('bypassAuth') === 'true';
+      
       // Use companyId from URL (passed from Whop)
-      const apiUrl = `/api/analytics/metrics?companyId=${companyId}&timeRange=${range}`;
+      let apiUrl = `/api/analytics/metrics?companyId=${companyId}&timeRange=${range}`;
+      if (bypassAuth) {
+        apiUrl += '&bypassAuth=true';
+        console.log('🔧 Frontend: Adding bypassAuth=true to API call');
+      }
       
       // Add iframe-specific headers if needed
       const fetchOptions: RequestInit = {
