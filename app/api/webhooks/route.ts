@@ -339,13 +339,14 @@ async function getOrCreateEntity(whopUserId: string, eventData: any) {
 
 /**
  * Map Whop plan IDs to tiers
+ * Updated to match database constraints: 'free', 'pro', 'premium'
  */
-const TIER_MAPPING: Record<string, string> = {
-	'plan_gDIQ1ypIFaZoQ': 'atom',      // Atom (Free)
-	'plan_hnYnLn6egXRis': 'core',      // Core ($20/month)
-	'plan_OvGPVPXu6sarv': 'pulse',     // Pulse ($100/month)
-	'plan_YWwjHKXiWT6vq': 'surge',     // Surge ($200/month)
-	'plan_BcSpDXIeGcklw': 'quantum',   // Quantum ($400/month)
+const TIER_MAPPING: Record<string, 'free' | 'pro' | 'premium'> = {
+	'plan_gDIQ1ypIFaZoQ': 'free',      // Free tier (Atom)
+	'plan_hnYnLn6egXRis': 'pro',       // Pro tier ($20-100/month)
+	'plan_OvGPVPXu6sarv': 'pro',       // Pro tier ($20-100/month)
+	'plan_YWwjHKXiWT6vq': 'premium',   // Premium tier ($100+/month)
+	'plan_BcSpDXIeGcklw': 'premium',   // Premium tier ($100+/month)
 };
 
 /**
@@ -354,7 +355,7 @@ const TIER_MAPPING: Record<string, string> = {
 async function getOrCreateClient(whopCompanyId: string, eventData: any): Promise<string | null> {
 	// Determine tier from plan_id (if provided)
 	const planId = eventData.plan_id || eventData.membership_plan_id;
-	const tier = planId ? TIER_MAPPING[planId] || 'atom' : 'atom';
+	const tier = planId ? TIER_MAPPING[planId] || 'free' : 'free';
 
 	// Try to find existing client
 	const { data: existing } = await supabase
@@ -388,8 +389,7 @@ async function getOrCreateClient(whopCompanyId: string, eventData: any): Promise
 			company_id: whopCompanyId,
 			email: eventData.company_email || `company_${whopCompanyId}@whop.com`,
 			name: eventData.company_name || `Company ${whopCompanyId}`,
-			subscription_tier: 'free', // Legacy field - must match constraint
-			current_tier: tier, // New tier system
+			current_tier: tier, // Use standardized tier system
 			whop_plan_id: planId,
 			subscription_status: eventData.status || 'active',
 		})

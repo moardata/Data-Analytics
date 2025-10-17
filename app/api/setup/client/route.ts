@@ -59,8 +59,7 @@ export async function POST(request: NextRequest) {
         company_id: companyId,
         email: companyEmail || `company_${companyId}@whop.com`,
         name: companyName || `Company ${companyId}`,
-        subscription_tier: 'free', // Legacy field - must match constraint
-        current_tier: 'atom', // New tier system
+        current_tier: 'free', // Standardized tier system (free/pro/premium)
         subscription_status: 'active',
       })
       .select('id')

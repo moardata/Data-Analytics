@@ -25,58 +25,44 @@ export async function OPTIONS() {
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
+    const h = await headers();
     
-    // Check if we should bypass Whop auth (for testing)
-    const bypassAuth = process.env.BYPASS_WHOP_AUTH === 'true' || searchParams.get('bypassAuth') === 'true';
-    
-    // TEMPORARY: Always bypass auth for testing
-    console.log('🔧 API: bypassAuth =', bypassAuth);
-    console.log('🔧 API: BYPASS_WHOP_AUTH env =', process.env.BYPASS_WHOP_AUTH);
-    console.log('🔧 API: bypassAuth param =', searchParams.get('bypassAuth'));
+    // Check for development bypass (only via env variable, not URL param)
+    const bypassAuth = process.env.BYPASS_WHOP_AUTH === 'true';
     
     let userId: string | undefined;
     
-    if (!bypassAuth) {
-      // Verify Whop authentication first
-      const h = await headers();
-      console.log('🔧 API: Verifying Whop token, headers:', Object.keys(h));
-      
+    if (bypassAuth) {
+      // Development bypass mode
+      console.log('⚠️ Development bypass mode enabled');
+      userId = 'dev-user-bypass';
+    } else {
+      // Production: Require proper Whop authentication
       try {
         const authResult = await whopSdk.verifyUserToken(h);
         userId = authResult.userId;
-        console.log('🔧 API: Whop auth successful, userId:', userId);
+        console.log('✅ Whop auth successful, userId:', userId);
       } catch (authError: any) {
-        console.log('🔧 API: Whop auth failed:', authError.message);
+        console.error('❌ Whop authentication failed:', authError.message);
         
-        // TEMPORARY: If Whop auth fails, check if we're in a Whop iframe context
-        // This is a workaround for Whop iframe authentication issues
+        // Check if we're in a Whop iframe context (for better error messages)
         const referer = h.get('referer') || '';
-        const userAgent = h.get('user-agent') || '';
         const origin = h.get('origin') || '';
+        const isWhopIframe = referer.includes('whop.com') || origin.includes('whop.com');
         
-        // Only use fallback if we're clearly in a Whop iframe context
-        const isWhopIframe = (
-          referer.includes('whop.com') || 
-          origin.includes('whop.com') ||
-          (userAgent.includes('whop') && referer !== '')
+        return NextResponse.json(
+          { 
+            error: isWhopIframe 
+              ? 'Whop authentication failed. Please ensure you have proper permissions and try refreshing the page.'
+              : 'Authentication required. Please access this app through the Whop platform.',
+            authError: authError.message 
+          },
+          { status: 401, headers: corsHeaders }
         );
-        
-        if (isWhopIframe) {
-          console.log('🔧 API: Detected Whop iframe context, using fallback authentication');
-          console.log('🔧 API: referer:', referer, 'origin:', origin, 'userAgent:', userAgent);
-          userId = 'whop-fallback-user';
-        } else {
-          console.log('🔧 API: Not in Whop iframe context, throwing auth error');
-          throw authError;
-        }
       }
-    } else {
-      // Bypass mode - use a mock user ID
-      userId = 'dev-user-123';
-      console.log('🔧 Bypass mode: Skipping Whop authentication');
     }
     
-    const companyId = searchParams.get('companyId') || searchParams.get('clientId');
+    const companyId = searchParams.get('companyId');
     const timeRange = searchParams.get('timeRange') || 'week';
 
     if (!companyId) {
@@ -86,8 +72,8 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    // Verify user has access to this company (skip if bypassing auth or using fallback)
-    if (!bypassAuth && userId !== 'whop-fallback-user') {
+    // Verify user has access to this company (skip only in development bypass mode)
+    if (!bypassAuth) {
       const access = await whopSdk.access.checkIfUserHasAccessToCompany({
         userId: userId!,
         companyId,
@@ -106,8 +92,8 @@ export async function GET(request: NextRequest) {
           { status: 403, headers: corsHeaders }
         );
       }
-    } else {
-      console.log('🔧 Bypass/Fallback mode: Skipping company access check');
+      
+      console.log('✅ Access verified: admin level for company', companyId);
     }
 
     // Calculate date range

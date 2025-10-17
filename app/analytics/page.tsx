@@ -69,27 +69,12 @@ function AnalyticsContent() {
   };
 
   const fetchData = async () => {
-    console.log('🚀 Starting fetchData with companyId:', companyId, 'range:', range);
-    console.log('🚀 Is in iframe:', isInIframe);
     setLoading(true);
     setError(null);
     setAccessError(null);
     try {
-      // Check if bypassAuth is in the URL
-      const urlParams = new URLSearchParams(window.location.search);
-      const bypassAuth = urlParams.get('bypassAuth') === 'true';
-      
-      console.log('🔧 URL params:', window.location.search);
-      console.log('🔧 bypassAuth detected:', bypassAuth);
-      
       // Use companyId from URL (passed from Whop)
-      let apiUrl = `/api/analytics/metrics?companyId=${companyId}&timeRange=${range}`;
-      if (bypassAuth) {
-        apiUrl += '&bypassAuth=true';
-        console.log('🔧 Frontend: Adding bypassAuth=true to API call');
-      }
-      
-      console.log('🔧 Final API URL:', apiUrl);
+      const apiUrl = `/api/analytics/metrics?companyId=${companyId}&timeRange=${range}`;
       
       // Add iframe-specific headers if needed
       const fetchOptions: RequestInit = {
@@ -102,17 +87,15 @@ function AnalyticsContent() {
       };
       
       const res = await fetch(apiUrl, fetchOptions);
-      console.log('🔧 API Response status:', res.status, res.statusText);
       
       if (!res.ok) {
         if (res.status === 401 || res.status === 403) {
-          const errorText = await res.text();
-          console.log('🔧 Frontend: Auth error response:', errorText);
+          const errorData = await res.json().catch(() => ({ error: 'Authentication failed' }));
           
           if (isInIframe) {
-            setAccessError('Whop authentication failed. Please ensure you are accessing this app through the Whop platform with proper permissions.');
+            setAccessError('Whop authentication failed. Please ensure you have admin permissions and try refreshing the page.');
           } else {
-            setAccessError('You do not have permission to view analytics. Only company admins can access this dashboard.');
+            setAccessError('Authentication required. Please access this app through the Whop platform.');
           }
           return;
         }
@@ -136,20 +119,9 @@ function AnalyticsContent() {
       const adapted = adaptToCreatorAnalytics(apiData);
       setDashboardData(adapted);
     } catch (err) {
-      console.error('❌ ERROR fetching dashboard data:', err);
-      console.error('❌ Error details:', {
-        message: err instanceof Error ? err.message : 'Unknown error',
-        stack: err instanceof Error ? err.stack : 'No stack trace',
-        type: typeof err,
-        isInIframe,
-        userAgent: navigator.userAgent
-      });
+      console.error('Error fetching dashboard data:', err);
       
-      // Provide iframe-specific error messages
-      const errorMessage = isInIframe 
-        ? 'Dashboard failed to load in iframe. This may be due to CORS or authentication issues. Please check the console for details.'
-        : err instanceof Error ? err.message : 'Failed to load dashboard';
-        
+      const errorMessage = err instanceof Error ? err.message : 'Failed to load dashboard';
       setError(errorMessage);
     } finally {
       setLoading(false);
@@ -223,23 +195,6 @@ function AnalyticsContent() {
     <div className="min-h-screen bg-[#0f1115]">
       <div className="max-w-[1600px] mx-auto p-6">
         <PermissionsBanner missing={missingPermissions} />
-        
-        {/* Status indicators */}
-        {isInIframe && (
-          <div className="bg-blue-500/10 border border-blue-500/20 rounded-lg p-3 mb-4">
-            <div className="text-blue-300 text-sm">
-              🔗 Running in iframe (Whop context detected)
-            </div>
-          </div>
-        )}
-        
-        {process.env.NEXT_PUBLIC_BYPASS_AUTH === 'true' && (
-          <div className="bg-yellow-500/10 border border-yellow-500/20 rounded-lg p-3 mb-4">
-            <div className="text-yellow-300 text-sm">
-              🔧 Auth bypass mode (Whop auth disabled)
-            </div>
-          </div>
-        )}
         
         <DashboardCreatorAnalytics
           data={dashboardData}
