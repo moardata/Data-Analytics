@@ -388,7 +388,7 @@ async function getOrCreateClient(whopCompanyId: string, eventData: any): Promise
 			company_id: whopCompanyId,
 			email: eventData.company_email || `company_${whopCompanyId}@whop.com`,
 			name: eventData.company_name || `Company ${whopCompanyId}`,
-			subscription_tier: 'atom', // Legacy field
+			subscription_tier: 'free', // Legacy field - must match constraint
 			current_tier: tier, // New tier system
 			whop_plan_id: planId,
 			subscription_status: eventData.status || 'active',
