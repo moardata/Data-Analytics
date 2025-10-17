@@ -8,15 +8,39 @@ import { generateInsightsForClient, detectAnomalies } from '@/lib/utils/aiInsigh
 import { supabaseServer as supabase } from '@/lib/supabase-server';
 import { getCompanyId } from '@/lib/auth/whop-auth';
 
+// CORS headers
+const corsHeaders = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+  'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+};
+
+export async function OPTIONS() {
+  return new NextResponse(null, { status: 200, headers: corsHeaders });
+}
+
 export async function POST(request: NextRequest) {
   try {
-    // Get companyId from Whop auth (with dev fallback)
-    const companyId = await getCompanyId(request);
+    const { searchParams } = new URL(request.url);
+    
+    // Check for development bypass
+    const bypassAuth = process.env.BYPASS_WHOP_AUTH === 'true';
+    
+    let companyId: string | null = null;
+    
+    if (bypassAuth) {
+      // Development bypass mode
+      companyId = searchParams.get('companyId') || process.env.NEXT_PUBLIC_WHOP_COMPANY_ID || null;
+      console.log('⚠️ Development bypass mode - using companyId:', companyId);
+    } else {
+      // Production: Get companyId from Whop auth
+      companyId = await getCompanyId(request);
+    }
     
     if (!companyId) {
       return NextResponse.json(
         { error: 'Unauthorized - No valid Whop authentication' },
-        { status: 401 }
+        { status: 401, headers: corsHeaders }
       );
     }
 
@@ -30,7 +54,7 @@ export async function POST(request: NextRequest) {
     if (clientError || !clientData) {
       return NextResponse.json(
         { error: 'Client not found for this company' },
-        { status: 404 }
+        { status: 404, headers: corsHeaders }
       );
     }
 
@@ -50,7 +74,7 @@ export async function POST(request: NextRequest) {
           limit: limitCheck.limit,
           upgrade: { message: 'Upgrade for more AI insights', url: '/upgrade' },
         },
-        { status: 429 } // Too Many Requests
+        { status: 429, headers: corsHeaders } // Too Many Requests
       );
     }
 
@@ -74,26 +98,39 @@ export async function POST(request: NextRequest) {
       insights: [...insights, ...anomalies],
       count: insights.length + anomalies.length,
       timestamp: new Date().toISOString()
-    });
+    }, { headers: corsHeaders });
 
   } catch (error: any) {
     console.error('Error generating insights:', error);
     return NextResponse.json(
       { error: error.message || 'Failed to generate insights' },
-      { status: 500 }
+      { status: 500, headers: corsHeaders }
     );
   }
 }
 
 export async function GET(request: NextRequest) {
   try {
-    // Get companyId from Whop auth (with dev fallback)
-    const companyId = await getCompanyId(request);
+    const { searchParams } = new URL(request.url);
+    
+    // Check for development bypass
+    const bypassAuth = process.env.BYPASS_WHOP_AUTH === 'true';
+    
+    let companyId: string | null = null;
+    
+    if (bypassAuth) {
+      // Development bypass mode
+      companyId = searchParams.get('companyId') || process.env.NEXT_PUBLIC_WHOP_COMPANY_ID || null;
+      console.log('⚠️ Development bypass mode - using companyId:', companyId);
+    } else {
+      // Production: Get companyId from Whop auth
+      companyId = await getCompanyId(request);
+    }
     
     if (!companyId) {
       return NextResponse.json(
         { error: 'Unauthorized - No valid Whop authentication' },
-        { status: 401 }
+        { status: 401, headers: corsHeaders }
       );
     }
 
@@ -107,7 +144,7 @@ export async function GET(request: NextRequest) {
     if (clientError || !clientData) {
       return NextResponse.json(
         { error: 'Client not found for this company' },
-        { status: 404 }
+        { status: 404, headers: corsHeaders }
       );
     }
 
@@ -133,13 +170,13 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({
       insights: insights || [],
       count: insights?.length || 0
-    });
+    }, { headers: corsHeaders });
 
   } catch (error: any) {
     console.error('Error fetching insights:', error);
     return NextResponse.json(
       { error: error.message || 'Failed to fetch insights' },
-      { status: 500 }
+      { status: 500, headers: corsHeaders }
     );
   }
 }
