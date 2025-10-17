@@ -21,7 +21,7 @@ export async function POST(request: NextRequest) {
     // First, get the client record for this company
     const { data: clientData, error: clientError } = await supabase
       .from('clients')
-      .select('id')
+      .select('id, current_tier')
       .eq('company_id', companyId)
       .single();
 
@@ -33,6 +33,24 @@ export async function POST(request: NextRequest) {
     }
 
     const clientId = clientData.id; // This is the actual UUID
+    const tier = (clientData.current_tier || 'atom') as any;
+
+    // Check tier limits before creating form
+    const { checkLimit } = await import('@/lib/pricing/usage-tracker');
+    
+    const limitCheck = await checkLimit(companyId, tier, 'createForm');
+
+    if (!limitCheck.allowed) {
+      return NextResponse.json(
+        { 
+          error: limitCheck.reason,
+          current: limitCheck.current,
+          limit: limitCheck.limit,
+          upgrade: { message: 'Upgrade to create more forms', url: '/upgrade' },
+        },
+        { status: 429 } // Too Many Requests
+      );
+    }
 
     // Create form template
     const { data: formTemplate, error } = await supabase

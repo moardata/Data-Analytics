@@ -89,7 +89,9 @@ export async function checkLimit(
   tier: TierName,
   action: 'addStudent' | 'createForm' | 'generateInsight'
 ): Promise<{ allowed: boolean; reason?: string; current?: number; limit?: number }> {
-  const tierData = getTier(tier);
+  // Map database tier to bundle name if needed
+  const actualTier = tier as TierName;
+  const tierData = getTier(actualTier);
   const usage = await getClientUsage(companyId);
 
   switch (action) {
