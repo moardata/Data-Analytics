@@ -53,3 +53,5 @@ SELECT
   (SELECT COUNT(*) FROM insights WHERE client_id IN (SELECT id FROM clients WHERE company_id = 'biz_3GYHNPbGkZCEky')) as insights,
   (SELECT COUNT(*) FROM events WHERE client_id IN (SELECT id FROM clients WHERE company_id = 'biz_3GYHNPbGkZCEky')) as events,
   (SELECT COUNT(*) FROM form_submissions WHERE client_id IN (SELECT id FROM clients WHERE company_id = 'biz_3GYHNPbGkZCEky')) as form_responses;
+
+

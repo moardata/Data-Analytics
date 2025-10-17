@@ -34,3 +34,5 @@ DELETE FROM clients WHERE company_id != 'biz_3GYHNPbGkZCEky';
 
 -- Show what's left (should only be your company)
 SELECT company_id, current_tier, created_at FROM clients;
+
+

@@ -95,3 +95,5 @@ SELECT
   END as company_type
 FROM clients 
 ORDER BY created_at;
+
+

@@ -12,40 +12,40 @@ export interface WhopAuthResult {
 }
 
 /**
- * Gets Whop authentication from headers
- * Whop passes user context via headers when app is embedded
+ * Gets Whop authentication using the SDK
+ * Whop apps are embedded and use the SDK to verify user tokens
  */
 export async function getWhopAuth(): Promise<WhopAuthResult | null> {
-  const headersList = await headers();
-  
-  // Whop passes these headers in the iframe context
-  const userId = headersList.get('x-whop-user-id');
-  const companyId = headersList.get('x-whop-company-id');
-  
-  // Also check for authorization header
-  const authorization = headersList.get('authorization');
-  
-  if (!userId && !companyId && !authorization) {
-    return null;
-  }
+  try {
+    const headersList = await headers();
+    const { whopSdk } = await import('@/lib/whop-sdk');
+    
+    // Use Whop SDK to verify user token from headers
+    const { userId } = await whopSdk.verifyUserToken(headersList);
+    
+    if (!userId) {
+      console.log('No valid user token found in headers');
+      return null;
+    }
 
-  // If we have user/company from headers, use those
-  if (userId && companyId) {
+    // Get user info to extract company ID
+    const user = await whopSdk.users.getUser({ userId });
+    const companyId = user.company_id;
+
+    if (!companyId) {
+      console.log('User has no company ID');
+      return null;
+    }
+
     return {
       userId,
       companyId,
       isAuthenticated: true,
     };
+  } catch (error) {
+    console.error('Error verifying Whop user token:', error);
+    return null;
   }
-
-  // Fallback for testing/direct access (both dev and prod)
-  // In production, this allows direct access for testing
-  // This only runs if Whop headers are NOT present
-  return {
-    userId: process.env.NEXT_PUBLIC_WHOP_AGENT_USER_ID || 'user_dev',
-    companyId: process.env.NEXT_PUBLIC_WHOP_COMPANY_ID || 'biz_dev',
-    isAuthenticated: true,
-  };
 }
 
 /**
@@ -63,7 +63,7 @@ export async function requireWhopAuth(): Promise<string> {
 }
 
 /**
- * Gets companyId from request, with fallback for testing
+ * Gets companyId from request - PRODUCTION ONLY
  */
 export async function getCompanyId(request: Request): Promise<string | null> {
   const auth = await getWhopAuth();
@@ -73,22 +73,8 @@ export async function getCompanyId(request: Request): Promise<string | null> {
     return auth.companyId;
   }
   
-  // Fallback: check URL params (both dev and prod)
-  const url = new URL(request.url);
-  const clientId = url.searchParams.get('clientId');
-  if (clientId) {
-    console.log('Using URL param clientId:', clientId);
-    return clientId;
-  }
-  
-  // Final fallback: use environment variable
-  const envCompanyId = process.env.NEXT_PUBLIC_WHOP_COMPANY_ID;
-  if (envCompanyId) {
-    console.log('Using env companyId:', envCompanyId);
-    return envCompanyId;
-  }
-  
-  console.log('No companyId found - auth:', auth, 'env:', envCompanyId);
+  // PRODUCTION: No fallbacks - require proper Whop authentication
+  console.log('No valid Whop authentication found');
   return null;
 }
 

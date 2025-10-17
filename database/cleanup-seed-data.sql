@@ -57,3 +57,5 @@ DELETE FROM clients WHERE company_id LIKE 'biz_test%';
 
 -- Show remaining clients to verify cleanup
 SELECT company_id, current_tier, created_at FROM clients ORDER BY created_at;
+
+

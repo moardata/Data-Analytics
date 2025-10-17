@@ -31,14 +31,28 @@ export async function getClientUsage(clientId: string): Promise<UsageStats> {
     .select('*', { count: 'exact', head: true })
     .eq('client_id', clientId);
 
-  // Get AI insights generated today
-  const { count: aiInsightsToday } = await supabase
-    .from('ai_runs')
-    .select('*', { count: 'exact', head: true })
-    .eq('client_id', clientId)
-    .eq('status', 'completed')
-    .gte('created_at', `${today}T00:00:00Z`)
-    .lte('created_at', `${today}T23:59:59Z`);
+  // Get AI insights generated today (if ai_runs table exists)
+  let aiInsightsToday = 0;
+  try {
+    const { count } = await supabase
+      .from('ai_runs')
+      .select('*', { count: 'exact', head: true })
+      .eq('client_id', clientId)
+      .eq('status', 'completed')
+      .gte('created_at', `${today}T00:00:00Z`)
+      .lte('created_at', `${today}T23:59:59Z`);
+    aiInsightsToday = count || 0;
+  } catch (error) {
+    console.log('ai_runs table not available, using insights table instead');
+    // Fallback to insights table
+    const { count } = await supabase
+      .from('insights')
+      .select('*', { count: 'exact', head: true })
+      .eq('client_id', clientId)
+      .gte('created_at', `${today}T00:00:00Z`)
+      .lte('created_at', `${today}T23:59:59Z`);
+    aiInsightsToday = count || 0;
+  }
 
   return {
     studentCount: studentCount || 0,
@@ -109,14 +123,18 @@ export async function trackAction(
   action: 'generateInsight'
 ): Promise<void> {
   if (action === 'generateInsight') {
-    // Create an AI run record
-    await supabase.from('ai_runs').insert({
-      client_id: clientId,
-      run_type: 'insight_generation',
-      status: 'completed',
-      started_at: new Date().toISOString(),
-      finished_at: new Date().toISOString(),
-    });
+    // Create an AI run record (if ai_runs table exists)
+    try {
+      await supabase.from('ai_runs').insert({
+        client_id: clientId,
+        run_type: 'insight_generation',
+        status: 'completed',
+        started_at: new Date().toISOString(),
+        finished_at: new Date().toISOString(),
+      });
+    } catch (error) {
+      console.log('ai_runs table not available, skipping run tracking');
+    }
   }
 }
 
@@ -150,5 +168,6 @@ export function getUsagePercentage(current: number, limit: number): number {
   if (limit === 0) return 100;
   return Math.min(Math.round((current / limit) * 100), 100);
 }
+
 
 

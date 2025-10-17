@@ -29,6 +29,32 @@ function AnalyticsContent() {
     fetchData();
   }, [range, companyId]);
 
+  const createClientRecord = async () => {
+    try {
+      const response = await fetch('/api/setup/client', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          companyId,
+          companyName: `Company ${companyId}`,
+          companyEmail: `company@${companyId}.com`,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to create client record');
+      }
+
+      // Retry fetching data after creating client
+      await fetchData();
+    } catch (err) {
+      console.error('Error creating client record:', err);
+      setError('Failed to initialize dashboard. Please refresh the page.');
+    }
+  };
+
   const fetchData = async () => {
     setLoading(true);
     setError(null);
@@ -40,6 +66,11 @@ function AnalyticsContent() {
       if (!res.ok) {
         if (res.status === 401 || res.status === 403) {
           setAccessError('You do not have permission to view analytics. Only company admins can access this dashboard.');
+          return;
+        }
+        if (res.status === 404) {
+          // No client found - create one automatically
+          await createClientRecord();
           return;
         }
         throw new Error(`Failed to fetch data: ${res.statusText}`);

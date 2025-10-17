@@ -1,34 +1,33 @@
 /**
- * Setup Client API
- * Creates a client record for testing purposes
+ * Setup Client API Endpoint
+ * Creates a client record for a new company accessing the app
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { getCompanyId } from '@/lib/auth/whop-auth';
 import { supabase } from '@/lib/supabase';
 
 export async function POST(request: NextRequest) {
   try {
-    const companyId = await getCompanyId(request);
-    
+    const { companyId, companyName, companyEmail } = await request.json();
+
     if (!companyId) {
       return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
+        { error: 'Missing companyId parameter' },
+        { status: 400 }
       );
     }
 
     // Check if client already exists
-    const { data: existingClient } = await supabase
+    const { data: existing } = await supabase
       .from('clients')
-      .select('*')
+      .select('id')
       .eq('company_id', companyId)
       .single();
 
-    if (existingClient) {
+    if (existing) {
       return NextResponse.json({
         message: 'Client already exists',
-        client: existingClient,
+        clientId: existing.id,
       });
     }
 
@@ -36,32 +35,34 @@ export async function POST(request: NextRequest) {
     const { data: newClient, error } = await supabase
       .from('clients')
       .insert({
+        whop_user_id: companyId,
         company_id: companyId,
-        current_tier: 'atom',
+        email: companyEmail || `company_${companyId}@whop.com`,
+        name: companyName || `Company ${companyId}`,
+        subscription_tier: 'atom', // Legacy field
+        current_tier: 'atom', // Start with free tier
         subscription_status: 'active',
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
       })
-      .select()
+      .select('id')
       .single();
 
     if (error) {
       console.error('Error creating client:', error);
       return NextResponse.json(
-        { error: 'Failed to create client' },
+        { error: 'Failed to create client record' },
         { status: 500 }
       );
     }
 
     return NextResponse.json({
       message: 'Client created successfully',
-      client: newClient,
+      clientId: newClient.id,
     });
 
-  } catch (error: any) {
-    console.error('Error setting up client:', error);
+  } catch (error) {
+    console.error('Setup client error:', error);
     return NextResponse.json(
-      { error: error.message || 'Failed to setup client' },
+      { error: 'Internal server error' },
       { status: 500 }
     );
   }

@@ -33,40 +33,64 @@ export async function generateInsightsForClient(
   clientId: string,
   range: string = 'week'
 ): Promise<any[]> {
-  // Create AI run record
-  const { data: aiRun } = await supabase
-    .from('ai_runs')
-    .insert({
-      client_id: clientId,
-      run_type: 'insight_generation',
-      status: 'running',
-      meta: { range }
-    })
-    .select()
-    .single();
+  // Create AI run record (if ai_runs table exists)
+  let aiRunId: string | null = null;
+  try {
+    const { data: aiRun } = await supabase
+      .from('ai_runs')
+      .insert({
+        client_id: clientId,
+        run_type: 'insight_generation',
+        status: 'running',
+        meta: { range }
+      })
+      .select()
+      .single();
+    aiRunId = aiRun?.id || null;
+  } catch (error) {
+    console.log('ai_runs table not available, skipping run tracking');
+  }
 
   try {
-    // Get text data from pool
+    // Get text data from form submissions directly
     const daysAgo = range === 'week' ? 7 : range === 'month' ? 30 : 90;
     const startDate = new Date(Date.now() - daysAgo * 86400000).toISOString();
 
-    const { data: textPool } = await supabase
-      .from('ai_text_pool')
-      .select('id, text, source, created_at')
+    const { data: formSubmissions } = await supabase
+      .from('form_submissions')
+      .select('responses, submitted_at')
       .eq('client_id', clientId)
-      .gte('created_at', startDate)
-      .order('created_at', { ascending: false })
-      .limit(100); // Limit to most recent 100 items
+      .gte('submitted_at', startDate)
+      .order('submitted_at', { ascending: false })
+      .limit(100);
 
-    if (!textPool || textPool.length === 0) {
+    if (!formSubmissions || formSubmissions.length === 0) {
       // No data - mark as completed and return stub insights
-      await supabase
-        .from('ai_runs')
-        .update({ status: 'completed', finished_at: new Date().toISOString() })
-        .eq('id', aiRun?.id);
+      if (aiRunId) {
+        await supabase
+          .from('ai_runs')
+          .update({ status: 'completed', finished_at: new Date().toISOString() })
+          .eq('id', aiRunId);
+      }
 
       return getStubInsights(clientId);
     }
+
+    // Extract text from form responses
+    const textPool = formSubmissions.flatMap(submission => {
+      const texts: any[] = [];
+      Object.values(submission.responses || {}).forEach(value => {
+        if (typeof value === 'string' && value.length > 10) {
+          texts.push({
+            id: Math.random().toString(),
+            text: value,
+            source: 'form_submission',
+            created_at: submission.submitted_at
+          });
+        }
+      });
+      return texts;
+    });
 
     // Scrub PII from texts
     const scrubbedTexts = textPool.map(item => ({
@@ -91,28 +115,32 @@ export async function generateInsightsForClient(
     // Store insights in database
     const insights = await storeInsights(clientId, result);
 
-    // Mark run as completed
-    await supabase
-      .from('ai_runs')
-      .update({ 
-        status: 'completed', 
-        finished_at: new Date().toISOString(),
-        meta: { range, insights_count: insights.length }
-      })
-      .eq('id', aiRun?.id);
+    // Mark run as completed (if ai_runs table exists)
+    if (aiRunId) {
+      await supabase
+        .from('ai_runs')
+        .update({ 
+          status: 'completed', 
+          finished_at: new Date().toISOString(),
+          meta: { range, insights_count: insights.length }
+        })
+        .eq('id', aiRunId);
+    }
 
     return insights;
 
   } catch (error: any) {
-    // Mark run as failed
-    await supabase
-      .from('ai_runs')
-      .update({ 
-        status: 'failed', 
-        finished_at: new Date().toISOString(),
-        error: error.message 
-      })
-      .eq('id', aiRun?.id);
+    // Mark run as failed (if ai_runs table exists)
+    if (aiRunId) {
+      await supabase
+        .from('ai_runs')
+        .update({ 
+          status: 'failed', 
+          finished_at: new Date().toISOString(),
+          error: error.message 
+        })
+        .eq('id', aiRunId);
+    }
 
     throw error;
   }

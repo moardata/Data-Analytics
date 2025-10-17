@@ -34,24 +34,10 @@ export async function GET(request: NextRequest) {
 
     if (clientError || !clientData) {
       console.log('No client found for companyId:', companyId);
-      // Return empty metrics if no client found
-      return NextResponse.json({
-        totalStudents: 0,
-        activeSubscriptions: 0,
-        totalRevenue: 0,
-        engagementRate: 0,
-        completionRate: 0,
-        newThisWeek: 0,
-        studentsChange: 0,
-        subscriptionsChange: 0,
-        revenueChange: 0,
-        engagementChange: 0,
-        completionChange: 0,
-        revenueData: [],
-        engagementData: [],
-        subscriptionData: [],
-        progressData: [],
-      });
+      return NextResponse.json(
+        { error: 'Client not found - needs initialization' },
+        { status: 404 }
+      );
     }
 
     const clientId = clientData.id;

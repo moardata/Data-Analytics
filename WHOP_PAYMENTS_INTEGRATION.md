@@ -386,3 +386,4 @@ export function GenerateInsightsButton() {
 **Questions?** Check Whop docs: https://docs.whop.com/apps/monetization
 
 
+
