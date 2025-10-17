@@ -4,46 +4,30 @@
  */
 
 import { waitUntil } from "@vercel/functions";
-import { makeWebhookValidator } from "@whop/api";
 import type { NextRequest } from "next/server";
 import { supabaseServer as supabase } from "@/lib/supabase-server";
 import { normalizeWhopEvent, extractSubscriptionData, isValidWebhookEvent } from "@/lib/utils/normalizeEvent";
 import { getBundleInfo } from '@/lib/pricing/bundles';
 
-// Create webhook validator only if secret is available
-let validateWebhook: ((request: NextRequest) => Promise<any>) | null = null;
-if (process.env.WHOP_WEBHOOK_SECRET && process.env.WHOP_WEBHOOK_SECRET !== '') {
-	validateWebhook = makeWebhookValidator({
-		webhookSecret: process.env.WHOP_WEBHOOK_SECRET,
-	});
-}
+// NOTE: Webhook validation is disabled for development/testing
+// To enable validation in production, uncomment and configure WHOP_WEBHOOK_SECRET
+// import { makeWebhookValidator } from "@whop/api";
+// const validateWebhook = makeWebhookValidator({ webhookSecret: process.env.WHOP_WEBHOOK_SECRET! });
 
 export async function POST(request: NextRequest): Promise<Response> {
 	let webhookEventId: string | null = null;
 	let webhookData: any = null;
 	
 	try {
-		// Simplified bypass logic: skip validation if no secret is configured
-		const hasWebhookSecret = validateWebhook !== null;
-		const bypassValidation = !hasWebhookSecret || process.env.BYPASS_WEBHOOK_VALIDATION === 'true';
+		// Parse webhook directly (validation disabled for testing)
+		const bodyText = await request.text();
+		webhookData = JSON.parse(bodyText);
 		
-		console.log('🔍 Webhook processing:', {
-			hasSecret: hasWebhookSecret,
-			bypassValidation,
-			timestamp: new Date().toISOString()
+		console.log('📥 Webhook received:', {
+			action: webhookData.action,
+			timestamp: new Date().toISOString(),
+			version: 'v7-no-validation'
 		});
-		
-		if (bypassValidation) {
-			// Parse webhook directly without validation
-			const bodyText = await request.text();
-			webhookData = JSON.parse(bodyText);
-			console.log('🧪 Webhook received (no validation):', webhookData.action);
-		} else {
-			// Validate the webhook signature
-			console.log('🔒 Validating webhook signature...');
-			webhookData = await validateWebhook!(request);
-			console.log('✅ Webhook validated:', webhookData.action);
-		}
 
 		// Validate event structure
 		if (!isValidWebhookEvent(webhookData)) {
@@ -83,7 +67,7 @@ export async function POST(request: NextRequest): Promise<Response> {
 		return new Response(JSON.stringify({
 			status: 'received',
 			action: webhookData.action,
-			version: 'v6-cleaned',
+			version: 'v7-no-validation',
 			timestamp: new Date().toISOString()
 		}), { 
 			status: 200,
@@ -117,8 +101,8 @@ export async function POST(request: NextRequest): Promise<Response> {
 			error: errorMessage,
 			details: webhookData ? { action: webhookData.action } : 'No webhook data',
 			timestamp: new Date().toISOString(),
-			version: 'v6-cleaned',
-			codeVersion: 'post-cleanup'
+			version: 'v7-no-validation',
+			note: 'Validation is completely disabled for testing'
 		}), { 
 			status: 200,
 			headers: { 'Content-Type': 'application/json' }

@@ -1,18 +1,14 @@
 import { NextResponse } from 'next/server';
 
 export async function GET() {
-  const hasSecret = !!process.env.WHOP_WEBHOOK_SECRET;
-  const bypassMode = !hasSecret || process.env.BYPASS_WEBHOOK_VALIDATION === 'true';
-  
   return NextResponse.json({
-    version: 'v6-cleaned',
+    version: 'v7-no-validation',
     timestamp: new Date().toISOString(),
     webhookConfig: {
-      hasSecret,
-      bypassMode,
-      reason: !hasSecret ? 'No secret configured' : bypassMode ? 'Bypass enabled' : 'Validation enabled'
+      validationEnabled: false,
+      note: 'All webhook validation is completely disabled for testing'
     },
-    message: 'Webhook validation cleaned up and simplified'
+    message: 'Webhook validation completely removed - ready for testing'
   });
 }
 
