@@ -29,6 +29,11 @@ export async function GET(request: NextRequest) {
     // Check if we should bypass Whop auth (for testing)
     const bypassAuth = process.env.BYPASS_WHOP_AUTH === 'true' || searchParams.get('bypassAuth') === 'true';
     
+    // TEMPORARY: Always bypass auth for testing
+    console.log('🔧 API: bypassAuth =', bypassAuth);
+    console.log('🔧 API: BYPASS_WHOP_AUTH env =', process.env.BYPASS_WHOP_AUTH);
+    console.log('🔧 API: bypassAuth param =', searchParams.get('bypassAuth'));
+    
     let userId: string | undefined;
     
     if (!bypassAuth) {
