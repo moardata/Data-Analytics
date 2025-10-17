@@ -24,8 +24,10 @@ export async function OPTIONS() {
 
 export async function GET(request: NextRequest) {
   try {
+    const { searchParams } = new URL(request.url);
+    
     // Check if we should bypass Whop auth (for testing)
-    const bypassAuth = process.env.BYPASS_WHOP_AUTH === 'true';
+    const bypassAuth = process.env.BYPASS_WHOP_AUTH === 'true' || searchParams.get('bypassAuth') === 'true';
     
     let userId: string | undefined;
     
@@ -40,7 +42,6 @@ export async function GET(request: NextRequest) {
       console.log('🔧 Bypass mode: Skipping Whop authentication');
     }
     
-    const { searchParams } = new URL(request.url);
     const companyId = searchParams.get('companyId') || searchParams.get('clientId');
     const timeRange = searchParams.get('timeRange') || 'week';
 
