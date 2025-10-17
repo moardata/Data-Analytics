@@ -10,44 +10,39 @@ import { supabaseServer as supabase } from "@/lib/supabase-server";
 import { normalizeWhopEvent, extractSubscriptionData, isValidWebhookEvent } from "@/lib/utils/normalizeEvent";
 import { getBundleInfo } from '@/lib/pricing/bundles';
 
-const validateWebhook = makeWebhookValidator({
-	webhookSecret: process.env.WHOP_WEBHOOK_SECRET ?? "fallback",
-});
+// Create webhook validator only if secret is available
+let validateWebhook: ((request: NextRequest) => Promise<any>) | null = null;
+if (process.env.WHOP_WEBHOOK_SECRET && process.env.WHOP_WEBHOOK_SECRET !== '') {
+	validateWebhook = makeWebhookValidator({
+		webhookSecret: process.env.WHOP_WEBHOOK_SECRET,
+	});
+}
 
 export async function POST(request: NextRequest): Promise<Response> {
 	let webhookEventId: string | null = null;
 	let webhookData: any = null;
 	
 	try {
-		// Check if this is a test webhook (development/staging only)
-		const isTestWebhook = request.headers.get('x-test-webhook') === 'true';
-		const bypassValidation = process.env.BYPASS_WEBHOOK_VALIDATION === 'true';
-		const isFromWhop = request.headers.get('user-agent')?.includes('whop') || 
-		                  request.headers.get('origin')?.includes('whop.com');
+		// Simplified bypass logic: skip validation if no secret is configured
+		const hasWebhookSecret = validateWebhook !== null;
+		const bypassValidation = !hasWebhookSecret || process.env.BYPASS_WEBHOOK_VALIDATION === 'true';
 		
-		console.log('🔍 Webhook validation check:', {
-			isTestWebhook,
+		console.log('🔍 Webhook processing:', {
+			hasSecret: hasWebhookSecret,
 			bypassValidation,
-			envValue: process.env.BYPASS_WEBHOOK_VALIDATION,
-			isFromWhop,
-			userAgent: request.headers.get('user-agent'),
-			origin: request.headers.get('origin'),
-			allHeaders: Object.fromEntries(request.headers.entries())
+			timestamp: new Date().toISOString()
 		});
 		
-		// TEMPORARY: Bypass validation for all webhooks during testing
-		// TODO: Re-enable validation once we confirm webhook structure is correct
-		const forceBypass = true; // Set to false when ready for production
-		
-		if (isTestWebhook || bypassValidation || isFromWhop || forceBypass) {
-			// For test webhooks or Whop requests, parse the body directly without validation
+		if (bypassValidation) {
+			// Parse webhook directly without validation
 			const bodyText = await request.text();
 			webhookData = JSON.parse(bodyText);
-			console.log('🧪 Webhook received (bypassing validation)', webhookData.action);
+			console.log('🧪 Webhook received (no validation):', webhookData.action);
 		} else {
-			// Validate the webhook to ensure it's from Whop
+			// Validate the webhook signature
 			console.log('🔒 Validating webhook signature...');
-			webhookData = await validateWebhook(request);
+			webhookData = await validateWebhook!(request);
+			console.log('✅ Webhook validated:', webhookData.action);
 		}
 
 		// Validate event structure
