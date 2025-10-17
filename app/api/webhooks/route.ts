@@ -23,6 +23,13 @@ export async function POST(request: NextRequest): Promise<Response> {
 		const isTestWebhook = request.headers.get('x-test-webhook') === 'true';
 		const bypassValidation = process.env.BYPASS_WEBHOOK_VALIDATION === 'true';
 		
+		console.log('🔍 Webhook validation check:', {
+			isTestWebhook,
+			bypassValidation,
+			envValue: process.env.BYPASS_WEBHOOK_VALIDATION,
+			headers: Object.fromEntries(request.headers.entries())
+		});
+		
 		if (isTestWebhook || bypassValidation) {
 			// For test webhooks, parse the body directly without validation
 			const bodyText = await request.text();
@@ -30,6 +37,7 @@ export async function POST(request: NextRequest): Promise<Response> {
 			console.log('🧪 Test webhook received (bypassing validation)', webhookData.action);
 		} else {
 			// Validate the webhook to ensure it's from Whop
+			console.log('🔒 Validating webhook signature...');
 			webhookData = await validateWebhook(request);
 		}
 
