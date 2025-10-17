@@ -16,8 +16,27 @@ export interface UsageStats {
 /**
  * Get current usage for a client
  */
-export async function getClientUsage(clientId: string): Promise<UsageStats> {
+export async function getClientUsage(companyId: string): Promise<UsageStats> {
   const today = new Date().toISOString().split('T')[0];
+
+  // First, get the client record for this company
+  const { data: clientData, error: clientError } = await supabase
+    .from('clients')
+    .select('id')
+    .eq('company_id', companyId)
+    .single();
+
+  if (clientError || !clientData) {
+    console.error('Client not found for company:', companyId);
+    return {
+      studentCount: 0,
+      formCount: 0,
+      aiInsightsToday: 0,
+      lastResetDate: today,
+    };
+  }
+
+  const clientId = clientData.id; // This is the actual UUID
 
   // Get student count
   const { count: studentCount } = await supabase
@@ -66,12 +85,12 @@ export async function getClientUsage(clientId: string): Promise<UsageStats> {
  * Check if client can perform action based on their tier limits
  */
 export async function checkLimit(
-  clientId: string,
+  companyId: string,
   tier: TierName,
   action: 'addStudent' | 'createForm' | 'generateInsight'
 ): Promise<{ allowed: boolean; reason?: string; current?: number; limit?: number }> {
   const tierData = getTier(tier);
-  const usage = await getClientUsage(clientId);
+  const usage = await getClientUsage(companyId);
 
   switch (action) {
     case 'addStudent':
@@ -119,10 +138,24 @@ export async function checkLimit(
  * Track an action (increment usage)
  */
 export async function trackAction(
-  clientId: string,
+  companyId: string,
   action: 'generateInsight'
 ): Promise<void> {
   if (action === 'generateInsight') {
+    // First, get the client record for this company
+    const { data: clientData, error: clientError } = await supabase
+      .from('clients')
+      .select('id')
+      .eq('company_id', companyId)
+      .single();
+
+    if (clientError || !clientData) {
+      console.error('Client not found for company:', companyId);
+      return;
+    }
+
+    const clientId = clientData.id; // This is the actual UUID
+
     // Create an AI run record (if ai_runs table exists)
     try {
       await supabase.from('ai_runs').insert({
@@ -141,7 +174,21 @@ export async function trackAction(
 /**
  * Clean up old insights based on tier history limits
  */
-export async function cleanupOldInsights(clientId: string, tier: TierName): Promise<number> {
+export async function cleanupOldInsights(companyId: string, tier: TierName): Promise<number> {
+  // First, get the client record for this company
+  const { data: clientData, error: clientError } = await supabase
+    .from('clients')
+    .select('id')
+    .eq('company_id', companyId)
+    .single();
+
+  if (clientError || !clientData) {
+    console.error('Client not found for company:', companyId);
+    return 0;
+  }
+
+  const clientId = clientData.id; // This is the actual UUID
+
   const tierData = getTier(tier);
   const cutoffDate = new Date();
   cutoffDate.setDate(cutoffDate.getDate() - tierData.limits.aiInsightsHistory);

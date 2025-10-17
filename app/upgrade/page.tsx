@@ -35,7 +35,7 @@ function UpgradeContent() {
 
   const fetchCurrentTier = async () => {
     try {
-      const res = await fetch('/api/usage/check');
+      const res = await fetch(`/api/usage/check?companyId=${clientId}`);
       const data = await res.json();
       setCurrentTier(data.tier || 'atom');
     } catch (error) {

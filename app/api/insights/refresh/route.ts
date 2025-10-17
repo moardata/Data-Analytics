@@ -6,17 +6,34 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getCompanyId } from '@/lib/auth/whop-auth';
 import { generateInsightsForClient } from '@/lib/utils/aiInsights';
+import { supabase } from '@/lib/supabase';
 
 export async function POST(request: NextRequest) {
   try {
-    const clientId = await getCompanyId(request);
+    const companyId = await getCompanyId(request);
     
-    if (!clientId) {
+    if (!companyId) {
       return NextResponse.json(
         { error: 'Unauthorized' },
         { status: 401 }
       );
     }
+
+    // First, get the client record for this company
+    const { data: clientData, error: clientError } = await supabase
+      .from('clients')
+      .select('id')
+      .eq('company_id', companyId)
+      .single();
+
+    if (clientError || !clientData) {
+      return NextResponse.json(
+        { error: 'Client not found for this company' },
+        { status: 404 }
+      );
+    }
+
+    const clientId = clientData.id; // This is the actual UUID
 
     // Generate new insights
     const insights = await generateInsightsForClient(clientId, 'week');

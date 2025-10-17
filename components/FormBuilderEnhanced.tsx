@@ -149,11 +149,15 @@ export default function FormBuilderEnhanced() {
   // Save handler with Supabase integration
   async function handleSave() {
     try {
+      // Get companyId from URL params or use default
+      const urlParams = new URLSearchParams(window.location.search);
+      const companyId = urlParams.get('companyId') || process.env.NEXT_PUBLIC_WHOP_COMPANY_ID;
+      
       const response = await fetch('/api/forms/create', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ 
-          clientId: '550e8400-e29b-41d4-a716-446655440000',
+          companyId: companyId,
           formData: draft 
         }),
       });
