@@ -58,6 +58,7 @@ function AnalyticsContent() {
   };
 
   const fetchData = async () => {
+    console.log('🚀 Starting fetchData with companyId:', companyId, 'range:', range);
     setLoading(true);
     setError(null);
     setAccessError(null);
@@ -92,7 +93,12 @@ function AnalyticsContent() {
       console.log('Adapted data:', adapted);
       setDashboardData(adapted);
     } catch (err) {
-      console.error('Error fetching dashboard data:', err);
+      console.error('❌ ERROR fetching dashboard data:', err);
+      console.error('❌ Error details:', {
+        message: err instanceof Error ? err.message : 'Unknown error',
+        stack: err instanceof Error ? err.stack : 'No stack trace',
+        type: typeof err
+      });
       setError(err instanceof Error ? err.message : 'Failed to load dashboard');
     } finally {
       setLoading(false);
