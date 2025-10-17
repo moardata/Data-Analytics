@@ -7,7 +7,6 @@
 
 import { Suspense, useState, useEffect } from 'react';
 import { useSearchParams } from 'next/navigation';
-import { supabase } from '@/lib/supabase';
 import RevenueDashboard from '@/components/RevenueDashboard';
 
 export const dynamic = 'force-dynamic';
@@ -25,31 +24,20 @@ function RevenueContent() {
 
   const fetchRevenue = async () => {
     try {
-      // First get the client record for this company
-      const { data: clientData } = await supabase
-        .from('clients')
-        .select('id')
-        .eq('company_id', clientId)
-        .single();
-
-      if (!clientData) {
-        console.log('No client found for company:', clientId);
+      const response = await fetch(`/api/revenue?companyId=${clientId}`);
+      
+      if (!response.ok) {
+        console.error('Failed to fetch revenue:', response.statusText);
         setRevenue([]);
         setLoading(false);
         return;
       }
 
-      // Now query events with the actual client UUID
-      const { data } = await supabase
-        .from('events')
-        .select('*')
-        .eq('client_id', clientData.id)
-        .eq('event_type', 'order')
-        .order('created_at', { ascending: false });
-      
-      setRevenue(data || []);
+      const data = await response.json();
+      setRevenue(data.revenue || []);
     } catch (error) {
       console.error('Error fetching revenue:', error);
+      setRevenue([]);
     } finally {
       setLoading(false);
     }
