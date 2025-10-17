@@ -143,3 +143,4 @@ lib/
 ## 📄 License
 
 MIT
+# Environment variables updated
