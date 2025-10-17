@@ -25,6 +25,7 @@ Create `.env.local` in your project root:
 # Supabase (REQUIRED)
 NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
 NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+SUPABASE_SERVICE_ROLE_KEY=your_supabase_service_role_key  # 🚨 CRITICAL - Get from Supabase Dashboard → Settings → API
 
 # Whop (REQUIRED)
 NEXT_PUBLIC_WHOP_APP_ID=your_whop_app_id

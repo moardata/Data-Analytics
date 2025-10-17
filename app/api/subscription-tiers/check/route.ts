@@ -7,7 +7,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getCompanyId } from '@/lib/auth/whop-auth';
 import { getTier } from '@/lib/pricing/tiers';
 import { getClientUsage } from '@/lib/pricing/usage-tracker';
-import { supabase } from '@/lib/supabase';
+import { supabaseServer as supabase } from '@/lib/supabase-server';
 
 export async function GET(request: NextRequest) {
   try {

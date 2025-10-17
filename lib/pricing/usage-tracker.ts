@@ -3,7 +3,7 @@
  * Tracks daily usage and enforces limits
  */
 
-import { supabase } from '@/lib/supabase';
+import { supabaseServer as supabase } from '@/lib/supabase-server';
 import { getTier, type TierName } from './tiers';
 
 export interface UsageStats {
