@@ -143,7 +143,7 @@ async function processTestWebhook(webhookData: any, companyId: string) {
   const { userId } = normalized;
 
   // Get or create client
-  const { data: clientData } = await supabase
+  let { data: clientData } = await supabase
     .from('clients')
     .select('id')
     .eq('company_id', companyId)
