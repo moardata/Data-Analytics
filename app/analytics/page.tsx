@@ -87,7 +87,9 @@ function AnalyticsContent() {
         setMissingPermissions([]);
       }
       
+      console.log('API Data received:', apiData);
       const adapted = adaptToCreatorAnalytics(apiData);
+      console.log('Adapted data:', adapted);
       setDashboardData(adapted);
     } catch (err) {
       console.error('Error fetching dashboard data:', err);
