@@ -7,7 +7,6 @@ import { headers } from 'next/headers';
 
 export interface WhopAuthResult {
   userId: string;
-  companyId: string;
   isAuthenticated: boolean;
 }
 
@@ -28,18 +27,8 @@ export async function getWhopAuth(): Promise<WhopAuthResult | null> {
       return null;
     }
 
-    // Get user info to extract company ID
-    const user = await whopSdk.users.getUser({ userId });
-    const companyId = user.company_id;
-
-    if (!companyId) {
-      console.log('User has no company ID');
-      return null;
-    }
-
     return {
       userId,
-      companyId,
       isAuthenticated: true,
     };
   } catch (error) {
@@ -50,7 +39,7 @@ export async function getWhopAuth(): Promise<WhopAuthResult | null> {
 
 /**
  * Validates that the request has proper Whop authentication
- * Returns the companyId if valid, throws error if not
+ * Returns the userId if valid, throws error if not
  */
 export async function requireWhopAuth(): Promise<string> {
   const auth = await getWhopAuth();
@@ -59,23 +48,36 @@ export async function requireWhopAuth(): Promise<string> {
     throw new Error('Unauthorized: No valid Whop authentication');
   }
   
-  return auth.companyId;
+  return auth.userId;
 }
 
 /**
- * Gets companyId from request - PRODUCTION ONLY
+ * Gets companyId from request URL parameters
+ * CompanyId is passed in via URL params when the Whop app is embedded
  */
 export async function getCompanyId(request: Request): Promise<string | null> {
-  const auth = await getWhopAuth();
-  
-  if (auth?.companyId) {
-    console.log('Using Whop auth companyId:', auth.companyId);
-    return auth.companyId;
+  try {
+    const url = new URL(request.url);
+    const companyId = url.searchParams.get('companyId');
+    
+    if (companyId) {
+      console.log('Using companyId from URL params:', companyId);
+      return companyId;
+    }
+    
+    // Fallback to environment variable for testing
+    const envCompanyId = process.env.NEXT_PUBLIC_WHOP_COMPANY_ID;
+    if (envCompanyId) {
+      console.log('Using companyId from environment:', envCompanyId);
+      return envCompanyId;
+    }
+    
+    console.log('No companyId found in URL params or environment');
+    return null;
+  } catch (error) {
+    console.error('Error getting companyId:', error);
+    return null;
   }
-  
-  // PRODUCTION: No fallbacks - require proper Whop authentication
-  console.log('No valid Whop authentication found');
-  return null;
 }
 
 
