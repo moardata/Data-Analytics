@@ -158,7 +158,7 @@ export async function POST(request: NextRequest) {
     console.log(`✅ Created ${students.length} students`);
 
     // 3. Create events
-    const eventTypes = ['signup', 'course_start', 'lesson_complete', 'form_submit', 'purchase'];
+    const eventTypes = ['order', 'subscription', 'activity', 'form_submission', 'custom'];
     const eventsCreated = [];
 
     for (const student of students) {
