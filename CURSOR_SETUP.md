@@ -9,9 +9,15 @@ Two files have been added to the repository to help maintain sync when working w
 
 ## How It Works
 
+<<<<<<< HEAD
 The `.cursorrules` file tells Cursor's AI assistant to:
 - **Before making changes**: Remind you to pull latest code
 - **After making changes**: Remind you to commit and push
+=======
+The .cursorrules file tells Cursor's AI assistant to:
+- Before making changes: Remind you to pull latest code
+- After making changes: Remind you to commit and push
+>>>>>>> b54bf6dcbde2c46be7c72929a090d485d2cced58
 
 This prevents conflicts when multiple developers (or AI assistants) are working on the same codebase.
 
@@ -19,13 +25,21 @@ This prevents conflicts when multiple developers (or AI assistants) are working 
 
 ### Step 1: Clone/Pull the Repository
 ```bash
+<<<<<<< HEAD
 git clone <your-repo-url>
+=======
+git clone https://github.com/moardata/Data-Analytics.git
+>>>>>>> b54bf6dcbde2c46be7c72929a090d485d2cced58
 # OR if you already have it
 git pull
 ```
 
 ### Step 2: That's It!
+<<<<<<< HEAD
 The `.cursorrules` file is automatically recognized by Cursor. No additional configuration needed.
+=======
+The .cursorrules file is automatically recognized by Cursor. No additional configuration needed.
+>>>>>>> b54bf6dcbde2c46be7c72929a090d485d2cced58
 
 ## Daily Workflow
 
@@ -62,11 +76,19 @@ bash .cursor/rules/git-sync.sh
 
 ## Best Practices
 
+<<<<<<< HEAD
 1. **Always pull** before starting work
 2. **Commit frequently** with clear messages
 3. **Push your changes** when done
 4. **Communicate** with your team about major changes
 5. **If you see conflicts**, resolve them before continuing
+=======
+1. Always pull before starting work
+2. Commit frequently with clear messages
+3. Push your changes when done
+4. Communicate with your team about major changes
+5. If you see conflicts, resolve them before continuing
+>>>>>>> b54bf6dcbde2c46be7c72929a090d485d2cced58
 
 ## Troubleshooting
 

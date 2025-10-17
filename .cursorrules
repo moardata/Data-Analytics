@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Cursor AI Rules for Team Collaboration
 
 ## Git Sync Reminders
@@ -28,4 +29,44 @@ Multiple developers (and AI assistants) working on the same codebase can create 
 4. Communicate with your team
 
 This ensures everyone stays in sync! 🔄
+=======
+# Cursor AI Rules for Git Sync
+
+## Git Workflow Reminders
+
+When working with this repository, always follow these practices to maintain sync:
+
+### Before Making Code Changes
+- Remind the user to run `git pull` to get the latest changes
+- Check if there are uncommitted changes that might cause conflicts
+
+### After Making Code Changes
+- Remind the user to commit their changes with `git add . && git commit -m "description"`
+- Remind the user to push their changes with `git push`
+- Encourage clear, descriptive commit messages
+
+### Multi-Developer Context
+- This repository has multiple developers working on it
+- Always pull before making changes to avoid conflicts
+- Always push after completing changes to keep team in sync
+- If conflicts arise, help resolve them before continuing
+
+### Best Practices
+- Commit frequently with small, focused changes
+- Use clear commit messages that describe what changed
+- Communicate with team members about major changes
+- Pull at the start of each work session
+- Push at the end of each work session
+
+## Implementation
+
+Before any code modifications:
+- Display: "⚠️ Reminder: Run `git pull` to get latest changes before we begin."
+
+After any code modifications:
+- Display: "✅ Changes complete! Remember to:"
+- Display: "   1. `git add .`"
+- Display: "   2. `git commit -m 'your description'`"
+- Display: "   3. `git push`"
+>>>>>>> b54bf6dcbde2c46be7c72929a090d485d2cced58
 
