@@ -457,10 +457,10 @@ export async function POST(request: NextRequest) {
 
     console.log(`✅ Created ${formSubmissionsCreated.length} form submissions`);
 
-    // 7. Create AI insights
+    // 7. Create AI insights (using valid insight_type values)
     const insights = [
       {
-        type: 'engagement',
+        type: 'trend',
         title: 'Strong Student Engagement Detected',
         content: `🎓 Excellent news! Your community of ${students.length} students shows strong engagement with 70% actively participating in the last week. This is ${students.length > 100 ? 'significantly' : 'well'} above industry average.`,
         recommendations: [
@@ -469,6 +469,7 @@ export async function POST(request: NextRequest) {
           'Create exclusive community spaces for top performers',
         ],
         confidence: 0.88,
+        severity: 'info',
       },
       {
         type: 'weekly_summary',
@@ -480,6 +481,7 @@ export async function POST(request: NextRequest) {
           'Launch time-limited upgrade promotions for existing members',
         ],
         confidence: 0.82,
+        severity: 'info',
       },
       {
         type: 'recommendation',
@@ -491,6 +493,19 @@ export async function POST(request: NextRequest) {
           'Create a student success stories section to boost social proof',
         ],
         confidence: 0.79,
+        severity: 'info',
+      },
+      {
+        type: 'alert',
+        title: 'High Satisfaction Score - Upsell Opportunity',
+        content: `⭐ Your students are extremely satisfied (4.5/5 average rating). This is the perfect time to introduce premium offerings or exclusive content tiers.`,
+        recommendations: [
+          'Launch a premium tier with exclusive content and direct access',
+          'Create a VIP community for top-performing students',
+          'Offer early access to new courses as an upsell incentive',
+        ],
+        confidence: 0.85,
+        severity: 'success',
       }
     ];
 
@@ -500,18 +515,22 @@ export async function POST(request: NextRequest) {
       const insightsTable = await supabase.from('insights');
       const { data: insight, error: insightError } = await insightsTable.insert({
         client_id: clientId,
-        insight_type: insightData.type as any,
+        insight_type: insightData.type,
         title: insightData.title,
         content: insightData.content,
+        severity: insightData.severity,
         metadata: { 
           recommendations: insightData.recommendations,
           confidence: insightData.confidence,
           test_data: true
         },
+        dismissed: false,
         created_at: new Date().toISOString(),
       });
 
-      if (!insightError && insight) {
+      if (insightError) {
+        console.error('Error creating insight:', insightError);
+      } else if (insight) {
         createdInsights.push(insight[0]);
       }
     }
