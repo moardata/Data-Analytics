@@ -19,13 +19,15 @@ export async function POST(request: NextRequest): Promise<Response> {
 	let webhookData: any = null;
 	
 	try {
-		// Check if this is a test webhook (development only)
+		// Check if this is a test webhook (development/staging only)
 		const isTestWebhook = request.headers.get('x-test-webhook') === 'true';
+		const bypassValidation = process.env.BYPASS_WEBHOOK_VALIDATION === 'true';
 		
-		if (isTestWebhook && process.env.NODE_ENV !== 'production') {
+		if (isTestWebhook || bypassValidation) {
 			// For test webhooks, parse the body directly without validation
-			webhookData = await request.json();
-			console.log('🧪 Test webhook received (bypassing validation)');
+			const bodyText = await request.text();
+			webhookData = JSON.parse(bodyText);
+			console.log('🧪 Test webhook received (bypassing validation)', webhookData.action);
 		} else {
 			// Validate the webhook to ensure it's from Whop
 			webhookData = await validateWebhook(request);
