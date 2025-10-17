@@ -55,11 +55,10 @@ export const PRICING_TIERS: Record<TierName, PricingTier> = {
       customBranding: false,
     },
     features: [
-      'Up to 20 students',
-      '1 AI insight per day',
-      '2 custom forms',
-      'Basic analytics',
-      '7-day insight history',
+      '1 daily insight (aggregated)',
+      'Basic webhooks + form data',
+      '7-day retention window',
+      'Community support only',
     ],
   },
 
@@ -81,12 +80,10 @@ export const PRICING_TIERS: Record<TierName, PricingTier> = {
       customBranding: false,
     },
     features: [
-      'Up to 200 students',
-      '5 AI insights per day',
-      '10 custom forms',
-      'Basic analytics',
-      'CSV/PDF exports',
-      '30-day insight history',
+      '5 daily insights + sentiment',
+      'Engagement + survey + sales data',
+      'CSV export',
+      '30-day retention window',
       'Email support',
     ],
   },
@@ -100,7 +97,7 @@ export const PRICING_TIERS: Record<TierName, PricingTier> = {
     limits: {
       maxStudents: 2000, // Medium-large communities
       maxForms: 50,
-      aiInsightsPerDay: 20,
+      aiInsightsPerDay: 10,
       aiInsightsHistory: 90, // Keep insights for 3 months
       dataExport: true,
       advancedAnalytics: true,
@@ -109,13 +106,11 @@ export const PRICING_TIERS: Record<TierName, PricingTier> = {
       customBranding: false,
     },
     features: [
-      'Up to 2,000 students',
-      '20 AI insights per day',
-      '50 custom forms',
-      'Advanced analytics',
-      'CSV/PDF exports',
-      '90-day insight history',
-      'Email support',
+      '10 daily AI insights + trend charting',
+      'All webhooks + form history',
+      'CSV / PDF export',
+      '90-day retention window',
+      'Priority chat support',
     ],
   },
 
@@ -128,7 +123,7 @@ export const PRICING_TIERS: Record<TierName, PricingTier> = {
     limits: {
       maxStudents: 10000, // Large communities
       maxForms: 100,
-      aiInsightsPerDay: 50,
+      aiInsightsPerDay: 25,
       aiInsightsHistory: 180, // Keep insights for 6 months
       dataExport: true,
       advancedAnalytics: true,
@@ -137,14 +132,11 @@ export const PRICING_TIERS: Record<TierName, PricingTier> = {
       customBranding: true,
     },
     features: [
-      'Up to 10,000 students',
-      '50 AI insights per day',
-      '100 custom forms',
-      'Advanced analytics',
-      'CSV/PDF exports',
-      '180-day insight history',
-      'Priority support',
-      'Custom branding',
+      '25 AI insights + forecasting + cluster segmentation',
+      'Real-time student feed',
+      'CSV / PDF / API export',
+      '180-day retention window',
+      'Priority support + branding',
     ],
   },
 
@@ -157,7 +149,7 @@ export const PRICING_TIERS: Record<TierName, PricingTier> = {
     limits: {
       maxStudents: 100000, // Mega communities
       maxForms: 500,
-      aiInsightsPerDay: 200,
+      aiInsightsPerDay: 999, // Unlimited custom LLM insights
       aiInsightsHistory: 365, // Keep insights for 1 year
       dataExport: true,
       advancedAnalytics: true,
@@ -166,15 +158,11 @@ export const PRICING_TIERS: Record<TierName, PricingTier> = {
       customBranding: true,
     },
     features: [
-      'Up to 100,000 students',
-      '200 AI insights per day',
-      '500 custom forms',
-      'Advanced analytics',
-      'CSV/PDF exports',
-      '365-day insight history',
-      'Priority support',
-      'Custom branding',
-      'Dedicated account manager',
+      'Custom LLM fine-tuned insights + multi-account',
+      'Cross-community analytics',
+      'Full API + data stream export',
+      '365-day retention window',
+      'Dedicated manager support',
     ],
   },
 };

@@ -11,41 +11,108 @@ export interface BundleInfo {
   bundle: string;
   displayName: string;
   description: string;
+  features: {
+    aiFeatures: string[];
+    dataCollection: string[];
+    exportIntegration: string[];
+    retentionWindow: string;
+    support: string;
+  };
+  pricing: {
+    monthly: number;
+    currency: string;
+  };
 }
 
 /**
  * Map Whop plan IDs to bundle information
+ * Based on your tier features table
  */
 export const PLAN_TO_BUNDLE: Record<string, BundleInfo> = {
   'plan_gDIQ1ypIFaZoQ': { 
     tier: 'free', 
     bundle: 'atom', 
     displayName: 'Atom',
-    description: 'Free tier with basic features'
+    description: 'Free tier with basic analytics',
+    features: {
+      aiFeatures: ['1 daily insight (aggregated)'],
+      dataCollection: ['Basic webhooks + form data'],
+      exportIntegration: ['None'],
+      retentionWindow: '7 days',
+      support: 'Community only'
+    },
+    pricing: {
+      monthly: 0,
+      currency: 'USD'
+    }
   },
   'plan_hnYnLn6egXRis': { 
     tier: 'pro', 
     bundle: 'core', 
     displayName: 'Core',
-    description: '$20/month - Professional features'
+    description: 'Starter tier for growing creators',
+    features: {
+      aiFeatures: ['5 daily insights + sentiment'],
+      dataCollection: ['Engagement + survey + sales data'],
+      exportIntegration: ['CSV export'],
+      retentionWindow: '30 days',
+      support: 'Email'
+    },
+    pricing: {
+      monthly: 20,
+      currency: 'USD'
+    }
   },
   'plan_OvGPVPXu6sarv': { 
     tier: 'pro', 
     bundle: 'pulse', 
     displayName: 'Pulse',
-    description: '$100/month - Advanced analytics'
+    description: 'Growth tier with advanced analytics',
+    features: {
+      aiFeatures: ['10 daily AI insights + trend charting'],
+      dataCollection: ['All webhooks + form history'],
+      exportIntegration: ['CSV / PDF'],
+      retentionWindow: '90 days',
+      support: 'Priority chat'
+    },
+    pricing: {
+      monthly: 100,
+      currency: 'USD'
+    }
   },
   'plan_YWwjHKXiWT6vq': { 
     tier: 'premium', 
     bundle: 'surge', 
     displayName: 'Surge',
-    description: '$200/month - Premium features'
+    description: 'Professional tier with API access',
+    features: {
+      aiFeatures: ['25 AI insights + forecasting + cluster segmentation'],
+      dataCollection: ['Real-time student feed'],
+      exportIntegration: ['CSV / PDF / API'],
+      retentionWindow: '180 days',
+      support: 'Priority + branding'
+    },
+    pricing: {
+      monthly: 200,
+      currency: 'USD'
+    }
   },
   'plan_BcSpDXIeGcklw': { 
     tier: 'premium', 
     bundle: 'quantum', 
     displayName: 'Quantum',
-    description: '$400/month - Enterprise features'
+    description: 'Enterprise tier with custom AI',
+    features: {
+      aiFeatures: ['Custom LLM fine-tuned insights + multi-account'],
+      dataCollection: ['Cross-community analytics'],
+      exportIntegration: ['Full API + data stream'],
+      retentionWindow: '365 days',
+      support: 'Dedicated manager'
+    },
+    pricing: {
+      monthly: 400,
+      currency: 'USD'
+    }
   },
 };
 
@@ -57,7 +124,18 @@ export function getBundleInfo(planId: string): BundleInfo {
     tier: 'free',
     bundle: 'atom',
     displayName: 'Atom',
-    description: 'Free tier with basic features'
+    description: 'Free tier with basic analytics',
+    features: {
+      aiFeatures: ['1 daily insight (aggregated)'],
+      dataCollection: ['Basic webhooks + form data'],
+      exportIntegration: ['None'],
+      retentionWindow: '7 days',
+      support: 'Community only'
+    },
+    pricing: {
+      monthly: 0,
+      currency: 'USD'
+    }
   };
 }
 
