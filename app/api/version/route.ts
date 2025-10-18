@@ -5,7 +5,7 @@ export async function GET() {
   const keyLength = process.env.SUPABASE_SERVICE_ROLE_KEY?.length || 0;
   
   return NextResponse.json({
-    version: 'v7-no-validation',
+    version: 'v9-force-redeploy',
     timestamp: new Date().toISOString(),
     webhookConfig: {
       validationEnabled: false,
