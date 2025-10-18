@@ -92,26 +92,9 @@ export async function getCompanyId(request: Request): Promise<string | null> {
       }
     }
     
-    // Try to get companyId from Whop SDK user context
-    try {
-      const { whopSdk } = await import('@/lib/whop-sdk');
-      const authResult = await whopSdk.verifyUserToken(headersList);
-      
-      if (authResult.userId) {
-        // Get user's company memberships to determine which company they're accessing from
-        const userCompanies = await whopSdk.access.getUserCompanies({ userId: authResult.userId });
-        
-        if (userCompanies && userCompanies.length > 0) {
-          // For now, use the first company (in production, you might need to determine which one)
-          // This is a limitation - we need to know which specific company context the user is in
-          const companyId = userCompanies[0].id;
-          console.log('Using companyId from user companies:', companyId);
-          return companyId;
-        }
-      }
-    } catch (sdkError) {
-      console.log('Could not get companyId from Whop SDK:', sdkError);
-    }
+    // Note: We cannot get companyId from Whop SDK user context alone
+    // The SDK doesn't provide a method to list user's companies
+    // We rely on URL parameters, headers, or referer URL instead
     
     // Fallback to environment variable for testing (but this should be different per group)
     const envCompanyId = process.env.NEXT_PUBLIC_WHOP_COMPANY_ID;
