@@ -5,6 +5,7 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { supabaseServer as supabase } from '@/lib/supabase-server';
+import { requireAdminAccess } from '@/lib/auth/whop-auth-unified';
 
 export async function POST(request: NextRequest) {
   try {
@@ -80,16 +81,12 @@ export async function POST(request: NextRequest) {
 
 export async function GET(request: NextRequest) {
   try {
-    const { searchParams } = new URL(request.url);
-    const companyId = searchParams.get('companyId') || searchParams.get('clientId');
-    const formId = searchParams.get('formId');
+    // SECURITY: Require admin access - don't trust client-passed companyId
+    const auth = await requireAdminAccess({ request });
+    const companyId = auth.companyId; // Server-validated company ID
 
-    if (!companyId) {
-      return NextResponse.json(
-        { error: 'Company ID is required' },
-        { status: 400 }
-      );
-    }
+    const { searchParams } = new URL(request.url);
+    const formId = searchParams.get('formId');
 
     // First, get the client record for this company
     const { data: clientData, error: clientError } = await supabase
