@@ -5,7 +5,7 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { supabaseServer as supabase } from '@/lib/supabase-server';
-import { getCompanyId } from '@/lib/auth/whop-auth';
+import { requireCompanyAccess } from '@/lib/auth/whop-auth-unified';
 
 // CORS headers
 const corsHeaders = {
@@ -20,33 +20,9 @@ export async function OPTIONS() {
 
 export async function GET(request: NextRequest) {
   try {
-    const { searchParams } = new URL(request.url);
-    
-    // Check for development bypass
-    const bypassAuth = process.env.BYPASS_WHOP_AUTH === 'true';
-    
-    let companyId: string | null = null;
-    
-    if (bypassAuth) {
-      // Development bypass mode - but still require companyId
-      companyId = searchParams.get('companyId');
-      if (!companyId) {
-        return NextResponse.json(
-          { error: 'companyId parameter required in bypass mode' },
-          { status: 400, headers: corsHeaders }
-        );
-      }
-      console.log('⚠️ Development bypass mode - using companyId:', companyId);
-    } else {
-      companyId = await getCompanyId(request);
-    }
-    
-    if (!companyId) {
-      return NextResponse.json(
-        { error: 'Missing companyId parameter' },
-        { status: 400, headers: corsHeaders }
-      );
-    }
+    // Use unified authentication
+    const auth = await requireCompanyAccess({ request });
+    const companyId = auth.companyId;
 
     // Get client record
     const { data: clientData, error: clientError } = await supabase

@@ -4,18 +4,12 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { getCompanyId } from '@/lib/auth/whop-auth';
+import { requireCompanyAccess } from '@/lib/auth/whop-auth-unified';
 
 export async function GET(request: NextRequest) {
   try {
-    const companyId = await getCompanyId(request);
-    
-    if (!companyId) {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
-      );
-    }
+    const auth = await requireCompanyAccess({ request });
+    const companyId = auth.companyId;
 
     const whopApiKey = process.env.WHOP_API_KEY;
     

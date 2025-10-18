@@ -4,12 +4,9 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { headers } from 'next/headers';
 import { supabaseServer as supabase } from '@/lib/supabase-server';
 import { format, subDays } from 'date-fns';
-import { getCompanyId } from '@/lib/auth/whop-auth';
-import { whopSdk } from '@/lib/whop-sdk';
-import { getCompanyIdFromRequestSimple, requireSimpleAuth } from '@/lib/auth/whop-auth-simple';
+import { requireCompanyAccess } from '@/lib/auth/whop-auth-unified';
 
 // Add CORS headers for iframe compatibility
 const corsHeaders = {
@@ -28,11 +25,11 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url);
     const timeRange = searchParams.get('timeRange') || 'week';
 
-    // Use simple authentication that actually works
-    const authResult = await requireSimpleAuth(request);
-    const { companyId, userId } = authResult;
+    // Use unified authentication system
+    const auth = await requireCompanyAccess({ request });
+    const { companyId, userId } = auth;
     
-    console.log('✅ Simple auth successful:', { userId, companyId });
+    console.log('✅ Auth successful:', { userId, companyId, accessLevel: auth.accessLevel });
 
     // Calculate date range
     const days = timeRange === 'week' ? 7 : timeRange === 'month' ? 30 : 90;

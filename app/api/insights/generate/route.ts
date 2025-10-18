@@ -6,7 +6,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { generateInsightsForClient, detectAnomalies } from '@/lib/utils/aiInsights';
 import { supabaseServer as supabase } from '@/lib/supabase-server';
-import { getCompanyId } from '@/lib/auth/whop-auth';
+import { requireAdminAccess } from '@/lib/auth/whop-auth-unified';
 
 // CORS headers
 const corsHeaders = {
@@ -21,34 +21,9 @@ export async function OPTIONS() {
 
 export async function POST(request: NextRequest) {
   try {
-    const { searchParams } = new URL(request.url);
-    
-    // Check for development bypass
-    const bypassAuth = process.env.BYPASS_WHOP_AUTH === 'true';
-    
-    let companyId: string | null = null;
-    
-    if (bypassAuth) {
-      // Development bypass mode - but still require companyId
-      companyId = searchParams.get('companyId');
-      if (!companyId) {
-        return NextResponse.json(
-          { error: 'companyId parameter required in bypass mode' },
-          { status: 400, headers: corsHeaders }
-        );
-      }
-      console.log('⚠️ Development bypass mode - using companyId:', companyId);
-    } else {
-      // Production: Get companyId from Whop auth
-      companyId = await getCompanyId(request);
-    }
-    
-    if (!companyId) {
-      return NextResponse.json(
-        { error: 'Unauthorized - No valid Whop authentication' },
-        { status: 401, headers: corsHeaders }
-      );
-    }
+    // Require admin access for generating insights (uses AI credits/costs money)
+    const auth = await requireAdminAccess({ request });
+    const companyId = auth.companyId;
 
     // First, get the client record for this company
     const { data: clientData, error: clientError } = await supabase
@@ -137,34 +112,9 @@ export async function POST(request: NextRequest) {
 
 export async function GET(request: NextRequest) {
   try {
-    const { searchParams } = new URL(request.url);
-    
-    // Check for development bypass
-    const bypassAuth = process.env.BYPASS_WHOP_AUTH === 'true';
-    
-    let companyId: string | null = null;
-    
-    if (bypassAuth) {
-      // Development bypass mode - but still require companyId
-      companyId = searchParams.get('companyId');
-      if (!companyId) {
-        return NextResponse.json(
-          { error: 'companyId parameter required in bypass mode' },
-          { status: 400, headers: corsHeaders }
-        );
-      }
-      console.log('⚠️ Development bypass mode - using companyId:', companyId);
-    } else {
-      // Production: Get companyId from Whop auth
-      companyId = await getCompanyId(request);
-    }
-    
-    if (!companyId) {
-      return NextResponse.json(
-        { error: 'Unauthorized - No valid Whop authentication' },
-        { status: 401, headers: corsHeaders }
-      );
-    }
+    // Use unified authentication
+    const auth = await requireCompanyAccess({ request });
+    const companyId = auth.companyId;
 
     // First, get the client record for this company
     const { data: clientData, error: clientError } = await supabase

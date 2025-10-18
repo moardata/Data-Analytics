@@ -153,21 +153,29 @@ export class WhopMCPServer {
   // Tool implementations
   private async getCompanyInfo(params: { companyId: string }) {
     try {
-      // Use the Whop SDK to get company information
+      // Use Whop SDK to get company information
       const companySdk = whopSdk.withCompany(params.companyId);
       
-      // Note: This would require the actual Whop SDK methods
-      // For now, return mock data structure
+      // Fetch company data using Whop API
+      const response = await fetch(
+        `https://api.whop.com/api/v5/companies/${params.companyId}`,
+        {
+          headers: {
+            'Authorization': `Bearer ${process.env.WHOP_API_KEY}`,
+            'Content-Type': 'application/json'
+          }
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}: ${await response.text()}`);
+      }
+
+      const companyData = await response.json();
+      
       return {
         success: true,
-        data: {
-          id: params.companyId,
-          name: `Company ${params.companyId}`,
-          description: 'Company description',
-          members_count: 0,
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString()
-        }
+        data: companyData
       };
     } catch (error) {
       return {
@@ -220,18 +228,31 @@ export class WhopMCPServer {
 
   private async getCompanyAnalytics(params: { companyId: string; dateRange?: string }) {
     try {
-      // This would integrate with your existing analytics system
+      // Fetch analytics from your own API endpoint
+      const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
+      const timeRange = params.dateRange === '7d' ? 'week' : params.dateRange === '90d' ? 'quarter' : 'month';
+      
+      const response = await fetch(
+        `${baseUrl}/api/analytics/metrics?companyId=${params.companyId}&timeRange=${timeRange}`,
+        {
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error(`Failed to fetch analytics: ${response.status}`);
+      }
+
+      const analyticsData = await response.json();
+      
       return {
         success: true,
         data: {
           companyId: params.companyId,
           dateRange: params.dateRange || '30d',
-          metrics: {
-            totalMembers: 0,
-            activeMembers: 0,
-            revenue: 0,
-            growth: 0
-          },
+          metrics: analyticsData,
           generated_at: new Date().toISOString()
         }
       };
@@ -245,17 +266,33 @@ export class WhopMCPServer {
 
   private async createWebhook(params: { companyId: string; url: string; events: string[] }) {
     try {
-      // This would create a webhook using Whop's API
+      // Create webhook using Whop SDK
+      const response = await fetch(
+        'https://api.whop.com/api/v5/webhooks',
+        {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${process.env.WHOP_API_KEY}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            url: params.url,
+            events: params.events,
+            enabled: true,
+            api_version: 'v5'
+          })
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}: ${await response.text()}`);
+      }
+
+      const webhookData = await response.json();
+      
       return {
         success: true,
-        data: {
-          id: `webhook_${Date.now()}`,
-          companyId: params.companyId,
-          url: params.url,
-          events: params.events,
-          status: 'active',
-          created_at: new Date().toISOString()
-        }
+        data: webhookData
       };
     } catch (error) {
       return {

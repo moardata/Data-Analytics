@@ -4,20 +4,14 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { getCompanyId } from '@/lib/auth/whop-auth';
+import { requireAdminAccess } from '@/lib/auth/whop-auth-unified';
 import { generateInsightsForClient } from '@/lib/utils/aiInsights';
 import { supabaseServer as supabase } from '@/lib/supabase-server';
 
 export async function POST(request: NextRequest) {
   try {
-    const companyId = await getCompanyId(request);
-    
-    if (!companyId) {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
-      );
-    }
+    const auth = await requireAdminAccess({ request });
+    const companyId = auth.companyId;
 
     // First, get the client record for this company
     const { data: clientData, error: clientError } = await supabase

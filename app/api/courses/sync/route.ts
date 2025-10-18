@@ -5,18 +5,13 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { supabaseServer as supabase } from '@/lib/supabase-server';
-import { getCompanyId } from '@/lib/auth/whop-auth';
+import { requireAdminAccess } from '@/lib/auth/whop-auth-unified';
 
 export async function POST(request: NextRequest) {
   try {
-    const companyId = await getCompanyId(request);
-    
-    if (!companyId) {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
-      );
-    }
+    // Require admin access for syncing courses
+    const auth = await requireAdminAccess({ request });
+    const companyId = auth.companyId;
 
     // Get client record
     const { data: clientData, error: clientError } = await supabase

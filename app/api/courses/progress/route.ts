@@ -5,21 +5,15 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { supabaseServer as supabase } from '@/lib/supabase-server';
-import { getCompanyId } from '@/lib/auth/whop-auth';
+import { requireCompanyAccess, getCompanyIdFromRequest } from '@/lib/auth/whop-auth-unified';
 
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
-    const companyId = searchParams.get('companyId') || await getCompanyId(request);
+    const auth = await requireCompanyAccess({ request });
+    const companyId = auth.companyId;
     const courseId = searchParams.get('courseId');
     const entityId = searchParams.get('entityId'); // specific member
-    
-    if (!companyId) {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
-      );
-    }
 
     // Get client record
     const { data: clientData, error: clientError } = await supabase

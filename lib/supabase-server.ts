@@ -13,13 +13,15 @@ function getSupabaseServer(): SupabaseClient {
   // Get env vars at runtime, not at module load time
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
   
-  // Try multiple env var names, then fall back to hardcoded key as last resort
+  // Try multiple env var names
   const supabaseServiceKey = 
-    process.env.SUPABASE_SECRET_KEY ||
     process.env.SUPABASE_SERVICE_ROLE_KEY ||
-    process.env.SUPABASE_KEY ||
-    // TEMPORARY WORKAROUND: Hardcoded key since Vercel blocks SERVICE_ROLE env vars
-    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJkbGxidGVwcHJzZmtiZXdxY3dqIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2MDE2NjQ5NiwiZXhwIjoyMDc1NzQyNDk2fQ.fzE4SymiGkPXBOGx95BNleFSyfysGF3NJAjQ___dxrw';
+    process.env.SUPABASE_SECRET_KEY ||
+    process.env.SUPABASE_KEY;
+
+  if (!supabaseUrl || !supabaseServiceKey) {
+    throw new Error('Missing required Supabase environment variables. Set NEXT_PUBLIC_SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY in your environment.');
+  }
 
   // Enhanced logging for debugging
   console.log('🔍 Supabase Server Init Check:', {

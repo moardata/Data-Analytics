@@ -1,20 +1,19 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabaseServer as supabase } from '@/lib/supabase-server';
-import { whopSdk } from '@/lib/whop-sdk';
-import { headers } from 'next/headers';
-import { getCompanyIdFromRequestSimple, requireSimpleAuth } from '@/lib/auth/whop-auth-simple';
+import { requireAdminAccess } from '@/lib/auth/whop-auth-unified';
 
 /**
  * Sync existing students from Whop to the app
  * This imports students that existed before the app was installed
+ * REQUIRES: Admin or owner access
  */
 export async function POST(request: NextRequest) {
   try {
-    // Use simple authentication that actually works
-    const authResult = await requireSimpleAuth(request);
-    const { companyId } = authResult;
+    // Require admin access for syncing students
+    const auth = await requireAdminAccess({ request });
+    const { companyId } = auth;
     
-    console.log('✅ Sync auth successful:', { companyId });
+    console.log('✅ Sync auth successful (admin):', { companyId, userId: auth.userId });
 
     console.log('🔄 Syncing students for company:', companyId);
 

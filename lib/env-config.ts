@@ -9,12 +9,18 @@
 
 // Try multiple possible environment variable names
 export const SUPABASE_SERVICE_KEY = 
-  process.env.SUPABASE_SECRET_KEY ||
   process.env.SUPABASE_SERVICE_ROLE_KEY ||
-  process.env.SUPABASE_KEY ||
-  // Fallback: Use the key directly as last resort
-  // TODO: Remove this once Vercel env vars are working
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJkbGxidGVwcHJzZmtiZXdxY3dqIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2MDE2NjQ5NiwiZXhwIjoyMDc1NzQyNDk2fQ.fzE4SymiGkPXBOGx95BNleFSyfysGF3NJAjQ___dxrw';
+  process.env.SUPABASE_SECRET_KEY ||
+  process.env.SUPABASE_KEY;
 
-export const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
+export const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL;
+
+// Validate that required env vars are set
+if (!SUPABASE_SERVICE_KEY) {
+  console.error('❌ SUPABASE_SERVICE_ROLE_KEY not found in environment variables');
+}
+
+if (!SUPABASE_URL) {
+  console.error('❌ NEXT_PUBLIC_SUPABASE_URL not found in environment variables');
+}
 
