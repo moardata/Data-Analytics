@@ -25,18 +25,16 @@ export async function GET(request: NextRequest) {
     }
     
     // 3. Try to get from referer URL
-    if (!companyId) {
-      const referer = headersList.get('referer');
-      if (referer) {
-        try {
-          const refererUrl = new URL(referer);
-          companyId = refererUrl.searchParams.get('companyId') || 
-                     refererUrl.searchParams.get('company_id') ||
-                     refererUrl.pathname.match(/\/company\/([^\/]+)/)?.[1] ||
-                     null;
-        } catch (error) {
-          console.log('Error parsing referer:', error);
-        }
+    const referer = headersList.get('referer');
+    if (!companyId && referer) {
+      try {
+        const refererUrl = new URL(referer);
+        companyId = refererUrl.searchParams.get('companyId') || 
+                   refererUrl.searchParams.get('company_id') ||
+                   refererUrl.pathname.match(/\/company\/([^\/]+)/)?.[1] ||
+                   null;
+      } catch (error) {
+        console.log('Error parsing referer:', error);
       }
     }
     
