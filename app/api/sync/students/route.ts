@@ -50,7 +50,7 @@ export async function POST(request: NextRequest) {
 
     // Use Whop SDK to get company members
     try {
-      const companySdk = whopSdk.withCompany({ companyId });
+      const companySdk = whopSdk.withCompany(companyId);
       
       // Get all memberships for this company
       const memberships = await companySdk.memberships.list({
