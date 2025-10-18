@@ -46,8 +46,23 @@ export async function GET() {
       k.includes('OPENAI')
     ),
     
+    // Check for common typos/variations
+    supabaseRelatedKeys: Object.keys(process.env).filter(k => 
+      k.toLowerCase().includes('supabase') || 
+      k.toLowerCase().includes('service') ||
+      k.toLowerCase().includes('role')
+    ),
+    lookingForExactly: 'SUPABASE_SERVICE_ROLE_KEY',
+    
+    deploymentInfo: {
+      vercelEnv: process.env.VERCEL_ENV,
+      nodeEnv: process.env.NODE_ENV,
+      vercelUrl: process.env.VERCEL_URL,
+      region: process.env.VERCEL_REGION,
+    },
+    
     timestamp: new Date().toISOString(),
-    version: 'v7-no-validation',
+    version: 'v8-env-debug',
   };
 
   return NextResponse.json(envCheck);
