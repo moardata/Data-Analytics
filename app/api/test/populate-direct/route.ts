@@ -33,10 +33,23 @@ export async function POST(request: NextRequest) {
     // Create client with direct fetch approach
     const createClient = async () => {
       return {
-        async from(table: string) {
+        from(table: string) {
+          let query = `${supabaseUrl}/rest/v1/${table}`;
+          let filters: string[] = [];
+          
           return {
+            select(columns = '*') {
+              query += `?select=${columns}`;
+              return this;
+            },
+            
+            eq(column: string, value: any) {
+              filters.push(`${column}=eq.${value}`);
+              return this;
+            },
+            
             async insert(data: any) {
-              const response = await fetch(`${supabaseUrl}/rest/v1/${table}`, {
+              const response = await fetch(query, {
                 method: 'POST',
                 headers: {
                   'Content-Type': 'application/json',
@@ -54,35 +67,28 @@ export async function POST(request: NextRequest) {
               return { data: await response.json(), error: null };
             },
             
-            async select(columns = '*') {
-              const response = await fetch(`${supabaseUrl}/rest/v1/${table}?select=${columns}`, {
-                headers: {
-                  'Authorization': `Bearer ${supabaseKey}`,
-                  'apikey': supabaseKey
+            async then(resolve: any, reject: any) {
+              try {
+                const fullQuery = filters.length > 0 
+                  ? `${query}${query.includes('?') ? '&' : '?'}${filters.join('&')}`
+                  : query;
+                  
+                const response = await fetch(fullQuery, {
+                  headers: {
+                    'Authorization': `Bearer ${supabaseKey}`,
+                    'apikey': supabaseKey
+                  }
+                });
+                
+                if (!response.ok) {
+                  throw new Error(`HTTP ${response.status}: ${await response.text()}`);
                 }
-              });
-              
-              if (!response.ok) {
-                throw new Error(`HTTP ${response.status}: ${await response.text()}`);
+                
+                const data = await response.json();
+                resolve({ data, error: null });
+              } catch (error) {
+                reject(error);
               }
-              
-              return { data: await response.json(), error: null };
-            },
-            
-            async single() {
-              const response = await fetch(`${supabaseUrl}/rest/v1/${table}?limit=1`, {
-                headers: {
-                  'Authorization': `Bearer ${supabaseKey}`,
-                  'apikey': supabaseKey
-                }
-              });
-              
-              if (!response.ok) {
-                throw new Error(`HTTP ${response.status}: ${await response.text()}`);
-              }
-              
-              const data = await response.json();
-              return { data: data[0] || null, error: null };
             }
           };
         }
