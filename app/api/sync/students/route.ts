@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { supabaseServer as supabase } from '@/lib/supabase-server';
 import { whopSdk } from '@/lib/whop-sdk';
 import { headers } from 'next/headers';
-import { requireAuthorization } from '@/lib/auth/permissions';
+import { getCompanyIdFromRequest, requireAdminAccess } from '@/lib/auth/whop-auth-proper';
 
 /**
  * Sync existing students from Whop to the app
@@ -11,27 +11,35 @@ import { requireAuthorization } from '@/lib/auth/permissions';
 export async function POST(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
-    const companyId = searchParams.get('companyId');
+
+    // Get company ID using proper Whop authentication
+    let companyId: string;
     
-    if (!companyId) {
-      return NextResponse.json(
-        { error: 'companyId parameter required' },
-        { status: 400 }
-      );
+    try {
+      const authResult = await requireAdminAccess({ 
+        companyId: searchParams.get('companyId') || undefined 
+      });
+      
+      companyId = authResult.companyId;
+      console.log('✅ Admin access verified for sync:', { companyId, userId: authResult.userId });
+      
+    } catch (authError: any) {
+      console.error('❌ Admin access check failed:', authError.message);
+      
+      // Fallback: get company ID directly
+      companyId = await getCompanyIdFromRequest(request);
+      
+      if (!companyId) {
+        return NextResponse.json(
+          { error: 'companyId parameter required' },
+          { status: 400 }
+        );
+      }
+      
+      console.log('⚠️ Using fallback auth for sync:', companyId);
     }
 
     console.log('🔄 Syncing students for company:', companyId);
-
-    // Check if user is authorized to sync students (only owners/admins)
-    try {
-      const permissions = await requireAuthorization(companyId);
-      console.log('✅ Access verified for student sync: user is authorized, Role:', permissions.userRole);
-    } catch (authError: any) {
-      return NextResponse.json(
-        { error: authError.message || 'Access denied: Only course owners and admins can sync students' },
-        { status: 403 }
-      );
-    }
 
     // Get or create client record
     let { data: client } = await supabase

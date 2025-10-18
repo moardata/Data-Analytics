@@ -11,7 +11,7 @@ import { useSearchParams } from 'next/navigation';
 import DashboardCreatorAnalytics from '@/components/DashboardCreatorAnalytics';
 import { adaptToCreatorAnalytics } from '@/lib/utils/adaptDashboardCreatorAnalytics';
 import { PermissionsBanner } from '@/components/PermissionsBanner';
-import { useCompanyContext } from '@/lib/hooks/useCompanyContext';
+import { useWhopContext } from '@/lib/hooks/useWhopContext';
 
 export const dynamic = 'force-dynamic';
 
@@ -19,12 +19,7 @@ type DateRange = 'week' | 'month' | 'quarter';
 
 function AnalyticsContent() {
   const searchParams = useSearchParams();
-  // TEMPORARY FIX: Use hardcoded company ID to bypass context detection issues
-  const companyId = searchParams.get('companyId') || 'biz_3GYHNPbGkZCEky';
-  const companyLoading = false;
-  const companyError = null;
-  
-  // const { companyId, loading: companyLoading, error: companyError } = useCompanyContext();
+  const { companyId, loading: companyLoading, error: companyError, isAuthenticated } = useWhopContext();
   
   const [dashboardData, setDashboardData] = useState<any>(null);
   const [range, setRange] = useState<DateRange>('week');
