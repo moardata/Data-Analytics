@@ -9,6 +9,7 @@ const nextConfig: NextConfig = {
 	env: {
 		// Explicitly expose server-side environment variables
 		SUPABASE_SERVICE_ROLE_KEY: process.env.SUPABASE_SERVICE_ROLE_KEY,
+		SUPABASE_KEY: process.env.SUPABASE_KEY, // Alternative name in case Vercel blocks the other
 	},
 };
 
