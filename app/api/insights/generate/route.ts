@@ -109,7 +109,8 @@ export async function POST(request: NextRequest) {
           hasKey: !!process.env.OPENAI_API_KEY,
           keyLength: process.env.OPENAI_API_KEY?.length || 0,
           keyPreview: process.env.OPENAI_API_KEY ? 
-            process.env.OPENAI_API_KEY.substring(0, 10) + '...' : 'Not set'
+            process.env.OPENAI_API_KEY.substring(0, 10) + '...' : 'Not set',
+          status: process.env.OPENAI_API_KEY ? '✅ CONFIGURED' : '❌ MISSING'
         }
       }
     }, { headers: corsHeaders });

@@ -113,12 +113,22 @@ export async function generateInsightsForClient(
     if (openai && process.env.OPENAI_API_KEY) {
       try {
         console.log('🤖 Attempting OpenAI API call...');
+        console.log('📊 Data being sent to OpenAI:', {
+          textCount: scrubbedTexts.length,
+          sampleText: scrubbedTexts[0]?.substring(0, 100) + '...' || 'No text'
+        });
+        
         result = await generateWithOpenAI(scrubbedTexts);
         isAIGenerated = true;
-        console.log('✅ OpenAI API success!');
+        console.log('✅ OpenAI API success! Generated themes:', result.themes.length);
       } catch (error: any) {
-        console.error('❌ OpenAI API failed:', error.message);
-        console.error('Full error:', error);
+        console.error('❌ OpenAI API failed:', {
+          message: error.message,
+          status: error.status,
+          code: error.code,
+          type: error.type,
+          stack: error.stack?.substring(0, 500)
+        });
         result = generateStubAnalysis(scrubbedTexts);
         isAIGenerated = false;
         console.log('⚠️ Using stub insights as fallback');
