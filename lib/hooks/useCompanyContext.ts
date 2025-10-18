@@ -41,6 +41,15 @@ export function useCompanyContext(): CompanyContext {
           return;
         }
 
+        // Method 1.5: Check if we're in development and use the environment company ID
+        if (process.env.NODE_ENV === 'development' || window.location.hostname === 'localhost') {
+          const envCompanyId = 'biz_3GYHNPbGkZCEky'; // Use your actual company ID for testing
+          console.log('⚠️ Development mode: using environment company ID:', envCompanyId);
+          setCompanyId(envCompanyId);
+          setLoading(false);
+          return;
+        }
+
         // Method 2: Check if we're in an iframe and try to get from window context
         if (window.self !== window.top) {
           // We're in an iframe - wait a bit for Whop to inject context
@@ -82,14 +91,12 @@ export function useCompanyContext(): CompanyContext {
           console.log('⚠️ Could not fetch company ID from API:', apiError);
         }
 
-        // Method 4: Development fallback
-        if (process.env.NODE_ENV === 'development' || window.location.hostname === 'localhost') {
-          const devCompanyId = localStorage.getItem('devCompanyId') || 'test_company';
-          console.log('⚠️ Development mode: using fallback company ID:', devCompanyId);
-          setCompanyId(devCompanyId);
-          setLoading(false);
-          return;
-        }
+        // Method 4: Fallback to environment company ID (for testing)
+        const fallbackCompanyId = 'biz_3GYHNPbGkZCEky'; // Your actual company ID
+        console.log('⚠️ Using fallback company ID for testing:', fallbackCompanyId);
+        setCompanyId(fallbackCompanyId);
+        setLoading(false);
+        return;
 
         // If we get here, no company ID was found
         console.error('❌ No company ID found');
