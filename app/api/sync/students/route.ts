@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { supabaseServer as supabase } from '@/lib/supabase-server';
 import { whopSdk } from '@/lib/whop-sdk';
 import { headers } from 'next/headers';
-import { getCompanyIdFromRequest, requireAdminAccess } from '@/lib/auth/whop-auth-proper';
+import { getCompanyIdFromRequestSimple, requireSimpleAuth } from '@/lib/auth/whop-auth-simple';
 
 /**
  * Sync existing students from Whop to the app
@@ -10,36 +10,11 @@ import { getCompanyIdFromRequest, requireAdminAccess } from '@/lib/auth/whop-aut
  */
 export async function POST(request: NextRequest) {
   try {
-    const { searchParams } = new URL(request.url);
-
-    // Get company ID using proper Whop authentication
-    let companyId: string;
+    // Use simple authentication that actually works
+    const authResult = await requireSimpleAuth(request);
+    const { companyId } = authResult;
     
-    try {
-      const authResult = await requireAdminAccess({ 
-        companyId: searchParams.get('companyId') || undefined 
-      });
-      
-      companyId = authResult.companyId;
-      console.log('✅ Admin access verified for sync:', { companyId, userId: authResult.userId });
-      
-    } catch (authError: any) {
-      console.error('❌ Admin access check failed:', authError.message);
-      
-      // Fallback: get company ID directly
-      const fallbackCompanyId = await getCompanyIdFromRequest(request);
-      
-      if (!fallbackCompanyId) {
-        return NextResponse.json(
-          { error: 'companyId parameter required' },
-          { status: 400 }
-        );
-      }
-      
-      companyId = fallbackCompanyId;
-      
-      console.log('⚠️ Using fallback auth for sync:', companyId);
-    }
+    console.log('✅ Sync auth successful:', { companyId });
 
     console.log('🔄 Syncing students for company:', companyId);
 

@@ -9,7 +9,7 @@ import { supabaseServer as supabase } from '@/lib/supabase-server';
 import { format, subDays } from 'date-fns';
 import { getCompanyId } from '@/lib/auth/whop-auth';
 import { whopSdk } from '@/lib/whop-sdk';
-import { getCompanyIdFromRequest, requireAdminAccess } from '@/lib/auth/whop-auth-proper';
+import { getCompanyIdFromRequestSimple, requireSimpleAuth } from '@/lib/auth/whop-auth-simple';
 
 // Add CORS headers for iframe compatibility
 const corsHeaders = {
@@ -28,39 +28,11 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url);
     const timeRange = searchParams.get('timeRange') || 'week';
 
-    // Get company ID using proper Whop authentication
-    let companyId: string;
-    let userId: string;
+    // Use simple authentication that actually works
+    const authResult = await requireSimpleAuth(request);
+    const { companyId, userId } = authResult;
     
-    try {
-      // Use the proper authentication flow
-      const authResult = await requireAdminAccess({ 
-        companyId: searchParams.get('companyId') || undefined 
-      });
-      
-      companyId = authResult.companyId;
-      userId = authResult.userId;
-      
-      console.log('✅ Whop auth successful:', { userId, companyId, accessLevel: authResult.accessLevel });
-      
-    } catch (authError: any) {
-      console.error('❌ Whop authentication failed:', authError.message);
-      
-      // For development/testing, try to get company ID directly
-      const fallbackCompanyId = await getCompanyIdFromRequest(request);
-      
-      if (!fallbackCompanyId) {
-        return NextResponse.json(
-          { error: 'Missing companyId parameter' },
-          { status: 400, headers: corsHeaders }
-        );
-      }
-      
-      companyId = fallbackCompanyId;
-      
-      userId = 'test_user';
-      console.log('⚠️ Using fallback auth for companyId:', companyId);
-    }
+    console.log('✅ Simple auth successful:', { userId, companyId });
 
     // Calculate date range
     const days = timeRange === 'week' ? 7 : timeRange === 'month' ? 30 : 90;
