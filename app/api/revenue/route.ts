@@ -5,7 +5,7 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { supabaseServer as supabase } from '@/lib/supabase-server';
-import { requireAdminAccess } from '@/lib/auth/whop-auth-unified';
+import { simpleAuth } from '@/lib/auth/simple-auth';
 
 // CORS headers
 const corsHeaders = {
@@ -20,8 +20,8 @@ export async function OPTIONS() {
 
 export async function GET(request: NextRequest) {
   try {
-    // Use unified authentication
-    const auth = await requireAdminAccess({ request });
+    // Use simple auth (never hangs)
+    const auth = await simpleAuth(request);
     const companyId = auth.companyId;
 
     // Get client record

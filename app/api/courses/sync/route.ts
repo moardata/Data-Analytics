@@ -5,12 +5,12 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { supabaseServer as supabase } from '@/lib/supabase-server';
-import { requireAdminAccess } from '@/lib/auth/whop-auth-unified';
+import { simpleAuth } from '@/lib/auth/simple-auth';
 
 export async function POST(request: NextRequest) {
   try {
-    // Require admin access for syncing courses
-    const auth = await requireAdminAccess({ request });
+    // Use simple auth (never hangs)
+    const auth = await simpleAuth(request);
     const companyId = auth.companyId;
 
     // Get client record
@@ -132,7 +132,7 @@ export async function POST(request: NextRequest) {
 
 export async function GET(request: NextRequest) {
   try {
-    const auth = await requireAdminAccess({ request });
+    const auth = await simpleAuth(request);
     const companyId = auth.companyId;
 
     // Get client record

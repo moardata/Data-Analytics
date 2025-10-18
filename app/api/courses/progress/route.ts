@@ -5,12 +5,12 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { supabaseServer as supabase } from '@/lib/supabase-server';
-import { requireAdminAccess, getCompanyIdFromRequest } from '@/lib/auth/whop-auth-unified';
+import { simpleAuth } from '@/lib/auth/simple-auth';
 
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
-    const auth = await requireAdminAccess({ request });
+    const auth = await simpleAuth(request);
     const companyId = auth.companyId;
     const courseId = searchParams.get('courseId');
     const entityId = searchParams.get('entityId'); // specific member

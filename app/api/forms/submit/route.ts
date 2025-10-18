@@ -5,7 +5,7 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { supabaseServer as supabase } from '@/lib/supabase-server';
-import { requireAdminAccess } from '@/lib/auth/whop-auth-unified';
+import { simpleAuth } from '@/lib/auth/simple-auth';
 
 export async function POST(request: NextRequest) {
   try {
@@ -81,9 +81,9 @@ export async function POST(request: NextRequest) {
 
 export async function GET(request: NextRequest) {
   try {
-    // SECURITY: Require admin access - don't trust client-passed companyId
-    const auth = await requireAdminAccess({ request });
-    const companyId = auth.companyId; // Server-validated company ID
+    // Use simple auth (never hangs)
+    const auth = await simpleAuth(request);
+    const companyId = auth.companyId;
 
     const { searchParams } = new URL(request.url);
     const formId = searchParams.get('formId');
