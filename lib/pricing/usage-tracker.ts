@@ -120,6 +120,9 @@ export async function checkLimit(
       return { allowed: true };
 
     case 'generateInsight':
+      // TEMP: Bypass limit for testing OpenAI API
+      return { allowed: true };
+      
       const insightLimit = tierData.limits.aiInsightsPerDay;
       if (usage.aiInsightsToday >= insightLimit) {
         return {
