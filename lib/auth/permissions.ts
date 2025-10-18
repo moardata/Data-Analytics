@@ -34,22 +34,34 @@ export async function getUserPermissions(
   userId?: string
 ): Promise<UserPermissions> {
   try {
+    console.log('🔐 getUserPermissions called with companyId:', companyId);
+    
     // If no userId provided, try to get from Whop auth
     if (!userId) {
-      const auth = await getWhopAuth();
-      if (auth) {
-        userId = auth.userId;
-      } else {
-        // No authentication - use temporary user ID for testing
-        userId = 'temp_user_' + companyId;
-        console.log('⚠️ No Whop auth found, using temporary userId:', userId);
+      try {
+        const auth = await getWhopAuth();
+        if (auth) {
+          userId = auth.userId;
+          console.log('✅ Got userId from Whop auth:', userId);
+        } else {
+          console.log('⚠️ No Whop auth found');
+        }
+      } catch (authError) {
+        console.log('⚠️ Whop auth failed:', authError);
+      }
+      
+      // If still no userId, we're in testing mode
+      if (!userId) {
+        console.log('🧪 TESTING MODE: No Whop authentication available');
+        console.log('🧪 This is normal when testing outside of Whop');
+        userId = 'test_user_' + companyId;
       }
     }
 
-    // For now, if we have a company ID, grant access
-    // This allows testing while app is in admin hub
+    // Grant access for testing (since Whop auth only works when embedded)
     if (companyId && companyId !== 'test_company') {
-      console.log('✅ Granting access for company:', companyId, 'userId:', userId);
+      console.log('✅ Granting access for company:', companyId);
+      console.log('✅ User ID:', userId);
       return {
         userId,
         canViewAnalytics: true,

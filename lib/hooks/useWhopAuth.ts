@@ -122,7 +122,40 @@ export function useWhopAuth(): WhopAuthState {
         const data = await response.json();
         console.log('✅ Auth response:', data);
 
-        if (!data.success || !data.permissions.isAuthorized) {
+        if (!data.success) {
+          console.error('❌ Auth API returned success=false:', data);
+          setState({
+            userId: null,
+            isAuthenticated: false,
+            companyId: urlCompanyId,
+            hasCompanyAccess: false,
+            accessLevel: 'none',
+            loading: false,
+            error: data.error || 'Authentication failed',
+            isAdmin: false,
+            isOwner: false,
+          });
+          return;
+        }
+
+        if (!data.permissions) {
+          console.error('❌ No permissions object in response:', data);
+          setState({
+            userId: null,
+            isAuthenticated: false,
+            companyId: urlCompanyId,
+            hasCompanyAccess: false,
+            accessLevel: 'none',
+            loading: false,
+            error: 'Invalid response from server',
+            isAdmin: false,
+            isOwner: false,
+          });
+          return;
+        }
+
+        if (!data.permissions.isAuthorized) {
+          console.warn('⚠️ User not authorized:', data.permissions);
           setState({
             userId: data.permissions.userId || null,
             isAuthenticated: !!data.permissions.userId,
@@ -130,7 +163,7 @@ export function useWhopAuth(): WhopAuthState {
             hasCompanyAccess: false,
             accessLevel: 'none',
             loading: false,
-            error: data.error || 'Access denied. Only company owners and administrators can access analytics.',
+            error: 'Access denied. Only company owners and administrators can access analytics.',
             isAdmin: false,
             isOwner: false,
           });
@@ -141,12 +174,16 @@ export function useWhopAuth(): WhopAuthState {
         const isOwner = data.permissions.userRole === 'owner';
         const isAdmin = data.permissions.userRole === 'admin' || isOwner;
         
+        console.log('✅ Authentication successful!');
+        console.log('✅ User ID:', data.permissions.userId);
+        console.log('✅ Role:', data.permissions.userRole);
+        
         setState({
           userId: data.permissions.userId,
           isAuthenticated: true,
           companyId: urlCompanyId,
           hasCompanyAccess: true,
-          accessLevel: data.permissions.userRole || 'member',
+          accessLevel: data.permissions.userRole || 'admin',
           loading: false,
           error: null,
           isAdmin,
