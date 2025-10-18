@@ -52,27 +52,75 @@ export async function requireWhopAuth(): Promise<string> {
 }
 
 /**
- * Gets companyId from request URL parameters
- * CompanyId is passed in via URL params when the Whop app is embedded
+ * Gets companyId from Whop authentication context
+ * In Whop apps, the companyId is determined by which company the user is accessing the app from
  */
 export async function getCompanyId(request: Request): Promise<string | null> {
   try {
     const url = new URL(request.url);
-    const companyId = url.searchParams.get('companyId');
     
-    if (companyId) {
-      console.log('Using companyId from URL params:', companyId);
-      return companyId;
+    // First, try to get companyId from URL params (for testing)
+    const urlCompanyId = url.searchParams.get('companyId');
+    if (urlCompanyId) {
+      console.log('Using companyId from URL params:', urlCompanyId);
+      return urlCompanyId;
     }
     
-    // Fallback to environment variable for testing
+    // For production, we need to get the companyId from Whop's authentication context
+    const headersList = await headers();
+    
+    // Check for companyId in headers (Whop may pass this)
+    const headerCompanyId = headersList.get('x-whop-company-id') || 
+                           headersList.get('whop-company-id') ||
+                           headersList.get('company-id');
+    
+    if (headerCompanyId) {
+      console.log('Using companyId from headers:', headerCompanyId);
+      return headerCompanyId;
+    }
+    
+    // Check for companyId in the referer URL (Whop embeds apps with company context)
+    const referer = headersList.get('referer');
+    if (referer) {
+      const refererUrl = new URL(referer);
+      const refererCompanyId = refererUrl.searchParams.get('companyId') || 
+                              refererUrl.pathname.match(/\/company\/([^\/]+)/)?.[1];
+      
+      if (refererCompanyId) {
+        console.log('Using companyId from referer:', refererCompanyId);
+        return refererCompanyId;
+      }
+    }
+    
+    // Try to get companyId from Whop SDK user context
+    try {
+      const { whopSdk } = await import('@/lib/whop-sdk');
+      const authResult = await whopSdk.verifyUserToken(headersList);
+      
+      if (authResult.userId) {
+        // Get user's company memberships to determine which company they're accessing from
+        const userCompanies = await whopSdk.access.getUserCompanies({ userId: authResult.userId });
+        
+        if (userCompanies && userCompanies.length > 0) {
+          // For now, use the first company (in production, you might need to determine which one)
+          // This is a limitation - we need to know which specific company context the user is in
+          const companyId = userCompanies[0].id;
+          console.log('Using companyId from user companies:', companyId);
+          return companyId;
+        }
+      }
+    } catch (sdkError) {
+      console.log('Could not get companyId from Whop SDK:', sdkError);
+    }
+    
+    // Fallback to environment variable for testing (but this should be different per group)
     const envCompanyId = process.env.NEXT_PUBLIC_WHOP_COMPANY_ID;
     if (envCompanyId) {
-      console.log('Using companyId from environment:', envCompanyId);
+      console.log('⚠️ Using companyId from environment (fallback):', envCompanyId);
       return envCompanyId;
     }
     
-    console.log('No companyId found in URL params or environment');
+    console.log('No companyId found in any source');
     return null;
   } catch (error) {
     console.error('Error getting companyId:', error);
