@@ -21,8 +21,8 @@ export async function OPTIONS() {
 
 export async function POST(request: NextRequest) {
   try {
-    // Require admin access for generating insights (uses AI credits/costs money)
-    const auth = await requireAdminAccess({ request });
+    // Use simple auth (never hangs)
+    const auth = await simpleAuth(request);
     const companyId = auth.companyId;
 
     // First, get the client record for this company

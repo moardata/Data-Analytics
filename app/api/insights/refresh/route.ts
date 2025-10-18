@@ -4,13 +4,13 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { simpleAuth } from '@/lib/auth/whop-auth-unified';
+import { simpleAuth } from '@/lib/auth/simple-auth';
 import { generateInsightsForClient } from '@/lib/utils/aiInsights';
 import { supabaseServer as supabase } from '@/lib/supabase-server';
 
 export async function POST(request: NextRequest) {
   try {
-    const auth = await simpleAuth({ request });
+    const auth = await simpleAuth(request);
     const companyId = auth.companyId;
 
     // First, get the client record for this company
