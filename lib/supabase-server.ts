@@ -12,7 +12,7 @@ let _supabaseServer: SupabaseClient | null = null;
 function getSupabaseServer(): SupabaseClient {
   // Get env vars at runtime, not at module load time
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_KEY;
+  const supabaseServiceKey = process.env.SUPABASE_SECRET_KEY || process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_KEY;
 
   // Enhanced logging for debugging
   console.log('🔍 Supabase Server Init Check:', {
