@@ -108,24 +108,29 @@ export async function generateInsightsForClient(
       textCount: scrubbedTexts.length
     });
     
+    let isAIGenerated = false;
+    
     if (openai && process.env.OPENAI_API_KEY) {
       try {
         console.log('🤖 Attempting OpenAI API call...');
         result = await generateWithOpenAI(scrubbedTexts);
+        isAIGenerated = true;
         console.log('✅ OpenAI API success!');
       } catch (error: any) {
         console.error('❌ OpenAI API failed:', error.message);
         console.error('Full error:', error);
         result = generateStubAnalysis(scrubbedTexts);
+        isAIGenerated = false;
         console.log('⚠️ Using stub insights as fallback');
       }
     } else {
       console.log('⚠️ OpenAI not configured, using stub insights');
       result = generateStubAnalysis(scrubbedTexts);
+      isAIGenerated = false;
     }
 
     // Store insights in database
-    const insights = await storeInsights(clientId, result);
+    const insights = await storeInsights(clientId, result, isAIGenerated);
 
     // Mark run as completed (if ai_runs table exists)
     if (aiRunId) {
@@ -299,7 +304,7 @@ function generateStubAnalysis(texts: any[]): AIAnalysisResult {
 /**
  * Store insights in database
  */
-async function storeInsights(clientId: string, result: AIAnalysisResult): Promise<any[]> {
+async function storeInsights(clientId: string, result: AIAnalysisResult, isAIGenerated: boolean = false): Promise<any[]> {
   const insights = result.themes.map((theme) => ({
     client_id: clientId,
     title: theme.title,
@@ -310,8 +315,8 @@ async function storeInsights(clientId: string, result: AIAnalysisResult): Promis
       sentiment: theme.sentiment,
       suggested_action: theme.suggested_action,
       urgency: theme.urgency,
-      ai_generated: true,
-      model: 'gpt-4o-mini'
+      ai_generated: isAIGenerated, // Only true if actually from OpenAI
+      model: isAIGenerated ? 'gpt-4o-mini' : 'stub'
     }
   }));
 

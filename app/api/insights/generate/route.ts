@@ -99,10 +99,11 @@ export async function POST(request: NextRequest) {
       count: insights.length + anomalies.length,
       timestamp: new Date().toISOString(),
       debug: {
-        usedOpenAI: insights.some(i => i.metadata?.ai_generated),
+        usedOpenAI: insights.some(i => i.metadata?.ai_generated === true),
         insightSources: insights.map(i => ({
           type: i.insight_type,
-          isAIGenerated: i.metadata?.ai_generated || false
+          isAIGenerated: i.metadata?.ai_generated === true,
+          model: i.metadata?.model || 'unknown'
         }))
       }
     }, { headers: corsHeaders });
