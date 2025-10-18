@@ -6,7 +6,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabaseServer as supabase } from '@/lib/supabase-server';
 import { format, subDays } from 'date-fns';
-import { requireAdminAccess } from '@/lib/auth/whop-auth-unified';
+import { simpleAuth } from '@/lib/auth/simple-auth';
 
 // Add CORS headers for iframe compatibility
 const corsHeaders = {
@@ -25,11 +25,11 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url);
     const timeRange = searchParams.get('timeRange') || 'week';
 
-    // Use unified authentication system
-    const auth = await requireAdminAccess({ request });
+    // Use simple auth (never hangs, 1s timeout max)
+    const auth = await simpleAuth(request);
     const { companyId, userId } = auth;
     
-    console.log('✅ Auth successful:', { userId, companyId, accessLevel: auth.accessLevel });
+    console.log('✅ [Analytics] Auth successful:', { userId, companyId, isTestMode: auth.isTestMode });
 
     // Calculate date range
     const days = timeRange === 'week' ? 7 : timeRange === 'month' ? 30 : 90;
