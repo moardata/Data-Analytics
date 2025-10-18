@@ -21,8 +21,28 @@ type DateRange = 'week' | 'month' | 'quarter';
 function AnalyticsContent() {
   const searchParams = useSearchParams();
   
-  // Simple company ID detection that actually works
-  const companyId = searchParams.get('companyId') || 'biz_3GYHNPbGkZCEky';
+  // Robust company ID detection with multiple fallbacks
+  const getCompanyId = () => {
+    // 1. Try URL parameter (Whop injects this automatically)
+    const urlCompanyId = searchParams.get('companyId') || searchParams.get('company_id');
+    if (urlCompanyId) {
+      console.log('✅ Company ID from URL:', urlCompanyId);
+      return urlCompanyId;
+    }
+    
+    // 2. Try environment variable (for testing)
+    const envCompanyId = process.env.NEXT_PUBLIC_WHOP_COMPANY_ID;
+    if (envCompanyId) {
+      console.log('⚠️ Company ID from environment:', envCompanyId);
+      return envCompanyId;
+    }
+    
+    // 3. Hardcoded fallback for development
+    console.log('⚠️ Using hardcoded fallback company ID');
+    return 'biz_3GYHNPbGkZCEky';
+  };
+  
+  const companyId = getCompanyId();
   const companyLoading = false;
   const companyError = null;
   const isAuthenticated = true;
@@ -109,11 +129,8 @@ function AnalyticsContent() {
   };
 
   const fetchData = async () => {
-    if (!companyId) {
-      setError('No company context found. Please ensure you are accessing this app through Whop.');
-      setLoading(false);
-      return;
-    }
+    // companyId should always exist due to fallbacks
+    console.log('📊 Fetching data for company:', companyId);
     
     setLoading(true);
     setError(null);
@@ -306,6 +323,21 @@ function AnalyticsContent() {
   return (
     <div className="min-h-screen bg-[#0f1115]">
       <div className="max-w-[1600px] mx-auto p-6">
+        {/* Company ID Debug Info - Only show in development or if using fallback */}
+        {(!searchParams.get('companyId') && !searchParams.get('company_id')) && (
+          <div className="mb-4 p-3 bg-yellow-900/20 border border-yellow-700/50 rounded-lg">
+            <div className="flex items-center gap-2 text-yellow-400 text-sm">
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+              </svg>
+              <span>
+                <strong>Testing Mode:</strong> Using fallback company ID ({companyId}). 
+                For production, ensure your Whop app URL includes <code className="px-1 bg-black/30 rounded">?companyId={'{{COMPANY_ID}}'}</code>
+              </span>
+            </div>
+          </div>
+        )}
+        
         <PermissionsBanner missing={missingPermissions} />
         
         {/* Sync Students Button - Always visible when no data */}
