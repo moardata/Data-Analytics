@@ -43,11 +43,9 @@ export async function GET(request: NextRequest) {
     // 4. Try to use Whop SDK to get current app context
     if (!companyId) {
       try {
-        // This would require proper authentication, but let's try
-        const appInfo = await whopSdk.app.get();
-        if (appInfo && appInfo.company_id) {
-          companyId = appInfo.company_id;
-        }
+        // Note: Whop SDK app.get() method is not available in current version
+        // This would require proper authentication and different SDK method
+        console.log('Whop SDK app context detection not implemented');
       } catch (error) {
         console.log('Could not get app info from Whop SDK:', error);
       }
