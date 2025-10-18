@@ -28,15 +28,22 @@ export async function GET(request: NextRequest) {
     const h = await headers();
     
     // Check for development bypass (only via env variable, not URL param)
-    // TEMPORARY: Hardcode bypass for testing since Vercel blocks env vars
-    const bypassAuth = true; // process.env.BYPASS_WHOP_AUTH === 'true';
+    const bypassAuth = process.env.BYPASS_WHOP_AUTH === 'true';
     
     let userId: string | undefined;
+    let companyId: string | null = null;
     
     if (bypassAuth) {
-      // Development bypass mode
-      console.log('⚠️ Development bypass mode enabled');
-      userId = 'dev-user-bypass';
+      // Development bypass mode - require companyId parameter
+      companyId = searchParams.get('companyId');
+      if (!companyId) {
+        return NextResponse.json(
+          { error: 'companyId parameter required in bypass mode' },
+          { status: 400, headers: corsHeaders }
+        );
+      }
+      console.log('⚠️ Development bypass mode enabled for companyId:', companyId);
+      userId = `dev-user-${companyId}`;
     } else {
       // Production: Require proper Whop authentication
       try {
@@ -66,7 +73,11 @@ export async function GET(request: NextRequest) {
       }
     }
     
-    const companyId = searchParams.get('companyId');
+    // Get companyId from searchParams if not already set in bypass mode
+    if (!companyId) {
+      companyId = searchParams.get('companyId');
+    }
+    
     const timeRange = searchParams.get('timeRange') || 'week';
 
     if (!companyId) {

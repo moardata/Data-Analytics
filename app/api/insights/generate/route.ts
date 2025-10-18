@@ -24,13 +24,19 @@ export async function POST(request: NextRequest) {
     const { searchParams } = new URL(request.url);
     
     // Check for development bypass
-    const bypassAuth = true; // TEMP: Hardcoded for testing
+    const bypassAuth = process.env.BYPASS_WHOP_AUTH === 'true';
     
     let companyId: string | null = null;
     
     if (bypassAuth) {
-      // Development bypass mode
-      companyId = searchParams.get('companyId') || process.env.NEXT_PUBLIC_WHOP_COMPANY_ID || null;
+      // Development bypass mode - but still require companyId
+      companyId = searchParams.get('companyId');
+      if (!companyId) {
+        return NextResponse.json(
+          { error: 'companyId parameter required in bypass mode' },
+          { status: 400, headers: corsHeaders }
+        );
+      }
       console.log('⚠️ Development bypass mode - using companyId:', companyId);
     } else {
       // Production: Get companyId from Whop auth
@@ -134,13 +140,19 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url);
     
     // Check for development bypass
-    const bypassAuth = true; // TEMP: Hardcoded for testing
+    const bypassAuth = process.env.BYPASS_WHOP_AUTH === 'true';
     
     let companyId: string | null = null;
     
     if (bypassAuth) {
-      // Development bypass mode
-      companyId = searchParams.get('companyId') || process.env.NEXT_PUBLIC_WHOP_COMPANY_ID || null;
+      // Development bypass mode - but still require companyId
+      companyId = searchParams.get('companyId');
+      if (!companyId) {
+        return NextResponse.json(
+          { error: 'companyId parameter required in bypass mode' },
+          { status: 400, headers: corsHeaders }
+        );
+      }
       console.log('⚠️ Development bypass mode - using companyId:', companyId);
     } else {
       // Production: Get companyId from Whop auth
