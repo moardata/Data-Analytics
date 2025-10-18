@@ -6,7 +6,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabaseServer as supabase } from '@/lib/supabase-server';
 import { format, subDays } from 'date-fns';
-import { requireCompanyAccess } from '@/lib/auth/whop-auth-unified';
+import { requireAdminAccess } from '@/lib/auth/whop-auth-unified';
 
 // Add CORS headers for iframe compatibility
 const corsHeaders = {
@@ -26,7 +26,7 @@ export async function GET(request: NextRequest) {
     const timeRange = searchParams.get('timeRange') || 'week';
 
     // Use unified authentication system
-    const auth = await requireCompanyAccess({ request });
+    const auth = await requireAdminAccess({ request });
     const { companyId, userId } = auth;
     
     console.log('✅ Auth successful:', { userId, companyId, accessLevel: auth.accessLevel });

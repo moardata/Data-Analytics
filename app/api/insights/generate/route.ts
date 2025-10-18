@@ -113,7 +113,7 @@ export async function POST(request: NextRequest) {
 export async function GET(request: NextRequest) {
   try {
     // Use unified authentication
-    const auth = await requireCompanyAccess({ request });
+    const auth = await requireAdminAccess({ request });
     const companyId = auth.companyId;
 
     // First, get the client record for this company

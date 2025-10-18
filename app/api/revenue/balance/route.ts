@@ -4,11 +4,11 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { requireCompanyAccess } from '@/lib/auth/whop-auth-unified';
+import { requireAdminAccess } from '@/lib/auth/whop-auth-unified';
 
 export async function GET(request: NextRequest) {
   try {
-    const auth = await requireCompanyAccess({ request });
+    const auth = await requireAdminAccess({ request });
     const companyId = auth.companyId;
 
     const whopApiKey = process.env.WHOP_API_KEY;

@@ -4,14 +4,14 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { requireCompanyAccess } from '@/lib/auth/whop-auth-unified';
+import { requireAdminAccess } from '@/lib/auth/whop-auth-unified';
 import { getTier } from '@/lib/pricing/tiers';
 import { getClientUsage } from '@/lib/pricing/usage-tracker';
 import { supabaseServer as supabase } from '@/lib/supabase-server';
 
 export async function GET(request: NextRequest) {
   try {
-    const auth = await requireCompanyAccess({ request });
+    const auth = await requireAdminAccess({ request });
     const companyId = auth.companyId;
 
     // Get client info
