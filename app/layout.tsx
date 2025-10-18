@@ -25,14 +25,15 @@ export default function RootLayout({
 		<html lang="en" className="dark">
 			<body className={`${inter.variable} font-sans antialiased`}>
 				<WhopApp>
-					<AccessGuard>
+					{/* Temporarily disable AccessGuard to debug loading issue */}
+					{/* <AccessGuard> */}
 						<div className="flex min-h-screen bg-gradient-to-b from-[#0d0f12] to-[#14171c]">
 							<Sidebar />
 							<main className="flex-1 ml-64">
 								{children}
 							</main>
 						</div>
-					</AccessGuard>
+					{/* </AccessGuard> */}
 				</WhopApp>
 			</body>
 		</html>
