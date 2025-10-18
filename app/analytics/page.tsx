@@ -28,6 +28,8 @@ function AnalyticsContent() {
   const [accessError, setAccessError] = useState<string | null>(null);
   const [missingPermissions, setMissingPermissions] = useState<string[]>([]);
   const [isInIframe, setIsInIframe] = useState(false);
+  const [syncing, setSyncing] = useState(false);
+  const [syncMessage, setSyncMessage] = useState('');
 
   useEffect(() => {
     // Detect if running in iframe
@@ -64,6 +66,39 @@ function AnalyticsContent() {
     } catch (err) {
       console.error('Error creating client record:', err);
       setError('Failed to initialize dashboard. Please refresh the page.');
+    }
+  };
+
+  const handleSyncStudents = async () => {
+    if (!companyId) {
+      setSyncMessage('❌ No company ID found');
+      return;
+    }
+
+    setSyncing(true);
+    setSyncMessage('🔄 Syncing students from Whop...');
+
+    try {
+      const response = await fetch(`/api/sync/students?companyId=${companyId}`, {
+        method: 'POST',
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        setSyncMessage(`✅ ${data.message}`);
+        // Refresh dashboard data
+        setTimeout(() => {
+          fetchData();
+          setSyncMessage('');
+        }, 2000);
+      } else {
+        setSyncMessage(`❌ ${data.error || 'Failed to sync students'}`);
+      }
+    } catch (error) {
+      setSyncMessage('❌ Error syncing students. Please try again.');
+    } finally {
+      setSyncing(false);
     }
   };
 
@@ -201,17 +236,55 @@ function AnalyticsContent() {
   }
 
   if (error) {
+    const isClientNotFound = error.includes('Client not found') || error.includes('needs initialization');
+    
     return (
       <div className="min-h-screen bg-[#0f1115] flex items-center justify-center">
-        <div className="text-center">
-          <div className="text-red-400 text-xl mb-2">Error loading dashboard</div>
-          <div className="text-[#9AA4B2] text-sm mb-4">{error}</div>
-          <button
-            onClick={fetchData}
-            className="px-4 py-2 bg-[#10B981] text-white rounded-lg hover:bg-[#0E3A2F]"
-          >
-            Retry
-          </button>
+        <div className="text-center max-w-md mx-auto">
+          <div className="text-red-400 text-xl mb-2">
+            {isClientNotFound ? 'No Data Yet' : 'Error loading dashboard'}
+          </div>
+          <div className="text-[#9AA4B2] text-sm mb-6">{error}</div>
+          
+          {isClientNotFound && (
+            <div className="space-y-4">
+              <p className="text-[#D1D5DB] text-sm mb-4">
+                Import your existing students from Whop to get started:
+              </p>
+              <button
+                onClick={handleSyncStudents}
+                disabled={syncing}
+                className="px-6 py-3 bg-[#10B981] text-white rounded-lg hover:bg-[#0E3A2F] disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 mx-auto"
+              >
+                {syncing ? (
+                  <>
+                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                    Syncing...
+                  </>
+                ) : (
+                  'Sync Students from Whop'
+                )}
+              </button>
+              {syncMessage && (
+                <div className={`text-sm p-3 rounded ${
+                  syncMessage.startsWith('✅') ? 'bg-green-900/20 text-green-400' :
+                  syncMessage.startsWith('🔄') ? 'bg-blue-900/20 text-blue-400' :
+                  'bg-red-900/20 text-red-400'
+                }`}>
+                  {syncMessage}
+                </div>
+              )}
+            </div>
+          )}
+          
+          {!isClientNotFound && (
+            <button
+              onClick={fetchData}
+              className="px-4 py-2 bg-[#10B981] text-white rounded-lg hover:bg-[#0E3A2F]"
+            >
+              Retry
+            </button>
+          )}
         </div>
       </div>
     );
