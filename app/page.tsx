@@ -5,13 +5,14 @@
 
 import { redirect } from 'next/navigation';
 
-export default function Page({
+export default async function Page({
   searchParams,
 }: {
-  searchParams: { companyId?: string };
+  searchParams: Promise<{ companyId?: string }>;
 }) {
-  // Get company ID from URL (Whop injects this)
-  const companyId = searchParams.companyId;
+  // In Next.js 15, searchParams is a Promise
+  const params = await searchParams;
+  const companyId = params.companyId;
   
   if (companyId) {
     // Redirect to analytics with company ID
@@ -21,4 +22,3 @@ export default function Page({
     redirect('/analytics');
   }
 }
-
