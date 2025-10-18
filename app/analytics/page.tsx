@@ -1,51 +1,29 @@
 /**
  * Analytics Dashboard Page
- * Uses the Dark Emerald dashboard theme
- * Admin-only access with proper Whop SDK validation
+ * Proper Multi-Tenant Analytics with Whop Authentication
+ * 
+ * Features:
+ * - Automatic company ID detection from Whop
+ * - User authentication via Whop SDK
+ * - Access control (only admins/owners can view)
+ * - Complete data isolation per company
  */
 
 'use client';
 
 import { Suspense, useState, useEffect } from 'react';
-import { useSearchParams } from 'next/navigation';
 import DashboardCreatorAnalytics from '@/components/DashboardCreatorAnalytics';
 import { adaptToCreatorAnalytics } from '@/lib/utils/adaptDashboardCreatorAnalytics';
 import { PermissionsBanner } from '@/components/PermissionsBanner';
-// Use simple company ID detection that actually works
-// import { useWhopContext } from '@/lib/hooks/useWhopContext';
+import { useWhopAuth } from '@/lib/hooks/useWhopAuth';
 
 export const dynamic = 'force-dynamic';
 
 type DateRange = 'week' | 'month' | 'quarter';
 
 function AnalyticsContent() {
-  const searchParams = useSearchParams();
-  
-  // Robust company ID detection with multiple fallbacks
-  const getCompanyId = () => {
-    // 1. Try URL parameter (Whop injects this automatically)
-    const urlCompanyId = searchParams.get('companyId') || searchParams.get('company_id');
-    if (urlCompanyId) {
-      console.log('✅ Company ID from URL:', urlCompanyId);
-      return urlCompanyId;
-    }
-    
-    // 2. Try environment variable (for testing)
-    const envCompanyId = process.env.NEXT_PUBLIC_WHOP_COMPANY_ID;
-    if (envCompanyId) {
-      console.log('⚠️ Company ID from environment:', envCompanyId);
-      return envCompanyId;
-    }
-    
-    // 3. Hardcoded fallback for development
-    console.log('⚠️ Using hardcoded fallback company ID');
-    return 'biz_3GYHNPbGkZCEky';
-  };
-  
-  const companyId = getCompanyId();
-  const companyLoading = false;
-  const companyError = null;
-  const isAuthenticated = true;
+  // Use proper Whop authentication with multi-tenancy
+  const auth = useWhopAuth();
   
   const [dashboardData, setDashboardData] = useState<any>(null);
   const [range, setRange] = useState<DateRange>('week');
@@ -63,13 +41,15 @@ function AnalyticsContent() {
     setIsInIframe(inIframe);
     console.log('🔍 Iframe detection:', inIframe);
     
-    // Only fetch data if we have a companyId and it's not loading
-    if (companyId && !companyLoading) {
+    // Only fetch data if user is authenticated and has company access
+    if (auth.hasCompanyAccess && auth.companyId && !auth.loading) {
       fetchData();
     }
-  }, [range, companyId, companyLoading]);
+  }, [range, auth.hasCompanyAccess, auth.companyId, auth.loading]);
 
   const createClientRecord = async () => {
+    if (!auth.companyId) return;
+    
     try {
       const response = await fetch('/api/setup/client', {
         method: 'POST',
@@ -77,9 +57,9 @@ function AnalyticsContent() {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          companyId,
-          companyName: `Company ${companyId}`,
-          companyEmail: `company@${companyId}.com`,
+          companyId: auth.companyId,
+          companyName: `Company ${auth.companyId}`,
+          companyEmail: `company@${auth.companyId}.com`,
         }),
       });
 
@@ -96,7 +76,7 @@ function AnalyticsContent() {
   };
 
   const handleSyncStudents = async () => {
-    if (!companyId) {
+    if (!auth.companyId) {
       setSyncMessage('❌ No company ID found');
       return;
     }
@@ -105,7 +85,7 @@ function AnalyticsContent() {
     setSyncMessage('🔄 Syncing students from Whop...');
 
     try {
-      const response = await fetch(`/api/sync/students?companyId=${companyId}`, {
+      const response = await fetch(`/api/sync/students?companyId=${auth.companyId}`, {
         method: 'POST',
       });
 
@@ -129,15 +109,20 @@ function AnalyticsContent() {
   };
 
   const fetchData = async () => {
-    // companyId should always exist due to fallbacks
-    console.log('📊 Fetching data for company:', companyId);
+    if (!auth.companyId) {
+      setError('No company ID available');
+      setLoading(false);
+      return;
+    }
+    
+    console.log('📊 Fetching data for company:', auth.companyId);
     
     setLoading(true);
     setError(null);
     setAccessError(null);
     try {
-      // Use companyId from company context
-      const apiUrl = `/api/analytics/metrics?companyId=${companyId}&timeRange=${range}`;
+      // Use companyId from authenticated context
+      const apiUrl = `/api/analytics/metrics?companyId=${auth.companyId}&timeRange=${range}`;
       
       // Add iframe-specific headers if needed
       const fetchOptions: RequestInit = {
@@ -192,15 +177,18 @@ function AnalyticsContent() {
   };
 
   const handleExportEventsCsv = () => {
-    window.open(`/api/export/csv?companyId=${companyId}&type=events`, '_blank');
+    if (!auth.companyId) return;
+    window.open(`/api/export/csv?companyId=${auth.companyId}&type=events`, '_blank');
   };
 
   const handleExportSubscriptionsCsv = () => {
-    window.open(`/api/export/csv?companyId=${companyId}&type=subscriptions`, '_blank');
+    if (!auth.companyId) return;
+    window.open(`/api/export/csv?companyId=${auth.companyId}&type=subscriptions`, '_blank');
   };
 
   const handleExportPdf = () => {
-    window.open(`/api/export/pdf?companyId=${companyId}`, '_blank');
+    if (!auth.companyId) return;
+    window.open(`/api/export/pdf?companyId=${auth.companyId}`, '_blank');
   };
 
   const handleLogEvent = (evt: { name: string; sellerId: string; meta?: Record<string, any> }) => {
@@ -208,28 +196,53 @@ function AnalyticsContent() {
     // In production, send to your analytics service (e.g., PostHog, Mixpanel, etc.)
   };
 
-  if (companyLoading) {
+  // Show authentication loading state
+  if (auth.loading) {
     return (
       <div className="min-h-screen bg-[#0f1115] flex items-center justify-center">
         <div className="text-[#D1D5DB] text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#10B981] mx-auto mb-4"></div>
-          <p>Detecting company context...</p>
+          <p>Authenticating with Whop...</p>
+          <p className="text-sm text-[#9AA4B2] mt-2">Verifying your access...</p>
         </div>
       </div>
     );
   }
 
-  if (companyError) {
+  // Show authentication error
+  if (auth.error || !auth.hasCompanyAccess) {
     return (
       <div className="min-h-screen bg-[#0f1115] flex items-center justify-center">
-        <div className="text-center max-w-md mx-auto">
-          <div className="text-red-400 text-xl mb-2">Company Context Error</div>
-          <div className="text-[#9AA4B2] text-sm mb-6">{companyError}</div>
-          <div className="text-[#9AA4B2] text-xs mb-4">
-            Please ensure you are accessing this app through Whop with proper permissions.
+        <div className="text-center max-w-md mx-auto px-6">
+          <div className="mb-6">
+            <svg className="w-16 h-16 text-red-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+            </svg>
           </div>
-          <div className="text-[#10B981] text-xs">
-            <strong>For testing:</strong> Add ?companyId=your_company_id to the URL
+          
+          <div className="text-red-400 text-xl font-semibold mb-3">Access Restricted</div>
+          
+          <div className="text-[#9AA4B2] text-sm mb-6">
+            {auth.error || 'You do not have permission to access this company\'s analytics.'}
+          </div>
+          
+          <div className="bg-[#1E2228] border border-[#2A2F36] rounded-lg p-4 mb-6">
+            <div className="text-[#D1D5DB] text-sm font-medium mb-2">Requirements:</div>
+            <ul className="text-[#9AA4B2] text-xs space-y-1 text-left">
+              <li>✓ Must be accessed through Whop</li>
+              <li>✓ Must have admin or owner role</li>
+              <li>✓ Must belong to the company</li>
+            </ul>
+          </div>
+          
+          {auth.companyId && (
+            <div className="text-[#9AA4B2] text-xs mb-4">
+              Company ID: <span className="text-[#10B981] font-mono">{auth.companyId}</span>
+            </div>
+          )}
+          
+          <div className="text-[#10B981] text-xs bg-[#10B981]/10 border border-[#10B981]/20 rounded p-3">
+            <strong>For testing:</strong> Add <code className="bg-black/30 px-1 rounded">?companyId=your_company_id</code> to the URL
           </div>
         </div>
       </div>
@@ -323,20 +336,22 @@ function AnalyticsContent() {
   return (
     <div className="min-h-screen bg-[#0f1115]">
       <div className="max-w-[1600px] mx-auto p-6">
-        {/* Company ID Debug Info - Only show in development or if using fallback */}
-        {(!searchParams.get('companyId') && !searchParams.get('company_id')) && (
-          <div className="mb-4 p-3 bg-yellow-900/20 border border-yellow-700/50 rounded-lg">
-            <div className="flex items-center gap-2 text-yellow-400 text-sm">
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+        {/* User Role Badge */}
+        <div className="mb-4 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2 bg-[#1E2228] border border-[#2A2F36] rounded-lg px-3 py-2">
+              <svg className="w-4 h-4 text-[#10B981]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
               </svg>
-              <span>
-                <strong>Testing Mode:</strong> Using fallback company ID ({companyId}). 
-                For production, ensure your Whop app URL includes <code className="px-1 bg-black/30 rounded">?companyId={'{{COMPANY_ID}}'}</code>
+              <span className="text-[#D1D5DB] text-sm">
+                Authenticated as: <span className="text-[#10B981] font-semibold capitalize">{auth.accessLevel}</span>
               </span>
             </div>
+            <div className="text-[#9AA4B2] text-xs font-mono">
+              {auth.companyId}
+            </div>
           </div>
-        )}
+        </div>
         
         <PermissionsBanner missing={missingPermissions} />
         
