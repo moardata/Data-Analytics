@@ -27,14 +27,16 @@ export async function POST(request: NextRequest) {
       console.error('❌ Admin access check failed:', authError.message);
       
       // Fallback: get company ID directly
-      companyId = await getCompanyIdFromRequest(request);
+      const fallbackCompanyId = await getCompanyIdFromRequest(request);
       
-      if (!companyId) {
+      if (!fallbackCompanyId) {
         return NextResponse.json(
           { error: 'companyId parameter required' },
           { status: 400 }
         );
       }
+      
+      companyId = fallbackCompanyId;
       
       console.log('⚠️ Using fallback auth for sync:', companyId);
     }

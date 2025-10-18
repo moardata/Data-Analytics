@@ -47,14 +47,16 @@ export async function GET(request: NextRequest) {
       console.error('❌ Whop authentication failed:', authError.message);
       
       // For development/testing, try to get company ID directly
-      companyId = await getCompanyIdFromRequest(request);
+      const fallbackCompanyId = await getCompanyIdFromRequest(request);
       
-      if (!companyId) {
+      if (!fallbackCompanyId) {
         return NextResponse.json(
           { error: 'Missing companyId parameter' },
           { status: 400, headers: corsHeaders }
         );
       }
+      
+      companyId = fallbackCompanyId;
       
       userId = 'test_user';
       console.log('⚠️ Using fallback auth for companyId:', companyId);
