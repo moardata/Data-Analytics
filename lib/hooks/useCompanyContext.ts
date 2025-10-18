@@ -21,24 +21,14 @@ export function useCompanyContext(): CompanyContext {
         setLoading(true);
         setError(null);
         
-        // First, try to get from URL parameters (most reliable)
+        // Get company ID from URL parameters (set by Whop)
         const urlParams = new URLSearchParams(window.location.search);
         const urlCompanyId = urlParams.get('companyId');
         
         if (urlCompanyId) {
           setCompanyId(urlCompanyId);
-          setLoading(false);
-          return;
-        }
-        
-        // If not in URL, try to get from the API
-        const response = await fetch('/api/whop/company-context');
-        const data = await response.json();
-        
-        if (data.companyId) {
-          setCompanyId(data.companyId);
         } else {
-          setError('No company context found');
+          setError('No company context found. Please ensure you are accessing this app through Whop with a valid company ID.');
         }
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Failed to get company context');
