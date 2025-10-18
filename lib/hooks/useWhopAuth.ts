@@ -64,34 +64,7 @@ export function useWhopAuth(): WhopAuthState {
         const urlCompanyId = searchParams.get('companyId') || searchParams.get('company_id');
         
         if (!urlCompanyId) {
-          // No company ID in URL - this means:
-          // 1. App is not being accessed through Whop
-          // 2. Whop app URL is not configured correctly
-          
-          // Check if we're in development
-          const isDev = window.location.hostname === 'localhost' || 
-                       window.location.hostname.includes('127.0.0.1');
-          
-          if (isDev) {
-            // Development mode: use fallback for testing
-            const fallbackCompanyId = process.env.NEXT_PUBLIC_WHOP_COMPANY_ID || 'biz_3GYHNPbGkZCEky';
-            console.log('⚠️ DEV MODE: Using fallback company ID:', fallbackCompanyId);
-            
-            setState({
-              userId: 'dev_user',
-              isAuthenticated: true,
-              companyId: fallbackCompanyId,
-              hasCompanyAccess: true,
-              accessLevel: 'admin',
-              loading: false,
-              error: null,
-              isAdmin: true,
-              isOwner: true,
-            });
-            return;
-          }
-          
-          // Production: require company ID from Whop
+          // No company ID means app is not configured correctly in Whop
           setState({
             userId: null,
             isAuthenticated: false,
@@ -99,7 +72,7 @@ export function useWhopAuth(): WhopAuthState {
             hasCompanyAccess: false,
             accessLevel: 'none',
             loading: false,
-            error: 'No company context found. Please ensure you are accessing this app through Whop with a valid company ID. For testing, you can add ?companyId=your_company_id to the URL.',
+            error: 'CONFIGURATION REQUIRED: This app must be accessed through Whop. Please configure your Whop app URL to include ?companyId={{COMPANY_ID}}',
             isAdmin: false,
             isOwner: false,
           });
