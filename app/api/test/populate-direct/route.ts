@@ -96,10 +96,7 @@ export async function POST(request: NextRequest) {
     
     try {
       // Try to find existing client for this specific company
-      const { data: existingClients } = await supabase
-        .from('clients')
-        .select('id')
-        .eq('company_id', companyId);
+      const { data: existingClients } = await supabase.from('clients').select('id').eq('company_id', companyId);
       
       if (existingClients && existingClients.length > 0) {
         clientId = existingClients[0].id;
@@ -109,9 +106,7 @@ export async function POST(request: NextRequest) {
       }
     } catch (error) {
       // Create new client for this company
-      const { data: newClient, error: clientError } = await supabase
-        .from('clients')
-        .insert({
+      const { data: newClient, error: clientError } = await supabase.from('clients').insert({
         company_id: companyId,
         whop_user_id: `test_user_${companyId}_${Date.now()}`,
         current_tier: 'core',
@@ -162,9 +157,7 @@ export async function POST(request: NextRequest) {
       const courses = ['Beginner Course', 'Intermediate Course', 'Advanced Course', 'Master Course'];
       const course = courses[Math.floor(Math.random() * courses.length)];
       
-      const { data: entity, error: entityError } = await supabase
-        .from('entities')
-        .insert({
+      const { data: entity, error: entityError } = await supabase.from('entities').insert({
         client_id: clientId,
         whop_user_id: userId,
         email: email,
@@ -268,9 +261,7 @@ export async function POST(request: NextRequest) {
           };
         }
 
-        const { data: event, error: eventError } = await supabase
-          .from('events')
-          .insert({
+        const { data: event, error: eventError } = await supabase.from('events').insert({
           client_id: clientId,
           entity_id: student.id,
           event_type: eventType,
@@ -318,9 +309,7 @@ export async function POST(request: NextRequest) {
       const startDate = new Date();
       startDate.setDate(startDate.getDate() - daysAgo);
 
-      const { data: subscription, error: subError } = await supabase
-        .from('subscriptions')
-        .insert({
+      const { data: subscription, error: subError } = await supabase.from('subscriptions').insert({
         client_id: clientId,
         entity_id: student.id,
         whop_subscription_id: `sub_test_${companyId}_${i}_${Date.now()}`,
@@ -385,9 +374,7 @@ export async function POST(request: NextRequest) {
     const createdFormTemplates = [];
 
     for (const template of formTemplates) {
-      const { data: form, error: formError } = await supabase
-        .from('form_templates')
-        .insert({
+      const { data: form, error: formError } = await supabase.from('form_templates').insert({
         client_id: clientId,
         name: template.name,
         description: template.description,
@@ -444,9 +431,7 @@ export async function POST(request: NextRequest) {
       const submittedAt = new Date();
       submittedAt.setDate(submittedAt.getDate() - daysAgo);
 
-      const { data: submission, error: submissionError } = await supabase
-        .from('form_submissions')
-        .insert({
+      const { data: submission, error: submissionError } = await supabase.from('form_submissions').insert({
         form_id: formTemplate.id,
         entity_id: student.id,
         client_id: clientId,
@@ -520,9 +505,7 @@ export async function POST(request: NextRequest) {
     const createdInsights = [];
 
     for (const insightData of insights) {
-      const { data: insight, error: insightError } = await supabase
-        .from('insights')
-        .insert({
+      const { data: insight, error: insightError } = await supabase.from('insights').insert({
         client_id: clientId,
         insight_type: insightData.type,
         title: insightData.title,
