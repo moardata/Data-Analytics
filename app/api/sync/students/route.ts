@@ -48,21 +48,37 @@ export async function POST(request: NextRequest) {
       client = newClient;
     }
 
-    // Use Whop SDK to get company members
+    // Use Whop API directly to get company members
     try {
-      const companySdk = whopSdk.withCompany(companyId);
+      const whopApiKey = process.env.WHOP_API_KEY;
       
-      // Get all memberships for this company
-      const memberships = await companySdk.memberships.list({
-        page: 1,
-        per_page: 100, // Adjust as needed
+      if (!whopApiKey) {
+        return NextResponse.json({
+          error: 'WHOP_API_KEY not configured',
+          hint: 'Add WHOP_API_KEY to your environment variables',
+        }, { status: 500 });
+      }
+
+      // Fetch memberships from Whop API
+      const response = await fetch(`https://api.whop.com/api/v2/memberships?company_id=${companyId}&per=100`, {
+        headers: {
+          'Authorization': `Bearer ${whopApiKey}`,
+          'Content-Type': 'application/json',
+        },
       });
+
+      if (!response.ok) {
+        throw new Error(`Whop API returned ${response.status}: ${await response.text()}`);
+      }
+
+      const membershipsData = await response.json();
+      const memberships = membershipsData.data || [];
 
       let studentsCreated = 0;
       let studentsUpdated = 0;
 
-      for (const membership of memberships.data || []) {
-        const whopUserId = membership.user_id;
+      for (const membership of memberships) {
+        const whopUserId = membership.user || membership.user_id || membership.id;
         const email = membership.email || `user_${whopUserId}@whop.com`;
 
         // Check if student already exists
@@ -82,7 +98,7 @@ export async function POST(request: NextRequest) {
               whop_user_id: whopUserId,
               email: email,
               metadata: {
-                plan_id: membership.plan_id,
+                plan_id: membership.plan || membership.plan_id,
                 status: membership.status,
                 synced_at: new Date().toISOString(),
                 valid: membership.valid,
@@ -98,7 +114,7 @@ export async function POST(request: NextRequest) {
             .from('entities')
             .update({
               metadata: {
-                plan_id: membership.plan_id,
+                plan_id: membership.plan || membership.plan_id,
                 status: membership.status,
                 synced_at: new Date().toISOString(),
                 valid: membership.valid,
@@ -117,7 +133,7 @@ export async function POST(request: NextRequest) {
         companyId,
         studentsCreated,
         studentsUpdated,
-        totalMemberships: memberships.data?.length || 0,
+        totalMemberships: memberships.length,
         message: `Synced ${studentsCreated} new students and updated ${studentsUpdated} existing students`,
       });
 
