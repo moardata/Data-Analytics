@@ -9,6 +9,7 @@ import { supabaseServer as supabase } from '@/lib/supabase-server';
 import { format, subDays } from 'date-fns';
 import { getCompanyId } from '@/lib/auth/whop-auth';
 import { whopSdk } from '@/lib/whop-sdk';
+import { requireAuthorization } from '@/lib/auth/permissions';
 
 // Add CORS headers for iframe compatibility
 const corsHeaders = {
@@ -89,26 +90,16 @@ export async function GET(request: NextRequest) {
 
     // Verify user has access to this company (skip only in development bypass mode)
     if (!bypassAuth) {
-      const access = await whopSdk.access.checkIfUserHasAccessToCompany({
-        userId: userId!,
-        companyId,
-      });
-
-      if (!access.hasAccess) {
+      try {
+        // Use our new permission system to check if user is authorized
+        const permissions = await requireAuthorization(companyId);
+        console.log('✅ Access verified: user is authorized for company', companyId, 'Role:', permissions.userRole);
+      } catch (authError: any) {
         return NextResponse.json(
-          { error: 'Access denied: You do not have permission to view this company\'s data' },
+          { error: authError.message || 'Access denied: Only course owners and admins can view analytics data' },
           { status: 403, headers: corsHeaders }
         );
       }
-
-      if (access.accessLevel !== 'admin') {
-        return NextResponse.json(
-          { error: 'Access denied: Only admins can view analytics data' },
-          { status: 403, headers: corsHeaders }
-        );
-      }
-      
-      console.log('✅ Access verified: admin level for company', companyId);
     }
 
     // Calculate date range

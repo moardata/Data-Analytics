@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { supabaseServer as supabase } from '@/lib/supabase-server';
 import { whopSdk } from '@/lib/whop-sdk';
 import { headers } from 'next/headers';
+import { requireAuthorization } from '@/lib/auth/permissions';
 
 /**
  * Sync existing students from Whop to the app
@@ -20,6 +21,17 @@ export async function POST(request: NextRequest) {
     }
 
     console.log('🔄 Syncing students for company:', companyId);
+
+    // Check if user is authorized to sync students (only owners/admins)
+    try {
+      const permissions = await requireAuthorization(companyId);
+      console.log('✅ Access verified for student sync: user is authorized, Role:', permissions.userRole);
+    } catch (authError: any) {
+      return NextResponse.json(
+        { error: authError.message || 'Access denied: Only course owners and admins can sync students' },
+        { status: 403 }
+      );
+    }
 
     // Get or create client record
     let { data: client } = await supabase
