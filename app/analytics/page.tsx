@@ -19,7 +19,12 @@ type DateRange = 'week' | 'month' | 'quarter';
 
 function AnalyticsContent() {
   const searchParams = useSearchParams();
-  const { companyId, loading: companyLoading, error: companyError } = useCompanyContext();
+  // TEMPORARY FIX: Use hardcoded company ID to bypass context detection issues
+  const companyId = searchParams.get('companyId') || 'biz_3GYHNPbGkZCEky';
+  const companyLoading = false;
+  const companyError = null;
+  
+  // const { companyId, loading: companyLoading, error: companyError } = useCompanyContext();
   
   const [dashboardData, setDashboardData] = useState<any>(null);
   const [range, setRange] = useState<DateRange>('week');
