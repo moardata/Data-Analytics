@@ -202,8 +202,11 @@ function AnalyticsContent() {
         <div className="text-center max-w-md mx-auto">
           <div className="text-red-400 text-xl mb-2">Company Context Error</div>
           <div className="text-[#9AA4B2] text-sm mb-6">{companyError}</div>
-          <div className="text-[#9AA4B2] text-xs">
+          <div className="text-[#9AA4B2] text-xs mb-4">
             Please ensure you are accessing this app through Whop with proper permissions.
+          </div>
+          <div className="text-[#10B981] text-xs">
+            <strong>For testing:</strong> Add ?companyId=your_company_id to the URL
           </div>
         </div>
       </div>
