@@ -104,7 +104,13 @@ export async function POST(request: NextRequest) {
           type: i.insight_type,
           isAIGenerated: i.metadata?.ai_generated === true,
           model: i.metadata?.model || 'unknown'
-        }))
+        })),
+        openaiConfig: {
+          hasKey: !!process.env.OPENAI_API_KEY,
+          keyLength: process.env.OPENAI_API_KEY?.length || 0,
+          keyPreview: process.env.OPENAI_API_KEY ? 
+            process.env.OPENAI_API_KEY.substring(0, 10) + '...' : 'Not set'
+        }
       }
     }, { headers: corsHeaders });
 
