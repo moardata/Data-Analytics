@@ -34,10 +34,39 @@ export function useCompanyContext(): CompanyContext {
         try {
           // Check if we're in a Whop iframe
           if (window.parent !== window) {
-            // Try to access Whop's context
+            // Listen for Whop's context message
+            const handleWhopMessage = (event: MessageEvent) => {
+              if (event.origin !== 'https://whop.com' && event.origin !== 'https://app.whop.com') {
+                return;
+              }
+              
+              if (event.data && event.data.type === 'whop-context') {
+                const companyId = event.data.companyId || event.data.company_id;
+                if (companyId) {
+                  setCompanyId(companyId);
+                  window.removeEventListener('message', handleWhopMessage);
+                }
+              }
+            };
+            
+            window.addEventListener('message', handleWhopMessage);
+            
+            // Request context from parent Whop iframe
+            window.parent.postMessage({ type: 'request-whop-context' }, '*');
+            
+            // Also try to access Whop's context directly
             const whopContext = (window as any).whop;
             if (whopContext && whopContext.companyId) {
               setCompanyId(whopContext.companyId);
+              return;
+            }
+            
+            // Try to get from window.location or document.referrer if in iframe
+            const currentUrl = new URL(window.location.href);
+            const iframeCompanyId = currentUrl.searchParams.get('company_id') || 
+                                  currentUrl.searchParams.get('companyId');
+            if (iframeCompanyId) {
+              setCompanyId(iframeCompanyId);
               return;
             }
           }
@@ -60,6 +89,19 @@ export function useCompanyContext(): CompanyContext {
           } catch (refererError) {
             console.log('Referer parsing failed:', refererError);
           }
+        }
+
+        // Try to get company context from our API endpoint
+        try {
+          const response = await fetch('/api/whop/context');
+          const data = await response.json();
+          
+          if (data.success && data.companyId) {
+            setCompanyId(data.companyId);
+            return;
+          }
+        } catch (apiError) {
+          console.log('API context fetch failed:', apiError);
         }
 
         // For testing, try to get from localStorage or use a fallback
