@@ -95,22 +95,22 @@ export async function POST(request: NextRequest) {
     let clientId: string;
     
     try {
-      // Try to find existing client
+      // Try to find existing client for this specific company
       const clientsTable = await supabase.from('clients');
-      const { data: existingClient } = await clientsTable.single();
-
-      if (existingClient) {
-        clientId = existingClient.id;
-        console.log('✅ Found existing client');
+      const { data: existingClients } = await clientsTable.select('id').eq('company_id', companyId);
+      
+      if (existingClients && existingClients.length > 0) {
+        clientId = existingClients[0].id;
+        console.log('✅ Found existing client for company:', companyId);
       } else {
-        throw new Error('No existing client');
+        throw new Error('No existing client for this company');
       }
     } catch (error) {
-      // Create new client
+      // Create new client for this company
       const clientsTable = await supabase.from('clients');
       const { data: newClient, error: clientError } = await clientsTable.insert({
         company_id: companyId,
-        whop_user_id: `test_user_${Date.now()}`,
+        whop_user_id: `test_user_${companyId}_${Date.now()}`,
         current_tier: 'core',
         subscription_status: 'active',
       });
@@ -124,7 +124,7 @@ export async function POST(request: NextRequest) {
       }
 
       clientId = newClient[0].id;
-      console.log('✅ Created new client');
+      console.log('✅ Created new client for company:', companyId);
     }
 
     // 2. Create students
