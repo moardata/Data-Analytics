@@ -67,28 +67,37 @@ export async function POST(request: NextRequest) {
               return { data: await response.json(), error: null };
             },
             
-            async then(resolve: any, reject: any) {
-              try {
-                const fullQuery = filters.length > 0 
-                  ? `${query}${query.includes('?') ? '&' : '?'}${filters.join('&')}`
-                  : query;
+            then<TResult1 = any, TResult2 = never>(
+              onfulfilled?: ((value: any) => TResult1 | PromiseLike<TResult1>) | null,
+              onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | null
+            ): PromiseLike<TResult1 | TResult2> {
+              return (async () => {
+                try {
+                  const fullQuery = filters.length > 0 
+                    ? `${query}${query.includes('?') ? '&' : '?'}${filters.join('&')}`
+                    : query;
+                    
+                  const response = await fetch(fullQuery, {
+                    headers: {
+                      'Authorization': `Bearer ${supabaseKey}`,
+                      'apikey': supabaseKey
+                    }
+                  });
                   
-                const response = await fetch(fullQuery, {
-                  headers: {
-                    'Authorization': `Bearer ${supabaseKey}`,
-                    'apikey': supabaseKey
+                  if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${await response.text()}`);
                   }
-                });
-                
-                if (!response.ok) {
-                  throw new Error(`HTTP ${response.status}: ${await response.text()}`);
+                  
+                  const data = await response.json();
+                  const result = { data, error: null };
+                  return onfulfilled ? onfulfilled(result) : result;
+                } catch (error) {
+                  if (onrejected) {
+                    return onrejected(error);
+                  }
+                  throw error;
                 }
-                
-                const data = await response.json();
-                resolve({ data, error: null });
-              } catch (error) {
-                reject(error);
-              }
+              })() as PromiseLike<TResult1 | TResult2>;
             }
           };
         }
