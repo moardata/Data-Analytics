@@ -77,9 +77,11 @@ export async function authenticateWhopUser(request?: WhopRequest): Promise<WhopA
       });
 
       if (access.hasAccess) {
-        accessLevel = access.accessLevel as any;
-        isAdmin = access.accessLevel === 'admin';
-        isOwner = access.accessLevel === 'owner';
+        // Handle different access level formats from Whop SDK
+        const level = access.accessLevel?.toString().toLowerCase() || '';
+        accessLevel = level as any;
+        isAdmin = level === 'admin' || level === 'administrator';
+        isOwner = level === 'owner' || level === 'creator' || level === 'founder';
       }
     } catch (accessError) {
       console.log('⚠️ Could not verify company access, assuming admin for testing');
