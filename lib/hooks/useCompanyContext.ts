@@ -1,3 +1,5 @@
+'use client';
+
 import { useState, useEffect } from 'react';
 
 interface CompanyContext {
@@ -8,7 +10,14 @@ interface CompanyContext {
 
 /**
  * Hook to get the current company context from Whop
- * This automatically detects which company the user is accessing the app from
+ * 
+ * When a Whop app is embedded, the company ID is automatically provided via:
+ * 1. URL parameter: ?companyId=biz_xxxxx
+ * 2. Headers (for server-side requests)
+ * 
+ * For proper setup in Whop:
+ * - Set your app URL to: https://your-app.com?companyId={{COMPANY_ID}}
+ * - Whop will automatically replace {{COMPANY_ID}} with the actual company ID
  */
 export function useCompanyContext(): CompanyContext {
   const [companyId, setCompanyId] = useState<string | null>(null);
@@ -21,103 +30,78 @@ export function useCompanyContext(): CompanyContext {
         setLoading(true);
         setError(null);
         
-        // Get company ID from URL parameters (set by Whop)
+        // Method 1: Get from URL parameters (Whop automatically injects this)
         const urlParams = new URLSearchParams(window.location.search);
-        const urlCompanyId = urlParams.get('companyId');
+        const urlCompanyId = urlParams.get('companyId') || urlParams.get('company_id');
         
         if (urlCompanyId) {
+          console.log('✅ Company ID found in URL:', urlCompanyId);
           setCompanyId(urlCompanyId);
+          setLoading(false);
           return;
         }
 
-        // Try to get company ID from Whop's iframe context
-        try {
-          // Check if we're in a Whop iframe
-          if (window.parent !== window) {
-            // Listen for Whop's context message
-            const handleWhopMessage = (event: MessageEvent) => {
-              if (event.origin !== 'https://whop.com' && event.origin !== 'https://app.whop.com') {
-                return;
-              }
-              
-              if (event.data && event.data.type === 'whop-context') {
-                const companyId = event.data.companyId || event.data.company_id;
-                if (companyId) {
-                  setCompanyId(companyId);
-                  window.removeEventListener('message', handleWhopMessage);
-                }
-              }
-            };
-            
-            window.addEventListener('message', handleWhopMessage);
-            
-            // Request context from parent Whop iframe
-            window.parent.postMessage({ type: 'request-whop-context' }, '*');
-            
-            // Also try to access Whop's context directly
-            const whopContext = (window as any).whop;
-            if (whopContext && whopContext.companyId) {
-              setCompanyId(whopContext.companyId);
-              return;
-            }
-            
-            // Try to get from window.location or document.referrer if in iframe
-            const currentUrl = new URL(window.location.href);
-            const iframeCompanyId = currentUrl.searchParams.get('company_id') || 
-                                  currentUrl.searchParams.get('companyId');
-            if (iframeCompanyId) {
-              setCompanyId(iframeCompanyId);
-              return;
-            }
+        // Method 2: Check if we're in an iframe and try to get from window context
+        if (window.self !== window.top) {
+          // We're in an iframe - wait a bit for Whop to inject context
+          await new Promise(resolve => setTimeout(resolve, 500));
+          
+          // Try to access Whop SDK context from window
+          const whopContext = (window as any).WhopSdk || (window as any).whop;
+          if (whopContext?.companyId) {
+            console.log('✅ Company ID found in Whop SDK context:', whopContext.companyId);
+            setCompanyId(whopContext.companyId);
+            setLoading(false);
+            return;
           }
-        } catch (whopError) {
-          console.log('Whop context not available:', whopError);
-        }
 
-        // Try to get from referer URL
-        const referer = document.referrer;
-        if (referer) {
-          try {
-            const refererUrl = new URL(referer);
-            const refererCompanyId = refererUrl.searchParams.get('companyId') || 
-                                   refererUrl.pathname.match(/\/company\/([^\/]+)/)?.[1];
-            
-            if (refererCompanyId) {
-              setCompanyId(refererCompanyId);
-              return;
-            }
-          } catch (refererError) {
-            console.log('Referer parsing failed:', refererError);
+          // Try to get from URL again after wait (in case URL updated)
+          const retryUrlParams = new URLSearchParams(window.location.search);
+          const retryCompanyId = retryUrlParams.get('companyId') || retryUrlParams.get('company_id');
+          
+          if (retryCompanyId) {
+            console.log('✅ Company ID found in URL (retry):', retryCompanyId);
+            setCompanyId(retryCompanyId);
+            setLoading(false);
+            return;
           }
         }
 
-        // Try to get company context from our API endpoint
+        // Method 3: Try to get from our backend API
         try {
           const response = await fetch('/api/whop/context');
           const data = await response.json();
           
-          if (data.success && data.companyId) {
+          if (data.success && data.companyId && data.companyId !== 'test_company') {
+            console.log('✅ Company ID found from API:', data.companyId);
             setCompanyId(data.companyId);
+            setLoading(false);
             return;
           }
         } catch (apiError) {
-          console.log('API context fetch failed:', apiError);
+          console.log('⚠️ Could not fetch company ID from API:', apiError);
         }
 
-        // For testing, try to get from localStorage or use a fallback
-        const testCompanyId = localStorage.getItem('testCompanyId') || 'test_company';
-        
-        // Only use test company ID if we're in development or if no other method worked
+        // Method 4: Development fallback
         if (process.env.NODE_ENV === 'development' || window.location.hostname === 'localhost') {
-          setCompanyId(testCompanyId);
+          const devCompanyId = localStorage.getItem('devCompanyId') || 'test_company';
+          console.log('⚠️ Development mode: using fallback company ID:', devCompanyId);
+          setCompanyId(devCompanyId);
+          setLoading(false);
           return;
         }
 
-        // If we're in production but still can't find company context, show a helpful error with instructions
-        setError('No company context found. Please ensure you are accessing this app through Whop with a valid company ID. For testing, you can add ?companyId=your_company_id to the URL.');
+        // If we get here, no company ID was found
+        console.error('❌ No company ID found');
+        setError(
+          'No company context found. Please ensure your Whop app URL is configured correctly. ' +
+          'The URL should be: https://your-app.vercel.app?companyId={{COMPANY_ID}} ' +
+          'For testing, you can manually add ?companyId=your_company_id to the URL.'
+        );
+        setLoading(false);
       } catch (err) {
+        console.error('❌ Error getting company context:', err);
         setError(err instanceof Error ? err.message : 'Failed to get company context');
-      } finally {
         setLoading(false);
       }
     }
