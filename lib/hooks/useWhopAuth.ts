@@ -64,7 +64,8 @@ export function useWhopAuth(): WhopAuthState {
         const urlCompanyId = searchParams.get('companyId') || searchParams.get('company_id');
         
         if (!urlCompanyId) {
-          // No company ID means app is not configured correctly in Whop
+          // No company ID in URL
+          // For testing/development: Show helpful error with instructions
           setState({
             userId: null,
             isAuthenticated: false,
@@ -72,7 +73,7 @@ export function useWhopAuth(): WhopAuthState {
             hasCompanyAccess: false,
             accessLevel: 'none',
             loading: false,
-            error: 'CONFIGURATION REQUIRED: This app must be accessed through Whop. Please configure your Whop app URL to include ?companyId={{COMPANY_ID}}',
+            error: 'TESTING MODE: Add your company ID to test. Example: ?companyId=biz_3GYHNPbGkZCEky',
             isAdmin: false,
             isOwner: false,
           });

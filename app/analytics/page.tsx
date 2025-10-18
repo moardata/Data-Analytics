@@ -211,39 +211,77 @@ function AnalyticsContent() {
 
   // Show authentication error
   if (auth.error || !auth.hasCompanyAccess) {
+    const isTestingMode = auth.error?.includes('TESTING MODE');
+    const currentUrl = typeof window !== 'undefined' ? window.location.href.split('?')[0] : '';
+    const testUrl = `${currentUrl}?companyId=biz_3GYHNPbGkZCEky`;
+    
     return (
       <div className="min-h-screen bg-[#0f1115] flex items-center justify-center">
-        <div className="text-center max-w-md mx-auto px-6">
+        <div className="text-center max-w-2xl mx-auto px-6">
           <div className="mb-6">
-            <svg className="w-16 h-16 text-red-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-            </svg>
+            {isTestingMode ? (
+              <svg className="w-16 h-16 text-yellow-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
+              </svg>
+            ) : (
+              <svg className="w-16 h-16 text-red-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+              </svg>
+            )}
           </div>
           
-          <div className="text-red-400 text-xl font-semibold mb-3">Access Restricted</div>
+          <div className={`${isTestingMode ? 'text-yellow-400' : 'text-red-400'} text-xl font-semibold mb-3`}>
+            {isTestingMode ? 'Testing Mode' : 'Access Restricted'}
+          </div>
           
           <div className="text-[#9AA4B2] text-sm mb-6">
             {auth.error || 'You do not have permission to access this company\'s analytics.'}
           </div>
           
-          <div className="bg-[#1E2228] border border-[#2A2F36] rounded-lg p-4 mb-6">
-            <div className="text-[#D1D5DB] text-sm font-medium mb-2">Requirements:</div>
-            <ul className="text-[#9AA4B2] text-xs space-y-1 text-left">
-              <li>✓ Must be accessed through Whop</li>
-              <li>✓ Must have admin or owner role</li>
-              <li>✓ Must belong to the company</li>
-            </ul>
-          </div>
+          {isTestingMode ? (
+            <div className="bg-[#1E2228] border border-[#2A2F36] rounded-lg p-6 mb-6 text-left">
+              <div className="text-[#D1D5DB] text-sm font-medium mb-4">🧪 To test your app:</div>
+              
+              <div className="mb-4">
+                <div className="text-[#9AA4B2] text-xs mb-2">Click this URL to test:</div>
+                <a 
+                  href={testUrl}
+                  className="block bg-[#10B981]/10 border border-[#10B981]/30 rounded p-3 text-[#10B981] text-xs font-mono hover:bg-[#10B981]/20 transition-colors break-all"
+                >
+                  {testUrl}
+                </a>
+              </div>
+
+              <div className="border-t border-[#2A2F36] pt-4 mt-4">
+                <div className="text-[#9AA4B2] text-xs mb-2">Or copy this URL format:</div>
+                <div className="bg-black/30 rounded p-3 text-[#10B981] text-xs font-mono break-all">
+                  {currentUrl}?companyId=YOUR_COMPANY_ID
+                </div>
+              </div>
+
+              <div className="border-t border-[#2A2F36] pt-4 mt-4">
+                <div className="text-[#9AA4B2] text-xs mb-2">Your company ID is in Whop dashboard:</div>
+                <div className="text-[#10B981] text-xs">
+                  Go to your Whop company → Settings → Copy company ID (starts with "biz_")
+                </div>
+              </div>
+            </div>
+          ) : (
+            <div className="bg-[#1E2228] border border-[#2A2F36] rounded-lg p-4 mb-6">
+              <div className="text-[#D1D5DB] text-sm font-medium mb-2">Requirements:</div>
+              <ul className="text-[#9AA4B2] text-xs space-y-1 text-left">
+                <li>✓ Must be accessed through Whop</li>
+                <li>✓ Must have admin or owner role</li>
+                <li>✓ Must belong to the company</li>
+              </ul>
+            </div>
+          )}
           
-          {auth.companyId && (
+          {auth.companyId && !isTestingMode && (
             <div className="text-[#9AA4B2] text-xs mb-4">
               Company ID: <span className="text-[#10B981] font-mono">{auth.companyId}</span>
             </div>
           )}
-          
-          <div className="text-[#10B981] text-xs bg-[#10B981]/10 border border-[#10B981]/20 rounded p-3">
-            <strong>For testing:</strong> Add <code className="bg-black/30 px-1 rounded">?companyId=your_company_id</code> to the URL
-          </div>
         </div>
       </div>
     );
