@@ -5,14 +5,18 @@
 
 'use client';
 
-import React from 'react';
-import { useRouter } from 'next/navigation';
-import { Settings as SettingsIcon, User, Bell, Key, Database } from 'lucide-react';
+import React, { useState } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { Settings as SettingsIcon, User, Bell, Key, Database, RefreshCw } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 
 export default function SettingsPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const companyId = searchParams.get('companyId');
+  const [syncing, setSyncing] = useState(false);
+  const [syncMessage, setSyncMessage] = useState('');
 
   const handleUpgrade = () => {
     router.push('/upgrade');
@@ -32,6 +36,37 @@ export default function SettingsPage() {
     // TODO: Implement support contact
     alert('Support contact coming soon!');
   };
+
+  const handleSyncStudents = async () => {
+    if (!companyId) {
+      setSyncMessage('❌ No company ID found. Please access through Whop.');
+      return;
+    }
+
+    setSyncing(true);
+    setSyncMessage('🔄 Syncing students from Whop...');
+
+    try {
+      const response = await fetch(`/api/sync/students?companyId=${companyId}`, {
+        method: 'POST',
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        setSyncMessage(`✅ ${data.message}`);
+        setTimeout(() => {
+          router.push(`/students?companyId=${companyId}`);
+        }, 2000);
+      } else {
+        setSyncMessage(`❌ ${data.error || 'Failed to sync students'}`);
+      }
+    } catch (error) {
+      setSyncMessage('❌ Error syncing students. Please try again.');
+    } finally {
+      setSyncing(false);
+    }
+  };
   return (
     <div className="min-h-screen bg-gradient-to-b from-[#0d0f12] to-[#14171c] p-8">
       <div className="max-w-4xl mx-auto space-y-8">
@@ -45,6 +80,45 @@ export default function SettingsPage() {
         </div>
 
         <div className="space-y-6">
+          <Card className="border border-[#2A2F36] bg-[#171A1F] shadow-lg">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-[#E5E7EB]">
+                <Database className="h-5 w-5 text-[#10B981]" />
+                Data Management
+              </CardTitle>
+              <CardDescription className="text-[#9AA4B2]">
+                Sync and manage your student data
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="text-sm text-[#D1D5DB]">
+                <p className="mb-2">
+                  Import existing students from Whop into your analytics dashboard.
+                </p>
+                <p className="text-xs text-[#9AA4B2]">
+                  This will sync all current members from your Whop group.
+                </p>
+              </div>
+              <Button 
+                onClick={handleSyncStudents}
+                disabled={syncing}
+                className="bg-[#0B2C24] hover:bg-[#0E3A2F] text-white border border-[#17493A] flex items-center gap-2"
+              >
+                <RefreshCw className={`h-4 w-4 ${syncing ? 'animate-spin' : ''}`} />
+                {syncing ? 'Syncing...' : 'Sync Students from Whop'}
+              </Button>
+              {syncMessage && (
+                <div className={`text-sm p-3 rounded ${
+                  syncMessage.startsWith('✅') ? 'bg-green-900/20 text-green-400' :
+                  syncMessage.startsWith('🔄') ? 'bg-blue-900/20 text-blue-400' :
+                  'bg-red-900/20 text-red-400'
+                }`}>
+                  {syncMessage}
+                </div>
+              )}
+            </CardContent>
+          </Card>
+
           <Card className="border border-[#2A2F36] bg-[#171A1F] shadow-lg">
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-[#E5E7EB]">
