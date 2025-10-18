@@ -48,6 +48,13 @@ export async function POST(request: NextRequest) {
       client = newClient;
     }
 
+    if (!client) {
+      return NextResponse.json(
+        { error: 'Failed to get or create client record' },
+        { status: 500 }
+      );
+    }
+
     // Use Whop API directly to get company members
     try {
       const whopApiKey = process.env.WHOP_API_KEY;
