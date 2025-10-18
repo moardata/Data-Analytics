@@ -83,16 +83,27 @@ export function useWhopAuth(): WhopAuthState {
         console.log('✅ Company ID from URL:', urlCompanyId);
 
         // Step 2: Verify authentication and access with backend
+        console.log('🔐 Calling /api/auth/permissions...');
+        
         const response = await fetch('/api/auth/permissions', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({ companyId: urlCompanyId })
+        }).catch(error => {
+          console.error('❌ Fetch error:', error);
+          throw error;
         });
 
+        console.log('📡 Response status:', response.status);
+
         if (!response.ok) {
-          const errorData = await response.json().catch(() => ({ error: 'Authentication failed' }));
+          const errorData = await response.json().catch(() => ({ 
+            error: `Authentication failed: ${response.status} ${response.statusText}` 
+          }));
+          
+          console.error('❌ Auth failed:', errorData);
           
           setState({
             userId: null,
@@ -109,6 +120,7 @@ export function useWhopAuth(): WhopAuthState {
         }
 
         const data = await response.json();
+        console.log('✅ Auth response:', data);
 
         if (!data.success || !data.permissions.isAuthorized) {
           setState({

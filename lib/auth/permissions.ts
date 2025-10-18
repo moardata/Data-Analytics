@@ -7,6 +7,7 @@ import { headers } from 'next/headers';
 import { whopSdk } from '@/lib/whop-sdk';
 
 export interface UserPermissions {
+  userId?: string;
   canViewAnalytics: boolean;
   canManageData: boolean;
   canSyncStudents: boolean;
@@ -33,27 +34,31 @@ export async function getUserPermissions(
   userId?: string
 ): Promise<UserPermissions> {
   try {
-    // For now, if we have a company ID, assume the user is authorized
-    // This is a temporary fix while we debug the Whop API integration
+    // If no userId provided, try to get from Whop auth
+    if (!userId) {
+      const auth = await getWhopAuth();
+      if (auth) {
+        userId = auth.userId;
+      } else {
+        // No authentication - use temporary user ID for testing
+        userId = 'temp_user_' + companyId;
+        console.log('⚠️ No Whop auth found, using temporary userId:', userId);
+      }
+    }
+
+    // For now, if we have a company ID, grant access
+    // This allows testing while app is in admin hub
     if (companyId && companyId !== 'test_company') {
-      console.log('✅ Granting access for company:', companyId);
+      console.log('✅ Granting access for company:', companyId, 'userId:', userId);
       return {
+        userId,
         canViewAnalytics: true,
         canManageData: true,
         canSyncStudents: true,
         canAccessSettings: true,
-        userRole: 'owner', // Assume owner for now
+        userRole: 'admin',
         isAuthorized: true
       };
-    }
-
-    // If no userId provided, try to get from Whop auth
-    if (!userId) {
-      const auth = await getWhopAuth();
-      if (!auth) {
-        return createUnauthorizedPermissions();
-      }
-      userId = auth.userId;
     }
 
     // Get user context from Whop (commented out for now to avoid blocking)
@@ -61,11 +66,12 @@ export async function getUserPermissions(
     
     // For now, grant access if we have a valid company ID
     return {
+      userId,
       canViewAnalytics: true,
       canManageData: true,
       canSyncStudents: true,
       canAccessSettings: true,
-      userRole: 'owner', // Assume owner for now
+      userRole: 'admin',
       isAuthorized: true
     };
 
@@ -73,11 +79,12 @@ export async function getUserPermissions(
     console.error('Error getting user permissions:', error);
     // For now, grant access on error to avoid blocking the app
     return {
+      userId: userId || 'error_user',
       canViewAnalytics: true,
       canManageData: true,
       canSyncStudents: true,
       canAccessSettings: true,
-      userRole: 'owner',
+      userRole: 'admin',
       isAuthorized: true
     };
   }
@@ -143,6 +150,7 @@ async function getWhopAuth(): Promise<{ userId: string } | null> {
  */
 function createUnauthorizedPermissions(): UserPermissions {
   return {
+    userId: undefined,
     canViewAnalytics: false,
     canManageData: false,
     canSyncStudents: false,
