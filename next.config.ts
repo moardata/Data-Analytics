@@ -6,6 +6,10 @@ const nextConfig: NextConfig = {
 	images: {
 		remotePatterns: [{ hostname: "**" }],
 	},
+	env: {
+		// Explicitly expose server-side environment variables
+		SUPABASE_SERVICE_ROLE_KEY: process.env.SUPABASE_SERVICE_ROLE_KEY,
+	},
 };
 
 export default withWhopAppConfig(nextConfig);
