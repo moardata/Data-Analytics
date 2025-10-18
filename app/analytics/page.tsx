@@ -299,6 +299,48 @@ function AnalyticsContent() {
       <div className="max-w-[1600px] mx-auto p-6">
         <PermissionsBanner missing={missingPermissions} />
         
+        {/* Sync Students Button - Always visible when no data */}
+        {dashboardData && dashboardData.totalStudents === 0 && (
+          <div className="mb-6 p-4 bg-[#1E2228] rounded-lg border border-[#2A2F36]">
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className="text-lg font-semibold text-white mb-2">No Students Found</h3>
+                <p className="text-[#9AA4B2] text-sm">
+                  Import your existing students from Whop to start tracking analytics.
+                </p>
+              </div>
+              <button
+                onClick={handleSyncStudents}
+                disabled={syncing}
+                className="px-6 py-3 bg-[#10B981] text-white rounded-lg hover:bg-[#0E3A2F] disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+              >
+                {syncing ? (
+                  <>
+                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                    Syncing...
+                  </>
+                ) : (
+                  <>
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                    </svg>
+                    Sync Students from Whop
+                  </>
+                )}
+              </button>
+            </div>
+            {syncMessage && (
+              <div className={`mt-3 text-sm p-3 rounded ${
+                syncMessage.startsWith('✅') ? 'bg-green-900/20 text-green-400' :
+                syncMessage.startsWith('🔄') ? 'bg-blue-900/20 text-blue-400' :
+                'bg-red-900/20 text-red-400'
+              }`}>
+                {syncMessage}
+              </div>
+            )}
+          </div>
+        )}
+        
         <DashboardCreatorAnalytics
           data={dashboardData}
           onExportEventsCsv={handleExportEventsCsv}
