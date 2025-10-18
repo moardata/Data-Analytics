@@ -116,6 +116,9 @@ export async function GET(request: NextRequest) {
     const auth = await requireAdminAccess({ request });
     const companyId = auth.companyId;
 
+    // Get search params from URL
+    const { searchParams } = new URL(request.url);
+
     // First, get the client record for this company
     const { data: clientData, error: clientError } = await supabase
       .from('clients')
