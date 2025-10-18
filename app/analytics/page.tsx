@@ -11,6 +11,7 @@ import { useSearchParams } from 'next/navigation';
 import DashboardCreatorAnalytics from '@/components/DashboardCreatorAnalytics';
 import { adaptToCreatorAnalytics } from '@/lib/utils/adaptDashboardCreatorAnalytics';
 import { PermissionsBanner } from '@/components/PermissionsBanner';
+import { useCompanyContext } from '@/lib/hooks/useCompanyContext';
 
 export const dynamic = 'force-dynamic';
 
@@ -18,7 +19,7 @@ type DateRange = 'week' | 'month' | 'quarter';
 
 function AnalyticsContent() {
   const searchParams = useSearchParams();
-  const companyId = searchParams.get('companyId') || process.env.NEXT_PUBLIC_WHOP_COMPANY_ID;
+  const { companyId, loading: companyLoading, error: companyError } = useCompanyContext();
   
   const [dashboardData, setDashboardData] = useState<any>(null);
   const [range, setRange] = useState<DateRange>('week');
@@ -34,13 +35,11 @@ function AnalyticsContent() {
     setIsInIframe(inIframe);
     console.log('🔍 Iframe detection:', inIframe);
     
-    // For development: if no companyId, use a default one
-    if (!companyId && process.env.NODE_ENV === 'development') {
-      console.log('🔧 Development mode: Using default companyId');
+    // Only fetch data if we have a companyId and it's not loading
+    if (companyId && !companyLoading) {
+      fetchData();
     }
-    
-    fetchData();
-  }, [range, companyId]);
+  }, [range, companyId, companyLoading]);
 
   const createClientRecord = async () => {
     try {
@@ -69,11 +68,17 @@ function AnalyticsContent() {
   };
 
   const fetchData = async () => {
+    if (!companyId) {
+      setError('No company context found. Please ensure you are accessing this app through Whop.');
+      setLoading(false);
+      return;
+    }
+    
     setLoading(true);
     setError(null);
     setAccessError(null);
     try {
-      // Use companyId from URL (passed from Whop)
+      // Use companyId from company context
       const apiUrl = `/api/analytics/metrics?companyId=${companyId}&timeRange=${range}`;
       
       // Add iframe-specific headers if needed
@@ -144,6 +149,31 @@ function AnalyticsContent() {
     console.log('📊 Analytics event:', evt);
     // In production, send to your analytics service (e.g., PostHog, Mixpanel, etc.)
   };
+
+  if (companyLoading) {
+    return (
+      <div className="min-h-screen bg-[#0f1115] flex items-center justify-center">
+        <div className="text-[#D1D5DB] text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#10B981] mx-auto mb-4"></div>
+          <p>Detecting company context...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (companyError) {
+    return (
+      <div className="min-h-screen bg-[#0f1115] flex items-center justify-center">
+        <div className="text-center max-w-md mx-auto">
+          <div className="text-red-400 text-xl mb-2">Company Context Error</div>
+          <div className="text-[#9AA4B2] text-sm mb-6">{companyError}</div>
+          <div className="text-[#9AA4B2] text-xs">
+            Please ensure you are accessing this app through Whop with proper permissions.
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   if (loading) {
     return (
