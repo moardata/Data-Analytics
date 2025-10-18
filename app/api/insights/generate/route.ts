@@ -150,7 +150,6 @@ export async function GET(request: NextRequest) {
 
     const clientId = clientData.id; // This is the actual UUID
 
-    const { searchParams } = new URL(request.url);
     const limit = parseInt(searchParams.get('limit') || '10');
     const dismissed = searchParams.get('dismissed') === 'true';
 
