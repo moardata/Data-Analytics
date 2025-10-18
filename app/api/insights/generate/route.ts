@@ -93,6 +93,12 @@ export async function POST(request: NextRequest) {
       anomalies = await detectAnomalies(clientId);
     }
 
+    // Check OpenAI configuration
+    const hasOpenAIKey = !!process.env.OPENAI_API_KEY;
+    const keyLength = process.env.OPENAI_API_KEY?.length || 0;
+    const keyPreview = process.env.OPENAI_API_KEY ? 
+      process.env.OPENAI_API_KEY.substring(0, 10) + '...' : 'Not set';
+    
     return NextResponse.json({
       success: true,
       insights: [...insights, ...anomalies],
@@ -106,11 +112,10 @@ export async function POST(request: NextRequest) {
           model: i.metadata?.model || 'unknown'
         })),
         openaiConfig: {
-          hasKey: !!process.env.OPENAI_API_KEY,
-          keyLength: process.env.OPENAI_API_KEY?.length || 0,
-          keyPreview: process.env.OPENAI_API_KEY ? 
-            process.env.OPENAI_API_KEY.substring(0, 10) + '...' : 'Not set',
-          status: process.env.OPENAI_API_KEY ? '✅ CONFIGURED' : '❌ MISSING'
+          hasKey: hasOpenAIKey,
+          keyLength,
+          keyPreview,
+          status: hasOpenAIKey ? '✅ CONFIGURED' : '❌ MISSING'
         }
       }
     }, { headers: corsHeaders });
