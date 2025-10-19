@@ -31,16 +31,40 @@ export async function GET(request: NextRequest) {
     
     console.log('✅ [Analytics] Auth successful:', { userId, companyId, isTestMode: auth.isTestMode });
 
+    // Check if Supabase is configured
+    if (!supabase) {
+      console.warn('⚠️ Supabase not configured. Returning empty test data.');
+      return NextResponse.json(getEmptyMetrics(), { headers: corsHeaders });
+    }
+
     // Calculate date range
     const days = timeRange === 'week' ? 7 : timeRange === 'month' ? 30 : 90;
     const startDate = subDays(new Date(), days).toISOString();
 
     // First, get the client record for this company
-    const { data: clientData, error: clientError } = await supabase
+    // Try both column names (company_id and whop_company_id)
+    let clientData = null;
+    let clientError = null;
+    
+    const result1 = await supabase
       .from('clients')
       .select('id')
-      .eq('company_id', companyId)
+      .eq('whop_company_id', companyId)
       .maybeSingle();
+    
+    if (result1.data) {
+      clientData = result1.data;
+    } else {
+      // Try alternate column name
+      const result2 = await supabase
+        .from('clients')
+        .select('id')
+        .eq('company_id', companyId)
+        .maybeSingle();
+      
+      clientData = result2.data;
+      clientError = result2.error;
+    }
 
     if (clientError) {
       console.error('Error fetching client:', clientError);
@@ -287,5 +311,37 @@ function generateProgressData(entities: any[]) {
   }));
 }
 
+function getEmptyMetrics() {
+  return {
+    totalStudents: 0,
+    activeSubscriptions: 0,
+    totalRevenue: 0,
+    grossRevenue: 0,
+    refundedAmount: 0,
+    disputedAmount: 0,
+    netRevenue: 0,
+    refundCount: 0,
+    disputeCount: 0,
+    engagementRate: 0,
+    completionRate: 0,
+    newThisWeek: 0,
+    studentsChange: 0,
+    subscriptionsChange: 0,
+    revenueChange: 0,
+    engagementChange: 0,
+    completionChange: 0,
+    revenueData: [],
+    engagementData: [],
+    subscriptionData: [],
+    progressData: [],
+    totalCourses: 0,
+    totalEnrollments: 0,
+    averageEnrollmentsPerCourse: 0,
+    courseCompletionRate: 0,
+    averageCourseProgress: 0,
+    completedCourses: 0,
+    activeCourseEnrollments: 0,
+  };
+}
 
 
