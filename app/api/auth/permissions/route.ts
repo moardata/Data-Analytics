@@ -7,6 +7,51 @@ import { simpleAuth } from '@/lib/auth/simple-auth';
  * Works in testing AND production
  */
 
+export async function GET(request: NextRequest) {
+  const startTime = Date.now();
+  
+  try {
+    const { searchParams } = new URL(request.url);
+    const companyId = searchParams.get('companyId');
+
+    if (!companyId) {
+      return NextResponse.json({
+        success: false,
+        error: 'Company ID is required'
+      }, { status: 400 });
+    }
+
+    console.log('🔐 [Permissions API GET] Checking ownership for company:', companyId);
+    
+    // Use simple auth (never hangs, max 1s timeout)
+    const auth = await simpleAuth(request);
+    
+    const elapsed = Date.now() - startTime;
+    console.log(`✅ [Permissions API GET] Complete in ${elapsed}ms - Owner: ${auth.isOwner}`);
+
+    return NextResponse.json({
+      success: true,
+      isOwner: auth.isOwner,
+      isAdmin: auth.isAdmin,
+      accessLevel: auth.accessLevel,
+      userId: auth.userId,
+      companyId: auth.companyId,
+      isTestMode: auth.isTestMode,
+    });
+
+  } catch (error: any) {
+    const elapsed = Date.now() - startTime;
+    console.error(`❌ [Permissions API GET] Failed in ${elapsed}ms:`, error);
+    
+    return NextResponse.json({
+      success: false,
+      error: error.message || 'Failed to check permissions',
+      isOwner: false,
+      accessLevel: 'none',
+    }, { status: 500 });
+  }
+}
+
 export async function POST(request: NextRequest) {
   const startTime = Date.now();
   
