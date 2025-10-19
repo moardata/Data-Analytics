@@ -45,6 +45,7 @@ export function OwnerOnlyGuard({ children }: { children: React.ReactNode }) {
         const data = await response.json();
 
         console.log('🔐 [OwnerOnlyGuard] Permissions check:', data);
+        console.log('🔐 [OwnerOnlyGuard] Raw response:', JSON.stringify(data, null, 2));
 
         // In test mode, always grant owner access
         if (data.isTestMode) {
@@ -57,6 +58,7 @@ export function OwnerOnlyGuard({ children }: { children: React.ReactNode }) {
           return;
         }
 
+        console.log('🔐 [OwnerOnlyGuard] Production mode - checking isOwner:', data.isOwner);
         setOwnerCheck({
           isOwner: data.isOwner || false,
           accessLevel: data.accessLevel || 'none',
