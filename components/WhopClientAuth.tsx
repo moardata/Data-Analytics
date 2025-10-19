@@ -110,16 +110,30 @@ export function WhopClientAuth({ children }: { children: React.ReactNode }) {
             experienceId: urlData?.experienceId
           });
           
-          // If we have company or experience data, likely the owner
-          if (hasCompanyRoute || hasExperienceRoute || hasExperienceId) {
+          // STRICT OWNERSHIP CHECK: Only grant access if we have specific ownership indicators
+          // Check for "live-analytics" company route (indicates admin access)
+          const isLiveAnalytics = hasCompanyRoute === 'live-analytics';
+          
+          // Check for specific experience patterns that indicate ownership
+          const isOwnerExperience = hasExperienceRoute && hasExperienceRoute.includes('creator-iq');
+          
+          console.log('🔐 [WhopClientAuth] Strict ownership check:', {
+            isLiveAnalytics,
+            isOwnerExperience,
+            companyRoute: hasCompanyRoute,
+            experienceRoute: hasExperienceRoute
+          });
+          
+          // Only grant access if we have strong ownership indicators
+          if (isLiveAnalytics || isOwnerExperience) {
             isOwner = true;
-            logic = 'OWNER (app view + company/experience data detected)';
-            console.log('🔐 [WhopClientAuth] Ownership granted based on URL data');
+            logic = 'OWNER (app view + strong ownership indicators detected)';
+            console.log('🔐 [WhopClientAuth] Ownership granted based on strict criteria');
           } else {
-            // Fallback: grant access for debugging
-            isOwner = true;
-            logic = 'OWNER (app view - fallback for debugging)';
-            console.log('🔐 [WhopClientAuth] Fallback: granting access for debugging');
+            // BLOCK access for students
+            isOwner = false;
+            logic = 'BLOCKED (app view + no strong ownership indicators)';
+            console.log('🔐 [WhopClientAuth] Access blocked - insufficient ownership indicators');
           }
           /*
           try {
