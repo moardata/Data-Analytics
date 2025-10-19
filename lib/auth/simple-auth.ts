@@ -119,20 +119,18 @@ export async function simpleAuth(request: Request): Promise<SimpleAuthResult> {
             hasAccess: accessCheck.hasAccess 
           });
         } else {
-          console.log('⚠️ [SimpleAuth] Access check timed out - GRANTING OWNER ACCESS (fail-open for testing)');
-          // TEMPORARILY grant owner access when timeout occurs
-          // This helps with testing while we debug the SDK
-          accessLevel = 'owner';
-          isOwner = true;
-          isAdmin = true;
+          console.log('❌ [SimpleAuth] Access check timed out - BLOCKING ACCESS (fail-closed for security)');
+          // SECURITY: Block access on timeout (fail-closed)
+          accessLevel = 'member';
+          isOwner = false;
+          isAdmin = false;
         }
       } catch (roleError) {
-        console.log('⚠️ [SimpleAuth] Role check failed - GRANTING OWNER ACCESS (fail-open for testing):', roleError);
-        // TEMPORARILY grant owner access on error
-        // This helps with testing while we debug the SDK
-        accessLevel = 'owner';
-        isOwner = true;
-        isAdmin = true;
+        console.log('❌ [SimpleAuth] Role check failed - BLOCKING ACCESS (fail-closed for security):', roleError);
+        // SECURITY: Block access on error (fail-closed)
+        accessLevel = 'member';
+        isOwner = false;
+        isAdmin = false;
       }
     } else {
       // Test mode - grant owner access for development
