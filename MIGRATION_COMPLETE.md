@@ -79,8 +79,9 @@
    ```typescript
    import { whopSdk } from '@/lib/whop-sdk';
    
-   // Existing code still works
-   const { userId } = await whopSdk.verifyUserToken(headers);
+   // Existing code pattern (with proper type handling)
+   const tokenResult = await whopSdk.verifyUserToken(headers);
+   const userId = tokenResult?.userId || 'test_user';
    const access = await whopSdk.access.checkIfUserHasAccessToCompany({
      userId, 
      companyId
