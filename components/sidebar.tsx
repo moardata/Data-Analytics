@@ -6,7 +6,7 @@
 'use client'
 
 import Link from 'next/link'
-import { usePathname } from 'next/navigation'
+import { usePathname, useSearchParams } from 'next/navigation'
 import { 
   LayoutDashboard, 
   FileText, 
@@ -33,6 +33,17 @@ const bottomItems = [
 
 export function Sidebar() {
   const pathname = usePathname()
+  const searchParams = useSearchParams()
+
+  // Preserve companyId and experienceId in navigation
+  const companyId = searchParams.get('companyId') || searchParams.get('company_id')
+  const experienceId = searchParams.get('experienceId') || searchParams.get('experience_id')
+  
+  // Build query string to preserve in navigation
+  const queryParams = new URLSearchParams()
+  if (companyId) queryParams.set('companyId', companyId)
+  if (experienceId) queryParams.set('experienceId', experienceId)
+  const queryString = queryParams.toString() ? `?${queryParams.toString()}` : ''
 
   return (
     <aside className="fixed left-0 top-0 h-screen w-64 border-r border-[#2A2F36] bg-[#12151A] flex flex-col z-50">
@@ -55,7 +66,7 @@ export function Sidebar() {
           return (
             <Link
               key={item.href}
-              href={item.href}
+              href={`${item.href}${queryString}`}
                 className={cn(
                 "flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-colors duration-150 group",
                 isActive
@@ -79,7 +90,7 @@ export function Sidebar() {
           return (
             <Link
               key={item.href}
-              href={item.href}
+              href={`${item.href}${queryString}`}
               className={cn(
                 "flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-colors duration-150 group",
                 isActive

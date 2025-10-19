@@ -6,10 +6,21 @@
 'use client';
 
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useSearchParams } from 'next/navigation';
 
 export function Navigation() {
   const pathname = usePathname();
+  const searchParams = useSearchParams();
+
+  // Preserve companyId and experienceId in navigation
+  const companyId = searchParams.get('companyId') || searchParams.get('company_id');
+  const experienceId = searchParams.get('experienceId') || searchParams.get('experience_id');
+  
+  // Build query string to preserve in navigation
+  const queryParams = new URLSearchParams();
+  if (companyId) queryParams.set('companyId', companyId);
+  if (experienceId) queryParams.set('experienceId', experienceId);
+  const queryString = queryParams.toString() ? `?${queryParams.toString()}` : '';
 
   const navItems = [
     { href: '/', label: 'Home', icon: '🏠' },
@@ -43,7 +54,7 @@ export function Navigation() {
                 return (
                   <Link
                     key={item.href}
-                    href={item.href}
+                    href={`${item.href}${queryString}`}
                     className={`inline-flex items-center px-5 py-2 text-lg font-bold rounded-xl transition-all ${
                       isActive
                         ? 'bg-[#10B981] text-white shadow-lg'
@@ -60,7 +71,7 @@ export function Navigation() {
 
           {/* Right side - User menu / Actions */}
           <div className="flex items-center">
-            <Link href="/upgrade">
+            <Link href={`/upgrade${queryString}`}>
               <button className="px-6 py-3 text-base font-bold text-white bg-gradient-to-r from-[#10B981] to-[#0E3A2F] rounded-xl hover:shadow-lg transition-all hover:scale-105">
                 ⚡ Upgrade
               </button>
@@ -79,7 +90,7 @@ export function Navigation() {
             return (
               <Link
                 key={item.href}
-                href={item.href}
+                href={`${item.href}${queryString}`}
                 className={`block px-4 py-3 text-base font-semibold rounded-xl transition-all ${
                   isActive
                     ? 'bg-[#10B981] text-white shadow-md'
