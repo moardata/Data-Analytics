@@ -126,7 +126,16 @@ export async function GET(request: NextRequest) {
       entities: entitiesResult.data?.length || 0,
       courses: coursesResult.data?.length || 0,
       enrollments: enrollmentsResult.data?.length || 0,
+      clientId: clientId,
+      companyId: companyId,
     });
+
+    // Log any errors
+    if (eventsResult.error) console.error('Events error:', eventsResult.error);
+    if (subscriptionsResult.error) console.error('Subscriptions error:', subscriptionsResult.error);
+    if (entitiesResult.error) console.error('Entities error:', entitiesResult.error);
+    if (coursesResult.error) console.error('Courses error:', coursesResult.error);
+    if (enrollmentsResult.error) console.error('Enrollments error:', enrollmentsResult.error);
 
     const events = eventsResult.data || [];
     const subscriptions = subscriptionsResult.data || [];
@@ -134,8 +143,20 @@ export async function GET(request: NextRequest) {
     const courses = coursesResult.data || [];
     const enrollments = enrollmentsResult.data || [];
 
+    console.log('✅ Data arrays created:', {
+      eventsLength: events.length,
+      subscriptionsLength: subscriptions.length,
+      entitiesLength: entities.length,
+    });
+
     // Calculate metrics
     const metrics = calculateMetrics(events, subscriptions, entities, courses, enrollments, days);
+
+    console.log('✅ Calculated metrics:', {
+      totalStudents: metrics.totalStudents,
+      activeSubscriptions: metrics.activeSubscriptions,
+      totalEvents: events.length,
+    });
 
     return NextResponse.json(metrics, { headers: corsHeaders });
 
