@@ -13,7 +13,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
 interface OwnerCheckResult {
   isOwner: boolean;
-  accessLevel: 'owner' | 'admin' | 'member' | 'none';
+  accessLevel: 'owner' | 'admin' | 'member' | 'student' | 'none';
   loading: boolean;
   error?: string;
 }
