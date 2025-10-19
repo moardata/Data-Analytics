@@ -1,47 +1,77 @@
-import { whopSdk } from "@/lib/whop-sdk";
-import { headers } from "next/headers";
+/**
+ * Analytics Experience View
+ * Main entry point when app is opened through Whop
+ * 
+ * URL: /experiences/[experienceId]
+ * This is the proper Whop app pattern
+ */
+
+import { headers } from 'next/headers';
+import { redirect } from 'next/navigation';
+import { whopSdk } from '@/lib/whop-sdk';
 
 export default async function ExperiencePage({
-	params,
+  params,
 }: {
-	params: Promise<{ experienceId: string }>;
+  params: Promise<{ experienceId: string }>;
 }) {
-	// The headers contains the user token
-	const headersList = await headers();
+  const { experienceId } = await params;
+  
+  try {
+    // Verify user authentication
+    const headersList = await headers();
+    const { userId } = await whopSdk.verifyUserToken(headersList);
+    
+    if (!userId) {
+      return (
+        <div className="min-h-screen bg-[#0f1115] flex items-center justify-center">
+          <div className="text-center">
+            <div className="text-red-400 text-xl mb-2">Authentication Required</div>
+            <div className="text-[#9AA4B2] text-sm">
+              Please access this app through Whop.
+            </div>
+          </div>
+        </div>
+      );
+    }
 
-	// The experienceId is a path param
-	const { experienceId } = await params;
+    // Check if user has access to this experience
+    const hasAccess = await whopSdk.access.checkIfUserHasAccessToExperience({
+      userId,
+      experienceId,
+    });
 
-	// The user token is in the headers
-	const { userId } = await whopSdk.verifyUserToken(headersList);
+    if (!hasAccess.hasAccess) {
+      return (
+        <div className="min-h-screen bg-[#0f1115] flex items-center justify-center">
+          <div className="text-center">
+            <div className="text-red-400 text-xl mb-2">Access Denied</div>
+            <div className="text-[#9AA4B2] text-sm">
+              You don't have access to this analytics dashboard.
+            </div>
+          </div>
+        </div>
+      );
+    }
 
-	const result = await whopSdk.access.checkIfUserHasAccessToExperience({
-		userId,
-		experienceId,
-	});
-
-	const user = await whopSdk.users.getUser({ userId });
-	const experience = await whopSdk.experiences.getExperience({ experienceId });
-
-	// Either: 'admin' | 'customer' | 'no_access';
-	// 'admin' means the user is an admin of the whop, such as an owner or moderator
-	// 'customer' means the user is a common member in this whop
-	// 'no_access' means the user does not have access to the whop
-	const { accessLevel } = result;
-
-	return (
-		<div className="flex justify-center items-center h-screen px-8">
-			<h1 className="text-xl">
-				Hi <strong>{user.name}</strong>, you{" "}
-				<strong>{result.hasAccess ? "have" : "do not have"} access</strong> to
-				this experience. Your access level to this whop is:{" "}
-				<strong>{accessLevel}</strong>. <br />
-				<br />
-				Your user ID is <strong>{userId}</strong> and your username is{" "}
-				<strong>@{user.username}</strong>.<br />
-				<br />
-				You are viewing the experience: <strong>{experience.name}</strong>
-			</h1>
-		</div>
-	);
+    // Get experience details (includes company info)
+    // This will be needed to pass to the analytics page
+    
+    // Redirect to analytics with experienceId
+    // The analytics page will use this to fetch company data
+    redirect(`/analytics?experienceId=${experienceId}`);
+    
+  } catch (error) {
+    console.error('Error in experience page:', error);
+    return (
+      <div className="min-h-screen bg-[#0f1115] flex items-center justify-center">
+        <div className="text-center">
+          <div className="text-red-400 text-xl mb-2">Error</div>
+          <div className="text-[#9AA4B2] text-sm">
+            {error instanceof Error ? error.message : 'Failed to load experience'}
+          </div>
+        </div>
+      </div>
+    );
+  }
 }
