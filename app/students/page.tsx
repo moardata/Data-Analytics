@@ -27,6 +27,14 @@ function StudentsContent() {
 
   const fetchStudents = async () => {
     try {
+      // Check if Supabase is configured
+      if (!supabase) {
+        console.warn('⚠️ Supabase not configured. Students feature disabled.');
+        setStudents([]);
+        setLoading(false);
+        return;
+      }
+
       // First get the client record for this company
       const { data: clientData } = await supabase
         .from('clients')
