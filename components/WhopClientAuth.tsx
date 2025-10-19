@@ -55,34 +55,24 @@ export function WhopClientAuth({ children }: { children: React.ReactNode }) {
       }
 
       try {
-        // Get user and company from SDK
-        const user = await sdk.getUser();
-        const company = await sdk.getCompany();
+        // Get URL data from SDK to determine view type
+        const urlData = await sdk.getTopLevelUrlData({});
 
         console.log('🔐 [WhopClientAuth] SDK data:', {
-          hasUser: !!user,
-          hasCompany: !!company,
-          userId: user?.id,
-          companyId: company?.id,
-          companyOwnerId: company?.owner_id,
+          viewType: urlData?.viewType,
+          experienceId: urlData?.experienceId,
+          companyRoute: urlData?.companyRoute,
         });
 
-        if (!user || !company) {
-          console.log('❌ [WhopClientAuth] Missing user or company data');
-          setAccessState({
-            loading: false,
-            isOwner: false,
-            role: 'none',
-          });
-          return;
-        }
-
-        // Check if user is the company owner
-        const isOwner = user.id === company.owner_id;
+        // Check view type:
+        // - "admin" or "analytics" = Owner/Admin view
+        // - "app" or "preview" = Member/Student view
+        const isOwner = 
+          urlData?.viewType === 'admin' || 
+          urlData?.viewType === 'analytics';
 
         console.log('🔐 [WhopClientAuth] Access check:', {
-          userId: user.id,
-          companyOwnerId: company.owner_id,
+          viewType: urlData?.viewType,
           isOwner,
         });
 
@@ -90,8 +80,7 @@ export function WhopClientAuth({ children }: { children: React.ReactNode }) {
           loading: false,
           isOwner,
           role: isOwner ? 'owner' : 'member',
-          userName: user.username || user.id,
-          userId: user.id,
+          userName: 'User', // We don't have username from this method
         });
 
       } catch (error) {
