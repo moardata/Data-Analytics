@@ -43,18 +43,63 @@ const access = {
     try {
       console.log('🔍 Checking company access:', { userId, companyId });
       
-      // In test mode or when SDK can't verify, grant access
-      // Production mode with proper iframe will handle this differently
+      // Use the new SDK to get company memberships
+      // Check if user has access to this specific company
+      try {
+        const memberships = await whopClient.companies.listMemberships(companyId);
+        
+        if (memberships && memberships.data) {
+          // Find this user's membership
+          const userMembership = memberships.data.find((m: any) => m.user?.id === userId);
+          
+          if (userMembership) {
+            // Check role - owner has highest access
+            const role = userMembership.role?.toLowerCase() || 'member';
+            const accessLevel = role === 'owner' || role === 'creator' ? 'owner' : 
+                              role === 'admin' || role === 'administrator' ? 'admin' : 'member';
+            
+            console.log('✅ Company membership found:', { userId, companyId, role, accessLevel });
+            
+            return {
+              hasAccess: true,
+              accessLevel
+            };
+          }
+        }
+        
+        console.log('⚠️ User not found in company memberships - checking via direct access');
+      } catch (sdkError) {
+        console.log('⚠️ SDK membership check failed:', sdkError);
+      }
+      
+      // Fallback: Try to get company info to see if user is owner
+      try {
+        const company = await whopClient.companies.retrieve(companyId);
+        
+        if (company && company.owner_id === userId) {
+          console.log('✅ User is company owner via company.owner_id');
+          return {
+            hasAccess: true,
+            accessLevel: 'owner'
+          };
+        }
+      } catch (companyError) {
+        console.log('⚠️ Company retrieve failed:', companyError);
+      }
+      
+      // No access found
+      console.log('❌ No company access found for user');
       return {
-        hasAccess: true,
-        accessLevel: 'admin'
+        hasAccess: false,
+        accessLevel: 'none'
       };
       
     } catch (error) {
       console.error('❌ Company access check error:', error);
+      // On error, deny access for security
       return {
-        hasAccess: true,
-        accessLevel: 'admin'
+        hasAccess: false,
+        accessLevel: 'none'
       };
     }
   },

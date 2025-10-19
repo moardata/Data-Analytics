@@ -83,14 +83,53 @@ export async function simpleAuth(request: Request): Promise<SimpleAuthResult> {
       userId = `test_${companyId.substring(4, 12)}`; // Consistent test user ID
     }
     
-    const elapsed = Date.now() - startTime;
-    console.log(`✅ [SimpleAuth] Complete in ${elapsed}ms`);
+    // Step 4: Check user's role/access level for this company
+    let accessLevel: 'owner' | 'admin' | 'member' | 'test' = 'member';
+    let isOwner = false;
+    let isAdmin = false;
     
-    // For now, grant owner access in test mode, admin in production
-    // TODO: Implement proper role checking via Whop SDK
-    const accessLevel = isRealWhopAuth ? 'owner' : 'owner'; // Grant owner for testing
-    const isOwner = true; // Grant owner access for testing/development
-    const isAdmin = true;
+    if (isRealWhopAuth) {
+      // Real Whop authentication - check actual role
+      try {
+        console.log('🔍 [SimpleAuth] Checking user role for company...');
+        
+        const accessPromise = whopSdk.access.checkIfUserHasAccessToCompany({
+          userId,
+          companyId,
+        });
+        const accessTimeout = new Promise<null>((resolve) => 
+          setTimeout(() => resolve(null), 1000) // 1 second timeout
+        );
+        
+        const accessCheck = await Promise.race([accessPromise, accessTimeout]);
+        
+        if (accessCheck) {
+          const role = accessCheck.accessLevel?.toString().toLowerCase() || 'member';
+          
+          // Determine access level based on role
+          isOwner = role === 'owner' || role === 'creator';
+          isAdmin = isOwner || role === 'admin' || role === 'administrator';
+          accessLevel = isOwner ? 'owner' : isAdmin ? 'admin' : 'member';
+          
+          console.log('✅ [SimpleAuth] User role determined:', { role, isOwner, isAdmin, accessLevel });
+        } else {
+          console.log('⚠️ [SimpleAuth] Access check timed out - defaulting to member');
+          accessLevel = 'member';
+        }
+      } catch (roleError) {
+        console.log('⚠️ [SimpleAuth] Role check failed:', roleError);
+        accessLevel = 'member'; // Default to member on error
+      }
+    } else {
+      // Test mode - grant owner access for development
+      console.log('🧪 [SimpleAuth] TEST MODE - Granting owner access');
+      accessLevel = 'owner';
+      isOwner = true;
+      isAdmin = true;
+    }
+    
+    const elapsed = Date.now() - startTime;
+    console.log(`✅ [SimpleAuth] Complete in ${elapsed}ms - Access: ${accessLevel}`);
     
     return {
       userId,
