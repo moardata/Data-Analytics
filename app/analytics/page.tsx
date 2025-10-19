@@ -210,32 +210,44 @@ function AnalyticsContent() {
   }
 
   // Show authentication error
-  if (auth.error || !auth.hasCompanyAccess) {
-    const isTestingMode = auth.error?.includes('TESTING MODE');
+  if (auth.error || !auth.hasAccess) {
+    const isTestingMode = auth.error?.includes('experience ID');
     const currentUrl = typeof window !== 'undefined' ? window.location.href.split('?')[0] : '';
-    const testUrl = `${currentUrl}?companyId=biz_3GYHNPbGkZCEky`;
+    const testUrl = `${currentUrl}?experienceId=exp_test`;
     
     return (
       <div className="min-h-screen bg-[#0f1115] flex items-center justify-center">
         <div className="text-center max-w-2xl mx-auto px-6">
           <div className="mb-6">
-            {isTestingMode ? (
-              <svg className="w-16 h-16 text-yellow-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
-              </svg>
-            ) : (
-              <svg className="w-16 h-16 text-red-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-              </svg>
-            )}
+            <svg className="w-16 h-16 text-red-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+            </svg>
           </div>
           
-          <div className={`${isTestingMode ? 'text-yellow-400' : 'text-red-400'} text-xl font-semibold mb-3`}>
-            {isTestingMode ? 'Testing Mode' : 'Access Restricted'}
+          <div className="text-red-400 text-xl font-semibold mb-3">
+            Access Through Whop Required
           </div>
           
           <div className="text-[#9AA4B2] text-sm mb-6">
-            {auth.error || 'You do not have permission to access this company\'s analytics.'}
+            {auth.error || 'This app must be accessed through the Whop platform.'}
+          </div>
+          
+          <div className="bg-[#1E2228] border border-[#2A2F36] rounded-lg p-6 mb-6 text-left">
+            <div className="text-[#D1D5DB] text-sm font-medium mb-4">📋 To use this app:</div>
+            <ul className="text-[#9AA4B2] text-xs space-y-2">
+              <li>1. Install this app from the Whop App Store</li>
+              <li>2. Add it to one of your products</li>
+              <li>3. Open the app from your Whop dashboard</li>
+            </ul>
+          </div>
+          
+          <div className="bg-[#1E2228] border border-[#10B981]/30 rounded-lg p-4">
+            <div className="text-[#10B981] text-sm font-medium mb-2">🛠️ For Developers:</div>
+            <div className="text-[#9AA4B2] text-xs">
+              Run: <code className="bg-black/30 px-2 py-1 rounded text-[#10B981]">npm run dev:whop</code>
+              <br />
+              Then switch to Localhost mode in Whop settings.
+            </div>
           </div>
           
           {isTestingMode ? (
