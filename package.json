@@ -14,7 +14,6 @@
     "@supabase/supabase-js": "^2.38.4",
     "@tailwindcss/postcss": "^4.0.0",
     "@vercel/functions": "^1.0.2",
-    "@whop/api": "^0.0.50",
     "@whop/react": "0.2.36",
     "@whop/sdk": "^0.0.1-canary.0",
     "class-variance-authority": "^0.7.1",

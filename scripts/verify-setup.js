@@ -108,16 +108,16 @@ async function verifySetup() {
   // Check Whop SDK configuration
   console.log('\n🔗 Checking Whop Integration:');
   try {
-    const { WhopServerSdk } = require('@whop/api');
+    // Check if the new SDK is installed
+    const Whop = require('@whop/sdk');
     
-    const whopSdk = WhopServerSdk({
-      appId: process.env.NEXT_PUBLIC_WHOP_APP_ID,
-      appApiKey: process.env.WHOP_API_KEY,
-    });
-
-    console.log('✅ Whop SDK configured');
+    if (process.env.NEXT_PUBLIC_WHOP_APP_ID && process.env.WHOP_API_KEY) {
+      console.log('✅ Whop SDK configured (@whop/sdk)');
+    } else {
+      console.log('❌ Whop SDK credentials missing');
+    }
   } catch (error) {
-    console.log('❌ Whop SDK configuration failed:', error.message);
+    console.log('⚠️ Whop SDK not found (@whop/sdk should be installed)');
   }
 
   // Check OpenAI configuration (optional)

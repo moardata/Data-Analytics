@@ -60,8 +60,26 @@ export function useWhopAuth(): WhopAuthState {
       try {
         setState(prev => ({ ...prev, loading: true, error: null }));
 
-        // Step 1: Get company ID from URL (Whop automatically injects this)
-        const urlCompanyId = searchParams.get('companyId') || searchParams.get('company_id');
+        // Step 1: Get company ID or experience ID from URL
+        let urlCompanyId = searchParams.get('companyId') || searchParams.get('company_id');
+        const urlExperienceId = searchParams.get('experienceId') || searchParams.get('experience_id');
+        
+        // If experienceId is provided, fetch the company ID from it
+        if (urlExperienceId && !urlCompanyId) {
+          console.log('✅ Experience ID from URL:', urlExperienceId);
+          try {
+            const expResponse = await fetch(`/api/experiences/${urlExperienceId}/access`);
+            if (expResponse.ok) {
+              const expData = await expResponse.json();
+              if (expData.success && expData.companyId) {
+                urlCompanyId = expData.companyId;
+                console.log('✅ Company ID from experience:', urlCompanyId);
+              }
+            }
+          } catch (error) {
+            console.error('❌ Failed to fetch company from experience:', error);
+          }
+        }
         
         if (!urlCompanyId) {
           // No company ID in URL

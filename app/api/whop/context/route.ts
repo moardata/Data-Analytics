@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { headers } from 'next/headers';
-import { whopSdk } from '@/lib/whop-sdk';
 
 /**
  * Get Whop context information including company ID

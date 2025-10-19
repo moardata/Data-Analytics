@@ -1,6 +1,6 @@
 /**
  * Unified Whop Authentication System
- * Uses @whop/api v0.0.50+ SDK properly with App/Company/Me modes
+ * Uses @whop/sdk (October 2025) with backward-compatible wrapper
  * 
  * This is the SINGLE SOURCE OF TRUTH for Whop authentication
  * Based on latest Whop SDK patterns (October 2025)

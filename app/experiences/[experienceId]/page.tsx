@@ -6,9 +6,7 @@
  * This is the proper Whop app pattern
  */
 
-import { headers } from 'next/headers';
 import { redirect } from 'next/navigation';
-import { whopSdk } from '@/lib/whop-sdk';
 
 export default async function ExperiencePage({
   params,
@@ -17,7 +15,7 @@ export default async function ExperiencePage({
 }) {
   const { experienceId } = await params;
   
-  // Just redirect to analytics with experienceId
-  // The analytics page will handle auth
+  // Redirect to analytics with experienceId
+  // The analytics page will handle auth and fetch company data
   redirect(`/analytics?experienceId=${experienceId}`);
 }
