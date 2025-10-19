@@ -31,8 +31,7 @@ export default function RootLayout({
 							<div className="w-16 h-16 border-4 border-[#10B981] border-t-transparent rounded-full animate-spin" />
 						</div>
 					}>
-						{/* TEMPORARILY DISABLED - OwnerOnlyGuard causing issues */}
-						{/* <OwnerOnlyGuard> */}
+						<OwnerOnlyGuard>
 							<div className="flex min-h-screen bg-gradient-to-b from-[#0d0f12] to-[#14171c]">
 								<Suspense fallback={<div className="w-64" />}>
 									<Sidebar />
@@ -41,7 +40,7 @@ export default function RootLayout({
 									{children}
 								</main>
 							</div>
-						{/* </OwnerOnlyGuard> */}
+						</OwnerOnlyGuard>
 					</Suspense>
 				</WhopApp>
 			</body>
