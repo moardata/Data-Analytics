@@ -1,7 +1,7 @@
 # 🚀 Pre-Launch Checklist - CreatorIQ
 
-**Last Updated**: October 17, 2025  
-**Current Version**: v7-no-validation  
+**Last Updated**: October 19, 2025  
+**Current Version**: v8-owner-access-control  
 **Status**: Testing Phase → Production Ready
 
 ---
@@ -21,23 +21,32 @@
 - [x] Fix Supabase service role key initialization
 - [x] Remove duplicate test webhook endpoints
 - [x] Clean up conflicting validation code
+- [x] Implement owner-only access control (OwnerOnlyGuard)
+- [x] Add secure loading screen with companyId validation
+- [x] Fix Supabase hardcoded credentials for Vercel deployment
+- [x] Populate rich mock data for testing (`biz_Jkhjc11f6HHRxh`)
+- [x] Implement fail-closed security (blocks on errors)
+- [x] Add timeout protection to prevent infinite loading
 
 ### 🔄 **IN PROGRESS**
 
+- [ ] Test owner vs student access control in production
 - [ ] Test webhook with real data from Whop
 - [ ] Verify all features work in Whop iframe
-- [ ] Confirm analytics data displays correctly
+- [ ] Confirm analytics data displays correctly for multiple companies
 
 ### 📝 **SUBMISSION CHECKLIST**
 
 Before resubmitting to Whop:
 
 - [ ] **Test in production environment** (use Whop's dropdown to switch from localhost to production)
-- [ ] **Verify admin view** is not shown to regular members
-- [ ] **Test member access** - confirm they see customer view, not admin analytics
+- [x] **Verify admin view** is not shown to regular members (OwnerOnlyGuard implemented)
+- [x] **Test member access** - students/members are blocked from analytics dashboard
 - [ ] **Verify accurate stats** - numbers update correctly and reflect real data
 - [ ] **Test all bundle tiers** - atom, core, pulse, surge, quantum
 - [ ] **Confirm webhook processing** - data flows correctly into the app
+- [ ] **Test owner access** - verify owners can access dashboard without issues
+- [ ] **Test loading screen** - confirm companyId validation works properly
 
 ---
 
@@ -232,11 +241,12 @@ if (existing) {
 ### Pre-Production Testing
 
 #### Authentication & Authorization
-- [ ] Admin can access dashboard
-- [ ] Member cannot access admin dashboard
-- [ ] Unauthorized users get proper error messages
+- [x] Admin/Owner can access dashboard (OwnerOnlyGuard implemented)
+- [x] Member/Student cannot access admin dashboard (OwnerOnlyGuard blocks)
+- [x] Unauthorized users get proper error messages (restriction screen shown)
+- [x] Loading screen validates companyId before access decisions
 - [ ] Session timeout works correctly
-- [ ] Cross-company access is blocked
+- [ ] Cross-company access is blocked (needs production testing)
 
 #### Data Isolation
 - [ ] Company A cannot see Company B's data
