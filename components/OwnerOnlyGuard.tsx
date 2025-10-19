@@ -33,20 +33,31 @@ export function OwnerOnlyGuard({ children }: { children: React.ReactNode }) {
   });
 
   useEffect(() => {
+    // Set a timeout to prevent infinite loading
+    const timeoutId = setTimeout(() => {
+      if (ownerCheck.loading) {
+        console.error('⏰ [OwnerOnlyGuard] Timeout - no companyId after 10 seconds');
+        setOwnerCheck({
+          isOwner: false,
+          accessLevel: 'none',
+          loading: false,
+          error: 'Timeout - unable to identify community',
+        });
+      }
+    }, 10000); // 10 second timeout
+
     async function checkOwnership() {
       console.log('🔐 [OwnerOnlyGuard] Starting check with companyId:', companyId);
       
+      // SECURITY: Wait for companyId to be available before making access decisions
       if (!companyId) {
-        console.error('❌ [OwnerOnlyGuard] No company ID found in URL or env!');
-        // GRANT ACCESS even without companyId (fail-open for testing)
-        setOwnerCheck({
-          isOwner: true,
-          accessLevel: 'owner',
-          loading: false,
-          error: 'No company ID - granting access for testing',
-        });
+        console.log('⏳ [OwnerOnlyGuard] No company ID yet - staying in loading state');
+        // Keep loading state - don't make any access decisions yet
         return;
       }
+
+      // Clear timeout since we have companyId
+      clearTimeout(timeoutId);
 
       try {
         console.log('🔍 [OwnerOnlyGuard] Calling role check API...');
@@ -54,11 +65,12 @@ export function OwnerOnlyGuard({ children }: { children: React.ReactNode }) {
         
         if (!response.ok) {
           console.error('❌ [OwnerOnlyGuard] API response not OK:', response.status, response.statusText);
-          // GRANT ACCESS on API error (fail-open)
+          // BLOCK ACCESS on API error (fail-closed for security)
           setOwnerCheck({
-            isOwner: true,
-            accessLevel: 'owner',
+            isOwner: false,
+            accessLevel: 'none',
             loading: false,
+            error: 'Failed to verify access - API error',
           });
           return;
         }
@@ -73,26 +85,55 @@ export function OwnerOnlyGuard({ children }: { children: React.ReactNode }) {
         });
       } catch (error) {
         console.error('❌ [OwnerOnlyGuard] Error checking role:', error);
-        // GRANT ACCESS on error (fail-open for now)
+        // BLOCK ACCESS on error (fail-closed for security)
         setOwnerCheck({
-          isOwner: true,
-          accessLevel: 'owner',
+          isOwner: false,
+          accessLevel: 'none',
           loading: false,
-          error: 'Error - granting access for testing',
+          error: 'Failed to verify access - network error',
         });
       }
     }
 
     checkOwnership();
-  }, [companyId]);
 
-  // Loading state
+    // Cleanup timeout on unmount
+    return () => clearTimeout(timeoutId);
+  }, [companyId, ownerCheck.loading]);
+
+  // Loading state - wait for companyId and then verify access
   if (ownerCheck.loading) {
     return (
       <div className="min-h-screen bg-gradient-to-b from-[#0d0f12] to-[#14171c] flex items-center justify-center">
-        <div className="text-center">
-          <div className="w-16 h-16 border-4 border-[#10B981] border-t-transparent rounded-full animate-spin mx-auto mb-4" />
-          <p className="text-[#9AA4B2] text-lg">Verifying access...</p>
+        <div className="text-center max-w-md mx-auto px-6">
+          <div className="w-16 h-16 border-4 border-[#10B981] border-t-transparent rounded-full animate-spin mx-auto mb-6" />
+          
+          <h2 className="text-2xl font-bold text-[#E5E7EB] mb-3">
+            {!companyId ? 'Loading App...' : 'Verifying Access...'}
+          </h2>
+          
+          <p className="text-[#9AA4B2] text-lg mb-4">
+            {!companyId 
+              ? 'Please wait while we load your community information.'
+              : 'Checking your permissions for this analytics dashboard.'
+            }
+          </p>
+          
+          {!companyId && (
+            <div className="bg-[#1A1E25] border border-[#2A2F36] rounded-lg p-4 mt-4">
+              <p className="text-sm text-[#9AA4B2]">
+                <span className="text-[#10B981] font-semibold">Note:</span> This app requires access through Whop to identify your community.
+              </p>
+            </div>
+          )}
+          
+          {companyId && (
+            <div className="bg-[#1A1E25] border border-[#2A2F36] rounded-lg p-4 mt-4">
+              <p className="text-sm text-[#9AA4B2]">
+                <span className="text-[#10B981] font-semibold">Community ID:</span> {companyId}
+              </p>
+            </div>
+          )}
         </div>
       </div>
     );
