@@ -6,8 +6,9 @@
 import { createClient } from '@supabase/supabase-js';
 
 // Initialize Supabase client with environment variables
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+// FALLBACK: Use hardcoded values if env vars aren't set (for deployment issues)
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://rdllbtepprsfkbewqcwj.supabase.co';
+const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJkbGxidGVwcHJzZmtiZXdxY3dqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjAxNjY0OTYsImV4cCI6MjA3NTc0MjQ5Nn0.tMaiAycTIUZ0BX1Es0FjWl96Mh3VPwbAi8Lvk35kr00';
 
 // Check if credentials are valid (not placeholders)
 const hasValidCredentials = 
