@@ -24,12 +24,10 @@ export async function GET(request: NextRequest) {
     const { companyId } = auth;
 
     console.log('📚 [Students API] Fetching students for company:', companyId);
-
-    // Check if Supabase is configured
-    if (!supabase || !supabase.from) {
-      console.warn('⚠️ Supabase not configured. Returning empty students list.');
-      return NextResponse.json({ students: [] }, { headers: corsHeaders });
-    }
+    console.log('🔍 [Students API] Supabase server check:', {
+      hasSupabase: !!supabase,
+      type: typeof supabase,
+    });
 
     // First get the client record for this company
     console.log('🔍 [Students API] Querying clients table for company_id:', companyId);
