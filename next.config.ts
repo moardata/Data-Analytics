@@ -6,11 +6,23 @@ const nextConfig: NextConfig = {
 	images: {
 		remotePatterns: [{ hostname: "**" }],
 	},
-	env: {
-		// Explicitly expose server-side environment variables
-		SUPABASE_SECRET_KEY: process.env.SUPABASE_SECRET_KEY, // Workaround: Vercel blocks "SERVICE_ROLE"
+	// Force server-side env vars to be available at runtime
+	serverRuntimeConfig: {
+		SUPABASE_SECRET_KEY: process.env.SUPABASE_SECRET_KEY,
 		SUPABASE_SERVICE_ROLE_KEY: process.env.SUPABASE_SERVICE_ROLE_KEY,
 		SUPABASE_KEY: process.env.SUPABASE_KEY,
+		SUPABASE_ADMIN_KEY: process.env.SUPABASE_ADMIN_KEY,
+		SUPABASE_SERVER_KEY: process.env.SUPABASE_SERVER_KEY,
+		DB_KEY: process.env.DB_KEY,
+	},
+	env: {
+		// Explicitly expose server-side environment variables
+		SUPABASE_SECRET_KEY: process.env.SUPABASE_SECRET_KEY,
+		SUPABASE_SERVICE_ROLE_KEY: process.env.SUPABASE_SERVICE_ROLE_KEY,
+		SUPABASE_KEY: process.env.SUPABASE_KEY,
+		SUPABASE_ADMIN_KEY: process.env.SUPABASE_ADMIN_KEY,
+		SUPABASE_SERVER_KEY: process.env.SUPABASE_SERVER_KEY,
+		DB_KEY: process.env.DB_KEY,
 	},
 };
 
