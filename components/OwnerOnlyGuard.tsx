@@ -41,37 +41,25 @@ export function OwnerOnlyGuard({ children }: { children: React.ReactNode }) {
       }
 
       try {
-        // SIMPLE CHECK: If user has student data, they're a student (block them)
-        // If no student data, they're the owner (allow them)
-        const response = await fetch(`/api/students?companyId=${companyId}`);
+        // SIMPLE CHECK: Call role check API
+        const response = await fetch(`/api/auth/check-role?companyId=${companyId}`);
         const data = await response.json();
 
-        console.log('🔐 [OwnerOnlyGuard] Students check:', data);
+        console.log('🔐 [OwnerOnlyGuard] Role check:', data);
 
-        // SIMPLE LOGIC: If students exist, owner has access
-        // If no students, still allow access (could be new setup)
-        if (data.students && data.students.length > 0) {
-          console.log('🔐 [OwnerOnlyGuard] Students found - owner access granted');
-          setOwnerCheck({
-            isOwner: true,
-            accessLevel: 'owner',
-            loading: false,
-          });
-        } else {
-          console.log('🔐 [OwnerOnlyGuard] No students found - still granting owner access');
-          setOwnerCheck({
-            isOwner: true,
-            accessLevel: 'owner',
-            loading: false,
-          });
-        }
-      } catch (error) {
-        console.error('❌ [OwnerOnlyGuard] Error checking students:', error);
-        // On error, grant access (fail-open for simplicity)
         setOwnerCheck({
-          isOwner: true,
-          accessLevel: 'owner',
+          isOwner: data.isOwner || false,
+          accessLevel: data.role || 'student',
           loading: false,
+        });
+      } catch (error) {
+        console.error('❌ [OwnerOnlyGuard] Error checking role:', error);
+        // On error, assume student (block access)
+        setOwnerCheck({
+          isOwner: false,
+          accessLevel: 'student',
+          loading: false,
+          error: 'Failed to verify role',
         });
       }
     }
