@@ -12,7 +12,6 @@ export const dynamic = 'force-dynamic';
 import { Users, Mail, Calendar } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { supabase } from '@/lib/supabase';
 
 function StudentsContent() {
   const searchParams = useSearchParams();
@@ -27,38 +26,28 @@ function StudentsContent() {
 
   const fetchStudents = async () => {
     try {
-      // Check if Supabase is configured
-      if (!supabase) {
-        console.warn('⚠️ Supabase not configured. Students feature disabled.');
+      if (!clientId) {
+        console.warn('⚠️ No company ID provided');
         setStudents([]);
         setLoading(false);
         return;
       }
 
-      // First get the client record for this company
-      const { data: clientData } = await supabase
-        .from('clients')
-        .select('id')
-        .eq('company_id', clientId)
-        .single();
-
-      if (!clientData) {
-        console.log('No client found for company:', clientId);
-        setStudents([]);
-        setLoading(false);
-        return;
-      }
-
-      // Now query entities with the actual client UUID
-      const { data } = await supabase
-        .from('entities')
-        .select('*')
-        .eq('client_id', clientData.id)
-        .order('created_at', { ascending: false });
+      // Fetch from API route instead of direct Supabase access
+      const response = await fetch(`/api/students?companyId=${clientId}`);
       
-      setStudents(data || []);
+      if (!response.ok) {
+        console.error('Failed to fetch students:', response.statusText);
+        setStudents([]);
+        setLoading(false);
+        return;
+      }
+
+      const data = await response.json();
+      setStudents(data.students || []);
     } catch (error) {
       console.error('Error fetching students:', error);
+      setStudents([]);
     } finally {
       setLoading(false);
     }

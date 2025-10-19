@@ -85,8 +85,8 @@ export function adaptToCreatorAnalytics(apiData: any) {
     // Card values (REAL DATA)
     activeStudents: {
       current: totalStudents.toString(),
-      sub: '7‑day unique participants',
-      delta: studentsChange > 0 ? `↑ ${studentsChange}%` : `↓ ${Math.abs(studentsChange)}%`,
+      sub: 'total students',
+      delta: newThisWeek > 0 ? `↑ ${newThisWeek} this week` : 'No new students',
     },
     
     engagementRate: {
