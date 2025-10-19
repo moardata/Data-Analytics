@@ -77,14 +77,62 @@ export function WhopClientAuth({ children }: { children: React.ReactNode }) {
           return;
         }
         
-        // For now, only BLOCK if viewType is explicitly "app" (member view)
-        // Allow everything else (admin, analytics, dashboard, preview, etc.)
-        const isOwner = viewType !== 'app';
+        // ENHANCED OWNER DETECTION LOGIC
+        let isOwner = false;
+        let logic = '';
+
+        // Method 1: Check viewType (primary method)
+        if (viewType === 'admin' || viewType === 'analytics') {
+          isOwner = true;
+          logic = 'OWNER (admin/analytics view)';
+        }
+        // Method 2: For "app" view, check if user is actually the company owner
+        else if (viewType === 'app') {
+          try {
+            // Get user and company data to verify ownership
+            const [user, company] = await Promise.all([
+              sdk.getUser().catch(() => null),
+              sdk.getCompany().catch(() => null)
+            ]);
+
+            console.log('🔐 [WhopClientAuth] User data:', user);
+            console.log('🔐 [WhopClientAuth] Company data:', company);
+
+            if (user && company) {
+              // Check if user is the company owner or creator
+              const isCompanyOwner = company.owner_id === user.id || 
+                                    company.created_by === user.id || 
+                                    company.creator_id === user.id;
+              
+              if (isCompanyOwner) {
+                isOwner = true;
+                logic = 'OWNER (company owner/creator detected)';
+              } else {
+                isOwner = false;
+                logic = 'BLOCKED (app view + not company owner)';
+              }
+            } else {
+              // If we can't get user/company data, be permissive for debugging
+              isOwner = true;
+              logic = 'OWNER (app view + no user/company data - debugging)';
+            }
+          } catch (error) {
+            console.error('🔐 [WhopClientAuth] Error checking ownership:', error);
+            // On error, be permissive for debugging
+            isOwner = true;
+            logic = 'OWNER (app view + error checking ownership - debugging)';
+          }
+        }
+        // Method 3: Allow other view types (preview, development, etc.)
+        else {
+          isOwner = true;
+          logic = `OWNER (${viewType} view)`;
+        }
 
         console.log('🔐 [WhopClientAuth] Access check:', {
           viewType,
           isOwner,
-          logic: viewType === 'app' ? 'BLOCKED (app view = student)' : 'ALLOWED (not app view)',
+          logic,
         });
 
         setAccessState({
