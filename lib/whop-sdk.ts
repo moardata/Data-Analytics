@@ -43,22 +43,35 @@ const access = {
     try {
       console.log('🔍 Checking company access:', { userId, companyId });
       
-      // Method 1: Try to get company info to check if user is owner
+      // Since the Whop SDK doesn't provide direct role checking methods,
+      // we'll use a simpler approach: check if the company exists and user has access
       try {
         const company = await whopClient.companies.retrieve(companyId);
         
         if (company) {
-          // Check if user is the owner
-          if (company.owner_id === userId) {
-            console.log('✅ User is company owner');
+          // Check if company has owner_id in the raw data
+          const companyData = company as any;
+          
+          if (companyData.owner_id && companyData.owner_id === userId) {
+            console.log('✅ User is company owner via owner_id');
             return {
               hasAccess: true,
               accessLevel: 'owner'
             };
           }
           
-          // User has access but not owner - assume member
-          console.log('ℹ️ User has access to company but is not owner');
+          // Check alternative field names that might indicate ownership
+          if (companyData.created_by === userId || companyData.creator_id === userId) {
+            console.log('✅ User is company creator');
+            return {
+              hasAccess: true,
+              accessLevel: 'owner'
+            };
+          }
+          
+          // User can retrieve company info - they have some access
+          // But we can't determine their role, so default to member
+          console.log('ℹ️ User has access to company, defaulting to member role');
           return {
             hasAccess: true,
             accessLevel: 'member'
@@ -67,8 +80,9 @@ const access = {
       } catch (companyError: any) {
         console.log('⚠️ Company retrieve failed:', companyError.message || companyError);
         
-        // If it's a 404, user doesn't have access
-        if (companyError.status === 404 || companyError.statusCode === 404) {
+        // If it's a 404 or 403, user doesn't have access
+        if (companyError.status === 404 || companyError.status === 403 || 
+            companyError.statusCode === 404 || companyError.statusCode === 403) {
           console.log('❌ Company not found or no access');
           return {
             hasAccess: false,
@@ -77,18 +91,17 @@ const access = {
         }
       }
       
-      // Method 2: For now, if we can't verify via SDK, grant member access
-      // This allows the app to work while we implement proper role checking
-      // The OwnerOnlyGuard will still restrict non-owners from seeing data
-      console.log('⚠️ Could not verify role via SDK - defaulting to member access');
+      // If we can't verify via SDK, default to member access
+      // The OwnerOnlyGuard component will do the final access check
+      console.log('⚠️ Could not verify role via SDK - defaulting to member');
       return {
         hasAccess: true,
-        accessLevel: 'member' // Default to member (will be blocked by OwnerOnlyGuard)
+        accessLevel: 'member'
       };
       
     } catch (error) {
       console.error('❌ Company access check error:', error);
-      // On error, grant member access (OwnerOnlyGuard will handle restriction)
+      // On error, default to member (OwnerOnlyGuard will restrict if needed)
       return {
         hasAccess: true,
         accessLevel: 'member'
