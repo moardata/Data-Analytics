@@ -42,7 +42,7 @@ export async function GET(request: NextRequest) {
     const startDate = subDays(new Date(), days).toISOString();
 
     // First, get the client record for this company
-    // Try both column names (company_id and whop_company_id)
+    // Use company_id column (as per schema in 01-schema.sql line 19)
     let clientData = null;
     let clientError = null;
     
@@ -54,24 +54,21 @@ export async function GET(request: NextRequest) {
       return NextResponse.json(getEmptyMetrics(), { headers: corsHeaders });
     }
     
-    const result1 = await clientsQuery
+    console.log('🔍 [Analytics] Looking for client with company_id:', companyId);
+    
+    const result = await clientsQuery
       .select('id')
-      .eq('whop_company_id', companyId)
+      .eq('company_id', companyId)
       .maybeSingle();
     
-    if (result1.data) {
-      clientData = result1.data;
-    } else {
-      // Try alternate column name
-      const result2 = await supabase
-        .from('clients')
-        .select('id')
-        .eq('company_id', companyId)
-        .maybeSingle();
-      
-      clientData = result2.data;
-      clientError = result2.error;
-    }
+    clientData = result.data;
+    clientError = result.error;
+    
+    console.log('📊 [Analytics] Client lookup result:', {
+      found: !!clientData,
+      clientId: clientData?.id,
+      error: clientError?.message,
+    });
 
     if (clientError) {
       console.error('Error fetching client:', clientError);
