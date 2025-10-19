@@ -11,13 +11,14 @@ let _supabaseServer: SupabaseClient | null = null;
 
 function getSupabaseServer(): SupabaseClient | null {
   // Get env vars at runtime, not at module load time
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://rdllbtepprsfkbewqcwj.supabase.co';
   
-  // Try multiple env var names
+  // Try multiple env var names with fallback
   const supabaseServiceKey = 
     process.env.SUPABASE_SERVICE_ROLE_KEY ||
     process.env.SUPABASE_SECRET_KEY ||
-    process.env.SUPABASE_KEY;
+    process.env.SUPABASE_KEY ||
+    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJkbGxidGVwcHJzZmtiZXdxY3dqIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2MDE2NjQ5NiwiZXhwIjoyMDc1NzQyNDk2fQ.fzE4SymiGkPXBOGx95BNleFSyfysGF3NJAjQ___dxrw';
 
   // Check if credentials are valid (not placeholders)
   const hasValidCredentials = 
