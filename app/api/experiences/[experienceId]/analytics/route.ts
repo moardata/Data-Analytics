@@ -6,7 +6,6 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { headers } from 'next/headers';
 import whopClient from '@/lib/whop-client';
 import { whopSdk } from '@/lib/whop-sdk';
 
@@ -53,10 +52,7 @@ export async function GET(
     // TODO: Migrate to @whop/sdk once we understand the correct API
     const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
     const analyticsResponse = await fetch(
-      `${baseUrl}/api/analytics/metrics?companyId=${companyId}&timeRange=${timeRange === '7d' ? 'week' : timeRange === '90d' ? 'quarter' : 'month'}`,
-      {
-        headers: headersList
-      }
+      `${baseUrl}/api/analytics/metrics?companyId=${companyId}&timeRange=${timeRange === '7d' ? 'week' : timeRange === '90d' ? 'quarter' : 'month'}`
     );
 
     if (!analyticsResponse.ok) {

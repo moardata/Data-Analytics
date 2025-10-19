@@ -6,7 +6,6 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { headers } from 'next/headers';
 import whopClient from '@/lib/whop-client';
 
 export async function GET(
