@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "dev:whop": "whop-proxy --command 'npm run dev'",
+    "dev:whop": "whop-proxy",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
