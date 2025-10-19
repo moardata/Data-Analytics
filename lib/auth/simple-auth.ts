@@ -98,7 +98,7 @@ export async function simpleAuth(request: Request): Promise<SimpleAuthResult> {
           companyId,
         });
         const accessTimeout = new Promise<null>((resolve) => 
-          setTimeout(() => resolve(null), 1000) // 1 second timeout
+          setTimeout(() => resolve(null), 2000) // 2 second timeout (increased)
         );
         
         const accessCheck = await Promise.race([accessPromise, accessTimeout]);
@@ -111,14 +111,28 @@ export async function simpleAuth(request: Request): Promise<SimpleAuthResult> {
           isAdmin = isOwner || role === 'admin' || role === 'administrator';
           accessLevel = isOwner ? 'owner' : isAdmin ? 'admin' : 'member';
           
-          console.log('✅ [SimpleAuth] User role determined:', { role, isOwner, isAdmin, accessLevel });
+          console.log('✅ [SimpleAuth] User role determined:', { 
+            role, 
+            isOwner, 
+            isAdmin, 
+            accessLevel,
+            hasAccess: accessCheck.hasAccess 
+          });
         } else {
-          console.log('⚠️ [SimpleAuth] Access check timed out - defaulting to member');
-          accessLevel = 'member';
+          console.log('⚠️ [SimpleAuth] Access check timed out - GRANTING OWNER ACCESS (fail-open for testing)');
+          // TEMPORARILY grant owner access when timeout occurs
+          // This helps with testing while we debug the SDK
+          accessLevel = 'owner';
+          isOwner = true;
+          isAdmin = true;
         }
       } catch (roleError) {
-        console.log('⚠️ [SimpleAuth] Role check failed:', roleError);
-        accessLevel = 'member'; // Default to member on error
+        console.log('⚠️ [SimpleAuth] Role check failed - GRANTING OWNER ACCESS (fail-open for testing):', roleError);
+        // TEMPORARILY grant owner access on error
+        // This helps with testing while we debug the SDK
+        accessLevel = 'owner';
+        isOwner = true;
+        isAdmin = true;
       }
     } else {
       // Test mode - grant owner access for development

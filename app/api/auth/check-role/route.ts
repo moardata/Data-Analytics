@@ -39,54 +39,23 @@ export async function GET(request: NextRequest) {
       isOwner = true;
       role = 'owner';
     } else {
-      // Real Whop auth - check if user has a membership
-      try {
-        console.log('🔍 [Role Check] Checking for memberships...');
-        
-        // Try to get user's memberships
-        const membershipsIterator = await whopClient.memberships.list({
-          user_id: auth.userId,
-        });
-        
-        const memberships = [];
-        for await (const membership of membershipsIterator) {
-          memberships.push(membership);
-          console.log('📋 [Role Check] Found membership:', {
-            id: membership.id,
-            status: membership.status,
-            planId: membership.plan_id,
-          });
-        }
-        
-        console.log(`📊 [Role Check] Total memberships found: ${memberships.length}`);
-        
-        // KEY LOGIC:
-        // - If user has ANY valid membership → They're a student/member (BLOCK)
-        // - If user has NO memberships → They're the owner (ALLOW)
-        
-        if (memberships.length > 0) {
-          console.log('❌ [Role Check] User has memberships - they are a STUDENT (blocked)');
-          isOwner = false;
-          role = 'student';
-        } else {
-          console.log('✅ [Role Check] User has NO memberships - they are the OWNER (allowed)');
-          isOwner = true;
-          role = 'owner';
-        }
-        
-      } catch (membershipError: any) {
-        console.error('⚠️ [Role Check] Membership check failed:', membershipError);
-        
-        // If we can't check memberships, fall back to the SDK's role check
-        if (auth.isOwner) {
-          console.log('✅ [Role Check] Fallback - SDK says owner');
-          isOwner = true;
-          role = 'owner';
-        } else {
-          console.log('❌ [Role Check] Fallback - assuming student (safe default)');
-          isOwner = false;
-          role = 'student';
-        }
+      // Real Whop auth - use the access level from simpleAuth
+      // simpleAuth already checks company ownership via SDK
+      console.log('🔍 [Role Check] Using simpleAuth access level:', auth.accessLevel);
+      
+      // KEY LOGIC FROM WHOP:
+      // - accessLevel 'owner' = Company owner (ALLOW)
+      // - accessLevel 'admin' = Company admin (ALLOW) 
+      // - accessLevel 'member' = Regular member/student (BLOCK)
+      
+      if (auth.accessLevel === 'owner' || auth.accessLevel === 'admin') {
+        console.log('✅ [Role Check] User is owner/admin - ALLOWED');
+        isOwner = true;
+        role = 'owner';
+      } else {
+        console.log('❌ [Role Check] User is member/student - BLOCKED');
+        isOwner = false;
+        role = 'student';
       }
     }
 
