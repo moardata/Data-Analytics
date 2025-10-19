@@ -126,6 +126,11 @@ export async function GET(request: NextRequest) {
 
   } catch (error: any) {
     console.error('Error fetching metrics:', error);
+    console.error('Error details:', {
+      message: error.message,
+      stack: error.stack,
+      name: error.name
+    });
     
     // Handle Whop authentication errors specifically
     if (error.message?.includes('Whop user token not found')) {
@@ -142,8 +147,13 @@ export async function GET(request: NextRequest) {
       );
     }
     
+    // Return detailed error for debugging
     return NextResponse.json(
-      { error: 'Failed to fetch metrics' },
+      { 
+        error: 'Failed to fetch metrics',
+        details: error.message,
+        type: error.name
+      },
       { status: 500, headers: corsHeaders }
     );
   }
