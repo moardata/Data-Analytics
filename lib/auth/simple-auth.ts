@@ -53,6 +53,15 @@ export async function simpleAuth(request: Request): Promise<SimpleAuthResult> {
       
       const headersList = await headers();
       
+      // Log ALL headers for debugging
+      const allHeaders: Record<string, string> = {};
+      headersList.forEach((value, key) => {
+        if (key.toLowerCase().includes('whop') || key.toLowerCase().includes('auth')) {
+          allHeaders[key] = value.substring(0, 50) + '...'; // Log first 50 chars
+        }
+      });
+      console.log('🔍 [SimpleAuth] Whop-related headers:', allHeaders);
+      
       // Create timeout promise (1 second)
       const timeoutPromise = new Promise<never>((_, reject) => {
         setTimeout(() => reject(new Error('Timeout')), 1000);
@@ -72,6 +81,8 @@ export async function simpleAuth(request: Request): Promise<SimpleAuthResult> {
       
       if (userId) {
         console.log('✅ [SimpleAuth] Real Whop authentication successful:', userId);
+      } else {
+        console.log('❌ [SimpleAuth] No userId returned from Whop SDK');
       }
     } catch (sdkError) {
       console.log('⚠️ [SimpleAuth] Whop SDK not available:', sdkError);
