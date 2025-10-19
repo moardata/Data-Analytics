@@ -63,13 +63,13 @@ export function OwnerOnlyGuard({ children }: { children: React.ReactNode }) {
           loading: false,
         });
       } catch (error) {
-        console.error('Error checking ownership:', error);
-        // On error, grant access for testing (fail-open in dev)
-        console.log('⚠️ [OwnerOnlyGuard] Error - granting access for testing');
+        console.error('❌ [OwnerOnlyGuard] Error checking ownership:', error);
+        // FAIL-CLOSED: On error, deny access (secure for production)
         setOwnerCheck({
-          isOwner: true,
-          accessLevel: 'owner',
+          isOwner: false,
+          accessLevel: 'none',
           loading: false,
+          error: 'Failed to verify access',
         });
       }
     }
