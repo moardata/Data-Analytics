@@ -10,7 +10,6 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { Settings as SettingsIcon, User, Bell, Key, Database, RefreshCw } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { WhopMCPDemo } from '@/components/WhopMCPDemo';
 
 function SettingsContent() {
   const router = useRouter();
@@ -230,21 +229,6 @@ function SettingsContent() {
             </CardContent>
           </Card>
 
-          {/* Whop MCP Tools Demo */}
-          <Card className="border border-[#2A2F36] bg-[#171A1F] shadow-lg">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-[#E5E7EB]">
-                <Database className="h-5 w-5 text-[#10B981]" />
-                Whop MCP Tools
-              </CardTitle>
-              <CardDescription className="text-[#9AA4B2]">
-                Model Context Protocol integration for enhanced Whop functionality
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <WhopMCPDemo />
-            </CardContent>
-          </Card>
         </div>
       </div>
     </div>
