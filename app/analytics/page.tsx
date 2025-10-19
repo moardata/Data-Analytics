@@ -15,15 +15,15 @@ import { Suspense, useState, useEffect } from 'react';
 import DashboardCreatorAnalytics from '@/components/DashboardCreatorAnalytics';
 import { adaptToCreatorAnalytics } from '@/lib/utils/adaptDashboardCreatorAnalytics';
 import { PermissionsBanner } from '@/components/PermissionsBanner';
-import { useWhopAuth } from '@/lib/hooks/useWhopAuth';
+import { useWhopExperience } from '@/lib/hooks/useWhopExperience';
 
 export const dynamic = 'force-dynamic';
 
 type DateRange = 'week' | 'month' | 'quarter';
 
 function AnalyticsContent() {
-  // Use proper Whop authentication with multi-tenancy
-  const auth = useWhopAuth();
+  // Use NEW experience-based authentication
+  const auth = useWhopExperience();
   
   const [dashboardData, setDashboardData] = useState<any>(null);
   const [range, setRange] = useState<DateRange>('week');
@@ -41,14 +41,14 @@ function AnalyticsContent() {
     setIsInIframe(inIframe);
     console.log('🔍 Iframe detection:', inIframe);
     
-    // Only fetch data if user is authenticated and has company access
-    if (auth.hasCompanyAccess && auth.companyId && !auth.loading) {
+    // Only fetch data if user has access and experience ID is present
+    if (auth.hasAccess && auth.experienceId && !auth.loading) {
       fetchData();
     }
-  }, [range, auth.hasCompanyAccess, auth.companyId, auth.loading]);
+  }, [range, auth.hasAccess, auth.experienceId, auth.loading]);
 
   const createClientRecord = async () => {
-    if (!auth.companyId) return;
+    if (!auth.companyId || !auth.experienceId) return;
     
     try {
       const response = await fetch('/api/setup/client', {
