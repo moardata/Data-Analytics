@@ -10,7 +10,7 @@
 
 'use client';
 
-import { useWhopUser } from '@whop/react';
+import { useIframeSdk } from '@whop/react';
 import { useEffect, useState } from 'react';
 import { ShieldAlert, Crown, Users } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -24,7 +24,7 @@ interface AccessState {
 }
 
 export function WhopClientAuth({ children }: { children: React.ReactNode }) {
-  const { user, isLoading } = useWhopUser();
+  const sdk = useIframeSdk();
   
   const [accessState, setAccessState] = useState<AccessState>({
     loading: true,
@@ -33,67 +33,80 @@ export function WhopClientAuth({ children }: { children: React.ReactNode }) {
   });
 
   useEffect(() => {
-    console.log('🔐 [WhopClientAuth] Checking Whop user...');
-    console.log('🔐 [WhopClientAuth] User object:', {
-      hasUser: !!user,
-      isLoading,
-      userId: user?.id,
-      userName: user?.username,
-      // Log all user properties to see what's available
-      userProps: user ? Object.keys(user) : [],
-    });
+    async function checkAccess() {
+      console.log('🔐 [WhopClientAuth] Checking Whop iframe SDK...');
+      console.log('🔐 [WhopClientAuth] SDK:', { hasSdk: !!sdk });
 
-    // Still loading
-    if (isLoading) {
-      console.log('⏳ [WhopClientAuth] Loading user data...');
-      return;
-    }
+      if (!sdk) {
+        console.log('⏳ [WhopClientAuth] Waiting for SDK...');
+        // Wait for SDK to load
+        setTimeout(() => {
+          if (!sdk) {
+            console.log('🧪 [WhopClientAuth] No SDK - test mode (grant access for dev)');
+            setAccessState({
+              loading: false,
+              isOwner: true, // Grant access in test mode
+              role: 'test',
+              userName: 'Test User',
+            });
+          }
+        }, 3000);
+        return;
+      }
 
-    // No user after loading = not in Whop context
-    if (!user) {
-      console.log('🧪 [WhopClientAuth] No user - test mode (grant access for dev)');
-      // Timeout to wait for Whop to load
-      setTimeout(() => {
-        if (!user) {
+      try {
+        // Get user and company from SDK
+        const user = await sdk.getUser();
+        const company = await sdk.getCompany();
+
+        console.log('🔐 [WhopClientAuth] SDK data:', {
+          hasUser: !!user,
+          hasCompany: !!company,
+          userId: user?.id,
+          companyId: company?.id,
+          companyOwnerId: company?.owner_id,
+        });
+
+        if (!user || !company) {
+          console.log('❌ [WhopClientAuth] Missing user or company data');
           setAccessState({
             loading: false,
-            isOwner: true, // Grant access in test mode
-            role: 'test',
-            userName: 'Test User',
+            isOwner: false,
+            role: 'none',
           });
+          return;
         }
-      }, 3000);
-      return;
+
+        // Check if user is the company owner
+        const isOwner = user.id === company.owner_id;
+
+        console.log('🔐 [WhopClientAuth] Access check:', {
+          userId: user.id,
+          companyOwnerId: company.owner_id,
+          isOwner,
+        });
+
+        setAccessState({
+          loading: false,
+          isOwner,
+          role: isOwner ? 'owner' : 'member',
+          userName: user.username || user.id,
+          userId: user.id,
+        });
+
+      } catch (error) {
+        console.error('❌ [WhopClientAuth] Error getting SDK data:', error);
+        // On error, block access (fail-closed)
+        setAccessState({
+          loading: false,
+          isOwner: false,
+          role: 'error',
+        });
+      }
     }
 
-    // We have a user! Now check their role
-    // Check if user object has company_id or role information
-    const userAny = user as any; // Cast to access any property
-    
-    // Try different ways to detect owner
-    const isOwner = 
-      userAny.role === 'owner' || 
-      userAny.role === 'admin' ||
-      userAny.is_owner === true ||
-      userAny.company_role === 'owner';
-
-    console.log('🔐 [WhopClientAuth] Access check:', {
-      userId: user.id,
-      userName: user.username,
-      role: userAny.role || 'unknown',
-      isOwner,
-      allUserFields: Object.keys(userAny),
-    });
-
-    setAccessState({
-      loading: false,
-      isOwner,
-      role: isOwner ? 'owner' : 'member',
-      userName: user.username || user.id,
-      userId: user.id,
-    });
-
-  }, [user, isLoading]);
+    checkAccess();
+  }, [sdk]);
 
   // Loading state
   if (accessState.loading) {
