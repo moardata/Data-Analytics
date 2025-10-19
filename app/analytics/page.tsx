@@ -15,15 +15,15 @@ import { Suspense, useState, useEffect } from 'react';
 import DashboardCreatorAnalytics from '@/components/DashboardCreatorAnalytics';
 import { adaptToCreatorAnalytics } from '@/lib/utils/adaptDashboardCreatorAnalytics';
 import { PermissionsBanner } from '@/components/PermissionsBanner';
-import { useWhopExperience } from '@/lib/hooks/useWhopExperience';
+import { useWhopAuth } from '@/lib/hooks/useWhopAuth';
 
 export const dynamic = 'force-dynamic';
 
 type DateRange = 'week' | 'month' | 'quarter';
 
 function AnalyticsContent() {
-  // Use NEW experience-based authentication
-  const auth = useWhopExperience();
+  // Use working authentication
+  const auth = useWhopAuth();
   
   const [dashboardData, setDashboardData] = useState<any>(null);
   const [range, setRange] = useState<DateRange>('week');
@@ -41,14 +41,14 @@ function AnalyticsContent() {
     setIsInIframe(inIframe);
     console.log('🔍 Iframe detection:', inIframe);
     
-    // Only fetch data if user has access and experience ID is present
-    if (auth.hasAccess && auth.experienceId && !auth.loading) {
+    // Only fetch data if user has company access
+    if (auth.hasCompanyAccess && auth.companyId && !auth.loading) {
       fetchData();
     }
-  }, [range, auth.hasAccess, auth.experienceId, auth.loading]);
+  }, [range, auth.hasCompanyAccess, auth.companyId, auth.loading]);
 
   const createClientRecord = async () => {
-    if (!auth.companyId || !auth.experienceId) return;
+    if (!auth.companyId) return;
     
     try {
       const response = await fetch('/api/setup/client', {
@@ -210,10 +210,10 @@ function AnalyticsContent() {
   }
 
   // Show authentication error
-  if (auth.error || !auth.hasAccess) {
-    const isTestingMode = auth.error?.includes('experience ID');
+  if (auth.error || !auth.hasCompanyAccess) {
+    const isTestingMode = auth.error?.includes('TESTING MODE');
     const currentUrl = typeof window !== 'undefined' ? window.location.href.split('?')[0] : '';
-    const testUrl = `${currentUrl}?experienceId=exp_test`;
+    const testUrl = `${currentUrl}?companyId=biz_3GYHNPbGkZCEky`;
     
     return (
       <div className="min-h-screen bg-[#0f1115] flex items-center justify-center">
