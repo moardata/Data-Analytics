@@ -31,8 +31,8 @@ export async function GET(request: NextRequest) {
     
     console.log('✅ [Analytics] Auth successful:', { userId, companyId, isTestMode: auth.isTestMode });
 
-    // Check if Supabase is configured
-    if (!supabase) {
+    // Check if Supabase is configured - test with a method call
+    if (!supabase || !supabase.from) {
       console.warn('⚠️ Supabase not configured. Returning empty test data.');
       return NextResponse.json(getEmptyMetrics(), { headers: corsHeaders });
     }
@@ -46,8 +46,15 @@ export async function GET(request: NextRequest) {
     let clientData = null;
     let clientError = null;
     
-    const result1 = await supabase
-      .from('clients')
+    const clientsQuery = supabase.from('clients');
+    
+    // Check if the query builder is valid
+    if (!clientsQuery) {
+      console.warn('⚠️ Supabase client query failed. Returning empty test data.');
+      return NextResponse.json(getEmptyMetrics(), { headers: corsHeaders });
+    }
+    
+    const result1 = await clientsQuery
       .select('id')
       .eq('whop_company_id', companyId)
       .maybeSingle();
