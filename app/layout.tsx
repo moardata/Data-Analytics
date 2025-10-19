@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import { Suspense } from "react";
 import { Sidebar } from "@/components/sidebar";
-import { OwnerOnlyGuard } from "@/components/OwnerOnlyGuard";
+import { WhopClientAuth } from "@/components/WhopClientAuth";
 import "./globals.css";
 
 const inter = Inter({
@@ -26,22 +26,16 @@ export default function RootLayout({
 		<html lang="en" className="dark">
 			<body className={`${inter.variable} font-sans antialiased`}>
 				<WhopApp>
-					<Suspense fallback={
-						<div className="min-h-screen bg-gradient-to-b from-[#0d0f12] to-[#14171c] flex items-center justify-center">
-							<div className="w-16 h-16 border-4 border-[#10B981] border-t-transparent rounded-full animate-spin" />
+					<WhopClientAuth>
+						<div className="flex min-h-screen bg-gradient-to-b from-[#0d0f12] to-[#14171c]">
+							<Suspense fallback={<div className="w-64" />}>
+								<Sidebar />
+							</Suspense>
+							<main className="flex-1 ml-64">
+								{children}
+							</main>
 						</div>
-					}>
-						<OwnerOnlyGuard>
-							<div className="flex min-h-screen bg-gradient-to-b from-[#0d0f12] to-[#14171c]">
-								<Suspense fallback={<div className="w-64" />}>
-									<Sidebar />
-								</Suspense>
-								<main className="flex-1 ml-64">
-									{children}
-								</main>
-							</div>
-						</OwnerOnlyGuard>
-					</Suspense>
+					</WhopClientAuth>
 				</WhopApp>
 			</body>
 		</html>
