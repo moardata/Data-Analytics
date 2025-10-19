@@ -58,29 +58,29 @@ export function WhopClientAuth({ children }: { children: React.ReactNode }) {
         // Get URL data from SDK to determine view type
         const urlData = await sdk.getTopLevelUrlData({});
 
-        console.log('🔐 [WhopClientAuth] SDK data:', {
-          viewType: urlData?.viewType,
-          experienceId: urlData?.experienceId,
-          companyRoute: urlData?.companyRoute,
-        });
+        console.log('🔐 [WhopClientAuth] SDK data (FULL):', urlData);
+        console.log('🔐 [WhopClientAuth] ViewType:', urlData?.viewType);
 
+        // TEMPORARY: Grant access to ALL view types to see what's happening
         // Check view type:
-        // - "admin" or "analytics" = Owner/Admin view
-        // - "app" or "preview" = Member/Student view
-        const isOwner = 
-          urlData?.viewType === 'admin' || 
-          urlData?.viewType === 'analytics';
+        // Possible values: "admin", "analytics", "app", "preview", "dashboard"?
+        const viewType = urlData?.viewType;
+        
+        // For now, only BLOCK if viewType is explicitly "app" (member view)
+        // Allow everything else (admin, analytics, dashboard, etc.)
+        const isOwner = viewType !== 'app';
 
         console.log('🔐 [WhopClientAuth] Access check:', {
-          viewType: urlData?.viewType,
+          viewType,
           isOwner,
+          logic: viewType === 'app' ? 'BLOCKED (app view = student)' : 'ALLOWED (not app view)',
         });
 
         setAccessState({
           loading: false,
           isOwner,
           role: isOwner ? 'owner' : 'member',
-          userName: 'User', // We don't have username from this method
+          userName: 'User',
         });
 
       } catch (error) {
