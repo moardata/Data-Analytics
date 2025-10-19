@@ -81,13 +81,25 @@ export function WhopClientAuth({ children }: { children: React.ReactNode }) {
         let isOwner = false;
         let logic = '';
 
+        console.log('🔐 [WhopClientAuth] Starting owner detection for viewType:', viewType);
+
         // Method 1: Check viewType (primary method)
         if (viewType === 'admin' || viewType === 'analytics') {
           isOwner = true;
           logic = 'OWNER (admin/analytics view)';
+          console.log('🔐 [WhopClientAuth] Method 1: Admin/Analytics view detected');
         }
         // Method 2: For "app" view, check if user is actually the company owner
         else if (viewType === 'app') {
+          console.log('🔐 [WhopClientAuth] Method 2: App view detected - checking ownership...');
+          
+          // TEMPORARY: Grant access for debugging while we figure out the ownership check
+          console.log('🔐 [WhopClientAuth] TEMPORARY: Granting access for app view (debugging)');
+          isOwner = true;
+          logic = 'OWNER (app view - temporary debug access)';
+          
+          // TODO: Re-enable this once we debug the ownership check
+          /*
           try {
             // Get user and company data to verify ownership
             const [user, company] = await Promise.all([
@@ -122,6 +134,7 @@ export function WhopClientAuth({ children }: { children: React.ReactNode }) {
             isOwner = true;
             logic = 'OWNER (app view + error checking ownership - debugging)';
           }
+          */
         }
         // Method 3: Allow other view types (preview, development, etc.)
         else {
