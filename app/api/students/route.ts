@@ -32,22 +32,31 @@ export async function GET(request: NextRequest) {
     }
 
     // First get the client record for this company
+    console.log('🔍 [Students API] Querying clients table for company_id:', companyId);
+    
     const { data: clientData, error: clientError } = await supabase
       .from('clients')
       .select('id')
       .eq('company_id', companyId)
       .maybeSingle();
 
+    console.log('📊 [Students API] Client query result:', {
+      found: !!clientData,
+      clientId: clientData?.id,
+      error: clientError?.message,
+      errorCode: clientError?.code,
+    });
+
     if (clientError) {
-      console.error('Error fetching client:', clientError);
+      console.error('❌ [Students API] Error fetching client:', clientError);
       return NextResponse.json(
-        { error: 'Database error', students: [] },
+        { error: 'Database error', details: clientError.message, students: [] },
         { status: 500, headers: corsHeaders }
       );
     }
 
     if (!clientData) {
-      console.log('No client found for company:', companyId);
+      console.log('❌ [Students API] No client found for company:', companyId);
       return NextResponse.json(
         { error: 'Client not found', students: [] },
         { status: 404, headers: corsHeaders }
@@ -57,16 +66,25 @@ export async function GET(request: NextRequest) {
     console.log('✅ [Students API] Client found:', clientData.id);
 
     // Now query entities with the actual client UUID
+    console.log('🔍 [Students API] Querying entities table for client_id:', clientData.id);
+    
     const { data: students, error: studentsError } = await supabase
       .from('entities')
       .select('*')
       .eq('client_id', clientData.id)
       .order('created_at', { ascending: false });
 
+    console.log('📊 [Students API] Students query result:', {
+      count: students?.length || 0,
+      error: studentsError?.message,
+      errorCode: studentsError?.code,
+      firstStudent: students?.[0]?.name || 'none',
+    });
+
     if (studentsError) {
-      console.error('Error fetching students:', studentsError);
+      console.error('❌ [Students API] Error fetching students:', studentsError);
       return NextResponse.json(
-        { error: 'Failed to fetch students', students: [] },
+        { error: 'Failed to fetch students', details: studentsError.message, students: [] },
         { status: 500, headers: corsHeaders }
       );
     }
