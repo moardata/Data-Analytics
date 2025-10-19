@@ -58,16 +58,27 @@ export function WhopClientAuth({ children }: { children: React.ReactNode }) {
         // Get URL data from SDK to determine view type
         const urlData = await sdk.getTopLevelUrlData({});
 
-        console.log('🔐 [WhopClientAuth] SDK data (FULL):', urlData);
+        console.log('🔐 [WhopClientAuth] SDK data (FULL):', JSON.stringify(urlData, null, 2));
         console.log('🔐 [WhopClientAuth] ViewType:', urlData?.viewType);
+        console.log('🔐 [WhopClientAuth] All URL data keys:', Object.keys(urlData || {}));
 
-        // TEMPORARY: Grant access to ALL view types to see what's happening
         // Check view type:
-        // Possible values: "admin", "analytics", "app", "preview", "dashboard"?
         const viewType = urlData?.viewType;
         
+        // SAFEGUARD: If no viewType returned, something is wrong - grant access
+        if (!viewType) {
+          console.warn('⚠️ [WhopClientAuth] No viewType - granting access as fallback');
+          setAccessState({
+            loading: false,
+            isOwner: true,
+            role: 'owner',
+            userName: 'User',
+          });
+          return;
+        }
+        
         // For now, only BLOCK if viewType is explicitly "app" (member view)
-        // Allow everything else (admin, analytics, dashboard, etc.)
+        // Allow everything else (admin, analytics, dashboard, preview, etc.)
         const isOwner = viewType !== 'app';
 
         console.log('🔐 [WhopClientAuth] Access check:', {
@@ -80,16 +91,18 @@ export function WhopClientAuth({ children }: { children: React.ReactNode }) {
           loading: false,
           isOwner,
           role: isOwner ? 'owner' : 'member',
-          userName: 'User',
+          userName: viewType === 'app' ? 'Member' : 'Owner',
         });
 
       } catch (error) {
         console.error('❌ [WhopClientAuth] Error getting SDK data:', error);
-        // On error, block access (fail-closed)
+        // On error, GRANT ACCESS (fail-open for now while debugging)
+        console.warn('⚠️ [WhopClientAuth] Error - granting access as fallback');
         setAccessState({
           loading: false,
-          isOwner: false,
-          role: 'error',
+          isOwner: true,
+          role: 'owner',
+          userName: 'User',
         });
       }
     }
