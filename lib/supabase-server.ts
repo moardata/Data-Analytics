@@ -9,7 +9,7 @@ import type { SupabaseClient } from '@supabase/supabase-js';
 
 let _supabaseServer: SupabaseClient | null = null;
 
-function getSupabaseServer(): SupabaseClient {
+function getSupabaseServer(): SupabaseClient | null {
   // Get env vars at runtime, not at module load time
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
   
@@ -19,32 +19,31 @@ function getSupabaseServer(): SupabaseClient {
     process.env.SUPABASE_SECRET_KEY ||
     process.env.SUPABASE_KEY;
 
-  if (!supabaseUrl || !supabaseServiceKey) {
-    throw new Error('Missing required Supabase environment variables. Set NEXT_PUBLIC_SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY in your environment.');
-  }
+  // Check if credentials are valid (not placeholders)
+  const hasValidCredentials = 
+    supabaseUrl && 
+    supabaseServiceKey && 
+    supabaseUrl.startsWith('https://') && 
+    !supabaseUrl.includes('your_supabase_url_here') &&
+    !supabaseServiceKey.includes('your_supabase');
 
   // Enhanced logging for debugging
   console.log('🔍 Supabase Server Init Check:', {
     hasUrl: !!supabaseUrl,
     hasKey: !!supabaseServiceKey,
+    hasValidCredentials,
     urlLength: supabaseUrl?.length || 0,
     keyLength: supabaseServiceKey?.length || 0,
-    urlPreview: supabaseUrl ? `${supabaseUrl.substring(0, 20)}...` : 'missing',
-    keyPreview: supabaseServiceKey ? `${supabaseServiceKey.substring(0, 10)}...` : 'missing',
-    allEnvKeys: Object.keys(process.env).filter(k => k.includes('SUPABASE')),
+    urlPreview: supabaseUrl && supabaseUrl.startsWith('https://') ? `${supabaseUrl.substring(0, 20)}...` : 'invalid/missing',
+    keyPreview: supabaseServiceKey && !supabaseServiceKey.includes('your_') ? `${supabaseServiceKey.substring(0, 10)}...` : 'invalid/missing',
   });
 
-  if (!supabaseUrl || !supabaseServiceKey) {
-    console.error('❌ Missing Supabase credentials for server client:', {
-      hasUrl: !!supabaseUrl,
-      hasKey: !!supabaseServiceKey,
-      urlLength: supabaseUrl?.length || 0,
-      keyLength: supabaseServiceKey?.length || 0
-    });
-    throw new Error('SUPABASE_SERVICE_ROLE_KEY is required for server operations');
+  if (!hasValidCredentials) {
+    console.warn('⚠️ Supabase not configured. Server client disabled. App will work in test mode.');
+    return null;
   }
 
-  if (!_supabaseServer) {
+  if (!_supabaseServer && supabaseUrl && supabaseServiceKey) {
     _supabaseServer = createClient(supabaseUrl, supabaseServiceKey, {
       auth: {
         autoRefreshToken: false,
@@ -61,10 +60,15 @@ function getSupabaseServer(): SupabaseClient {
  * Server-side Supabase client with SERVICE ROLE key
  * This bypasses RLS policies - use ONLY in API routes
  * Never expose this client to the frontend
+ * Returns null if Supabase is not configured
  */
 export const supabaseServer = new Proxy({} as SupabaseClient, {
   get(target, prop) {
     const client = getSupabaseServer();
+    if (!client) {
+      // Return null for any property access if Supabase is not configured
+      return null;
+    }
     const value = (client as any)[prop];
     return typeof value === 'function' ? value.bind(client) : value;
   },

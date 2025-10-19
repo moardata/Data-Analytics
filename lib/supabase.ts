@@ -9,16 +9,28 @@ import { createClient } from '@supabase/supabase-js';
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
+// Check if credentials are valid (not placeholders)
+const hasValidCredentials = 
+  supabaseUrl && 
+  supabaseKey && 
+  supabaseUrl.startsWith('https://') && 
+  !supabaseUrl.includes('your_supabase_url_here');
+
 console.log('DEBUG - Supabase URL:', supabaseUrl ? 'Found' : 'MISSING');
 console.log('DEBUG - Supabase Key:', supabaseKey ? 'Found' : 'MISSING');
+console.log('DEBUG - Valid Credentials:', hasValidCredentials ? 'YES' : 'NO');
 
-if (!supabaseUrl || !supabaseKey) {
-  console.warn('Supabase credentials not found. Database features will be disabled.');
-  console.log('All env vars:', Object.keys(process.env).filter(k => k.includes('SUPABASE')));
-  throw new Error('Supabase credentials are required. Please check your .env.local file.');
+// Create client only if credentials are valid, otherwise create a mock
+export const supabase = hasValidCredentials && supabaseUrl && supabaseKey
+  ? createClient(supabaseUrl, supabaseKey)
+  : null;
+
+// Export a flag so other code can check if Supabase is available
+export const supabaseAvailable = !!supabase;
+
+if (!supabase) {
+  console.warn('⚠️ Supabase not configured. Database features disabled. App will work in test mode.');
 }
-
-export const supabase = createClient(supabaseUrl, supabaseKey);
 
 /**
  * Database Schema Types
