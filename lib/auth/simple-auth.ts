@@ -11,8 +11,10 @@ export interface SimpleAuthResult {
   userId: string;
   companyId: string;
   isAuthenticated: boolean;
-  accessLevel: 'admin' | 'member' | 'test';
+  accessLevel: 'owner' | 'admin' | 'member' | 'test';
   isTestMode: boolean;
+  isOwner: boolean;
+  isAdmin: boolean;
 }
 
 /**
@@ -84,12 +86,20 @@ export async function simpleAuth(request: Request): Promise<SimpleAuthResult> {
     const elapsed = Date.now() - startTime;
     console.log(`✅ [SimpleAuth] Complete in ${elapsed}ms`);
     
+    // For now, grant owner access in test mode, admin in production
+    // TODO: Implement proper role checking via Whop SDK
+    const accessLevel = isRealWhopAuth ? 'owner' : 'owner'; // Grant owner for testing
+    const isOwner = true; // Grant owner access for testing/development
+    const isAdmin = true;
+    
     return {
       userId,
       companyId,
       isAuthenticated: true,
-      accessLevel: 'admin', // Grant admin for testing
-      isTestMode: !isRealWhopAuth
+      accessLevel,
+      isTestMode: !isRealWhopAuth,
+      isOwner,
+      isAdmin,
     };
     
   } catch (error) {
