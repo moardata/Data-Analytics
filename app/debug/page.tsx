@@ -9,6 +9,13 @@ function DebugContent() {
   const [loading, setLoading] = useState(false);
   
   const companyId = searchParams.get('companyId') || searchParams.get('company_id');
+  const experienceId = searchParams.get('experienceId') || searchParams.get('experience_id');
+  
+  // Build query string to preserve in links
+  const queryParams = new URLSearchParams();
+  if (companyId) queryParams.set('companyId', companyId);
+  if (experienceId) queryParams.set('experienceId', experienceId);
+  const queryString = queryParams.toString() ? `?${queryParams.toString()}` : '';
 
   useEffect(() => {
     if (companyId) {
@@ -107,19 +114,19 @@ function DebugContent() {
           <h2 className="text-xl font-semibold text-white mb-4">Quick Links</h2>
           <div className="space-y-2">
             <a 
-              href="/debug?companyId=biz_3GYHNPbGkZCEky"
+              href={queryString ? `/debug${queryString}` : "/debug?companyId=biz_3GYHNPbGkZCEky"}
               className="block text-[#10B981] hover:underline text-sm"
             >
               → Debug with company ID
             </a>
             <a 
-              href="/analytics?companyId=biz_3GYHNPbGkZCEky&bypass=true"
+              href={queryString ? `/analytics${queryString}&bypass=true` : "/analytics?companyId=biz_3GYHNPbGkZCEky&bypass=true"}
               className="block text-[#10B981] hover:underline text-sm"
             >
               → Analytics with bypass mode
             </a>
             <a 
-              href="/analytics?companyId=biz_3GYHNPbGkZCEky"
+              href={queryString ? `/analytics${queryString}` : "/analytics?companyId=biz_3GYHNPbGkZCEky"}
               className="block text-[#10B981] hover:underline text-sm"
             >
               → Analytics (normal mode)

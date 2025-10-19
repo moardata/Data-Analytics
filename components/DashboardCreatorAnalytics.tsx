@@ -2,6 +2,7 @@
 
 import * as React from 'react';
 import Link from 'next/link';
+import { useSearchParams } from 'next/navigation';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils/cn';
@@ -153,24 +154,36 @@ interface DashboardCreatorAnalyticsProps {
 // Main component
 // ----------------------------------------
 export default function DashboardCreatorAnalytics({ data, onExportEventsCsv, onExportSubscriptionsCsv, onExportPdf }: DashboardCreatorAnalyticsProps) {
+  const searchParams = useSearchParams();
+  
+  // Preserve companyId and experienceId in navigation
+  const companyId = searchParams.get('companyId') || searchParams.get('company_id');
+  const experienceId = searchParams.get('experienceId') || searchParams.get('experience_id');
+  
+  // Build query string to preserve in navigation
+  const queryParams = new URLSearchParams();
+  if (companyId) queryParams.set('companyId', companyId);
+  if (experienceId) queryParams.set('experienceId', experienceId);
+  const queryString = queryParams.toString() ? `?${queryParams.toString()}` : '';
+
   return (
     <div className="space-y-4">
       {/* Toolbar */}
       <div className="flex flex-wrap items-center gap-2">
         <div className="text-lg font-semibold text-white">Dashboard</div>
         <div className="ml-auto flex items-center gap-2">
-          <Link href="/analytics">
+          <Link href={`/analytics${queryString}`}>
             <Button className="border border-[#2A2F36] bg-[#0B2C24]/40 hover:bg-[#0B2C24]/60">
               <Calendar className="mr-2 h-4 w-4" /> Analytics
             </Button>
           </Link>
-          <Link href="/insights">
+          <Link href={`/insights${queryString}`}>
             <Button className="border border-[#2A2F36] bg-[#0B2C24]/40 hover:bg-[#0B2C24]/60">AI Insights</Button>
           </Link>
-          <Link href="/forms">
+          <Link href={`/forms${queryString}`}>
             <Button className="border border-[#2A2F36] bg-[#0B2C24]/40 hover:bg-[#0B2C24]/60">Forms</Button>
           </Link>
-          <Link href="/students">
+          <Link href={`/students${queryString}`}>
             <Button className="border border-[#2A2F36] bg-[#0B2C24]/40 hover:bg-[#0B2C24]/60">Students</Button>
           </Link>
           <Button 

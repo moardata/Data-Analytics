@@ -15,11 +15,18 @@ function SettingsContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const companyId = searchParams.get('companyId');
+  const experienceId = searchParams.get('experienceId') || searchParams.get('experience_id');
   const [syncing, setSyncing] = useState(false);
   const [syncMessage, setSyncMessage] = useState('');
 
+  // Build query string to preserve in navigation
+  const queryParams = new URLSearchParams();
+  if (companyId) queryParams.set('companyId', companyId);
+  if (experienceId) queryParams.set('experienceId', experienceId);
+  const queryString = queryParams.toString() ? `?${queryParams.toString()}` : '';
+
   const handleUpgrade = () => {
-    router.push('/upgrade');
+    router.push(`/upgrade${queryString}`);
   };
 
   const handleExportData = () => {
@@ -56,7 +63,7 @@ function SettingsContent() {
       if (data.success) {
         setSyncMessage(`✅ ${data.message}`);
         setTimeout(() => {
-          router.push(`/students?companyId=${companyId}`);
+          router.push(`/students${queryString}`);
         }, 2000);
       } else {
         setSyncMessage(`❌ ${data.error || 'Failed to sync students'}`);
