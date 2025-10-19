@@ -6,7 +6,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabaseServer as supabase } from '@/lib/supabase-server';
 import { format, subDays } from 'date-fns';
-import { simpleAuth } from '@/lib/auth/simple-auth';
+import { requireOwner } from '@/lib/middleware/requireOwner';
 
 // Add CORS headers for iframe compatibility
 const corsHeaders = {
@@ -25,11 +25,14 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url);
     const timeRange = searchParams.get('timeRange') || 'week';
 
-    // Use simple auth (never hangs, 1s timeout max)
-    const auth = await simpleAuth(request);
+    // SECURITY: Require owner/admin access
+    const { auth, error } = await requireOwner(request);
+    if (error) return error;
+    if (!auth) return NextResponse.json({ error: 'Unauthorized' }, { status: 401, headers: corsHeaders });
+
     const { companyId, userId } = auth;
     
-    console.log('✅ [Analytics] Auth successful:', { userId, companyId, isTestMode: auth.isTestMode });
+    console.log('✅ [Analytics] Owner/Admin access verified:', { userId, companyId, role: auth.role });
 
     // Check if Supabase is configured - test with a method call
     if (!supabase || !supabase.from) {
