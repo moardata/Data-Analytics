@@ -13,7 +13,10 @@ export default async function DashboardPage({ params }: { params: Promise<{ comp
   try {
     // Get user token from headers
     const headersList = await headers();
-    const { userId } = await whopSdk.verifyUserToken(headersList);
+    const tokenResult = await whopSdk.verifyUserToken(headersList);
+    
+    // Use test user if no userId (local development mode)
+    const userId = tokenResult?.userId || 'test_user';
     
     // Check if user has access to this company
     const result = await whopSdk.access.checkIfUserHasAccessToCompany({
