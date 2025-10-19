@@ -1,6 +1,7 @@
 import { WhopApp } from "@whop/react/components";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
+import { Suspense } from "react";
 import { Sidebar } from "@/components/sidebar";
 import { AccessGuard } from "@/components/AccessGuard";
 import "./globals.css";
@@ -28,7 +29,9 @@ export default function RootLayout({
 					{/* Temporarily disable AccessGuard to debug loading issue */}
 					{/* <AccessGuard> */}
 						<div className="flex min-h-screen bg-gradient-to-b from-[#0d0f12] to-[#14171c]">
-							<Sidebar />
+							<Suspense fallback={<div className="w-64" />}>
+								<Sidebar />
+							</Suspense>
 							<main className="flex-1 ml-64">
 								{children}
 							</main>

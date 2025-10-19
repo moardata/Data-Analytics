@@ -1,6 +1,7 @@
 'use client';
 
 import * as React from 'react';
+import { Suspense } from 'react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { Card, CardContent } from '@/components/ui/card';
@@ -151,9 +152,9 @@ interface DashboardCreatorAnalyticsProps {
 }
 
 // ----------------------------------------
-// Main component
+// Toolbar with navigation (uses searchParams)
 // ----------------------------------------
-export default function DashboardCreatorAnalytics({ data, onExportEventsCsv, onExportSubscriptionsCsv, onExportPdf }: DashboardCreatorAnalyticsProps) {
+function DashboardToolbar({ onExportPdf }: { onExportPdf?: () => void }) {
   const searchParams = useSearchParams();
   
   // Preserve companyId and experienceId in navigation
@@ -167,33 +168,48 @@ export default function DashboardCreatorAnalytics({ data, onExportEventsCsv, onE
   const queryString = queryParams.toString() ? `?${queryParams.toString()}` : '';
 
   return (
+    <div className="flex flex-wrap items-center gap-2">
+      <div className="text-lg font-semibold text-white">Dashboard</div>
+      <div className="ml-auto flex items-center gap-2">
+        <Link href={`/analytics${queryString}`}>
+          <Button className="border border-[#2A2F36] bg-[#0B2C24]/40 hover:bg-[#0B2C24]/60">
+            <Calendar className="mr-2 h-4 w-4" /> Analytics
+          </Button>
+        </Link>
+        <Link href={`/insights${queryString}`}>
+          <Button className="border border-[#2A2F36] bg-[#0B2C24]/40 hover:bg-[#0B2C24]/60">AI Insights</Button>
+        </Link>
+        <Link href={`/forms${queryString}`}>
+          <Button className="border border-[#2A2F36] bg-[#0B2C24]/40 hover:bg-[#0B2C24]/60">Forms</Button>
+        </Link>
+        <Link href={`/students${queryString}`}>
+          <Button className="border border-[#2A2F36] bg-[#0B2C24]/40 hover:bg-[#0B2C24]/60">Students</Button>
+        </Link>
+        <Button 
+          onClick={onExportPdf}
+          className="border border-emerald-700/60 bg-emerald-900/40 hover:bg-emerald-900/60"
+        >
+          <Download className="mr-2 h-4 w-4" /> Export
+        </Button>
+      </div>
+    </div>
+  );
+}
+
+// ----------------------------------------
+// Main component
+// ----------------------------------------
+export default function DashboardCreatorAnalytics({ data, onExportEventsCsv, onExportSubscriptionsCsv, onExportPdf }: DashboardCreatorAnalyticsProps) {
+  return (
     <div className="space-y-4">
       {/* Toolbar */}
-      <div className="flex flex-wrap items-center gap-2">
-        <div className="text-lg font-semibold text-white">Dashboard</div>
-        <div className="ml-auto flex items-center gap-2">
-          <Link href={`/analytics${queryString}`}>
-            <Button className="border border-[#2A2F36] bg-[#0B2C24]/40 hover:bg-[#0B2C24]/60">
-              <Calendar className="mr-2 h-4 w-4" /> Analytics
-            </Button>
-          </Link>
-          <Link href={`/insights${queryString}`}>
-            <Button className="border border-[#2A2F36] bg-[#0B2C24]/40 hover:bg-[#0B2C24]/60">AI Insights</Button>
-          </Link>
-          <Link href={`/forms${queryString}`}>
-            <Button className="border border-[#2A2F36] bg-[#0B2C24]/40 hover:bg-[#0B2C24]/60">Forms</Button>
-          </Link>
-          <Link href={`/students${queryString}`}>
-            <Button className="border border-[#2A2F36] bg-[#0B2C24]/40 hover:bg-[#0B2C24]/60">Students</Button>
-          </Link>
-          <Button 
-            onClick={onExportPdf}
-            className="border border-emerald-700/60 bg-emerald-900/40 hover:bg-emerald-900/60"
-          >
-            <Download className="mr-2 h-4 w-4" /> Export
-          </Button>
+      <Suspense fallback={
+        <div className="flex flex-wrap items-center gap-2">
+          <div className="text-lg font-semibold text-white">Dashboard</div>
         </div>
-      </div>
+      }>
+        <DashboardToolbar onExportPdf={onExportPdf} />
+      </Suspense>
 
       {/* Grid: 2 rows × 4 cards */}
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4">
