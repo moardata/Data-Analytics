@@ -97,28 +97,46 @@ export async function GET(request: NextRequest) {
         .from('events')
         .select('*')
         .eq('client_id', clientId)
-        .gte('created_at', startDate),
+        .gte('created_at', startDate)
+        .then(result => result)
+        .catch(err => ({ data: [], error: err })),
       
       supabase
         .from('subscriptions')
         .select('*')
-        .eq('client_id', clientId),
+        .eq('client_id', clientId)
+        .then(result => result)
+        .catch(err => ({ data: [], error: err })),
       
       supabase
         .from('entities')
         .select('*')
-        .eq('client_id', clientId),
+        .eq('client_id', clientId)
+        .then(result => result)
+        .catch(err => ({ data: [], error: err })),
       
       supabase
         .from('courses')
         .select('*')
-        .eq('client_id', clientId),
+        .eq('client_id', clientId)
+        .then(result => result)
+        .catch(err => ({ data: [], error: err })),
       
       supabase
         .from('course_enrollments')
         .select('*, lesson_interactions:lesson_interactions(is_completed)')
-        .eq('client_id', clientId),
+        .eq('client_id', clientId)
+        .then(result => result)
+        .catch(err => ({ data: [], error: err })),
     ]);
+
+    console.log('📊 Data fetch results:', {
+      events: eventsResult.data?.length || 0,
+      subscriptions: subscriptionsResult.data?.length || 0,
+      entities: entitiesResult.data?.length || 0,
+      courses: coursesResult.data?.length || 0,
+      enrollments: enrollmentsResult.data?.length || 0,
+    });
 
     const events = eventsResult.data || [];
     const subscriptions = subscriptionsResult.data || [];
