@@ -99,13 +99,16 @@ export function WhopClientAuth({ children }: { children: React.ReactNode }) {
           logic = 'OWNER (app view - temporary debug access)';
           
           // TODO: Re-enable this once we debug the ownership check
+          // Note: sdk.getUser() and sdk.getCompany() don't exist on this SDK
+          // We need to use a different approach to verify ownership
           /*
           try {
             // Get user and company data to verify ownership
-            const [user, company] = await Promise.all([
-              sdk.getUser().catch(() => null),
-              sdk.getCompany().catch(() => null)
-            ]);
+            // These methods don't exist on the current SDK:
+            // const [user, company] = await Promise.all([
+            //   sdk.getUser().catch(() => null),
+            //   sdk.getCompany().catch(() => null)
+            // ]);
 
             console.log('🔐 [WhopClientAuth] User data:', user);
             console.log('🔐 [WhopClientAuth] Company data:', company);
