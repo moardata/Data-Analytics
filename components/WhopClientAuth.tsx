@@ -10,7 +10,7 @@
 
 'use client';
 
-import { useWhop } from '@whop/react';
+import { useWhopUser } from '@whop/react';
 import { useEffect, useState } from 'react';
 import { ShieldAlert, Crown, Users } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -20,11 +20,11 @@ interface AccessState {
   isOwner: boolean;
   role: string;
   userName?: string;
-  companyId?: string;
+  userId?: string;
 }
 
 export function WhopClientAuth({ children }: { children: React.ReactNode }) {
-  const whop = useWhop();
+  const { user, isLoading } = useWhopUser();
   
   const [accessState, setAccessState] = useState<AccessState>({
     loading: true,
@@ -33,24 +33,28 @@ export function WhopClientAuth({ children }: { children: React.ReactNode }) {
   });
 
   useEffect(() => {
-    console.log('🔐 [WhopClientAuth] Checking Whop context...');
-    console.log('🔐 [WhopClientAuth] Whop object:', {
-      hasUser: !!whop.user,
-      hasCompany: !!whop.company,
-      userId: whop.user?.id,
-      userName: whop.user?.name || whop.user?.username,
-      companyId: whop.company?.id,
-      companyOwnerId: whop.company?.owner_id,
+    console.log('🔐 [WhopClientAuth] Checking Whop user...');
+    console.log('🔐 [WhopClientAuth] User object:', {
+      hasUser: !!user,
+      isLoading,
+      userId: user?.id,
+      userName: user?.username,
+      // Log all user properties to see what's available
+      userProps: user ? Object.keys(user) : [],
     });
 
-    // Check if we're in Whop context
-    if (!whop.user || !whop.company) {
-      console.log('⏳ [WhopClientAuth] Waiting for Whop context...');
-      // Still loading or not in Whop iframe
+    // Still loading
+    if (isLoading) {
+      console.log('⏳ [WhopClientAuth] Loading user data...');
+      return;
+    }
+
+    // No user after loading = not in Whop context
+    if (!user) {
+      console.log('🧪 [WhopClientAuth] No user - test mode (grant access for dev)');
+      // Timeout to wait for Whop to load
       setTimeout(() => {
-        if (!whop.user || !whop.company) {
-          console.log('🧪 [WhopClientAuth] No Whop context - test mode');
-          // If after 3 seconds still no Whop context, assume test mode
+        if (!user) {
           setAccessState({
             loading: false,
             isOwner: true, // Grant access in test mode
@@ -62,27 +66,34 @@ export function WhopClientAuth({ children }: { children: React.ReactNode }) {
       return;
     }
 
-    // Check if user is the company owner
-    const userId = whop.user.id;
-    const companyOwnerId = whop.company.owner_id;
-    const isOwner = userId === companyOwnerId;
+    // We have a user! Now check their role
+    // Check if user object has company_id or role information
+    const userAny = user as any; // Cast to access any property
+    
+    // Try different ways to detect owner
+    const isOwner = 
+      userAny.role === 'owner' || 
+      userAny.role === 'admin' ||
+      userAny.is_owner === true ||
+      userAny.company_role === 'owner';
 
     console.log('🔐 [WhopClientAuth] Access check:', {
-      userId,
-      companyOwnerId,
+      userId: user.id,
+      userName: user.username,
+      role: userAny.role || 'unknown',
       isOwner,
-      role: isOwner ? 'owner' : 'member',
+      allUserFields: Object.keys(userAny),
     });
 
     setAccessState({
       loading: false,
       isOwner,
       role: isOwner ? 'owner' : 'member',
-      userName: whop.user.name || whop.user.username,
-      companyId: whop.company.id,
+      userName: user.username || user.id,
+      userId: user.id,
     });
 
-  }, [whop.user, whop.company]);
+  }, [user, isLoading]);
 
   // Loading state
   if (accessState.loading) {
