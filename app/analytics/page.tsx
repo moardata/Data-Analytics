@@ -212,8 +212,9 @@ function AnalyticsContent() {
   // Show authentication error
   if (auth.error || !auth.hasCompanyAccess) {
     const isTestingMode = auth.error?.includes('TESTING MODE');
-    const currentUrl = typeof window !== 'undefined' ? window.location.href.split('?')[0] : '';
-    const testUrl = `${currentUrl}?companyId=biz_3GYHNPbGkZCEky`;
+    // Use a fixed URL pattern instead of window.location to avoid hydration mismatch
+    const testUrl = '/analytics?companyId=biz_3GYHNPbGkZCEky';
+    const urlFormat = '/analytics?companyId=YOUR_COMPANY_ID';
     
     return (
       <div className="min-h-screen bg-[#0f1115] flex items-center justify-center">
@@ -267,7 +268,7 @@ function AnalyticsContent() {
               <div className="border-t border-[#2A2F36] pt-4 mt-4">
                 <div className="text-[#9AA4B2] text-xs mb-2">Or copy this URL format:</div>
                 <div className="bg-black/30 rounded p-3 text-[#10B981] text-xs font-mono break-all">
-                  {currentUrl}?companyId=YOUR_COMPANY_ID
+                  {urlFormat}
                 </div>
               </div>
 
