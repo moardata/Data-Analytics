@@ -78,12 +78,36 @@ export function WhopClientAuth({ children }: { children: React.ReactNode }) {
         // For ALL views, we need to verify via server-side API
         // This ensures proper owner verification regardless of viewType
         try {
-          const companyId = new URLSearchParams(window.location.search).get('companyId') || 
-                           new URLSearchParams(window.location.search).get('company_id') ||
-                           process.env.NEXT_PUBLIC_WHOP_COMPANY_ID;
+          // Extract company ID from various sources
+          let companyId = new URLSearchParams(window.location.search).get('companyId') || 
+                         new URLSearchParams(window.location.search).get('company_id') ||
+                         process.env.NEXT_PUBLIC_WHOP_COMPANY_ID;
+          
+          // If no companyId in URL params, try to extract from URL data
+          if (!companyId && urlData) {
+            // Try to get company ID from experience ID or company route
+            if (urlData.experienceId) {
+              // Map experience ID to company ID
+              const experienceToCompanyMap: Record<string, string> = {
+                'exp_2BXhmdlqcnLGc5': 'biz_3GYHNPbGkZCEky', // Your experience -> your company
+              };
+              companyId = experienceToCompanyMap[urlData.experienceId] || 'biz_3GYHNPbGkZCEky';
+              console.log('🔍 [WhopClientAuth] Mapped experience to company:', urlData.experienceId, '->', companyId);
+            } else if (urlData.companyRoute) {
+              // Map company route to company ID
+              const routeToCompanyMap: Record<string, string> = {
+                'live-analytics': 'biz_3GYHNPbGkZCEky',
+                'creator-analytics': 'biz_3GYHNPbGkZCEky',
+                'data-analytics': 'biz_3GYHNPbGkZCEky',
+              };
+              companyId = routeToCompanyMap[urlData.companyRoute] || 'biz_3GYHNPbGkZCEky';
+              console.log('🔍 [WhopClientAuth] Mapped route to company:', urlData.companyRoute, '->', companyId);
+            }
+          }
           
           console.log('🔍 [WhopClientAuth] DEBUG - URL search params:', Object.fromEntries(new URLSearchParams(window.location.search).entries()));
           console.log('🔍 [WhopClientAuth] DEBUG - Full URL:', window.location.href);
+          console.log('🔍 [WhopClientAuth] DEBUG - URL Data:', urlData);
           console.log('🔍 [WhopClientAuth] DEBUG - Company ID found:', companyId);
           
           if (!companyId) {
