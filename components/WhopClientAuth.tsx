@@ -111,30 +111,36 @@ export function WhopClientAuth({ children }: { children: React.ReactNode }) {
             experienceId: urlData?.experienceId
           });
           
-          // STRICT OWNERSHIP CHECK: Only grant access if we have specific ownership indicators
-          // Check for "live-analytics" company route (indicates admin access)
-          const isLiveAnalytics = hasCompanyRoute === 'live-analytics';
+          // STRICT OWNERSHIP CHECK: Only grant access for known admin company routes
+          // Check for specific admin company routes that indicate ownership
+          const adminCompanyRoutes = ['live-analytics', 'admin', 'dashboard'];
+          const isAdminCompanyRoute = adminCompanyRoutes.includes(hasCompanyRoute);
           
-          // Check for specific experience patterns that indicate ownership
-          const isOwnerExperience = hasExperienceRoute && hasExperienceRoute.includes('creator-iq');
+          // Check for specific admin experience patterns (more restrictive)
+          const adminExperiencePatterns = ['creator-iq-2BXhmdlqcnLGc5']; // Only specific admin experiences
+          const isAdminExperience = adminExperiencePatterns.some(pattern => 
+            hasExperienceRoute && hasExperienceRoute.includes(pattern)
+          );
           
           console.log('🔐 [WhopClientAuth] Strict ownership check:', {
-            isLiveAnalytics,
-            isOwnerExperience,
+            isAdminCompanyRoute,
+            isAdminExperience,
             companyRoute: hasCompanyRoute,
-            experienceRoute: hasExperienceRoute
+            experienceRoute: hasExperienceRoute,
+            adminCompanyRoutes,
+            adminExperiencePatterns
           });
           
-          // Only grant access if we have strong ownership indicators
-          if (isLiveAnalytics || isOwnerExperience) {
+          // Only grant access if we have strong admin ownership indicators
+          if (isAdminCompanyRoute || isAdminExperience) {
             isOwner = true;
-            logic = 'OWNER (app view + strong ownership indicators detected)';
-            console.log('🔐 [WhopClientAuth] Ownership granted based on strict criteria');
+            logic = 'OWNER (app view + admin ownership indicators detected)';
+            console.log('🔐 [WhopClientAuth] Ownership granted based on admin criteria');
           } else {
-            // BLOCK access for students
+            // BLOCK access for students and non-admin users
             isOwner = false;
-            logic = 'BLOCKED (app view + no strong ownership indicators)';
-            console.log('🔐 [WhopClientAuth] Access blocked - insufficient ownership indicators');
+            logic = 'BLOCKED (app view + no admin ownership indicators)';
+            console.log('🔐 [WhopClientAuth] Access blocked - insufficient admin indicators');
           }
           /*
           try {
