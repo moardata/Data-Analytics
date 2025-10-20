@@ -82,8 +82,37 @@ export function WhopClientAuth({ children }: { children: React.ReactNode }) {
                            new URLSearchParams(window.location.search).get('company_id') ||
                            process.env.NEXT_PUBLIC_WHOP_COMPANY_ID;
           
+          console.log('🔍 [WhopClientAuth] DEBUG - URL search params:', Object.fromEntries(new URLSearchParams(window.location.search).entries()));
+          console.log('🔍 [WhopClientAuth] DEBUG - Full URL:', window.location.href);
+          console.log('🔍 [WhopClientAuth] DEBUG - Company ID found:', companyId);
+          
           if (!companyId) {
-            console.log('❌ [WhopClientAuth] No company ID found');
+            console.log('❌ [WhopClientAuth] No company ID found - trying fallback');
+            // Try to get company ID from URL path or other sources
+            const pathParts = window.location.pathname.split('/');
+            const possibleCompanyId = pathParts.find(part => part.startsWith('biz_'));
+            
+            if (possibleCompanyId) {
+              console.log('🔍 [WhopClientAuth] Found company ID in URL path:', possibleCompanyId);
+              // Use the company ID from URL path
+              const response = await fetch(`/api/auth/permissions?companyId=${possibleCompanyId}`);
+              const data = await response.json();
+              
+              console.log('🔍 [WhopClientAuth] Server verification result (from path):', data);
+              
+              if (data.success && data.isOwner) {
+                console.log('✅ [WhopClientAuth] Server confirmed owner access (from path)');
+                setAccessState({
+                  loading: false,
+                  isOwner: true,
+                  role: data.accessLevel || 'owner',
+                  userName: data.userId || 'Owner',
+                });
+                return;
+              }
+            }
+            
+            console.log('❌ [WhopClientAuth] No company ID found anywhere');
             setAccessState({
               loading: false,
               isOwner: false,
