@@ -80,8 +80,8 @@ export function WhopClientAuth({ children }: { children: React.ReactNode }) {
         // PROPER AUTHENTICATION: Use server-side verification instead of URL guessing
         console.log('🔐 [WhopClientAuth] Using server-side authentication...');
         
-        // Get company ID from URL data
-        const companyId = urlData?.companyRoute || urlData?.experienceId;
+        // Get company ID from URL data - prefer experienceId as it's more specific
+        const companyId = urlData?.experienceId || urlData?.companyRoute;
         
         if (!companyId) {
           console.log('❌ [WhopClientAuth] No company ID found in URL data');

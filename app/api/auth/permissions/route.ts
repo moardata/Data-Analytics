@@ -23,13 +23,33 @@ export async function GET(request: NextRequest) {
 
     console.log('🔐 [Permissions API GET] Checking ownership for company:', companyId);
     
-    // Map company route to actual company ID
+    // Handle different types of company identifiers
     let actualCompanyId = companyId;
-    if (companyId === 'live-analytics') {
-      actualCompanyId = 'biz_3GYHNPbGkZCEky'; // Your company ID
-    }
     
-    console.log('🔐 [Permissions API GET] Mapped to actual company ID:', actualCompanyId);
+    if (companyId.startsWith('exp_')) {
+      // This is an experience ID - we need to get the company ID from the experience
+      // For now, we'll use a mapping approach
+      const experienceToCompanyMap: Record<string, string> = {
+        'exp_2BXhmdlqcnLGc5': 'biz_3GYHNPbGkZCEky', // Your experience -> your company
+        // Add more experience mappings as needed
+      };
+      
+      actualCompanyId = experienceToCompanyMap[companyId] || 'biz_3GYHNPbGkZCEky'; // Default fallback
+      console.log('🔐 [Permissions API GET] Mapped experience to company ID:', companyId, '->', actualCompanyId);
+    } else if (!companyId.startsWith('biz_')) {
+      // This is a company route (like "live-analytics"), we need to get the real company ID
+      const routeToCompanyMap: Record<string, string> = {
+        'live-analytics': 'biz_3GYHNPbGkZCEky',
+        'creator-analytics': 'biz_3GYHNPbGkZCEky',
+        'data-analytics': 'biz_3GYHNPbGkZCEky',
+        // Add more mappings as needed
+      };
+      
+      actualCompanyId = routeToCompanyMap[companyId] || 'biz_3GYHNPbGkZCEky'; // Default fallback
+      console.log('🔐 [Permissions API GET] Mapped route to company ID:', companyId, '->', actualCompanyId);
+    } else {
+      console.log('🔐 [Permissions API GET] Using direct company ID:', actualCompanyId);
+    }
     
     // Create a new request with the correct company ID
     const modifiedUrl = new URL(request.url);
