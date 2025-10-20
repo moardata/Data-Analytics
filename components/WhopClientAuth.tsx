@@ -77,143 +77,71 @@ export function WhopClientAuth({ children }: { children: React.ReactNode }) {
           return;
         }
         
-        // ENHANCED OWNER DETECTION LOGIC
-        let isOwner = false;
-        let logic = '';
-
-        console.log('🔐 [WhopClientAuth] Starting owner detection for viewType:', viewType);
-
-        // Method 1: Check viewType (primary method) - EXPANDED for admin access
-        const adminViewTypes = ['admin', 'analytics', 'dashboard', 'preview'];
-        if (adminViewTypes.includes(viewType as string)) {
-          isOwner = true;
-          logic = 'OWNER (admin/analytics/dashboard/preview view)';
-          console.log('🔐 [WhopClientAuth] Method 1: Admin/Analytics/Dashboard/Preview view detected');
+        // PROPER AUTHENTICATION: Use server-side verification instead of URL guessing
+        console.log('🔐 [WhopClientAuth] Using server-side authentication...');
+        
+        // Get company ID from URL data
+        const companyId = urlData?.companyRoute || urlData?.experienceId;
+        
+        if (!companyId) {
+          console.log('❌ [WhopClientAuth] No company ID found in URL data');
+          setAccessState({
+            loading: false,
+            isOwner: false,
+            role: 'none',
+            userName: 'Unknown',
+          });
+          return;
         }
-        // Method 2: For "app" view, check if user is actually the company owner
-        else if (viewType === 'app') {
-          console.log('🔐 [WhopClientAuth] Method 2: App view detected - checking ownership...');
+        
+        try {
+          // Call server-side authentication API
+          console.log('🔐 [WhopClientAuth] Calling server-side auth for company:', companyId);
           
-          // ENHANCED: Use available URL data to determine ownership
-          console.log('🔐 [WhopClientAuth] App view detected - analyzing URL data for ownership...');
-          
-          // Check if we have company/experience data that indicates ownership
-          const hasCompanyRoute = urlData?.companyRoute;
-          const hasExperienceRoute = urlData?.experienceRoute;
-          const hasExperienceId = urlData?.experienceId;
-          
-          console.log('🔐 [WhopClientAuth] Ownership indicators:', {
-            hasCompanyRoute,
-            hasExperienceRoute,
-            hasExperienceId,
-            companyRoute: urlData?.companyRoute,
-            experienceRoute: urlData?.experienceRoute,
-            experienceId: urlData?.experienceId
+          const authResponse = await fetch(`/api/auth/permissions?companyId=${companyId}`, {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json',
+            },
           });
           
-          // STRICT OWNERSHIP CHECK: Only grant access for known admin company routes
-          // Check for specific admin company routes that indicate ownership
-          const adminCompanyRoutes = ['live-analytics', 'admin', 'dashboard'];
-          const isAdminCompanyRoute = adminCompanyRoutes.includes(hasCompanyRoute);
+          if (!authResponse.ok) {
+            throw new Error(`Auth API failed: ${authResponse.status}`);
+          }
           
-          // Check for specific admin experience patterns (more restrictive)
-          const adminExperiencePatterns = ['creator-iq-2BXhmdlqcnLGc5']; // Only specific admin experiences
-          const isAdminExperience = adminExperiencePatterns.some(pattern => 
-            hasExperienceRoute && hasExperienceRoute.includes(pattern)
-          );
+          const authData = await authResponse.json();
+          console.log('🔐 [WhopClientAuth] Server auth response:', authData);
           
-          console.log('🔐 [WhopClientAuth] Strict ownership check:', {
-            isAdminCompanyRoute,
-            isAdminExperience,
-            companyRoute: hasCompanyRoute,
-            experienceRoute: hasExperienceRoute,
-            adminCompanyRoutes,
-            adminExperiencePatterns
+          const isOwner = authData.success && authData.permissions?.isAuthorized;
+          const role = authData.permissions?.userRole || 'member';
+          const userName = authData.permissions?.userId || 'User';
+          
+          console.log('🔐 [WhopClientAuth] Server-side auth result:', {
+            isOwner,
+            role,
+            userName,
+            success: authData.success
           });
           
-          // Only grant access if we have strong admin ownership indicators
-          if (isAdminCompanyRoute || isAdminExperience) {
-            isOwner = true;
-            logic = 'OWNER (app view + admin ownership indicators detected)';
-            console.log('🔐 [WhopClientAuth] Ownership granted based on admin criteria');
-          } else {
-            // BLOCK access for students and non-admin users
-            isOwner = false;
-            logic = 'BLOCKED (app view + no admin ownership indicators)';
-            console.log('🔐 [WhopClientAuth] Access blocked - insufficient admin indicators');
-          }
-          /*
-          try {
-            // Get user and company data to verify ownership
-            // These methods don't exist on the current SDK:
-            // const [user, company] = await Promise.all([
-            //   sdk.getUser().catch(() => null),
-            //   sdk.getCompany().catch(() => null)
-            // ]);
-
-            console.log('🔐 [WhopClientAuth] User data:', user);
-            console.log('🔐 [WhopClientAuth] Company data:', company);
-
-            if (user && company) {
-              // Check if user is the company owner or creator
-              const isCompanyOwner = company.owner_id === user.id || 
-                                    company.created_by === user.id || 
-                                    company.creator_id === user.id;
-              
-              if (isCompanyOwner) {
-                isOwner = true;
-                logic = 'OWNER (company owner/creator detected)';
-              } else {
-                isOwner = false;
-                logic = 'BLOCKED (app view + not company owner)';
-              }
-            } else {
-              // If we can't get user/company data, be permissive for debugging
-              isOwner = true;
-              logic = 'OWNER (app view + no user/company data - debugging)';
-            }
-          } catch (error) {
-            console.error('🔐 [WhopClientAuth] Error checking ownership:', error);
-            // On error, be permissive for debugging
-            isOwner = true;
-            logic = 'OWNER (app view + error checking ownership - debugging)';
-          }
-          */
+          setAccessState({
+            loading: false,
+            isOwner,
+            role,
+            userName,
+          });
+          
+        } catch (error) {
+          console.error('❌ [WhopClientAuth] Server-side auth failed:', error);
+          // On error, block access for security
+          setAccessState({
+            loading: false,
+            isOwner: false,
+            role: 'none',
+            userName: 'Error',
+          });
         }
-        // Method 3: Check for other admin-related view types
-        else if (viewType && (viewType.includes('admin') || viewType.includes('dashboard') || viewType.includes('manage'))) {
-          isOwner = true;
-          logic = `OWNER (${viewType} view - admin pattern detected)`;
-          console.log('🔐 [WhopClientAuth] Method 3: Admin pattern detected in viewType');
-        }
-        // Method 4: Allow other view types (development, etc.) but be more restrictive
-        else {
-          // Only grant access for known safe view types
-          const safeViewTypes = ['development', 'test', 'staging'];
-          if (safeViewTypes.includes(viewType)) {
-            isOwner = true;
-            logic = `OWNER (${viewType} view - safe development mode)`;
-            console.log('🔐 [WhopClientAuth] Method 4: Safe development viewType detected');
-          } else {
-            // Block unknown view types for security
-            isOwner = false;
-            logic = `BLOCKED (${viewType} view - unknown/unsafe viewType)`;
-            console.log('🔐 [WhopClientAuth] Method 4: Unknown viewType blocked for security');
-          }
-        }
-
-        console.log('🔐 [WhopClientAuth] Access check:', {
-          viewType,
-          isOwner,
-          logic,
-        });
-
-        setAccessState({
-          loading: false,
-          isOwner,
-          role: isOwner ? 'owner' : 'member',
-          userName: viewType === 'app' ? 'Member' : 'Owner',
-        });
+        
+        return; // Exit early since we handled authentication
 
       } catch (error) {
         console.error('❌ [WhopClientAuth] Error getting SDK data:', error);
