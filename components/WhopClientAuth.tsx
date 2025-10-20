@@ -83,11 +83,11 @@ export function WhopClientAuth({ children }: { children: React.ReactNode }) {
 
         console.log('🔐 [WhopClientAuth] Starting owner detection for viewType:', viewType);
 
-        // Method 1: Check viewType (primary method)
-        if (viewType === 'admin' || viewType === 'analytics') {
+        // Method 1: Check viewType (primary method) - EXPANDED for admin access
+        if (viewType === 'admin' || viewType === 'analytics' || viewType === 'dashboard' || viewType === 'preview') {
           isOwner = true;
-          logic = 'OWNER (admin/analytics view)';
-          console.log('🔐 [WhopClientAuth] Method 1: Admin/Analytics view detected');
+          logic = 'OWNER (admin/analytics/dashboard/preview view)';
+          console.log('🔐 [WhopClientAuth] Method 1: Admin/Analytics/Dashboard/Preview view detected');
         }
         // Method 2: For "app" view, check if user is actually the company owner
         else if (viewType === 'app') {
@@ -173,10 +173,26 @@ export function WhopClientAuth({ children }: { children: React.ReactNode }) {
           }
           */
         }
-        // Method 3: Allow other view types (preview, development, etc.)
-        else {
+        // Method 3: Check for other admin-related view types
+        else if (viewType && (viewType.includes('admin') || viewType.includes('dashboard') || viewType.includes('manage'))) {
           isOwner = true;
-          logic = `OWNER (${viewType} view)`;
+          logic = `OWNER (${viewType} view - admin pattern detected)`;
+          console.log('🔐 [WhopClientAuth] Method 3: Admin pattern detected in viewType');
+        }
+        // Method 4: Allow other view types (development, etc.) but be more restrictive
+        else {
+          // Only grant access for known safe view types
+          const safeViewTypes = ['development', 'test', 'staging'];
+          if (safeViewTypes.includes(viewType)) {
+            isOwner = true;
+            logic = `OWNER (${viewType} view - safe development mode)`;
+            console.log('🔐 [WhopClientAuth] Method 4: Safe development viewType detected');
+          } else {
+            // Block unknown view types for security
+            isOwner = false;
+            logic = `BLOCKED (${viewType} view - unknown/unsafe viewType)`;
+            console.log('🔐 [WhopClientAuth] Method 4: Unknown viewType blocked for security');
+          }
         }
 
         console.log('🔐 [WhopClientAuth] Access check:', {
