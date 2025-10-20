@@ -84,7 +84,8 @@ export function WhopClientAuth({ children }: { children: React.ReactNode }) {
         console.log('🔐 [WhopClientAuth] Starting owner detection for viewType:', viewType);
 
         // Method 1: Check viewType (primary method) - EXPANDED for admin access
-        if (viewType === 'admin' || viewType === 'analytics' || viewType === 'dashboard' || viewType === 'preview') {
+        const adminViewTypes = ['admin', 'analytics', 'dashboard', 'preview'];
+        if (adminViewTypes.includes(viewType as string)) {
           isOwner = true;
           logic = 'OWNER (admin/analytics/dashboard/preview view)';
           console.log('🔐 [WhopClientAuth] Method 1: Admin/Analytics/Dashboard/Preview view detected');
