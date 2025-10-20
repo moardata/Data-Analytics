@@ -88,10 +88,19 @@ export async function simpleAuth(request: Request): Promise<SimpleAuthResult> {
       console.log('⚠️ [SimpleAuth] Whop SDK not available:', sdkError);
     }
     
-    // Step 3: If no Whop auth, use test mode
+    // Step 3: If no Whop auth, check if we can use test mode
     if (!userId) {
-      console.log('🧪 [SimpleAuth] TESTING MODE - No Whop headers detected');
-      userId = `test_${companyId.substring(4, 12)}`; // Consistent test user ID
+      const isDevelopment = process.env.NODE_ENV === 'development' || 
+                           process.env.ENABLE_TEST_MODE === 'true';
+      
+      if (isDevelopment) {
+        console.log('🧪 [SimpleAuth] TESTING MODE - No Whop headers detected (development only)');
+        userId = `test_${companyId.substring(4, 12)}`; // Consistent test user ID
+      } else {
+        // PRODUCTION: No Whop auth = deny access
+        console.log('🔒 [SimpleAuth] PRODUCTION - No Whop authentication found, denying access');
+        throw new Error('Whop authentication required. Please access this app through the Whop platform.');
+      }
     }
     
     // Step 4: Check user's role/access level for this company
@@ -145,7 +154,7 @@ export async function simpleAuth(request: Request): Promise<SimpleAuthResult> {
       }
     } else {
       // Test mode - grant owner access for development
-      console.log('🧪 [SimpleAuth] TEST MODE - Granting owner access');
+      console.log('🧪 [SimpleAuth] TEST MODE (development only) - Granting owner access');
       accessLevel = 'owner';
       isOwner = true;
       isAdmin = true;

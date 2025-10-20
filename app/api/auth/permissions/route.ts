@@ -103,22 +103,42 @@ export async function POST(request: NextRequest) {
     const elapsed = Date.now() - startTime;
     console.error(`❌ [Permissions API] Failed in ${elapsed}ms:`, error);
     
-    // In development/test mode, fail-open for easier testing
-    console.log('⚠️ [Permissions API] Granting access despite error (test mode)');
+    // SECURITY: Fail-closed in production (deny access on error)
+    const isDevelopment = process.env.NODE_ENV === 'development';
     
-    return NextResponse.json({
-      success: true,
-      permissions: {
-        userId: 'test_user',
-        isAuthorized: true, // Grant access on error for testing
-        userRole: 'owner',
-        canViewAnalytics: true,
-        canManageData: true,
-        canSyncStudents: true,
-        canAccessSettings: true,
-        isTestMode: true
-      },
-      message: 'Test mode: Access granted despite error (for debugging)'
-    });
+    if (isDevelopment) {
+      console.log('⚠️ [Permissions API] Development mode - granting test access despite error');
+      return NextResponse.json({
+        success: true,
+        permissions: {
+          userId: 'test_user',
+          isAuthorized: true,
+          userRole: 'owner',
+          canViewAnalytics: true,
+          canManageData: true,
+          canSyncStudents: true,
+          canAccessSettings: true,
+          isTestMode: true
+        },
+        message: 'Development mode: Access granted for testing'
+      });
+    } else {
+      // PRODUCTION: Deny access on authentication failure
+      console.log('🔒 [Permissions API] Production mode - denying access due to auth error');
+      return NextResponse.json({
+        success: false,
+        error: 'Authentication failed',
+        permissions: {
+          userId: null,
+          isAuthorized: false,
+          userRole: 'none',
+          canViewAnalytics: false,
+          canManageData: false,
+          canSyncStudents: false,
+          canAccessSettings: false,
+          isTestMode: false
+        }
+      }, { status: 401 });
+    }
   }
 }
