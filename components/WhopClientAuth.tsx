@@ -74,6 +74,7 @@ export function WhopClientAuth({ children }: { children: React.ReactNode }) {
         
         console.log('🔍 [WhopClientAuth] ViewType detected:', viewType);
         console.log('🔍 [WhopClientAuth] Using server-side verification for all views');
+        console.log('🚀 [WhopClientAuth] VERCEL BUILD CHECK - Latest deployment active!');
         
         // For ALL views, we need to verify via server-side API
         // This ensures proper owner verification regardless of viewType
