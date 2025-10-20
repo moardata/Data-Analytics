@@ -68,45 +68,26 @@ export function WhopClientAuth({ children }: { children: React.ReactNode }) {
         console.log('🔐 [WhopClientAuth] ViewType:', viewType);
         console.log('🔐 [WhopClientAuth] Full URL:', urlData?.fullHref);
         
-        // IMPORTANT: viewType tells us the VIEW, not the USER ROLE
-        // viewType = "app" means the app is being accessed through the customer interface
-        // viewType = "analytics" means accessed through owner/admin dashboard
+        // WHOP SDK LIMITATION:
+        // The SDK only provides getTopLevelUrlData() - no getUser() or getCompany()
+        // So we MUST use server-side verification for ALL views
         
-        // However, an OWNER can access through BOTH views!
-        // So we need to check the actual user, not just the viewType
-        
-        // Try to get user info from SDK
-        let whopUser = null;
-        try {
-          whopUser = await sdk.getUser();
-          console.log('🔐 [WhopClientAuth] Whop user data:', whopUser);
-        } catch (e) {
-          console.log('⚠️ [WhopClientAuth] Could not get user from SDK:', e);
-        }
-        
-        // Try to get company info
-        let whopCompany = null;
-        try {
-          whopCompany = await sdk.getCompany();
-          console.log('🔐 [WhopClientAuth] Whop company data:', whopCompany);
-        } catch (e) {
-          console.log('⚠️ [WhopClientAuth] Could not get company from SDK:', e);
-        }
-        
-        // For now, if we're in 'analytics' view, definitely grant access (owner dashboard)
+        // For now, let's grant access to everyone in analytics/admin views
+        // and verify via server for app views
         if (viewType === 'analytics' || viewType === 'admin') {
-          console.log('✅ [WhopClientAuth] Analytics/Admin view - GRANTING ACCESS');
+          console.log('✅ [WhopClientAuth] Analytics/Admin view - these are owner-only views in Whop');
           setAccessState({
             loading: false,
             isOwner: true,
             role: 'owner',
-            userName: whopUser?.username || 'Owner',
+            userName: 'Owner',
           });
           return;
         }
         
-        // If we're in 'app' view, use server-side verification to check if user is owner
-        console.log('🔐 [WhopClientAuth] App view - checking server-side authentication...');
+        // For 'app' or other views, we need server-side verification
+        // because the SDK doesn't tell us the user's role
+        console.log('🔐 [WhopClientAuth] App/other view - using server-side verification...');
         
         // Get company ID from URL data - prefer experienceId as it's more specific
         const companyId = urlData?.experienceId || urlData?.companyRoute;
