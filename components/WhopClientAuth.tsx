@@ -62,43 +62,51 @@ export function WhopClientAuth({ children }: { children: React.ReactNode }) {
         console.log('🔐 [WhopClientAuth] ViewType:', urlData?.viewType);
         console.log('🔐 [WhopClientAuth] All URL data keys:', Object.keys(urlData || {}));
 
-        // Check view type - THIS IS THE KEY!
+        // Check view type
         const viewType = urlData?.viewType;
         
         console.log('🔐 [WhopClientAuth] ViewType:', viewType);
+        console.log('🔐 [WhopClientAuth] Full URL:', urlData?.fullHref);
         
-        // WHOP ACCESS CONTROL:
-        // viewType tells us WHO is accessing the app:
-        // - "analytics" or "admin" = Company OWNER accessing dashboard
-        // - "app" = Customer/Student accessing the app
-        // - "preview" = Preview mode
+        // IMPORTANT: viewType tells us the VIEW, not the USER ROLE
+        // viewType = "app" means the app is being accessed through the customer interface
+        // viewType = "analytics" means accessed through owner/admin dashboard
         
-        if (viewType === 'app') {
-          // This is a STUDENT/CUSTOMER view - BLOCK ACCESS
-          console.log('🚫 [WhopClientAuth] Student access detected - BLOCKING');
-          setAccessState({
-            loading: false,
-            isOwner: false,
-            role: 'student',
-            userName: 'Student',
-          });
-          return;
+        // However, an OWNER can access through BOTH views!
+        // So we need to check the actual user, not just the viewType
+        
+        // Try to get user info from SDK
+        let whopUser = null;
+        try {
+          whopUser = await sdk.getUser();
+          console.log('🔐 [WhopClientAuth] Whop user data:', whopUser);
+        } catch (e) {
+          console.log('⚠️ [WhopClientAuth] Could not get user from SDK:', e);
         }
         
+        // Try to get company info
+        let whopCompany = null;
+        try {
+          whopCompany = await sdk.getCompany();
+          console.log('🔐 [WhopClientAuth] Whop company data:', whopCompany);
+        } catch (e) {
+          console.log('⚠️ [WhopClientAuth] Could not get company from SDK:', e);
+        }
+        
+        // For now, if we're in 'analytics' view, definitely grant access (owner dashboard)
         if (viewType === 'analytics' || viewType === 'admin') {
-          // This is OWNER/ADMIN view - GRANT ACCESS
-          console.log('✅ [WhopClientAuth] Owner/Admin access detected - GRANTING');
+          console.log('✅ [WhopClientAuth] Analytics/Admin view - GRANTING ACCESS');
           setAccessState({
             loading: false,
             isOwner: true,
             role: 'owner',
-            userName: 'Owner',
+            userName: whopUser?.username || 'Owner',
           });
           return;
         }
         
-        // For other view types (preview, etc.), use server-side verification
-        console.log('🔐 [WhopClientAuth] Using server-side authentication for viewType:', viewType);
+        // If we're in 'app' view, use server-side verification to check if user is owner
+        console.log('🔐 [WhopClientAuth] App view - checking server-side authentication...');
         
         // Get company ID from URL data - prefer experienceId as it's more specific
         const companyId = urlData?.experienceId || urlData?.companyRoute;
