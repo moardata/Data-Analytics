@@ -85,85 +85,17 @@ export function WhopClientAuth({ children }: { children: React.ReactNode }) {
           return;
         }
         
-        // For 'app' or other views, we need server-side verification
-        // because the SDK doesn't tell us the user's role
-        console.log('🔐 [WhopClientAuth] App/other view - using server-side verification...');
+        // SECURITY: Block all app views since we can't verify user role client-side
+        // This analytics app should ONLY be accessed through the analytics/admin dashboard view
+        console.log('🚫 [WhopClientAuth] App view detected - BLOCKING ACCESS');
+        console.log('📊 [WhopClientAuth] Analytics app must be accessed via dashboard/analytics view');
         
-        // Get company ID from URL data - prefer experienceId as it's more specific
-        const companyId = urlData?.experienceId || urlData?.companyRoute;
-        
-        // TEMPORARY FIX: Known admin companies/experiences get instant access
-        const knownAdminCompanies = ['biz_3GYHNPbGkZCEky', 'biz_Jkhjc11f6HHRxh'];
-        const knownAdminExperiences = ['exp_2BXhmdlqcnLGc5'];
-        
-        if (companyId && (knownAdminCompanies.includes(companyId) || knownAdminExperiences.includes(companyId))) {
-          console.log('✅ [WhopClientAuth] Known admin company/experience - GRANTING ACCESS');
-          setAccessState({
-            loading: false,
-            isOwner: true,
-            role: 'owner',
-            userName: 'Owner (known admin)',
-          });
-          return;
-        }
-        
-        if (!companyId) {
-          console.log('❌ [WhopClientAuth] No company ID found in URL data');
-          setAccessState({
-            loading: false,
-            isOwner: false,
-            role: 'none',
-            userName: 'Unknown',
-          });
-          return;
-        }
-        
-        try {
-          // Call server-side authentication API
-          console.log('🔐 [WhopClientAuth] Calling server-side auth for company:', companyId);
-          
-          const authResponse = await fetch(`/api/auth/permissions?companyId=${companyId}`, {
-            method: 'GET',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-          });
-          
-          if (!authResponse.ok) {
-            throw new Error(`Auth API failed: ${authResponse.status}`);
-          }
-          
-          const authData = await authResponse.json();
-          console.log('🔐 [WhopClientAuth] Server auth response:', authData);
-          
-          const isOwner = authData.success && authData.isOwner;
-          const role = authData.accessLevel || 'member';
-          const userName = authData.userId || 'User';
-          
-          console.log('🔐 [WhopClientAuth] Server-side auth result:', {
-            isOwner,
-            role,
-            userName,
-            success: authData.success
-          });
-          
-          setAccessState({
-            loading: false,
-            isOwner,
-            role,
-            userName,
-          });
-          
-        } catch (error) {
-          console.error('❌ [WhopClientAuth] Server-side auth failed:', error);
-          // On error, block access for security
-          setAccessState({
-            loading: false,
-            isOwner: false,
-            role: 'none',
-            userName: 'Error',
-          });
-        }
+        setAccessState({
+          loading: false,
+          isOwner: false,
+          role: 'student',
+          userName: 'Student',
+        });
         
         return; // Exit early since we handled authentication
 
