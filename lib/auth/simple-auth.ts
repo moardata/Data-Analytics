@@ -30,6 +30,12 @@ export async function simpleAuth(request: Request): Promise<SimpleAuthResult> {
   const startTime = Date.now();
   console.log('🔐 [SimpleAuth] Starting authentication...');
   
+  // Known admin company IDs that should have access even without Whop auth
+  const knownAdminCompanies = [
+    'biz_3GYHNPbGkZCEky', // Your company
+    'biz_Jkhjc11f6HHRxh', // Test company
+  ];
+  
   try {
     // Step 1: Get company ID from URL (REQUIRED)
     const url = new URL(request.url);
@@ -97,9 +103,15 @@ export async function simpleAuth(request: Request): Promise<SimpleAuthResult> {
         console.log('🧪 [SimpleAuth] TESTING MODE - No Whop headers detected (development only)');
         userId = `test_${companyId.substring(4, 12)}`; // Consistent test user ID
       } else {
-        // PRODUCTION: No Whop auth = deny access
-        console.log('🔒 [SimpleAuth] PRODUCTION - No Whop authentication found, denying access');
-        throw new Error('Whop authentication required. Please access this app through the Whop platform.');
+        // PRODUCTION: Check if this is a known admin company ID
+        if (knownAdminCompanies.includes(companyId)) {
+          console.log('🔓 [SimpleAuth] PRODUCTION - Known admin company, granting access');
+          userId = `admin_${companyId.substring(4, 12)}`; // Admin user ID
+        } else {
+          // PRODUCTION: No Whop auth = deny access
+          console.log('🔒 [SimpleAuth] PRODUCTION - No Whop authentication found, denying access');
+          throw new Error('Whop authentication required. Please access this app through the Whop platform.');
+        }
       }
     }
     
@@ -153,8 +165,13 @@ export async function simpleAuth(request: Request): Promise<SimpleAuthResult> {
         isAdmin = false;
       }
     } else {
-      // Test mode - grant owner access for development
-      console.log('🧪 [SimpleAuth] TEST MODE (development only) - Granting owner access');
+      // Test mode or known admin company - grant owner access
+      const isKnownAdmin = knownAdminCompanies?.includes(companyId);
+      if (isKnownAdmin) {
+        console.log('🔓 [SimpleAuth] KNOWN ADMIN COMPANY - Granting owner access');
+      } else {
+        console.log('🧪 [SimpleAuth] TEST MODE (development only) - Granting owner access');
+      }
       accessLevel = 'owner';
       isOwner = true;
       isAdmin = true;
