@@ -23,8 +23,25 @@ export async function GET(request: NextRequest) {
 
     console.log('🔐 [Permissions API GET] Checking ownership for company:', companyId);
     
+    // Map company route to actual company ID
+    let actualCompanyId = companyId;
+    if (companyId === 'live-analytics') {
+      actualCompanyId = 'biz_3GYHNPbGkZCEky'; // Your company ID
+    }
+    
+    console.log('🔐 [Permissions API GET] Mapped to actual company ID:', actualCompanyId);
+    
+    // Create a new request with the correct company ID
+    const modifiedUrl = new URL(request.url);
+    modifiedUrl.searchParams.set('companyId', actualCompanyId);
+    const modifiedRequest = new Request(modifiedUrl.toString(), {
+      method: request.method,
+      headers: request.headers,
+      body: request.body,
+    });
+    
     // Use simple auth (never hangs, max 1s timeout)
-    const auth = await simpleAuth(request);
+    const auth = await simpleAuth(modifiedRequest);
     
     const elapsed = Date.now() - startTime;
     console.log(`✅ [Permissions API GET] Complete in ${elapsed}ms - Owner: ${auth.isOwner}`);
