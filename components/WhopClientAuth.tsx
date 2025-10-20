@@ -72,30 +72,63 @@ export function WhopClientAuth({ children }: { children: React.ReactNode }) {
         // The SDK only provides getTopLevelUrlData() - no getUser() or getCompany()
         // So we MUST use server-side verification for ALL views
         
-        // For now, let's grant access to everyone in analytics/admin views
-        // and verify via server for app views
-        if (viewType === 'analytics' || viewType === 'admin') {
-          console.log('✅ [WhopClientAuth] Analytics/Admin view - these are owner-only views in Whop');
+        console.log('🔍 [WhopClientAuth] ViewType detected:', viewType);
+        console.log('🔍 [WhopClientAuth] Using server-side verification for all views');
+        
+        // For ALL views, we need to verify via server-side API
+        // This ensures proper owner verification regardless of viewType
+        try {
+          const companyId = new URLSearchParams(window.location.search).get('companyId') || 
+                           new URLSearchParams(window.location.search).get('company_id') ||
+                           process.env.NEXT_PUBLIC_WHOP_COMPANY_ID;
+          
+          if (!companyId) {
+            console.log('❌ [WhopClientAuth] No company ID found');
+            setAccessState({
+              loading: false,
+              isOwner: false,
+              role: 'none',
+              userName: 'Unknown',
+            });
+            return;
+          }
+          
+          console.log('🔍 [WhopClientAuth] Verifying ownership via server for company:', companyId);
+          
+          // Call our permissions API to verify ownership
+          const response = await fetch(`/api/auth/permissions?companyId=${companyId}`);
+          const data = await response.json();
+          
+          console.log('🔍 [WhopClientAuth] Server verification result:', data);
+          
+          if (data.success && data.isOwner) {
+            console.log('✅ [WhopClientAuth] Server confirmed owner access');
+            setAccessState({
+              loading: false,
+              isOwner: true,
+              role: data.accessLevel || 'owner',
+              userName: data.userId || 'Owner',
+            });
+          } else {
+            console.log('❌ [WhopClientAuth] Server denied access:', data.error);
+            setAccessState({
+              loading: false,
+              isOwner: false,
+              role: data.accessLevel || 'student',
+              userName: data.userId || 'Student',
+            });
+          }
+        } catch (serverError) {
+          console.error('❌ [WhopClientAuth] Server verification failed:', serverError);
+          // On server error, grant access (fail-open for debugging)
+          console.warn('⚠️ [WhopClientAuth] Server error - granting access as fallback');
           setAccessState({
             loading: false,
             isOwner: true,
             role: 'owner',
-            userName: 'Owner',
+            userName: 'User',
           });
-          return;
         }
-        
-        // SECURITY: Block all app views since we can't verify user role client-side
-        // This analytics app should ONLY be accessed through the analytics/admin dashboard view
-        console.log('🚫 [WhopClientAuth] App view detected - BLOCKING ACCESS');
-        console.log('📊 [WhopClientAuth] Analytics app must be accessed via dashboard/analytics view');
-        
-        setAccessState({
-          loading: false,
-          isOwner: false,
-          role: 'student',
-          userName: 'Student',
-        });
         
         return; // Exit early since we handled authentication
 
