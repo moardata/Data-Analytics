@@ -62,23 +62,43 @@ export function WhopClientAuth({ children }: { children: React.ReactNode }) {
         console.log('🔐 [WhopClientAuth] ViewType:', urlData?.viewType);
         console.log('🔐 [WhopClientAuth] All URL data keys:', Object.keys(urlData || {}));
 
-        // Check view type:
+        // Check view type - THIS IS THE KEY!
         const viewType = urlData?.viewType;
         
-        // SAFEGUARD: If no viewType returned, something is wrong - grant access
-        if (!viewType) {
-          console.warn('⚠️ [WhopClientAuth] No viewType - granting access as fallback');
+        console.log('🔐 [WhopClientAuth] ViewType:', viewType);
+        
+        // WHOP ACCESS CONTROL:
+        // viewType tells us WHO is accessing the app:
+        // - "analytics" or "admin" = Company OWNER accessing dashboard
+        // - "app" = Customer/Student accessing the app
+        // - "preview" = Preview mode
+        
+        if (viewType === 'app') {
+          // This is a STUDENT/CUSTOMER view - BLOCK ACCESS
+          console.log('🚫 [WhopClientAuth] Student access detected - BLOCKING');
           setAccessState({
             loading: false,
-            isOwner: true,
-            role: 'owner',
-            userName: 'User',
+            isOwner: false,
+            role: 'student',
+            userName: 'Student',
           });
           return;
         }
         
-        // PROPER AUTHENTICATION: Use server-side verification instead of URL guessing
-        console.log('🔐 [WhopClientAuth] Using server-side authentication...');
+        if (viewType === 'analytics' || viewType === 'admin') {
+          // This is OWNER/ADMIN view - GRANT ACCESS
+          console.log('✅ [WhopClientAuth] Owner/Admin access detected - GRANTING');
+          setAccessState({
+            loading: false,
+            isOwner: true,
+            role: 'owner',
+            userName: 'Owner',
+          });
+          return;
+        }
+        
+        // For other view types (preview, etc.), use server-side verification
+        console.log('🔐 [WhopClientAuth] Using server-side authentication for viewType:', viewType);
         
         // Get company ID from URL data - prefer experienceId as it's more specific
         const companyId = urlData?.experienceId || urlData?.companyRoute;
