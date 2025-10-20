@@ -112,9 +112,9 @@ export function WhopClientAuth({ children }: { children: React.ReactNode }) {
           const authData = await authResponse.json();
           console.log('🔐 [WhopClientAuth] Server auth response:', authData);
           
-          const isOwner = authData.success && authData.permissions?.isAuthorized;
-          const role = authData.permissions?.userRole || 'member';
-          const userName = authData.permissions?.userId || 'User';
+          const isOwner = authData.success && authData.isOwner;
+          const role = authData.accessLevel || 'member';
+          const userName = authData.userId || 'User';
           
           console.log('🔐 [WhopClientAuth] Server-side auth result:', {
             isOwner,
