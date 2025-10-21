@@ -40,6 +40,16 @@ export function WhopClientAuth({ children }: { children: React.ReactNode }) {
         return;
       }
 
+      // FIRST: Check what headers Whop is actually sending
+      try {
+        console.log('🔍 [WhopClientAuth] Calling debug endpoint to see headers...');
+        const debugResponse = await fetch('/api/debug/headers');
+        const debugData = await debugResponse.json();
+        console.log('📋 [WhopClientAuth] Headers from server:', debugData);
+      } catch (debugError) {
+        console.error('⚠️ [WhopClientAuth] Debug endpoint error:', debugError);
+      }
+
       // Check owner status via our server API (which has Whop headers)
       try {
         console.log('🔍 [WhopClientAuth] Calling server to check ownership...');
