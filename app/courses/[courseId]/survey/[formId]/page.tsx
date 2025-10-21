@@ -23,14 +23,16 @@ function CourseSurveyContent({ formId }: { formId: string }) {
   );
 }
 
-export default function CourseSurveyPage({ params }: { params: { courseId: string; formId: string } }) {
+export default async function CourseSurveyPage({ params }: { params: Promise<{ courseId: string; formId: string }> }) {
+  const { formId } = await params;
+  
   return (
     <Suspense fallback={
       <div className="min-h-screen bg-gradient-to-b from-[#0d0f12] to-[#14171c] flex items-center justify-center">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#10B981]"></div>
       </div>
     }>
-      <CourseSurveyContent formId={params.formId} />
+      <CourseSurveyContent formId={formId} />
     </Suspense>
   );
 }

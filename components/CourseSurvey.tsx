@@ -15,7 +15,7 @@ interface CourseSurveyProps {
   delay?: number; // Auto-show after X seconds
 }
 
-export function CourseSurvey({ 
+export default function CourseSurvey({ 
   formId, 
   companyId,
   triggerText = "📝 Quick Feedback",

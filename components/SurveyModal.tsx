@@ -15,7 +15,7 @@ interface SurveyModalProps {
   description?: string;
 }
 
-export function SurveyModal({ 
+export default function SurveyModal({ 
   formId, 
   companyId, 
   isOpen, 
