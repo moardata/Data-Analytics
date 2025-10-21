@@ -28,11 +28,20 @@ function DebugFormsContent() {
       setLoading(true);
       setError(null);
       
-      const response = await fetch(`/api/debug/forms?companyId=${companyId}`);
+      // Fetch data directly from the student surveys API
+      const response = await fetch(`/api/student/surveys?companyId=${companyId}&userId=debug_user`);
       const data = await response.json();
 
       if (response.ok) {
-        setDebugData(data);
+        // Create debug data structure
+        setDebugData({
+          companyId,
+          clientId: 'debug_client',
+          allForms: data.surveys || [],
+          activeForms: data.surveys || [],
+          totalForms: data.surveys?.length || 0,
+          activeFormsCount: data.surveys?.length || 0
+        });
       } else {
         setError(data.error || 'Failed to fetch debug data');
       }
