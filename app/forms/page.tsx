@@ -9,7 +9,7 @@ import React, { Suspense, useState, useEffect } from 'react';
 import { useSearchParams } from 'next/navigation';
 
 export const dynamic = 'force-dynamic';
-import { Plus, FileText, Eye, CheckCircle, Share2, Copy } from 'lucide-react';
+import { Plus, FileText, Eye, CheckCircle, Share2, Copy, BookOpen, Code } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -187,26 +187,90 @@ function FormsContent() {
                         <CheckCircle className="h-4 w-4" />
                         {form.fields?.length || 0} fields
                       </div>
-                      <div className="flex gap-2">
-                        <Button 
-                          onClick={() => setSelectedForm(form)}
-                          className="flex-1 gap-2 bg-[#0B2C24] hover:bg-[#0E3A2F] text-white border border-[#17493A]"
-                        >
-                          <Eye className="h-4 w-4" />
-                          View Form
-                        </Button>
-                        <Button 
-                          onClick={() => {
-                            const publicUrl = `${window.location.origin}/forms/public/${form.id}?companyId=${clientId}`;
-                            navigator.clipboard.writeText(publicUrl);
-                            alert('Public form link copied to clipboard!');
-                          }}
-                          variant="outline"
-                          className="gap-2 border-[#2A2F36] text-[#9AA4B2] hover:bg-[#2A2F36]"
-                        >
-                          <Share2 className="h-4 w-4" />
-                          Share
-                        </Button>
+                      <div className="space-y-2">
+                        <div className="flex gap-2">
+                          <Button 
+                            onClick={() => setSelectedForm(form)}
+                            className="flex-1 gap-2 bg-[#0B2C24] hover:bg-[#0E3A2F] text-white border border-[#17493A]"
+                          >
+                            <Eye className="h-4 w-4" />
+                            View Form
+                          </Button>
+                          <Button 
+                            onClick={() => {
+                              const publicUrl = `${window.location.origin}/forms/public/${form.id}?companyId=${clientId}`;
+                              navigator.clipboard.writeText(publicUrl);
+                              alert('Public form link copied to clipboard!');
+                            }}
+                            variant="outline"
+                            className="gap-2 border-[#2A2F36] text-[#9AA4B2] hover:bg-[#2A2F36]"
+                          >
+                            <Share2 className="h-4 w-4" />
+                            Share
+                          </Button>
+                        </div>
+                        <div className="flex gap-2">
+                          <Button 
+                            onClick={async () => {
+                              try {
+                                const response = await fetch('/api/surveys/trigger', {
+                                  method: 'POST',
+                                  headers: { 'Content-Type': 'application/json' },
+                                  body: JSON.stringify({
+                                    formId: form.id,
+                                    companyId: clientId,
+                                    triggerType: 'course'
+                                  })
+                                });
+                                const data = await response.json();
+                                
+                                if (data.success) {
+                                  navigator.clipboard.writeText(data.embedCode);
+                                  alert('Course embed code copied to clipboard!');
+                                }
+                              } catch (error) {
+                                console.error('Error getting embed code:', error);
+                                alert('Failed to get embed code');
+                              }
+                            }}
+                            variant="outline"
+                            size="sm"
+                            className="flex-1 gap-2 border-[#2A2F36] text-[#9AA4B2] hover:bg-[#2A2F36]"
+                          >
+                            <BookOpen className="h-4 w-4" />
+                            Course Embed
+                          </Button>
+                          <Button 
+                            onClick={async () => {
+                              try {
+                                const response = await fetch('/api/surveys/trigger', {
+                                  method: 'POST',
+                                  headers: { 'Content-Type': 'application/json' },
+                                  body: JSON.stringify({
+                                    formId: form.id,
+                                    companyId: clientId,
+                                    triggerType: 'modal'
+                                  })
+                                });
+                                const data = await response.json();
+                                
+                                if (data.success) {
+                                  navigator.clipboard.writeText(data.modalCode);
+                                  alert('Modal popup code copied to clipboard!');
+                                }
+                              } catch (error) {
+                                console.error('Error getting modal code:', error);
+                                alert('Failed to get modal code');
+                              }
+                            }}
+                            variant="outline"
+                            size="sm"
+                            className="flex-1 gap-2 border-[#2A2F36] text-[#9AA4B2] hover:bg-[#2A2F36]"
+                          >
+                            <Code className="h-4 w-4" />
+                            Popup Code
+                          </Button>
+                        </div>
                       </div>
                     </CardContent>
                   </Card>
