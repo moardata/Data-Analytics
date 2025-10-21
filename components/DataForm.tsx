@@ -10,10 +10,11 @@ import { useState } from 'react';
 export interface FormField {
   id: string;
   label: string;
-  type: 'text' | 'textarea' | 'rating' | 'multiple_choice' | 'number' | 'email';
+  type: 'text' | 'short_text' | 'long_text' | 'textarea' | 'rating' | 'multiple_choice' | 'number' | 'email' | 'radio' | 'checkbox' | 'select' | 'multiselect' | 'date';
   required: boolean;
   options?: string[];
   placeholder?: string;
+  max?: number; // for rating controls
 }
 
 interface DataFormProps {
