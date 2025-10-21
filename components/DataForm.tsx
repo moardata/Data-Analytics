@@ -167,10 +167,10 @@ export function DataForm({ formId, fields, onSubmit, title, description }: DataF
                       value={option}
                       checked={responses[field.id]?.includes(option) || false}
                       onChange={(e) => {
-                        const current = responses[field.id] || [];
+                        const current = (responses[field.id] || []) as string[];
                         const updated = e.target.checked 
                           ? [...current, option]
-                          : current.filter(item => item !== option);
+                          : current.filter((item: string) => item !== option);
                         handleFieldChange(field.id, updated);
                       }}
                       className="mr-2"
@@ -204,10 +204,10 @@ export function DataForm({ formId, fields, onSubmit, title, description }: DataF
                       value={option}
                       checked={responses[field.id]?.includes(option) || false}
                       onChange={(e) => {
-                        const current = responses[field.id] || [];
+                        const current = (responses[field.id] || []) as string[];
                         const updated = e.target.checked 
                           ? [...current, option]
-                          : current.filter(item => item !== option);
+                          : current.filter((item: string) => item !== option);
                         handleFieldChange(field.id, updated);
                       }}
                       className="mr-2"
