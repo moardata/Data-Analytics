@@ -289,20 +289,6 @@ function FormsContent() {
             </p>
           </div>
           <div className="flex items-center gap-4">
-            <Button
-              onClick={() => window.open('/courses/test-course', '_blank')}
-              className="gap-2 bg-[#10B981] hover:bg-[#0E9F71] text-white"
-            >
-              <BookOpen className="h-4 w-4" />
-              Test Survey
-            </Button>
-            <Button
-              onClick={() => window.open(`/student/surveys?companyId=${clientId}`, '_blank')}
-              className="gap-2 bg-[#0B2C24] hover:bg-[#0E3A2F] text-white border border-[#17493A]"
-            >
-              <Users className="h-4 w-4" />
-              Student View
-            </Button>
             <Badge className="bg-[#0B2C24] text-[#10B981] border-[#17493A] px-3 py-1">
               <Users className="h-3 w-3 mr-1" />
               {forms.length} Active Surveys
@@ -385,7 +371,7 @@ function FormsContent() {
                             onClick={() => {
                               window.open(`/forms/public/${form.id}?companyId=${clientId}`, '_blank');
                             }}
-                            className="flex-1 gap-2 bg-[#10B981] hover:bg-[#0E9F71] text-white"
+                            className="flex-1 gap-2 bg-[#0B2C24] hover:bg-[#0E3A2F] text-white border border-[#17493A]"
                           >
                             <Eye className="h-4 w-4" />
                             Preview
@@ -394,7 +380,7 @@ function FormsContent() {
                             onClick={() => {
                               window.open(`/surveys/${form.id}?companyId=${clientId}&view=admin`, '_blank');
                             }}
-                            className="flex-1 gap-2 bg-[#10B981] hover:bg-[#0E9F71] text-white"
+                            className="flex-1 gap-2 bg-[#0B2C24] hover:bg-[#0E3A2F] text-white border border-[#17493A]"
                           >
                             <Settings className="h-4 w-4" />
                             Manage
@@ -434,7 +420,7 @@ function FormsContent() {
                               alert('Failed to update survey status. Please try again.');
                             }
                           }}
-                          className="w-full gap-2 bg-[#10B981] hover:bg-[#0E9F71] text-white font-medium py-3 px-6 rounded-lg transition-all duration-200 hover:shadow-lg hover:shadow-[#10B981]/25"
+                          className="w-full gap-2 bg-[#0B2C24] hover:bg-[#0E3A2F] text-white border border-[#17493A] font-medium py-3 px-6 rounded-lg transition-all duration-200"
                         >
                           <FileText className="h-5 w-5" />
                           {form.is_active ? 'Unpublish from Students' : 'Publish to Students'}
@@ -449,7 +435,7 @@ function FormsContent() {
                               alert('Public form link copied to clipboard!');
                             }}
                             size="sm"
-                            className="flex-1 gap-2 bg-[#10B981] hover:bg-[#0E9F71] text-white"
+                            className="flex-1 gap-2 bg-[#0B2C24] hover:bg-[#0E3A2F] text-white border border-[#17493A]"
                           >
                             <Share2 className="h-4 w-4" />
                             Share
@@ -460,7 +446,7 @@ function FormsContent() {
                               window.open(`/analytics?formId=${form.id}&companyId=${clientId}`, '_blank');
                             }}
                             size="sm"
-                            className="flex-1 gap-2 bg-[#10B981] hover:bg-[#0E9F71] text-white"
+                            className="flex-1 gap-2 bg-[#0B2C24] hover:bg-[#0E3A2F] text-white border border-[#17493A]"
                           >
                             <BarChart3 className="h-4 w-4" />
                             Analytics
