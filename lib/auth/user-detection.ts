@@ -1,6 +1,7 @@
 /**
  * User Type Detection
  * Determines if a user is a student or operator based on various signals
+ * Based on Whop Forms app pattern analysis
  */
 
 export interface UserInfo {
@@ -9,19 +10,27 @@ export interface UserInfo {
   userId?: string;
   companyId?: string;
   userType?: string;
+  viewType?: string;
+  companyRoute?: string;
+  experienceId?: string;
 }
 
 /**
  * Detect user type from various sources
+ * Based on Whop Forms app pattern: /joined/company/app/ = student
  */
 export function detectUserType(
   searchParams: URLSearchParams,
-  headers?: Headers
+  headers?: Headers,
+  url?: string
 ): UserInfo {
   // Get parameters from URL
   const userId = searchParams.get('userId') || undefined;
   const companyId = searchParams.get('companyId') || undefined;
   const userType = searchParams.get('userType') || undefined;
+  const viewType = searchParams.get('viewType') || undefined;
+  const companyRoute = searchParams.get('companyRoute') || undefined;
+  const experienceId = searchParams.get('experienceId') || undefined;
   
   // Get Whop headers if available
   const whopUserId = headers?.get('x-whop-user-id');
@@ -31,22 +40,51 @@ export function detectUserType(
   const finalUserId = whopUserId || userId;
   const finalCompanyId = whopCompanyId || companyId;
   
-  // Determine if user is a student
+  // Determine if user is a student based on URL pattern
   let isStudent = false;
   let isOperator = false;
   
+  // Check URL pattern first (most reliable indicator)
+  if (url) {
+    // Pattern: /joined/company/app/ = student access
+    if (url.includes('/joined/') && url.includes('/app/')) {
+      isStudent = true;
+      isOperator = false;
+    }
+    // Pattern: /dashboard/company = operator access
+    else if (url.includes('/dashboard/') || url.includes('/analytics')) {
+      isStudent = false;
+      isOperator = true;
+    }
+  }
+  
+  // Check viewType parameter
+  if (viewType) {
+    if (viewType === 'app') {
+      isStudent = true;
+      isOperator = false;
+    } else if (viewType === 'admin' || viewType === 'analytics') {
+      isStudent = false;
+      isOperator = true;
+    }
+  }
+  
+  // Check explicit userType parameter
   if (userType) {
-    // Explicit user type provided
     isStudent = userType === 'student';
     isOperator = userType === 'operator' || userType === 'admin';
-  } else if (finalUserId) {
-    // Infer from user ID patterns
+  }
+  
+  // Fallback: infer from user ID patterns
+  if (!isStudent && !isOperator && finalUserId) {
     isStudent = !finalUserId.startsWith('admin_') && 
                 !finalUserId.startsWith('operator_') && 
                 !finalUserId.startsWith('owner_');
     isOperator = !isStudent;
-  } else {
-    // Default to student if no clear indication
+  }
+  
+  // Default to student if no clear indication
+  if (!isStudent && !isOperator) {
     isStudent = true;
     isOperator = false;
   }
@@ -56,7 +94,10 @@ export function detectUserType(
     isOperator,
     userId: finalUserId,
     companyId: finalCompanyId,
-    userType: userType || (isStudent ? 'student' : 'operator')
+    userType: userType || (isStudent ? 'student' : 'operator'),
+    viewType,
+    companyRoute,
+    experienceId
   };
 }
 

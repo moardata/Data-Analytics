@@ -1,26 +1,25 @@
 /**
  * Whop Client-Side Authentication
- * Uses @whop/react hooks - the CORRECT way to authenticate in Whop iframes
- * 
- * This works 100% reliably because:
- * - Whop provides user context via React Context
- * - No server-side header parsing needed
- * - Directly checks if user is company owner
+ * Uses @whop/react hooks with improved student/operator detection
+ * Based on Whop Forms app pattern analysis
  */
 
 'use client';
 
 import { useIframeSdk } from '@whop/react';
 import { useEffect, useState } from 'react';
-import { ShieldAlert, Crown, Users } from 'lucide-react';
+import { ShieldAlert, Crown, Users, BookOpen } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { detectUserType, getRedirectUrl } from '@/lib/auth/user-detection';
 
 interface AccessState {
   loading: boolean;
   isOwner: boolean;
+  isStudent: boolean;
   role: string;
   userName?: string;
   userId?: string;
+  redirectUrl?: string;
 }
 
 export function WhopClientAuth({ children }: { children: React.ReactNode }) {
@@ -29,6 +28,7 @@ export function WhopClientAuth({ children }: { children: React.ReactNode }) {
   const [accessState, setAccessState] = useState<AccessState>({
     loading: true,
     isOwner: false,
+    isStudent: false,
     role: 'unknown',
   });
 
@@ -45,7 +45,8 @@ export function WhopClientAuth({ children }: { children: React.ReactNode }) {
             console.log('❌ [WhopClientAuth] No SDK - blocking access for security');
             setAccessState({
               loading: false,
-              isOwner: false, // Block access for security
+              isOwner: false,
+              isStudent: true,
               role: 'none',
               userName: 'Unknown',
             });
@@ -62,25 +63,34 @@ export function WhopClientAuth({ children }: { children: React.ReactNode }) {
         console.log('🔐 [WhopClientAuth] ViewType:', urlData?.viewType);
         console.log('🔐 [WhopClientAuth] All URL data keys:', Object.keys(urlData || {}));
 
-        // Check view type
-        const viewType = urlData?.viewType;
+        // Use improved user detection logic
+        const searchParams = new URLSearchParams(window.location.search);
+        const userInfo = detectUserType(searchParams, undefined, window.location.href);
         
-        console.log('🔐 [WhopClientAuth] ViewType:', viewType);
-        console.log('🔐 [WhopClientAuth] Full URL:', urlData?.fullHref);
+        console.log('🔍 [WhopClientAuth] User detection result:', userInfo);
         
-        // WHOP SDK LIMITATION:
-        // The SDK only provides getTopLevelUrlData() - no getUser() or getCompany()
-        // So we MUST use server-side verification for ALL views
+        // Check if this is a student access
+        if (userInfo.isStudent) {
+          console.log('🎓 [WhopClientAuth] Student detected - redirecting to surveys');
+          const redirectUrl = getRedirectUrl(userInfo);
+          setAccessState({
+            loading: false,
+            isOwner: false,
+            isStudent: true,
+            role: 'student',
+            userName: 'Student',
+            redirectUrl,
+          });
+          return;
+        }
         
-        console.log('🔍 [WhopClientAuth] ViewType detected:', viewType);
-        console.log('🔍 [WhopClientAuth] Using server-side verification for all views');
-        console.log('🚀 [WhopClientAuth] VERCEL BUILD CHECK - Latest deployment active!');
+        // For operators, verify ownership via server-side API
+        console.log('👑 [WhopClientAuth] Operator detected - verifying ownership');
         
-        // For ALL views, we need to verify via server-side API
-        // This ensures proper owner verification regardless of viewType
         try {
           // Extract company ID from various sources
-          let companyId = new URLSearchParams(window.location.search).get('companyId') || 
+          let companyId = userInfo.companyId || 
+                         new URLSearchParams(window.location.search).get('companyId') || 
                          new URLSearchParams(window.location.search).get('company_id') ||
                          process.env.NEXT_PUBLIC_WHOP_COMPANY_ID;
           
@@ -130,6 +140,7 @@ export function WhopClientAuth({ children }: { children: React.ReactNode }) {
                 setAccessState({
                   loading: false,
                   isOwner: true,
+                  isStudent: false,
                   role: data.accessLevel || 'owner',
                   userName: data.userId || 'Owner',
                 });
@@ -141,6 +152,7 @@ export function WhopClientAuth({ children }: { children: React.ReactNode }) {
             setAccessState({
               loading: false,
               isOwner: false,
+              isStudent: true,
               role: 'none',
               userName: 'Unknown',
             });
@@ -160,6 +172,7 @@ export function WhopClientAuth({ children }: { children: React.ReactNode }) {
             setAccessState({
               loading: false,
               isOwner: true,
+              isStudent: false,
               role: data.accessLevel || 'owner',
               userName: data.userId || 'Owner',
             });
@@ -168,6 +181,7 @@ export function WhopClientAuth({ children }: { children: React.ReactNode }) {
             setAccessState({
               loading: false,
               isOwner: false,
+              isStudent: true,
               role: data.accessLevel || 'student',
               userName: data.userId || 'Student',
             });
@@ -179,6 +193,7 @@ export function WhopClientAuth({ children }: { children: React.ReactNode }) {
           setAccessState({
             loading: false,
             isOwner: true,
+            isStudent: false,
             role: 'owner',
             userName: 'User',
           });
@@ -193,6 +208,7 @@ export function WhopClientAuth({ children }: { children: React.ReactNode }) {
         setAccessState({
           loading: false,
           isOwner: true,
+          isStudent: false,
           role: 'owner',
           userName: 'User',
         });
@@ -215,6 +231,27 @@ export function WhopClientAuth({ children }: { children: React.ReactNode }) {
           
           <p className="text-[#9AA4B2] text-lg mb-4">
             Verifying your access permissions
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  // Student redirect
+  if (accessState.isStudent && accessState.redirectUrl) {
+    // Redirect to student surveys page
+    window.location.href = accessState.redirectUrl;
+    return (
+      <div className="min-h-screen bg-gradient-to-b from-[#0d0f12] to-[#14171c] flex items-center justify-center">
+        <div className="text-center max-w-md mx-auto px-6">
+          <div className="w-16 h-16 border-4 border-[#10B981] border-t-transparent rounded-full animate-spin mx-auto mb-6" />
+          
+          <h2 className="text-2xl font-bold text-[#E5E7EB] mb-3">
+            Redirecting to Surveys...
+          </h2>
+          
+          <p className="text-[#9AA4B2] text-lg mb-4">
+            Taking you to your student surveys
           </p>
         </div>
       </div>
@@ -248,45 +285,31 @@ export function WhopClientAuth({ children }: { children: React.ReactNode }) {
               </p>
             </div>
 
-            {/* Access levels explanation */}
-            <div className="bg-[#12151A] border border-[#2A2F36] rounded-xl p-6 space-y-4">
-              <div className="flex items-start gap-3">
-                <Crown className="h-5 w-5 text-[#10B981] mt-0.5 flex-shrink-0" />
-                <div>
-                  <div className="font-semibold text-[#E1E4EA] mb-1">Owner Access</div>
-                  <div className="text-sm text-[#9AA4B2]">
-                    Full access to analytics, insights, revenue tracking, and student management
-                  </div>
+            {/* What students can do */}
+            <div className="bg-gradient-to-r from-[#1A1E25] to-[#20242B] rounded-lg p-6 border border-[#2A2F36]">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500/20 to-blue-600/20 border-2 border-blue-500/30 flex items-center justify-center">
+                  <BookOpen className="h-5 w-5 text-blue-500" />
                 </div>
+                <h3 className="text-xl font-bold text-[#E1E4EA]">Student Access</h3>
               </div>
-              <div className="flex items-start gap-3 opacity-50">
-                <Users className="h-5 w-5 text-[#9AA4B2] mt-0.5 flex-shrink-0" />
-                <div>
-                  <div className="font-semibold text-[#E1E4EA] mb-1">Member/Student Access</div>
-                  <div className="text-sm text-[#9AA4B2]">
-                    Access to course content and community features (not this admin dashboard)
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* What to do */}
-            <div className="bg-blue-900/20 border border-blue-700/30 rounded-xl p-4">
-              <div className="flex items-start gap-3">
-                <div className="text-blue-400 text-2xl">💡</div>
-                <div className="flex-1">
-                  <div className="font-semibold text-blue-300 mb-1">Need Access?</div>
-                  <div className="text-sm text-blue-200">
-                    If you're the owner of this community, make sure you're logged in with the correct account. If you need help, contact your community administrator.
-                  </div>
-                </div>
+              <p className="text-[#D1D5DB] mb-4">
+                As a student, you can access surveys and forms assigned to you by your community owner.
+              </p>
+              <div className="flex gap-3">
+                <button 
+                  onClick={() => window.location.href = '/student/surveys'}
+                  className="flex-1 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold py-3 px-6 rounded-lg transition-all duration-200 transform hover:scale-105 shadow-lg"
+                >
+                  Go to Surveys
+                </button>
               </div>
             </div>
 
-            {/* Footer */}
+            {/* Contact info */}
             <div className="text-center pt-4 border-t border-[#2A2F36]">
-              <p className="text-sm text-[#9AA4B2]">
-                This security measure ensures your community's data stays private and secure.
+              <p className="text-[#9AA4B2] text-sm">
+                Need help? Contact your community owner or administrator.
               </p>
             </div>
           </CardContent>
@@ -295,8 +318,35 @@ export function WhopClientAuth({ children }: { children: React.ReactNode }) {
     );
   }
 
-  // Access granted - render children
-  console.log('✅ [WhopClientAuth] Access granted to owner:', accessState.userName);
-  return <>{children}</>;
-}
+  // Owner access granted - show the app
+  return (
+    <div className="min-h-screen bg-gradient-to-b from-[#0d0f12] to-[#14171c]">
+      {/* Success indicator */}
+      <div className="bg-gradient-to-r from-green-600/10 to-emerald-600/10 border-b border-green-500/20 p-4">
+        <div className="max-w-7xl mx-auto flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-green-500/20 to-emerald-500/20 border-2 border-green-500/30 flex items-center justify-center">
+              <Crown className="h-4 w-4 text-green-500" />
+            </div>
+            <div>
+              <p className="text-green-500 font-semibold">
+                ✅ Authenticated as: <span className="text-white">{accessState.role}</span>
+              </p>
+              <p className="text-green-400/80 text-sm">
+                Welcome back, {accessState.userName}!
+              </p>
+            </div>
+          </div>
+          <div className="text-right">
+            <p className="text-green-400/80 text-sm">
+              Company ID: {new URLSearchParams(window.location.search).get('companyId') || 'N/A'}
+            </p>
+          </div>
+        </div>
+      </div>
 
+      {/* Main app content */}
+      {children}
+    </div>
+  );
+}
