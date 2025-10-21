@@ -16,6 +16,7 @@ import { Badge } from '@/components/ui/badge';
 import FormBuilderEnhanced from '@/components/FormBuilderEnhanced';
 import SurveyForm from '@/components/SurveyForm';
 import { DataForm, FormField } from '@/components/DataForm';
+import FormDeliverySettings from '@/components/FormDeliverySettings';
 import { supabase } from '@/lib/supabase';
 
 function FormsContent() {
@@ -293,29 +294,64 @@ function FormsContent() {
         )}
 
         {activeTab === 'schedule' && (
-          <div>
-            <Card className="border border-[#2A2F36] bg-[#171A1F] shadow-lg">
-              <CardHeader>
-                <CardTitle className="text-[#E1E4EA] flex items-center gap-2">
-                  <Calendar className="h-5 w-5 text-[#10B981]" />
-                  Survey Scheduling
-                </CardTitle>
-                <CardDescription className="text-[#9AA4B2]">
-                  Set up automated survey distribution and timing
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="text-center py-8">
-                  <Clock className="h-16 w-16 mx-auto mb-4 text-[#2A2F36]" />
+          <div className="space-y-6">
+            {forms.length === 0 ? (
+              <Card className="border border-[#2A2F36] bg-[#171A1F] shadow-lg">
+                <CardContent className="py-16 text-center">
+                  <Calendar className="h-16 w-16 mx-auto mb-4 text-[#2A2F36]" />
                   <h3 className="text-2xl font-black text-[#E1E4EA] mb-2">
-                    Scheduling Coming Soon
+                    No surveys to schedule
                   </h3>
                   <p className="text-lg text-[#9AA4B2] mb-6">
-                    Automated survey distribution and timing features will be available soon
+                    Create a survey first to set up delivery scheduling
+                  </p>
+                  <Button 
+                    onClick={() => setActiveTab('builder')}
+                    className="gap-2 bg-[#0B2C24] hover:bg-[#0E3A2F] text-white border border-[#17493A]"
+                  >
+                    <Plus className="h-5 w-5" />
+                    Create Survey
+                  </Button>
+                </CardContent>
+              </Card>
+            ) : (
+              <div className="space-y-6">
+                <div>
+                  <h2 className="text-2xl font-bold text-[#E1E4EA] mb-2">
+                    Survey Delivery Settings
+                  </h2>
+                  <p className="text-[#9AA4B2]">
+                    Configure how and when surveys are delivered to students
                   </p>
                 </div>
-              </CardContent>
-            </Card>
+                
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                  {forms.map((form) => (
+                    <div key={form.id} className="space-y-4">
+                      <Card className="border border-[#2A2F36] bg-[#171A1F] shadow-lg">
+                        <CardHeader className="pb-3">
+                          <CardTitle className="text-[#E1E4EA] text-sm flex items-center gap-2">
+                            <FileText className="h-4 w-4 text-[#10B981]" />
+                            {form.name}
+                          </CardTitle>
+                          <p className="text-xs text-[#9AA4B2]">{form.description}</p>
+                        </CardHeader>
+                        <CardContent>
+                          <FormDeliverySettings
+                            formId={form.id}
+                            companyId={clientId}
+                            onSettingsChange={(settings) => {
+                              console.log('Delivery settings updated:', settings);
+                              // TODO: Save settings to database
+                            }}
+                          />
+                        </CardContent>
+                      </Card>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
         )}
 
