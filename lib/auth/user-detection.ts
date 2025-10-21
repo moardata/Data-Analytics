@@ -112,16 +112,19 @@ export function detectUserType(
 export function getRedirectUrl(userInfo: UserInfo): string {
   const { isStudent, userId, companyId } = userInfo;
   
+  // Get the current origin to make URLs absolute
+  const origin = typeof window !== 'undefined' ? window.location.origin : '';
+  
   if (!companyId) {
-    return isStudent ? '/student/surveys' : '/analytics';
+    return isStudent ? `${origin}/student/surveys` : `${origin}/analytics`;
   }
   
   if (isStudent) {
     const studentUrl = userId 
-      ? `/student/surveys?companyId=${companyId}&userId=${userId}`
-      : `/student/surveys?companyId=${companyId}`;
+      ? `${origin}/student/surveys?companyId=${companyId}&userId=${userId}`
+      : `${origin}/student/surveys?companyId=${companyId}`;
     return studentUrl;
   } else {
-    return `/analytics?companyId=${companyId}`;
+    return `${origin}/analytics?companyId=${companyId}`;
   }
 }

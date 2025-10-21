@@ -79,6 +79,7 @@ export function WhopClientAuth({ children }: { children: React.ReactNode }) {
         if (userInfo.isStudent) {
           console.log('🎓 [WhopClientAuth] Student detected - redirecting to surveys');
           const redirectUrl = getRedirectUrl(userInfo);
+          
           setAccessState({
             loading: false,
             isOwner: false,
@@ -87,6 +88,24 @@ export function WhopClientAuth({ children }: { children: React.ReactNode }) {
             userName: 'Student',
             redirectUrl,
           });
+          
+          // Try to use Whop SDK navigation first, fallback to window.location
+          setTimeout(() => {
+            console.log('🔄 [WhopClientAuth] Redirecting to:', redirectUrl);
+            try {
+              // Try using Whop SDK navigation if available
+              if (sdk && typeof sdk.navigate === 'function') {
+                sdk.navigate(redirectUrl);
+              } else {
+                // Fallback to window.location
+                window.location.href = redirectUrl;
+              }
+            } catch (error) {
+              console.error('❌ [WhopClientAuth] Redirect error:', error);
+              // Final fallback
+              window.location.href = redirectUrl;
+            }
+          }, 100);
           return;
         }
         
