@@ -65,7 +65,11 @@ export function WhopClientAuth({ children }: { children: React.ReactNode }) {
           console.log('🔍 [WhopClientAuth] DEBUG INFO:');
           console.log('  - Company owner_id:', data.debug.company_owner_id);
           console.log('  - Current user_id:', data.debug.user_id);
-          console.log('  - Match?', data.debug.company_owner_id === data.debug.user_id);
+          console.log('  - Has membership:', data.debug.has_membership);
+          console.log('  - Method:', data.method);
+          if (data.debug.company_owner_id !== undefined) {
+            console.log('  - Match?', data.debug.company_owner_id === data.debug.user_id);
+          }
         }
         
         // Check if this is a temporary/fallback response
