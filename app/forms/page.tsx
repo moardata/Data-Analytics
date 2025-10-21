@@ -26,13 +26,21 @@ function FormsContent() {
   
   const [forms, setForms] = useState<any[]>([]);
   const [selectedForm, setSelectedForm] = useState<any | null>(null);
-  const [activeTab, setActiveTab] = useState<'surveys' | 'builder' | 'embed' | 'analytics' | 'export'>('surveys');
+  const [activeTab, setActiveTab] = useState<'surveys' | 'builder' | 'submissions' | 'analytics' | 'export'>('surveys');
   const [userRole, setUserRole] = useState<'owner' | 'student' | 'loading'>('loading');
+  const [submissions, setSubmissions] = useState<any[]>([]);
+  const [selectedSubmission, setSelectedSubmission] = useState<any | null>(null);
 
   useEffect(() => {
     fetchForms();
     checkUserRole();
   }, [clientId]);
+
+  useEffect(() => {
+    if (activeTab === 'submissions') {
+      fetchSubmissions();
+    }
+  }, [activeTab, clientId]);
 
   const checkUserRole = async () => {
     try {
@@ -92,6 +100,45 @@ function FormsContent() {
     } catch (error) {
       console.error('Error fetching forms:', error);
       setForms([]);
+    }
+  };
+
+  const fetchSubmissions = async () => {
+    try {
+      if (!supabase) {
+        console.warn('⚠️ Supabase not configured. Submissions feature disabled.');
+        setSubmissions([]);
+        return;
+      }
+
+      // First get the client record for this company
+      const { data: clientData } = await supabase
+        .from('clients')
+        .select('id')
+        .eq('company_id', clientId)
+        .single();
+
+      if (!clientData) {
+        console.log('No client found for company:', clientId);
+        setSubmissions([]);
+        return;
+      }
+
+      // Fetch all form submissions for this client
+      const { data } = await supabase
+        .from('form_submissions')
+        .select(`
+          *,
+          form_templates!inner(name, description),
+          entities!inner(whop_user_id, name)
+        `)
+        .eq('client_id', clientData.id)
+        .order('submitted_at', { ascending: false });
+      
+      setSubmissions(data || []);
+    } catch (error) {
+      console.error('Error fetching submissions:', error);
+      setSubmissions([]);
     }
   };
 
@@ -268,7 +315,7 @@ function FormsContent() {
           {[
             { id: 'surveys', label: 'My Surveys', icon: FileText, description: 'View pre-saved surveys' },
             { id: 'builder', label: 'Customize', icon: Settings, description: 'Edit survey content' },
-            { id: 'embed', label: 'Embed Code', icon: Code, description: 'Get code for Whop courses' },
+            { id: 'submissions', label: 'Submissions', icon: Users, description: 'View form submissions' },
             { id: 'analytics', label: 'Analytics', icon: BarChart3, description: 'View response data' },
             { id: 'export', label: 'Export Data', icon: Download, description: 'Download collected data' }
           ].map((tab) => {
@@ -331,33 +378,75 @@ function FormsContent() {
                         <CheckCircle className="h-4 w-4 text-[#10B981]" />
                         {form.fields?.length || 0} fields
                       </div>
-                      <div className="space-y-3">
-                        {/* Submit Survey Button - Only for live forms */}
-                        {form.is_active ? (
+                      <div className="space-y-2">
+                        {/* Admin Action Buttons */}
+                        <div className="flex gap-2">
                           <Button 
-                            onClick={() => setSelectedForm(form)}
-                            className="w-full gap-2 bg-[#10B981] hover:bg-[#0E9F71] text-white font-medium py-3 px-6 rounded-lg transition-all duration-200 hover:shadow-lg hover:shadow-[#10B981]/25"
+                            onClick={() => {
+                              window.open(`/forms/public/${form.id}?companyId=${clientId}`, '_blank');
+                            }}
+                            className="flex-1 gap-2 bg-[#0B2C24] hover:bg-[#0E3A2F] text-white border border-[#17493A]"
                           >
-                            <FileText className="h-5 w-5" />
-                            Submit Survey
+                            <Eye className="h-4 w-4" />
+                            Preview
                           </Button>
-                        ) : (
-                          <div className="w-full py-3 px-6 rounded-lg bg-[#2A2F36] border border-[#3A4047] text-center">
-                            <span className="text-[#9AA4B2] text-sm">Survey not available</span>
-                          </div>
-                        )}
+                          <Button 
+                            onClick={() => {
+                              window.open(`/surveys/${form.id}?companyId=${clientId}&view=admin`, '_blank');
+                            }}
+                            className="flex-1 gap-2 bg-[#10B981] hover:bg-[#0E9F71] text-white"
+                          >
+                            <Settings className="h-4 w-4" />
+                            Manage
+                          </Button>
+                        </div>
                         
-                        {/* View Form Button - For preview */}
+                        {/* Publish to Students Button */}
                         <Button 
                           onClick={() => {
-                            window.open(`/forms/public/${form.id}?companyId=${clientId}`, '_blank');
+                            // Toggle the survey's active status
+                            const newStatus = !form.is_active;
+                            // Here you would typically make an API call to update the form status
+                            alert(`Survey ${newStatus ? 'published' : 'unpublished'} to students!`);
                           }}
-                          variant="outline"
-                          className="w-full gap-2 bg-transparent hover:bg-[#0B2C24] text-[#9AA4B2] hover:text-white border border-[#3A4047] hover:border-[#10B981]/30 transition-all duration-200"
+                          className={`w-full gap-2 font-medium py-3 px-6 rounded-lg transition-all duration-200 ${
+                            form.is_active 
+                              ? 'bg-[#10B981] hover:bg-[#0E9F71] text-white hover:shadow-lg hover:shadow-[#10B981]/25' 
+                              : 'bg-[#2A2F36] hover:bg-[#3A4047] text-[#9AA4B2] hover:text-white border border-[#3A4047]'
+                          }`}
                         >
-                          <Eye className="h-4 w-4" />
-                          Preview Form
+                          <FileText className="h-5 w-5" />
+                          {form.is_active ? 'Published to Students' : 'Publish to Students'}
                         </Button>
+                        
+                        {/* Additional Admin Actions */}
+                        <div className="flex gap-2">
+                          <Button 
+                            onClick={() => {
+                              const publicUrl = `${window.location.origin}/forms/public/${form.id}?companyId=${clientId}`;
+                              navigator.clipboard.writeText(publicUrl);
+                              alert('Public form link copied to clipboard!');
+                            }}
+                            variant="outline"
+                            size="sm"
+                            className="flex-1 gap-2 bg-transparent hover:bg-[#0B2C24] text-[#9AA4B2] hover:text-white border border-[#3A4047] hover:border-[#10B981]/30"
+                          >
+                            <Share2 className="h-4 w-4" />
+                            Share
+                          </Button>
+                          <Button 
+                            onClick={() => {
+                              // Navigate to analytics for this form
+                              window.open(`/analytics?formId=${form.id}&companyId=${clientId}`, '_blank');
+                            }}
+                            variant="outline"
+                            size="sm"
+                            className="flex-1 gap-2 bg-transparent hover:bg-[#0B2C24] text-[#9AA4B2] hover:text-white border border-[#3A4047] hover:border-[#10B981]/30"
+                          >
+                            <BarChart3 className="h-4 w-4" />
+                            Analytics
+                          </Button>
+                        </div>
                       </div>
                     </CardContent>
                   </Card>
@@ -373,85 +462,101 @@ function FormsContent() {
           </div>
         )}
 
-        {activeTab === 'embed' && (
+        {activeTab === 'submissions' && (
           <div className="space-y-6">
-            {forms.length === 0 ? (
+            {submissions.length === 0 ? (
               <Card className="border border-[#2A2F36] bg-[#171A1F] shadow-lg">
                 <CardContent className="py-16 text-center">
-                  <Code className="h-16 w-16 text-[#9AA4B2] mx-auto mb-4" />
+                  <Users className="h-16 w-16 text-[#9AA4B2] mx-auto mb-4" />
                   <h3 className="text-xl font-semibold text-[#E1E4EA] mb-2">
-                    No Surveys Yet
+                    No Submissions Yet
                   </h3>
                   <p className="text-[#9AA4B2] mb-6">
-                    Create a survey first to get embed codes for your Whop courses
+                    Form submissions will appear here once students start filling out your surveys
                   </p>
                   <Button
-                    onClick={() => setActiveTab('builder')}
+                    onClick={() => setActiveTab('surveys')}
                     className="bg-[#10B981] hover:bg-[#0E9F71] text-white"
                   >
-                    <Plus className="h-4 w-4 mr-2" />
-                    Create Survey
+                    <FileText className="h-4 w-4 mr-2" />
+                    View Surveys
                   </Button>
                 </CardContent>
               </Card>
             ) : (
-              <div className="space-y-6">
-                <div className="bg-[#0B2C24] border border-[#17493A] rounded-lg p-4">
-                  <div className="flex items-start justify-between mb-3">
-                    <div>
-                      <h3 className="text-lg font-semibold text-[#10B981] mb-1 flex items-center gap-2">
-                        <Code className="h-5 w-5" />
-                        How to Embed Surveys in Whop Courses
-                      </h3>
-                      <p className="text-[#9AA4B2] text-sm">
-                        Copy the embed code below and paste it into your Whop course lesson content.
-                      </p>
-                    </div>
-                    <Badge className="bg-[#10B981] text-white border-0">
-                      Recommended
-                    </Badge>
-                  </div>
-                  <div className="space-y-3">
-                    <div className="flex items-center gap-2 text-xs text-[#9AA4B2]">
-                      <div className="flex items-center gap-1">
-                        <CheckCircle className="h-3 w-3 text-[#10B981]" />
-                        <span>Students see survey IN your Whop course</span>
-                      </div>
-                      <span>•</span>
-                      <div className="flex items-center gap-1">
-                        <CheckCircle className="h-3 w-3 text-[#10B981]" />
-                        <span>No "sending" or scheduling needed</span>
-                      </div>
-                      <span>•</span>
-                      <div className="flex items-center gap-1">
-                        <CheckCircle className="h-3 w-3 text-[#10B981]" />
-                        <span>Always available in that lesson</span>
-                      </div>
-                    </div>
-                    <div className="bg-[#14171c] border border-[#2A2F36] rounded p-3 text-xs text-[#9AA4B2]">
-                      <strong className="text-[#10B981]">💡 Pro Tip:</strong> Place the embed code at the end of a lesson to collect feedback, or at the beginning to quiz knowledge before teaching!
-                    </div>
-                  </div>
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <h3 className="text-xl font-semibold text-[#E1E4EA]">
+                    Form Submissions ({submissions.length})
+                  </h3>
+                  <Badge className="bg-[#10B981] text-white border-0">
+                    <Users className="h-3 w-3 mr-1" />
+                    {submissions.length} Total
+                  </Badge>
                 </div>
 
-                {forms.map((form) => (
-                  <div key={form.id} className="space-y-4">
-                    <div className="flex items-center gap-3">
-                      <div className="flex-1">
-                        <h3 className="text-lg font-semibold text-[#E1E4EA]">{form.name}</h3>
-                        <p className="text-sm text-[#9AA4B2]">{form.description || 'No description'}</p>
-                      </div>
-                      <Badge className="bg-[#0B2C24] text-[#10B981] border-[#17493A]">
-                        {form.fields?.length || 0} questions
-                      </Badge>
-                    </div>
-                    <EmbedCodeGenerator
-                      formId={form.id}
-                      companyId={clientId || ''}
-                      formName={form.name}
-                    />
-                  </div>
-                ))}
+                <div className="space-y-3">
+                  {submissions.map((submission) => (
+                    <Card key={submission.id} className="border border-[#2A2F36] bg-[#171A1F] hover:border-[#10B981]/30 transition-colors">
+                      <CardHeader 
+                        className="pb-3 cursor-pointer"
+                        onClick={() => setSelectedSubmission(selectedSubmission?.id === submission.id ? null : submission)}
+                      >
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 rounded-full bg-[#10B981]/20 flex items-center justify-center">
+                              <Users className="h-5 w-5 text-[#10B981]" />
+                            </div>
+                            <div>
+                              <CardTitle className="text-[#E1E4EA] text-lg">
+                                {submission.entities?.name || 'Anonymous User'}
+                              </CardTitle>
+                              <CardDescription className="text-[#9AA4B2]">
+                                {submission.form_templates?.name || 'Unknown Form'}
+                              </CardDescription>
+                            </div>
+                          </div>
+                          <div className="flex items-center gap-4">
+                            <div className="text-right">
+                              <div className="text-sm text-[#9AA4B2]">
+                                {new Date(submission.submitted_at).toLocaleDateString()}
+                              </div>
+                              <div className="text-xs text-[#9AA4B2]">
+                                {new Date(submission.submitted_at).toLocaleTimeString()}
+                              </div>
+                            </div>
+                            <div className="text-[#9AA4B2]">
+                              {selectedSubmission?.id === submission.id ? '▼' : '▶'}
+                            </div>
+                          </div>
+                        </div>
+                      </CardHeader>
+                      
+                      {selectedSubmission?.id === submission.id && (
+                        <CardContent className="pt-0">
+                          <div className="border-t border-[#2A2F36] pt-4">
+                            <h4 className="text-sm font-semibold text-[#E1E4EA] mb-3">Submission Details:</h4>
+                            <div className="space-y-3">
+                              {Object.entries(submission.responses || {}).map(([fieldName, value]) => (
+                                <div key={fieldName} className="bg-[#0B2C24] rounded-lg p-3">
+                                  <div className="text-sm font-medium text-[#10B981] mb-1">
+                                    {fieldName}
+                                  </div>
+                                  <div className="text-[#E1E4EA]">
+                                    {typeof value === 'object' ? JSON.stringify(value) : String(value)}
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+                            <div className="mt-4 pt-3 border-t border-[#2A2F36] text-xs text-[#9AA4B2]">
+                              Submission ID: {submission.id}
+                            </div>
+                          </div>
+                        </CardContent>
+                      )}
+                    </Card>
+                  ))}
+                </div>
               </div>
             )}
           </div>
