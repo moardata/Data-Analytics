@@ -120,6 +120,25 @@ function CoursesContent() {
           </Button>
         </div>
 
+        {/* Test Course Link */}
+        <Card className="border border-[#2A2F36] bg-[#171A1F] shadow-lg">
+          <CardContent className="p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className="text-lg font-semibold text-[#E1E4EA] mb-2">🧪 Test Survey System</h3>
+                <p className="text-[#9AA4B2]">Click to test the student survey delivery system</p>
+              </div>
+              <Button
+                onClick={() => window.open('/courses/test-course', '_blank')}
+                className="gap-2 bg-[#10B981] hover:bg-[#0E9F71] text-white"
+              >
+                <BookOpen className="h-4 w-4" />
+                Test Course
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+
         {/* Stats Overview */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           <Card className="border border-[#2A2F36] bg-[#171A1F] shadow-lg">

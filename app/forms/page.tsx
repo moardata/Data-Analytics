@@ -122,6 +122,13 @@ function FormsContent() {
             </p>
           </div>
           <div className="flex items-center gap-4">
+            <Button
+              onClick={() => window.open('/courses/test-course', '_blank')}
+              className="gap-2 bg-[#10B981] hover:bg-[#0E9F71] text-white"
+            >
+              <BookOpen className="h-4 w-4" />
+              Test Survey
+            </Button>
             <Badge className="bg-[#0B2C24] text-[#10B981] border-[#17493A] px-3 py-1">
               <Users className="h-3 w-3 mr-1" />
               {forms.length} Active Surveys
