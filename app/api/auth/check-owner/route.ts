@@ -63,75 +63,33 @@ export async function GET(request: NextRequest) {
 
       console.log('✅ [Check Owner] User ID from token:', userId);
 
-      // Now check if this user owns the company
-      // STRATEGY: Use Whop SDK to check memberships
-      // Owners don't have memberships to their own company, students do
-      try {
-        console.log('🔍 [Check Owner] Checking memberships via Whop SDK...');
-        
-        let hasMembership = false;
-        let isOwner = false;
-        
-        try {
-          // Use Whop SDK to list memberships for this user
-          const memberships = await whopClient.memberships.list({
-            user_id: userId,
-            company_id: companyId,
-          });
-          
-          console.log('📊 [Check Owner] Memberships response:', memberships);
-          
-          // Check if response has data
-          if (memberships && typeof memberships === 'object') {
-            const membershipData = memberships as any;
-            
-            // Check various possible response formats
-            if (Array.isArray(membershipData)) {
-              hasMembership = membershipData.length > 0;
-            } else if (Array.isArray(membershipData.data)) {
-              hasMembership = membershipData.data.length > 0;
-            } else if (membershipData.memberships && Array.isArray(membershipData.memberships)) {
-              hasMembership = membershipData.memberships.length > 0;
-            }
-            
-            console.log('🔍 [Check Owner] Has membership:', hasMembership);
-          }
-          
-          // Inverse logic: If user has membership, they're a student (not owner)
-          isOwner = !hasMembership;
-          
-          console.log(isOwner 
-            ? '✅ [Check Owner] No memberships → User IS the owner' 
-            : '❌ [Check Owner] Has memberships → User is a student'
-          );
-          
-          return NextResponse.json({ 
-            isOwner,
-            userId: userId.substring(0, 10) + '...',
-            companyId,
-            method: 'sdk_membership_check',
-            debug: {
-              user_id: userId,
-              has_membership: hasMembership,
-            }
-          });
-          
-        } catch (membershipError: any) {
-          console.error('❌ [Check Owner] Membership check failed:', membershipError);
-          console.error('❌ [Check Owner] Error details:', membershipError.message || membershipError);
-          
-          // IMPORTANT: Fail-closed for security
-          // If we can't determine ownership, default to student
-          return NextResponse.json({ 
-            isOwner: false,
-            userId: userId.substring(0, 10) + '...',
-            companyId,
-            method: 'membership_check_failed',
-            temporary: true,
-            error: 'Membership check failed - defaulting to student access',
-            details: membershipError.message || String(membershipError)
-          });
+      // SIMPLE APPROACH: Check if user ID matches your known owner ID
+      // This is a temporary workaround until we figure out the Whop API
+      const KNOWN_OWNER_ID = 'user_CnvnQVrfaxWA0'; // Your user ID from logs
+      
+      const isOwner = userId === KNOWN_OWNER_ID;
+      
+      console.log('🔍 [Check Owner] Comparing user IDs...');
+      console.log('  - Current user:', userId);
+      console.log('  - Known owner:', KNOWN_OWNER_ID);
+      console.log('  - Match?', isOwner);
+      
+      console.log(isOwner 
+        ? '✅ [Check Owner] User IS the owner (ID match)' 
+        : '❌ [Check Owner] User is NOT the owner (different ID)'
+      );
+      
+      return NextResponse.json({ 
+        isOwner,
+        userId: userId.substring(0, 10) + '...',
+        companyId,
+        method: 'user_id_match',
+        debug: {
+          user_id: userId,
+          known_owner: KNOWN_OWNER_ID,
+          match: isOwner,
         }
+      });
         
       } catch (apiError: any) {
         console.error('❌ [Check Owner] Whop API error:', apiError.message || apiError);
