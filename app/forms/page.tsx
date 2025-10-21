@@ -211,111 +211,33 @@ function FormsContent() {
                         <CheckCircle className="h-4 w-4 text-[#10B981]" />
                         {form.fields?.length || 0} fields
                       </div>
-                      <div className="space-y-2">
-                        <div className="flex gap-2">
+                      <div className="space-y-3">
+                        {/* Submit Survey Button - Only for live forms */}
+                        {form.is_active ? (
                           <Button 
-                            onClick={() => {
-                              window.open(`/surveys/${form.id}?companyId=${clientId}&view=form`, '_blank');
-                            }}
-                            className="flex-1 gap-2 bg-[#0B2C24] hover:bg-[#0E3A2F] text-white border border-[#17493A]"
+                            onClick={() => setSelectedForm(form)}
+                            className="w-full gap-2 bg-[#10B981] hover:bg-[#0E9F71] text-white font-medium py-3 px-6 rounded-lg transition-all duration-200 hover:shadow-lg hover:shadow-[#10B981]/25"
                           >
-                            <Eye className="h-4 w-4" />
-                            View Form
+                            <FileText className="h-5 w-5" />
+                            Submit Survey
                           </Button>
-                          <Button 
-                            onClick={() => {
-                              window.open(`/surveys/${form.id}?companyId=${clientId}&view=admin`, '_blank');
-                            }}
-                            className="flex-1 gap-2 bg-[#10B981] hover:bg-[#0E9F71] text-white"
-                          >
-                            <Settings className="h-4 w-4" />
-                            Admin
-                          </Button>
-                        </div>
-                        <div className="flex gap-2">
-                          <Button 
-                            onClick={() => {
-                              const publicUrl = `${window.location.origin}/forms/public/${form.id}?companyId=${clientId}`;
-                              navigator.clipboard.writeText(publicUrl);
-                              alert('Public form link copied to clipboard!');
-                            }}
-                            className="flex-1 gap-2 bg-[#0B2C24] hover:bg-[#0E3A2F] text-white border border-[#17493A]"
-                          >
-                            <Share2 className="h-4 w-4" />
-                            Share
-                          </Button>
-                          <Button 
-                            onClick={() => {
-                              const embedUrl = `${window.location.origin}/embed/survey/${form.id}?companyId=${clientId}`;
-                              navigator.clipboard.writeText(embedUrl);
-                              alert('Embed URL copied to clipboard!');
-                            }}
-                            className="flex-1 gap-2 bg-[#0B2C24] hover:bg-[#0E3A2F] text-white border border-[#17493A]"
-                          >
-                            <Code className="h-4 w-4" />
-                            Embed
-                          </Button>
-                        </div>
-                        <div className="flex gap-2">
-                          <Button 
-                            onClick={async () => {
-                              try {
-                                const response = await fetch('/api/surveys/trigger', {
-                                  method: 'POST',
-                                  headers: { 'Content-Type': 'application/json' },
-                                  body: JSON.stringify({
-                                    formId: form.id,
-                                    companyId: clientId,
-                                    triggerType: 'course'
-                                  })
-                                });
-                                const data = await response.json();
-                                
-                                if (data.success) {
-                                  navigator.clipboard.writeText(data.embedCode);
-                                  alert('Course embed code copied to clipboard!');
-                                }
-                              } catch (error) {
-                                console.error('Error getting embed code:', error);
-                                alert('Failed to get embed code');
-                              }
-                            }}
-                            size="sm"
-                            className="flex-1 gap-2 bg-[#0B2C24] hover:bg-[#0E3A2F] text-white border border-[#17493A]"
-                          >
-                            <BookOpen className="h-4 w-4" />
-                            Course Embed
-                          </Button>
-                          <Button 
-                            onClick={async () => {
-                              try {
-                                const response = await fetch('/api/surveys/trigger', {
-                                  method: 'POST',
-                                  headers: { 'Content-Type': 'application/json' },
-                                  body: JSON.stringify({
-                                    formId: form.id,
-                                    companyId: clientId,
-                                    triggerType: 'modal'
-                                  })
-                                });
-                                const data = await response.json();
-                                
-                                if (data.success) {
-                                  navigator.clipboard.writeText(data.modalCode);
-                                  alert('Modal popup code copied to clipboard!');
-                                }
-                              } catch (error) {
-                                console.error('Error getting modal code:', error);
-                                alert('Failed to get modal code');
-                              }
-                            }}
-                            size="sm"
-                            className="flex-1 gap-2 bg-[#0B2C24] hover:bg-[#0E3A2F] text-white border border-[#17493A]"
-                          >
-                            <Code className="h-4 w-4" />
-                            Popup Code
-                          </Button>
-                        </div>
+                        ) : (
+                          <div className="w-full py-3 px-6 rounded-lg bg-[#2A2F36] border border-[#3A4047] text-center">
+                            <span className="text-[#9AA4B2] text-sm">Survey not available</span>
+                          </div>
+                        )}
+                        
+                        {/* View Form Button - For preview */}
+                        <Button 
+                          onClick={() => {
+                            window.open(`/forms/public/${form.id}?companyId=${clientId}`, '_blank');
+                          }}
+                          variant="outline"
+                          className="w-full gap-2 bg-transparent hover:bg-[#0B2C24] text-[#9AA4B2] hover:text-white border border-[#3A4047] hover:border-[#10B981]/30 transition-all duration-200"
+                        >
+                          <Eye className="h-4 w-4" />
+                          Preview Form
+                        </Button>
                       </div>
                     </CardContent>
                   </Card>
