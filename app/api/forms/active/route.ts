@@ -3,14 +3,13 @@ import { supabaseServer as supabase } from '@/lib/supabase-server';
 
 /**
  * Get Active Forms API
- * Returns forms that are currently active for delivery
+ * Returns all active forms for students to complete
  */
 
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
     const companyId = searchParams.get('companyId');
-    const courseId = searchParams.get('courseId');
 
     if (!companyId) {
       return NextResponse.json(
@@ -41,7 +40,7 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    // Get active forms for this client
+    // Get all active forms for this client
     const { data: forms, error: formsError } = await supabase
       .from('form_templates')
       .select('*')
@@ -50,27 +49,23 @@ export async function GET(request: NextRequest) {
       .order('created_at', { ascending: false });
 
     if (formsError) {
+      console.error('Error fetching forms:', formsError);
       return NextResponse.json(
         { error: 'Failed to fetch forms' },
         { status: 500 }
       );
     }
 
-    // For demo purposes, return the first active form
-    // In production, you'd have more sophisticated logic to determine
-    // which form should be shown based on course, timing, etc.
-    const activeForm = forms && forms.length > 0 ? forms[0] : null;
-
     return NextResponse.json({
       success: true,
-      form: activeForm,
-      totalForms: forms?.length || 0
+      forms: forms || [],
+      count: forms?.length || 0
     });
 
   } catch (error: any) {
-    console.error('Error fetching active forms:', error);
+    console.error('Error in active forms API:', error);
     return NextResponse.json(
-      { error: 'Failed to fetch active forms' },
+      { error: 'Internal server error', details: error.message },
       { status: 500 }
     );
   }
