@@ -71,43 +71,42 @@ export async function GET(request: NextRequest) {
     const elapsed = Date.now() - startTime;
     console.log(`✅ [Permissions API GET] Complete in ${elapsed}ms - Owner: ${auth.isOwner}`);
 
-    // WHOP FORMS APP PATTERN: Determine if user is student or owner
-    // Based on viewType and baseHref patterns
+    // CRITICAL: Whop sends viewType="app" and /joined/ URL for BOTH students AND owners!
+    // We MUST use Whop's server-side authentication (auth.isOwner) as the PRIMARY signal
     let isStudent = false;
-    let isOwner = auth.isOwner;
+    let isOwner = false;
     
     console.log('🔍 [Permissions API GET] Detection signals:');
     console.log('  - viewType:', viewType);
     console.log('  - baseHref:', baseHref);
     console.log('  - baseHref includes /joined/:', baseHref?.includes('/joined/'));
     console.log('  - baseHref includes /dashboard/:', baseHref?.includes('/dashboard/'));
-    console.log('  - auth.isOwner from Whop:', auth.isOwner);
+    console.log('  - auth.isOwner from Whop API:', auth.isOwner);
+    console.log('  - auth.userId:', auth.userId);
     
-    if (viewType === 'app' && baseHref && baseHref.includes('/joined/')) {
-      // Student pattern: viewType=app + /joined/ URL
-      isStudent = true;
-      isOwner = false;
-      console.log('🎓 [Permissions API GET] ✅ STUDENT detected via Whop Forms pattern (viewType=app + /joined/)');
-    } else if (viewType === 'admin' || viewType === 'analytics') {
-      // Owner pattern: admin/analytics viewType
-      isStudent = false;
+    // PRIMARY: Use Whop's server-side authentication (MOST RELIABLE)
+    if (auth.isOwner) {
       isOwner = true;
+      isStudent = false;
+      console.log('👑 [Permissions API GET] ✅ OWNER detected via Whop API authentication');
+    } 
+    // SECONDARY: Check for explicit admin/analytics viewType
+    else if (viewType === 'admin' || viewType === 'analytics') {
+      isOwner = true;
+      isStudent = false;
       console.log('👑 [Permissions API GET] ✅ OWNER detected via viewType:', viewType);
-    } else if (baseHref?.includes('/dashboard/')) {
-      // Owner pattern: /dashboard/ URL
-      isStudent = false;
+    } 
+    // TERTIARY: Check for /dashboard/ URL pattern
+    else if (baseHref?.includes('/dashboard/')) {
       isOwner = true;
+      isStudent = false;
       console.log('👑 [Permissions API GET] ✅ OWNER detected via /dashboard/ URL');
-    } else if (auth.isOwner) {
-      // Fallback to Whop auth result
-      isStudent = false;
-      isOwner = true;
-      console.log('👑 [Permissions API GET] ✅ OWNER detected via Whop auth');
-    } else {
-      // Default to student
+    } 
+    // DEFAULT: If not owner, must be student
+    else {
       isStudent = true;
       isOwner = false;
-      console.log('🎓 [Permissions API GET] ⚠️ STUDENT by default (no clear owner signal)');
+      console.log('🎓 [Permissions API GET] ✅ STUDENT (not owner per Whop API)');
     }
     
     console.log('🔍 [Permissions API GET] FINAL RESULT:', { isStudent, isOwner });
