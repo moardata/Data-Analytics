@@ -9,14 +9,14 @@ interface MainContentProps {
 }
 
 export function MainContent({ children, className }: MainContentProps) {
-  const { isCollapsed, isMobileOpen } = useSidebar();
+  const { isMobileOpen } = useSidebar();
 
   return (
     <main 
       className={cn(
         "flex-1 transition-all duration-300",
-        // Mobile: no margin when sidebar is closed, full margin when open
-        "ml-0 md:ml-16 lg:ml-64",
+        // Always ml-16 for collapsed sidebar, ml-64 for mobile when open
+        "ml-0 md:ml-16",
         // Override for mobile when sidebar is open
         isMobileOpen && "ml-64",
         className

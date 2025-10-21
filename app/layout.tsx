@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import { Suspense } from "react";
 import { Sidebar } from "@/components/sidebar";
+import { TopBar } from "@/components/top-bar";
 import { WhopClientAuth } from "@/components/WhopClientAuth";
 import { SidebarProvider } from "@/contexts/sidebar-context";
 import { MainContent } from "@/components/main-content";
@@ -31,12 +32,15 @@ export default function RootLayout({
 					<WhopClientAuth>
 						<SidebarProvider>
 							<div className="flex min-h-screen bg-gradient-to-b from-[#0d0f12] to-[#14171c]">
-								<Suspense fallback={<div className="w-64 md:w-16" />}>
+								<Suspense fallback={<div className="w-16" />}>
 									<Sidebar />
 								</Suspense>
-								<MainContent>
-									{children}
-								</MainContent>
+								<div className="flex-1 flex flex-col">
+									<TopBar />
+									<MainContent className="pt-16">
+										{children}
+									</MainContent>
+								</div>
 							</div>
 						</SidebarProvider>
 					</WhopClientAuth>
