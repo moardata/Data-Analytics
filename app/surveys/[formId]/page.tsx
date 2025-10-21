@@ -19,13 +19,50 @@ function SurveyContent({ formId }: { formId: string }) {
   const [error, setError] = useState<string | null>(null);
   const [submissions, setSubmissions] = useState<any[]>([]);
   const [submissionsLoading, setSubmissionsLoading] = useState(false);
+  const [isStudent, setIsStudent] = useState(false);
+  const [canAccessSurvey, setCanAccessSurvey] = useState(false);
 
   useEffect(() => {
+    checkAccess();
     fetchForm();
     if (viewType === 'admin') {
       fetchSubmissions();
     }
   }, [formId, companyId, viewType]);
+
+  const checkAccess = async () => {
+    try {
+      const userId = searchParams.get('userId') || 'student_' + Math.random().toString(36).substr(2, 9);
+      
+      // Check if user is a student
+      const isStudentUser = !userId.startsWith('admin_') && !userId.startsWith('operator_');
+      setIsStudent(isStudentUser);
+      
+      if (isStudentUser) {
+        // Check if student can access this survey
+        const response = await fetch(`/api/student/surveys?companyId=${companyId}&userId=${userId}`);
+        const data = await response.json();
+        
+        if (response.ok) {
+          const canAccess = data.allowedSurveyIds?.includes(formId) || false;
+          setCanAccessSurvey(canAccess);
+          
+          if (!canAccess) {
+            setError('This survey is not available to you at this time.');
+            setLoading(false);
+            return;
+          }
+        }
+      } else {
+        // Operator - can access everything
+        setCanAccessSurvey(true);
+      }
+    } catch (error) {
+      console.error('Error checking access:', error);
+      setError('Failed to verify access');
+      setLoading(false);
+    }
+  };
 
   const fetchForm = async () => {
     try {
@@ -171,31 +208,38 @@ function SurveyContent({ formId }: { formId: string }) {
           <div>
             <h1 className="text-3xl font-bold text-[#E1E4EA]">{form.name}</h1>
             <p className="text-[#9AA4B2]">{form.description || 'Course feedback survey'}</p>
+            {isStudent && (
+              <p className="text-sm text-[#10B981] mt-1">
+                📚 Student View - Complete the survey below
+              </p>
+            )}
           </div>
-          <div className="flex gap-2">
-            <Button
-              onClick={() => handleViewToggle('form')}
-              variant={viewType === 'form' ? 'default' : 'outline'}
-              className={viewType === 'form' 
-                ? 'bg-[#10B981] hover:bg-[#0E9F71] text-white' 
-                : 'bg-[#0B2C24] hover:bg-[#0E3A2F] text-white border border-[#17493A]'
-              }
-            >
-              <Eye className="h-4 w-4 mr-2" />
-              Form
-            </Button>
-            <Button
-              onClick={() => handleViewToggle('admin')}
-              variant={viewType === 'admin' ? 'default' : 'outline'}
-              className={viewType === 'admin' 
-                ? 'bg-[#10B981] hover:bg-[#0E9F71] text-white' 
-                : 'bg-[#0B2C24] hover:bg-[#0E3A2F] text-white border border-[#17493A]'
-              }
-            >
-              <Settings className="h-4 w-4 mr-2" />
-              Admin
-            </Button>
-          </div>
+          {!isStudent && (
+            <div className="flex gap-2">
+              <Button
+                onClick={() => handleViewToggle('form')}
+                variant={viewType === 'form' ? 'default' : 'outline'}
+                className={viewType === 'form' 
+                  ? 'bg-[#10B981] hover:bg-[#0E9F71] text-white' 
+                  : 'bg-[#0B2C24] hover:bg-[#0E3A2F] text-white border border-[#17493A]'
+                }
+              >
+                <Eye className="h-4 w-4 mr-2" />
+                Form
+              </Button>
+              <Button
+                onClick={() => handleViewToggle('admin')}
+                variant={viewType === 'admin' ? 'default' : 'outline'}
+                className={viewType === 'admin' 
+                  ? 'bg-[#10B981] hover:bg-[#0E9F71] text-white' 
+                  : 'bg-[#0B2C24] hover:bg-[#0E3A2F] text-white border border-[#17493A]'
+                }
+              >
+                <Settings className="h-4 w-4 mr-2" />
+                Admin
+              </Button>
+            </div>
+          )}
         </div>
 
         {/* Form View (Student View) */}
@@ -247,8 +291,8 @@ function SurveyContent({ formId }: { formId: string }) {
           </Card>
         )}
 
-        {/* Admin View (Operator View) */}
-        {viewType === 'admin' && (
+        {/* Admin View (Operator View) - Hidden for Students */}
+        {viewType === 'admin' && !isStudent && (
           <div className="space-y-6">
             {/* Stats Overview */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
