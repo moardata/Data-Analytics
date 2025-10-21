@@ -3,7 +3,8 @@
 import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { FileText, Eye, CheckCircle, BookOpen } from 'lucide-react';
+import { FileText, Eye, CheckCircle, BookOpen, X } from 'lucide-react';
+import { DataForm } from '@/components/DataForm';
 
 interface StudentSurveysInterfaceProps {
   companyId: string;
@@ -13,6 +14,8 @@ export default function StudentSurveysInterface({ companyId }: StudentSurveysInt
   const [surveys, setSurveys] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [selectedSurvey, setSelectedSurvey] = useState<any | null>(null);
+  const [submitted, setSubmitted] = useState(false);
 
   useEffect(() => {
     fetchSurveys();
@@ -48,9 +51,41 @@ export default function StudentSurveysInterface({ companyId }: StudentSurveysInt
     }
   };
 
-  const handleTakeSurvey = (surveyId: string) => {
-    // Open survey in student view
-    window.open(`/surveys/${surveyId}?companyId=${companyId}&userId=student_${Date.now()}&view=form`, '_blank');
+  const handleTakeSurvey = (survey: any) => {
+    // Show survey inline instead of redirecting
+    setSelectedSurvey(survey);
+    setSubmitted(false);
+  };
+
+  const handleFormSubmit = async (responses: Record<string, any>) => {
+    try {
+      const response = await fetch('/api/forms/submit', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          formId: selectedSurvey.id,
+          entityId: `student_${Date.now()}`,
+          companyId: companyId,
+          responses,
+        }),
+      });
+
+      if (response.ok) {
+        setSubmitted(true);
+        // Refresh surveys list
+        fetchSurveys();
+      } else {
+        alert('Failed to submit survey. Please try again.');
+      }
+    } catch (error) {
+      console.error('Error submitting form:', error);
+      alert('Failed to submit survey. Please try again.');
+    }
+  };
+
+  const handleCloseForm = () => {
+    setSelectedSurvey(null);
+    setSubmitted(false);
   };
 
   if (loading) {
@@ -59,6 +94,76 @@ export default function StudentSurveysInterface({ companyId }: StudentSurveysInt
         <div className="text-center">
           <div className="w-16 h-16 border-4 border-[#10B981] border-t-transparent rounded-full animate-spin mx-auto mb-4" />
           <p className="text-[#9AA4B2]">Loading surveys...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Show form inline if survey is selected
+  if (selectedSurvey) {
+    return (
+      <div className="min-h-screen bg-gradient-to-b from-[#0d0f12] to-[#14171c]">
+        <div className="bg-[#12151A] border-b border-[#2A2F36] px-6 py-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-2xl font-bold text-[#E1E4EA]">{selectedSurvey.name}</h1>
+              <p className="text-[#9AA4B2]">Complete this survey</p>
+            </div>
+            <Button 
+              onClick={handleCloseForm}
+              variant="outline"
+              className="bg-transparent hover:bg-[#0B2C24] text-[#9AA4B2] hover:text-white border border-[#3A4047] hover:border-[#10B981]/30"
+            >
+              <X className="h-4 w-4 mr-2" />
+              Back to Surveys
+            </Button>
+          </div>
+        </div>
+        
+        <div className="p-6">
+          <div className="max-w-3xl mx-auto">
+            {submitted ? (
+              <Card className="border border-[#2A2F36] bg-[#171A1F] shadow-lg">
+                <CardContent className="py-16 text-center">
+                  <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-green-500/20 flex items-center justify-center">
+                    <CheckCircle className="h-8 w-8 text-green-500" />
+                  </div>
+                  <h3 className="text-2xl font-bold text-[#E1E4EA] mb-2">
+                    Thank You!
+                  </h3>
+                  <p className="text-[#9AA4B2] mb-6">
+                    Your survey has been submitted successfully.
+                  </p>
+                  <Button 
+                    onClick={handleCloseForm}
+                    className="bg-[#10B981] hover:bg-[#0E9F71] text-white"
+                  >
+                    Back to Surveys
+                  </Button>
+                </CardContent>
+              </Card>
+            ) : (
+              <Card className="border border-[#2A2F36] bg-[#171A1F] shadow-lg">
+                <CardHeader>
+                  <CardTitle className="text-xl text-[#E1E4EA]">
+                    {selectedSurvey.name}
+                  </CardTitle>
+                  <p className="text-[#9AA4B2]">
+                    {selectedSurvey.description}
+                  </p>
+                </CardHeader>
+                <CardContent>
+                  <DataForm
+                    formId={selectedSurvey.id}
+                    fields={selectedSurvey.fields}
+                    onSubmit={handleFormSubmit}
+                    title=""
+                    description=""
+                  />
+                </CardContent>
+              </Card>
+            )}
+          </div>
         </div>
       </div>
     );
@@ -150,18 +255,11 @@ export default function StudentSurveysInterface({ companyId }: StudentSurveysInt
                         
                         <div className="flex gap-2">
                           <Button 
-                            onClick={() => handleTakeSurvey(survey.id)}
+                            onClick={() => handleTakeSurvey(survey)}
                             className="flex-1 gap-2 bg-[#10B981] hover:bg-[#0E9F71] text-white font-medium py-3 px-6 rounded-lg transition-all duration-200 hover:shadow-lg hover:shadow-[#10B981]/25"
                           >
                             <FileText className="h-5 w-5" />
                             Take Survey
-                          </Button>
-                          <Button 
-                            onClick={() => window.open(`/surveys/${survey.id}?companyId=${companyId}&userId=student_${Date.now()}&view=form`, '_blank')}
-                            variant="outline"
-                            className="bg-transparent hover:bg-[#0B2C24] text-[#9AA4B2] hover:text-white border border-[#3A4047] hover:border-[#10B981]/30 transition-all duration-200"
-                          >
-                            <Eye className="h-4 w-4" />
                           </Button>
                         </div>
                       </CardContent>
