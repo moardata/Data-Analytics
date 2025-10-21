@@ -22,14 +22,19 @@ export function WhopClientAuth({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     // SIMPLE URL-BASED DETECTION (like Whop Forms app)
     const currentUrl = window.location.href;
+    const currentPath = window.location.pathname;
     
-    console.log('🔐 [WhopClientAuth] Current URL:', currentUrl);
+    console.log('🔐 [WhopClientAuth] Full URL:', currentUrl);
+    console.log('🔐 [WhopClientAuth] Path:', currentPath);
+    console.log('🔐 [WhopClientAuth] Checking for /joined/ pattern...');
+    console.log('🔐 [WhopClientAuth] URL includes /joined/:', currentUrl.includes('/joined/'));
     
     // WHOP FORMS PATTERN: /joined/ = student, everything else = owner
     const isStudent = currentUrl.includes('/joined/');
     const isOwner = !isStudent;
     
-    console.log('🔍 [WhopClientAuth] Detection:', { isStudent, isOwner });
+    console.log('🔍 [WhopClientAuth] FINAL Detection:', { isStudent, isOwner });
+    console.log('🔍 [WhopClientAuth] Will show:', isStudent ? 'STUDENT INTERFACE' : 'OWNER DASHBOARD');
     
     setAccessState({
       loading: false,
