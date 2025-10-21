@@ -240,7 +240,7 @@ export function DataForm({ formId, fields, onSubmit, title, description }: DataF
             )}
 
             {/* Fallback for unknown field types */}
-            {!['text', 'short_text', 'long_text', 'email', 'number', 'rating', 'radio', 'checkbox', 'select', 'multiselect', 'date', 'textarea'].includes(field.type) && (
+            {!['text', 'short_text', 'long_text', 'email', 'number', 'rating', 'radio', 'checkbox', 'select', 'multiselect', 'date', 'textarea', 'multiple_choice'].includes(field.type) && (
               <div className="p-4 bg-[#0B2C24] border border-[#17493A] rounded-lg">
                 <p className="text-[#E1E4EA]">
                   <strong>Unknown field type:</strong> {field.type}
@@ -296,8 +296,8 @@ export function DataForm({ formId, fields, onSubmit, title, description }: DataF
           disabled={submitting}
           className={`w-full py-4 px-6 rounded-xl font-bold text-lg transition-all shadow-lg ${
             submitting
-              ? 'bg-[#2A2F36] cursor-not-allowed text-[#9AA4B2]'
-              : 'bg-[#10B981] hover:bg-[#0E9F71] text-white hover:scale-105'
+              ? 'bg-[#2A2F36] cursor-not-allowed text-[#9AA4B2] border border-[#2A2F36]'
+              : 'bg-[#0B2C24] hover:bg-[#0E3A2F] text-white border border-[#17493A] hover:border-[#10B981] hover:shadow-[#10B981]/20'
           }`}
         >
           {submitting ? '⏳ Submitting...' : '✅ Submit'}
