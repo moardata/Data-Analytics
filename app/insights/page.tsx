@@ -135,7 +135,7 @@ function InsightsContent() {
           <div>
             <h1 className="text-2xl md:text-3xl font-semibold flex items-center gap-3">
               <div className="w-10 h-10 rounded-lg bg-[#10B981] flex items-center justify-center">
-                <Brain className="h-6 w-6 text-white" />
+                <BrainMicrochipIcon className="h-6 w-6 text-white" />
               </div>
               AI Insights
             </h1>
