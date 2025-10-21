@@ -9,7 +9,7 @@ import React, { Suspense, useState, useEffect } from 'react';
 import { useSearchParams } from 'next/navigation';
 
 export const dynamic = 'force-dynamic';
-import { Plus, FileText, Eye, CheckCircle } from 'lucide-react';
+import { Plus, FileText, Eye, CheckCircle, Share2, Copy } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -194,6 +194,18 @@ function FormsContent() {
                         >
                           <Eye className="h-4 w-4" />
                           View Form
+                        </Button>
+                        <Button 
+                          onClick={() => {
+                            const publicUrl = `${window.location.origin}/forms/public/${form.id}?companyId=${clientId}`;
+                            navigator.clipboard.writeText(publicUrl);
+                            alert('Public form link copied to clipboard!');
+                          }}
+                          variant="outline"
+                          className="gap-2 border-[#2A2F36] text-[#9AA4B2] hover:bg-[#2A2F36]"
+                        >
+                          <Share2 className="h-4 w-4" />
+                          Share
                         </Button>
                       </div>
                     </CardContent>
