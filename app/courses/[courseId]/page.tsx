@@ -76,11 +76,17 @@ function CourseContent({ courseId }: { courseId: string }) {
 
   const fetchActiveForm = async () => {
     try {
+      console.log('Fetching active form for company:', companyId, 'course:', courseId);
       const response = await fetch(`/api/forms/active?companyId=${companyId}&courseId=${courseId}`);
       const data = await response.json();
       
+      console.log('Active form response:', data);
+      
       if (response.ok && data.form) {
+        console.log('Setting active form ID:', data.form.id);
         setActiveFormId(data.form.id);
+      } else {
+        console.log('No active form found');
       }
     } catch (error) {
       console.error('Error fetching active form:', error);
@@ -92,8 +98,10 @@ function CourseContent({ courseId }: { courseId: string }) {
     
     // Check if this is the last module or if we should show survey
     if (moduleIndex === course.modules.length - 1 || moduleIndex === 1) {
+      console.log('Module completed, showing survey in 2 seconds...');
       // Show survey after completing module 2 or the last module
       setTimeout(() => {
+        console.log('Setting showSurvey to true');
         setShowSurvey(true);
       }, 2000); // 2 second delay
     }
@@ -252,6 +260,16 @@ function CourseContent({ courseId }: { courseId: string }) {
             title="Course Feedback"
             description="Help us improve this course by sharing your thoughts"
           />
+        )}
+        
+        {/* Debug Info */}
+        {process.env.NODE_ENV === 'development' && (
+          <div className="fixed bottom-4 right-4 bg-black/80 text-white p-4 rounded-lg text-xs">
+            <div>showSurvey: {showSurvey.toString()}</div>
+            <div>activeFormId: {activeFormId || 'null'}</div>
+            <div>companyId: {companyId || 'null'}</div>
+            <div>courseId: {courseId}</div>
+          </div>
         )}
       </div>
     </div>
