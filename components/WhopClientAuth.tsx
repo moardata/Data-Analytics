@@ -70,16 +70,16 @@ export function WhopClientAuth({ children }: { children: React.ReactNode }) {
         console.log('🔐 [WhopClientAuth] ViewType:', urlData?.viewType);
         console.log('🔐 [WhopClientAuth] All URL data keys:', Object.keys(urlData || {}));
 
-        // Use improved user detection logic with SDK data
+        // Use improved user detection logic with current URL (not SDK URL)
         const searchParams = new URLSearchParams(window.location.search);
-        const sdkUrl = urlData?.baseHref || urlData?.fullHref || window.location.href;
-        const userInfo = detectUserType(searchParams, undefined, sdkUrl);
+        const currentUrl = window.location.href;
+        const userInfo = detectUserType(searchParams, undefined, currentUrl);
         
         console.log('🔍 [WhopClientAuth] User detection result:', userInfo);
-        console.log('🔍 [WhopClientAuth] Current URL:', window.location.href);
-        console.log('🔍 [WhopClientAuth] SDK URL (baseHref):', sdkUrl);
-        console.log('🔍 [WhopClientAuth] SDK URL includes /joined/:', sdkUrl.includes('/joined/'));
-        console.log('🔍 [WhopClientAuth] SDK URL includes /app/:', sdkUrl.includes('/app/'));
+        console.log('🔍 [WhopClientAuth] Current URL:', currentUrl);
+        console.log('🔍 [WhopClientAuth] Current URL includes /joined/:', currentUrl.includes('/joined/'));
+        console.log('🔍 [WhopClientAuth] Current URL includes /app/:', currentUrl.includes('/app/'));
+        console.log('🔍 [WhopClientAuth] Current URL includes /dashboard/:', currentUrl.includes('/dashboard/'));
         console.log('🔍 [WhopClientAuth] ViewType from SDK:', urlData?.viewType);
         console.log('🔍 [WhopClientAuth] Final detection - isStudent:', userInfo.isStudent, 'isOperator:', userInfo.isOperator);
         
