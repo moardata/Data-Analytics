@@ -156,13 +156,8 @@ export async function simpleAuth(request: Request): Promise<SimpleAuthResult> {
         isAdmin = false;
       }
     } else {
-      // Test mode or known admin company - grant owner access
-      const isKnownAdmin = knownAdminCompanies?.includes(companyId);
-      if (isKnownAdmin) {
-        console.log('🔓 [SimpleAuth] KNOWN ADMIN COMPANY - Granting owner access');
-      } else {
-        console.log('🧪 [SimpleAuth] TEST MODE (development only) - Granting owner access');
-      }
+      // Test mode - grant owner access (development only)
+      console.log('🧪 [SimpleAuth] TEST MODE (development only) - Granting owner access');
       accessLevel = 'owner';
       isOwner = true;
       isAdmin = true;
