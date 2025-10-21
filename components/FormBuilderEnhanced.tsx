@@ -26,7 +26,7 @@ export type FormField = {
   label: string;
   type: FieldType;
   placeholder?: string;
-  required?: boolean;
+  required: boolean;
   // for select-like controls
   options?: string[];
   // for rating controls
@@ -66,7 +66,7 @@ const SURVEY_PRESETS: SurveyPreset[] = [
     fields: [
       { id: "rating", label: "How satisfied are you with our service?", type: "rating", required: true, max: 5 },
       { id: "recommend", label: "Would you recommend us to others?", type: "radio", required: true, options: ["Yes", "No", "Maybe"] },
-      { id: "improvements", label: "What can we improve?", type: "long_text", placeholder: "Please share your suggestions..." }
+      { id: "improvements", label: "What can we improve?", type: "long_text", required: false, placeholder: "Please share your suggestions..." }
     ]
   },
   {
@@ -79,7 +79,7 @@ const SURVEY_PRESETS: SurveyPreset[] = [
       { id: "course-rating", label: "Rate this course", type: "rating", required: true, max: 5 },
       { id: "instructor", label: "How was the instructor?", type: "radio", required: true, options: ["Excellent", "Good", "Average", "Poor"] },
       { id: "content", label: "Was the content helpful?", type: "radio", required: true, options: ["Very helpful", "Somewhat helpful", "Not helpful"] },
-      { id: "suggestions", label: "Any suggestions for improvement?", type: "long_text", placeholder: "Your feedback helps us improve..." }
+      { id: "suggestions", label: "Any suggestions for improvement?", type: "long_text", required: false, placeholder: "Your feedback helps us improve..." }
     ]
   },
   {
@@ -93,7 +93,7 @@ const SURVEY_PRESETS: SurveyPreset[] = [
       { id: "organization", label: "How well was the event organized?", type: "radio", required: true, options: ["Excellent", "Good", "Average", "Poor"] },
       { id: "speakers", label: "Rate the speakers", type: "rating", required: true, max: 5 },
       { id: "venue", label: "How was the venue?", type: "radio", required: true, options: ["Excellent", "Good", "Average", "Poor"] },
-      { id: "feedback", label: "Additional comments", type: "long_text", placeholder: "Share your thoughts about the event..." }
+      { id: "feedback", label: "Additional comments", type: "long_text", required: false, placeholder: "Share your thoughts about the event..." }
     ]
   }
 ];
@@ -165,7 +165,7 @@ export default function FormBuilderEnhanced() {
       label: label.trim(),
       type,
       placeholder: placeholder.trim() || undefined,
-      required,
+      required: required || false,
       options: needsOptions ? options : undefined,
       max: needsRating ? ratingMax : undefined,
     };
