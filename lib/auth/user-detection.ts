@@ -127,10 +127,9 @@ export function getRedirectUrl(userInfo: UserInfo): string {
   }
   
   if (isStudent) {
-    const studentUrl = userId 
-      ? `${origin}/student/surveys?companyId=${companyId}&userId=${userId}`
-      : `${origin}/student/surveys?companyId=${companyId}`;
-    return studentUrl;
+    // Students should always go through the main app entry point
+    // WhopClientAuth will handle showing the student interface
+    return `${origin}/?companyId=${companyId}`;
   } else {
     return `${origin}/analytics?companyId=${companyId}`;
   }

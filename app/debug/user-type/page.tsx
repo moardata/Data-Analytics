@@ -39,7 +39,7 @@ function UserTypeDebugContent() {
       isStudent,
       isOperator: !isStudent,
       redirectUrl: isStudent 
-        ? `/student/surveys?companyId=${params.companyId}&userId=${params.userId}`
+        ? `/?companyId=${params.companyId}`
         : `/analytics?companyId=${params.companyId}`
     };
 
@@ -137,7 +137,7 @@ function UserTypeDebugContent() {
           </Button>
           
           <Button
-            onClick={() => handleRedirect('/student/surveys')}
+            onClick={() => handleRedirect('/')}
             className="gap-2 bg-[#0B2C24] hover:bg-[#0E3A2F] text-white border border-[#17493A]"
           >
             <Users className="h-4 w-4" />
