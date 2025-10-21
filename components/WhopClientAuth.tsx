@@ -10,7 +10,7 @@ import { useIframeSdk } from '@whop/react';
 import { useEffect, useState } from 'react';
 import { ShieldAlert, Crown, Users, BookOpen } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { detectUserType, getRedirectUrl } from '@/lib/auth/user-detection';
+import { detectUserType } from '@/lib/auth/user-detection';
 
 interface AccessState {
   loading: boolean;
@@ -19,7 +19,6 @@ interface AccessState {
   role: string;
   userName?: string;
   userId?: string;
-  redirectUrl?: string;
 }
 
 export function WhopClientAuth({ children }: { children: React.ReactNode }) {
@@ -85,11 +84,7 @@ export function WhopClientAuth({ children }: { children: React.ReactNode }) {
         
         // Check if this is a student access
         if (userInfo.isStudent) {
-          console.log('🎓 [WhopClientAuth] Student detected - redirecting to surveys');
-          const redirectUrl = getRedirectUrl(userInfo);
-          
-          // Set redirect flag to prevent multiple redirects
-          setHasRedirected(true);
+          console.log('🎓 [WhopClientAuth] Student detected - showing student interface');
           
           setAccessState({
             loading: false,
@@ -97,20 +92,7 @@ export function WhopClientAuth({ children }: { children: React.ReactNode }) {
             isStudent: true,
             role: 'student',
             userName: 'Student',
-            redirectUrl,
           });
-          
-          // Perform redirect after state update
-          setTimeout(() => {
-            console.log('🔄 [WhopClientAuth] Redirecting to:', redirectUrl);
-            try {
-              window.location.href = redirectUrl;
-            } catch (error) {
-              console.error('❌ [WhopClientAuth] Redirect error:', error);
-              // Try alternative redirect method
-              window.location.assign(redirectUrl);
-            }
-          }, 100);
           return;
         }
         
@@ -283,6 +265,59 @@ export function WhopClientAuth({ children }: { children: React.ReactNode }) {
           <p className="text-[#9AA4B2] text-lg mb-4">
             Taking you to your student surveys
           </p>
+        </div>
+      </div>
+    );
+  }
+
+  // Student Interface - Show student surveys directly
+  if (accessState.isStudent) {
+    return (
+      <div className="min-h-screen bg-gradient-to-b from-[#0d0f12] to-[#14171c]">
+        {/* Student Header */}
+        <div className="bg-[#12151A] border-b border-[#2A2F36] px-6 py-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-2xl font-bold text-[#E1E4EA]">Student Surveys</h1>
+              <p className="text-[#9AA4B2]">Complete your assigned surveys</p>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="text-sm text-[#9AA4B2]">Student View</span>
+              <div className="w-2 h-2 bg-[#10B981] rounded-full"></div>
+            </div>
+          </div>
+        </div>
+        
+        {/* Student Content */}
+        <div className="p-6">
+          <div className="max-w-4xl mx-auto">
+            <div className="grid gap-6">
+              {/* Welcome Message */}
+              <div className="bg-gradient-to-r from-[#1A1E25] to-[#20242B] border border-[#2A2F36] rounded-lg p-6">
+                <h2 className="text-xl font-semibold text-[#E1E4EA] mb-2">
+                  Welcome, {accessState.userName}! 👋
+                </h2>
+                <p className="text-[#D1D5DB]">
+                  You have access to complete surveys assigned by your community. 
+                  Check below for available surveys.
+                </p>
+              </div>
+              
+              {/* Student Surveys Content */}
+              <div className="bg-[#1A1E25] border border-[#2A2F36] rounded-lg p-6">
+                <h3 className="text-lg font-semibold text-[#E1E4EA] mb-4">Available Surveys</h3>
+                <div className="text-center py-8">
+                  <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-[#10B981]/20 flex items-center justify-center">
+                    <BookOpen className="h-8 w-8 text-[#10B981]" />
+                  </div>
+                  <p className="text-[#9AA4B2] mb-4">No surveys available at the moment</p>
+                  <p className="text-sm text-[#6B7280]">
+                    Your community owner will assign surveys for you to complete.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     );
