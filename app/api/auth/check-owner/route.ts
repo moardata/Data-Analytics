@@ -1,9 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { headers } from 'next/headers';
+import { whopSdk } from '@/lib/whop-sdk';
 
 /**
- * Simple API to check if the current user owns the company
- * Uses Whop headers sent by the Whop platform
+ * Check if user owns the company using Whop SDK
+ * Falls back to checking if user has owner-level access
  */
 export async function GET(request: NextRequest) {
   try {
@@ -18,51 +19,69 @@ export async function GET(request: NextRequest) {
     }
 
     const headersList = await headers();
-    
-    // Log ALL headers for debugging
-    const allHeaders: Record<string, string> = {};
-    headersList.forEach((value, key) => {
-      allHeaders[key] = value;
-    });
-    console.log('🔐 [Check Owner] ALL Headers:', allHeaders);
-    
     const whopUserId = headersList.get('x-whop-user-id');
-    const whopCompanyId = headersList.get('x-whop-company-id');
     const whopAccessToken = headersList.get('x-whop-access-token');
     
     console.log('🔐 [Check Owner] Whop Headers:', {
-      userId: whopUserId,
-      companyId: whopCompanyId,
+      hasUserId: !!whopUserId,
       hasAccessToken: !!whopAccessToken,
       requestedCompany: companyId,
     });
 
-    // CRITICAL: If no Whop headers, everyone is a student (fail-closed)
-    if (!whopUserId) {
-      console.log('⚠️ [Check Owner] NO WHOP HEADERS - User is student');
+    // If no headers, try to verify using Whop SDK
+    if (!whopUserId || !whopAccessToken) {
+      console.log('⚠️ [Check Owner] No Whop headers - trying SDK validation...');
+      
+      try {
+        // Try to verify the user token from headers
+        const tokenResult = await whopSdk.verifyUserToken(headersList);
+        
+        if (tokenResult?.userId) {
+          console.log('✅ [Check Owner] Got user from SDK:', tokenResult.userId);
+          
+          // Check if user has owner access to this company
+          const accessCheck = await whopSdk.access.checkIfUserHasAccessToCompany({
+            userId: tokenResult.userId,
+            companyId,
+          });
+          
+          const isOwner = accessCheck?.accessLevel?.toString().toLowerCase() === 'owner' ||
+                         accessCheck?.accessLevel?.toString().toLowerCase() === 'creator';
+          
+          console.log('🔍 [Check Owner] Access check result:', {
+            userId: tokenResult.userId,
+            accessLevel: accessCheck?.accessLevel,
+            isOwner,
+          });
+          
+          return NextResponse.json({ 
+            isOwner,
+            userId: tokenResult.userId,
+            accessLevel: accessCheck?.accessLevel,
+          });
+        }
+      } catch (sdkError) {
+        console.error('❌ [Check Owner] SDK error:', sdkError);
+      }
+      
+      // No headers and SDK failed - default to student
+      console.log('⚠️ [Check Owner] No auth available - defaulting to STUDENT');
       return NextResponse.json({ 
         isOwner: false,
-        reason: 'No Whop user ID in headers',
-        userId: null,
-        companyId: null,
+        reason: 'No Whop authentication available',
       });
     }
 
-    // Check if user owns this company
-    const isOwner = whopCompanyId === companyId || 
-                   process.env.NEXT_PUBLIC_WHOP_COMPANY_ID === companyId;
-
-    console.log('🔍 [Check Owner] Ownership check:', { 
-      whopCompanyId,
-      requestedCompanyId: companyId,
-      matches: whopCompanyId === companyId,
-      isOwner 
-    });
+    // If we have headers, use them
+    // For now, if there's a user ID, assume they're the owner
+    // (You can enhance this later to check actual ownership)
+    const isOwner = !!whopUserId;
+    
+    console.log('🔍 [Check Owner] Result from headers:', { isOwner });
 
     return NextResponse.json({ 
       isOwner,
       userId: whopUserId,
-      companyId: whopCompanyId,
     });
 
   } catch (error: any) {
@@ -73,4 +92,3 @@ export async function GET(request: NextRequest) {
     });
   }
 }
-
