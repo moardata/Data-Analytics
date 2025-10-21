@@ -18,6 +18,7 @@ import SurveyForm from '@/components/SurveyForm';
 import { DataForm, FormField } from '@/components/DataForm';
 import EmbedCodeGenerator from '@/components/EmbedCodeGenerator';
 import { supabase } from '@/lib/supabase';
+import { WhopClientAuth } from '@/components/WhopClientAuth';
 
 function FormsContent() {
   const searchParams = useSearchParams();
@@ -26,10 +27,37 @@ function FormsContent() {
   const [forms, setForms] = useState<any[]>([]);
   const [selectedForm, setSelectedForm] = useState<any | null>(null);
   const [activeTab, setActiveTab] = useState<'surveys' | 'builder' | 'embed' | 'analytics' | 'export'>('surveys');
+  const [userRole, setUserRole] = useState<'owner' | 'student' | 'loading'>('loading');
 
   useEffect(() => {
     fetchForms();
+    checkUserRole();
   }, [clientId]);
+
+  const checkUserRole = async () => {
+    try {
+      const params = new URLSearchParams(window.location.search);
+      const companyId = params.get('companyId') || 
+                       window.location.pathname.split('/').find(part => part.startsWith('biz_'));
+
+      if (!companyId) {
+        setUserRole('student');
+        return;
+      }
+
+      const response = await fetch(`/api/auth/check-owner?companyId=${companyId}`);
+      const data = await response.json();
+      
+      if (data.isOwner) {
+        setUserRole('owner');
+      } else {
+        setUserRole('student');
+      }
+    } catch (error) {
+      console.error('Error checking user role:', error);
+      setUserRole('student'); // Default to student on error
+    }
+  };
 
   const fetchForms = async () => {
     try {
@@ -68,7 +96,7 @@ function FormsContent() {
   };
 
   const handleFormSubmit = async (responses: Record<string, any>) => {
-    const demoEntityId = '650e8400-e29b-41d4-a716-446655440001';
+    const demoEntityId = 'student_' + Date.now();
 
     const response = await fetch('/api/forms/submit', {
       method: 'POST',
@@ -83,6 +111,9 @@ function FormsContent() {
 
     if (response.ok) {
       setSelectedForm(null);
+      alert('Survey submitted successfully! Thank you for your feedback.');
+    } else {
+      alert('Failed to submit survey. Please try again.');
     }
   };
 
@@ -103,6 +134,95 @@ function FormsContent() {
             title={selectedForm.name}
             description={selectedForm.description}
           />
+        </div>
+      </div>
+    );
+  }
+
+  // Show loading state
+  if (userRole === 'loading') {
+    return (
+      <div className="min-h-screen bg-gradient-to-b from-[#0d0f12] to-[#14171c] flex items-center justify-center">
+        <div className="text-[#D1D5DB] text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#10B981] mx-auto mb-4"></div>
+          <p>Loading your surveys...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Student Interface
+  if (userRole === 'student') {
+    return (
+      <div className="min-h-screen bg-[#0f1115] p-8">
+        <div className="max-w-6xl mx-auto">
+          <div className="text-center mb-8">
+            <h1 className="text-3xl font-bold text-[#E5E7EB] mb-2">
+              Available Surveys
+            </h1>
+            <p className="text-[#9AA4B2]">
+              Complete surveys to share your feedback and help improve the experience.
+            </p>
+          </div>
+
+          {forms.length === 0 ? (
+            <div className="bg-[#171A1F] border border-[#2A2F36] rounded-2xl p-8 text-center">
+              <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-[#0B2C24] flex items-center justify-center">
+                <FileText className="h-8 w-8 text-[#9AA4B2]" />
+              </div>
+              <h3 className="text-lg font-semibold text-[#E5E7EB] mb-2">
+                No Surveys Available
+              </h3>
+              <p className="text-[#9AA4B2] text-sm">
+                There are currently no surveys available. Check back later!
+              </p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {forms.map((form) => (
+                <Card key={form.id} className="border border-[#2A2F36] bg-[#171A1F] shadow-lg hover:shadow-xl hover:shadow-[#10B981]/10 transition-all duration-300 hover:border-[#10B981]/30 group">
+                  <CardHeader className="pb-3">
+                    <CardTitle className="text-[#E1E4EA] flex items-center gap-2 group-hover:text-[#10B981] transition-colors">
+                      <FileText className="h-5 w-5 text-[#10B981]" />
+                      {form.name}
+                    </CardTitle>
+                    <CardDescription className="text-[#9AA4B2] group-hover:text-[#E1E4EA] transition-colors">
+                      {form.description || 'No description'}
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div className="flex items-center gap-2 text-sm text-[#9AA4B2] group-hover:text-[#E1E4EA] transition-colors">
+                      <CheckCircle className="h-4 w-4 text-[#10B981]" />
+                      {form.fields?.length || 0} fields
+                    </div>
+                    
+                    <div className="space-y-3">
+                      {/* Submit Survey Button */}
+                      <Button 
+                        onClick={() => setSelectedForm(form)}
+                        className="w-full gap-2 bg-[#10B981] hover:bg-[#0E9F71] text-white font-medium py-3 px-6 rounded-lg transition-all duration-200 hover:shadow-lg hover:shadow-[#10B981]/25"
+                      >
+                        <FileText className="h-5 w-5" />
+                        Submit Survey
+                      </Button>
+                      
+                      {/* Preview Button */}
+                      <Button 
+                        onClick={() => {
+                          window.open(`/forms/public/${form.id}?companyId=${clientId}`, '_blank');
+                        }}
+                        variant="outline"
+                        className="w-full gap-2 bg-transparent hover:bg-[#0B2C24] text-[#9AA4B2] hover:text-white border border-[#3A4047] hover:border-[#10B981]/30 transition-all duration-200"
+                      >
+                        <Eye className="h-4 w-4" />
+                        Preview Form
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          )}
         </div>
       </div>
     );
