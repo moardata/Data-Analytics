@@ -63,22 +63,21 @@ export async function GET(request: NextRequest) {
 
       console.log('✅ [Check Owner] User ID from token:', userId);
 
-      // OFFICIAL WHOP METHOD: Use checkIfUserHasAccessToCompany
-      // Returns accessLevel: 'admin' (owner) or 'customer' (student)
+      // OFFICIAL WHOP METHOD: Use users.checkAccess
+      // Returns access_level: 'no_access' | 'admin' | 'customer'
       try {
         console.log('🔍 [Check Owner] Checking access level via Whop SDK...');
         
-        const accessCheck = await whopClient.access.checkIfUserHasAccessToCompany({
-          userId,
-          companyId,
+        const accessCheck = await whopClient.users.checkAccess(companyId, {
+          id: userId,
         });
         
         console.log('📊 [Check Owner] Access check result:', accessCheck);
         
-        const accessLevel = accessCheck.accessLevel?.toString().toLowerCase() || 'customer';
+        const accessLevel = accessCheck.access_level || 'no_access';
         
         // Whop returns 'admin' for owners, 'customer' for students
-        const isOwner = accessLevel === 'admin' || accessLevel === 'owner';
+        const isOwner = accessLevel === 'admin';
         
         console.log('🔍 [Check Owner] Access level:', accessLevel);
         console.log(isOwner 
@@ -90,11 +89,11 @@ export async function GET(request: NextRequest) {
           isOwner,
           userId: userId.substring(0, 10) + '...',
           companyId,
-          method: 'whop_sdk_access_check',
+          method: 'whop_sdk_users_check_access',
           debug: {
             user_id: userId,
             access_level: accessLevel,
-            has_access: accessCheck.hasAccess,
+            has_access: accessCheck.has_access,
           }
         });
         
