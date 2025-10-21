@@ -54,8 +54,8 @@ export function Sidebar() {
         {/* Logo - Always collapsed */}
         <div className="p-6 border-b border-[#2A2F36]">
           <div className="flex items-center justify-center">
-            <div className="w-8 h-8 bg-[#10B981] rounded-lg flex items-center justify-center group cursor-pointer" title="CreatorIQ">
-              <span className="text-white font-bold text-sm">C</span>
+            <div className="w-8 h-8 bg-[#1E2228] rounded-lg flex items-center justify-center group cursor-pointer" title="CreatorIQ">
+              <span className="text-[#9AA4B2] font-bold text-sm">C</span>
             </div>
           </div>
         </div>

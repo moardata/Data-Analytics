@@ -4,7 +4,7 @@ import { Bell, Users, Settings, Info } from 'lucide-react';
 
 export function TopBar() {
   return (
-    <div className="fixed top-0 right-0 left-16 lg:left-16 z-40 bg-[#12151A] border-b border-[#2A2F36] h-16 flex items-center justify-between px-6">
+    <div className="fixed top-0 right-0 left-16 z-40 bg-[#12151A] border-b border-[#2A2F36] h-16 flex items-center justify-between px-6">
       {/* Left side - empty for now */}
       <div></div>
       
@@ -12,9 +12,6 @@ export function TopBar() {
       <div className="flex items-center gap-4">
         {/* CreatorIQ Logo */}
         <div className="flex items-center gap-2">
-          <div className="w-8 h-8 bg-[#10B981] rounded-lg flex items-center justify-center">
-            <span className="text-white font-bold text-sm">C</span>
-          </div>
           <span className="text-white font-bold text-lg">
             <span className="text-white">Creator</span>
             <span className="text-[#10B981]">IQ</span>
