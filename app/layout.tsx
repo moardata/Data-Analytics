@@ -37,7 +37,7 @@ export default function RootLayout({
 								</Suspense>
 								<div className="flex-1 flex flex-col">
 									<TopBar />
-									<MainContent className="pt-16">
+									<MainContent>
 										{children}
 									</MainContent>
 								</div>

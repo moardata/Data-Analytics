@@ -13,8 +13,8 @@ export function MainContent({ children, className }: MainContentProps) {
     <main 
       className={cn(
         "flex-1 transition-all duration-300",
-        // Always ml-16 for collapsed sidebar (64px width)
-        "ml-16",
+        // ml-16 for sidebar, pt-16 for top bar
+        "ml-16 pt-16",
         className
       )}
     >
