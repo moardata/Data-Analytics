@@ -63,33 +63,56 @@ export async function GET(request: NextRequest) {
 
       console.log('✅ [Check Owner] User ID from token:', userId);
 
-      // SIMPLE APPROACH: Check if user ID matches your known owner ID
-      // This is a temporary workaround until we figure out the Whop API
-      const KNOWN_OWNER_ID = 'user_CnvnQVrfaxWA0'; // Your user ID from logs
-      
-      const isOwner = userId === KNOWN_OWNER_ID;
-      
-      console.log('🔍 [Check Owner] Comparing user IDs...');
-      console.log('  - Current user:', userId);
-      console.log('  - Known owner:', KNOWN_OWNER_ID);
-      console.log('  - Match?', isOwner);
-      
-      console.log(isOwner 
-        ? '✅ [Check Owner] User IS the owner (ID match)' 
-        : '❌ [Check Owner] User is NOT the owner (different ID)'
-      );
-      
-      return NextResponse.json({ 
-        isOwner,
-        userId: userId.substring(0, 10) + '...',
-        companyId,
-        method: 'user_id_match',
-        debug: {
-          user_id: userId,
-          known_owner: KNOWN_OWNER_ID,
-          match: isOwner,
-        }
-      });
+      // OFFICIAL WHOP METHOD: Use checkIfUserHasAccessToCompany
+      // Returns accessLevel: 'admin' (owner) or 'customer' (student)
+      try {
+        console.log('🔍 [Check Owner] Checking access level via Whop SDK...');
+        
+        const accessCheck = await whopClient.access.checkIfUserHasAccessToCompany({
+          userId,
+          companyId,
+        });
+        
+        console.log('📊 [Check Owner] Access check result:', accessCheck);
+        
+        const accessLevel = accessCheck.accessLevel?.toString().toLowerCase() || 'customer';
+        
+        // Whop returns 'admin' for owners, 'customer' for students
+        const isOwner = accessLevel === 'admin' || accessLevel === 'owner';
+        
+        console.log('🔍 [Check Owner] Access level:', accessLevel);
+        console.log(isOwner 
+          ? '✅ [Check Owner] User is ADMIN/OWNER' 
+          : '❌ [Check Owner] User is CUSTOMER/STUDENT'
+        );
+        
+        return NextResponse.json({ 
+          isOwner,
+          userId: userId.substring(0, 10) + '...',
+          companyId,
+          method: 'whop_sdk_access_check',
+          debug: {
+            user_id: userId,
+            access_level: accessLevel,
+            has_access: accessCheck.hasAccess,
+          }
+        });
+        
+      } catch (accessError: any) {
+        console.error('❌ [Check Owner] Access check failed:', accessError);
+        console.error('❌ [Check Owner] Error details:', accessError.message || accessError);
+        
+        // FAIL-CLOSED: Default to student if check fails
+        return NextResponse.json({ 
+          isOwner: false,
+          userId: userId.substring(0, 10) + '...',
+          companyId,
+          method: 'access_check_failed',
+          temporary: true,
+          error: 'Access check failed - defaulting to student',
+          details: accessError.message || String(accessError)
+        });
+      }
         
       } catch (apiError: any) {
         console.error('❌ [Check Owner] Whop API error:', apiError.message || apiError);
