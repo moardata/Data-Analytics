@@ -265,13 +265,13 @@ export default function FormDeliverySettings({
               <span className="text-[#9AA4B2]">frequency</span>
             </div>
             <div className="flex items-center gap-2">
-              <Badge className={settings.autoShow ? 'bg-[#10B981]' : 'bg-[#9AA4B2]'} text="white">
+              <Badge className={`${settings.autoShow ? 'bg-[#10B981]' : 'bg-[#9AA4B2]'} text-white`}>
                 {settings.autoShow ? 'auto-show' : 'manual'}
               </Badge>
               <span className="text-[#9AA4B2]">display</span>
             </div>
             <div className="flex items-center gap-2">
-              <Badge className={settings.allowSkip ? 'bg-[#10B981]' : 'bg-[#9AA4B2]'} text="white">
+              <Badge className={`${settings.allowSkip ? 'bg-[#10B981]' : 'bg-[#9AA4B2]'} text-white`}>
                 {settings.allowSkip ? 'optional' : 'required'}
               </Badge>
               <span className="text-[#9AA4B2]">participation</span>
