@@ -90,11 +90,13 @@ function FormsContent() {
       }
 
       // Now query form templates with the actual client UUID
+      // For owners, show all forms regardless of active status
+      // For students, only show active forms
       const { data } = await supabase
         .from('form_templates')
         .select('*')
         .eq('client_id', clientData.id)
-        .eq('is_active', true);
+        .order('created_at', { ascending: false });
       
       setForms(data || []);
     } catch (error) {
@@ -348,7 +350,9 @@ function FormsContent() {
               </Card>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {forms.map((form) => (
+                {forms
+                  .filter(form => userRole === 'owner' || form.is_active)
+                  .map((form) => (
                   <Card key={form.id} className="border border-[#2A2F36] bg-[#171A1F] shadow-lg hover:shadow-xl hover:shadow-[#10B981]/10 transition-all duration-300 hover:border-[#10B981]/30 group">
                     <CardHeader className="pb-3">
                       <CardTitle className="text-[#E1E4EA] flex items-center gap-2 group-hover:text-[#10B981] transition-colors">
@@ -363,10 +367,15 @@ function FormsContent() {
                       <div className="flex items-center gap-2 text-sm text-[#9AA4B2] group-hover:text-[#E1E4EA] transition-colors">
                         <CheckCircle className="h-4 w-4 text-[#10B981]" />
                         {form.fields?.length || 0} fields
+                        {userRole === 'owner' && (
+                          <Badge className={`ml-2 ${form.is_active ? 'bg-[#10B981] text-white' : 'bg-[#6B7280] text-white'}`}>
+                            {form.is_active ? 'Published' : 'Draft'}
+                          </Badge>
+                        )}
                       </div>
                       <div className="space-y-2">
                         {/* Admin Action Buttons */}
-                        <div className="flex gap-2">
+                      <div className="flex gap-2">
                           <Button 
                             onClick={() => {
                               window.open(`/forms/public/${form.id}?companyId=${clientId}`, '_blank');
