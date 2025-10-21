@@ -1,6 +1,5 @@
 'use client';
 
-import { useIframeSdk } from '@whop/react';
 import { useEffect, useState } from 'react';
 import { BookOpen } from 'lucide-react';
 
@@ -12,8 +11,6 @@ interface AccessState {
 }
 
 export function WhopClientAuth({ children }: { children: React.ReactNode }) {
-  const sdk = useIframeSdk();
-  
   const [accessState, setAccessState] = useState<AccessState>({
     loading: true,
     isOwner: false,
@@ -23,60 +20,66 @@ export function WhopClientAuth({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     async function checkAccess() {
-      console.log('🔐 [WhopClientAuth] Checking SDK...');
+      console.log('🔐 [WhopClientAuth] Checking owner status via server...');
 
-      if (!sdk) {
-        console.log('⏳ [WhopClientAuth] Waiting for SDK...');
-        setTimeout(() => {
-          if (!sdk) {
-            console.log('❌ [WhopClientAuth] No SDK - defaulting to owner');
-            setAccessState({
-              loading: false,
-              isOwner: true,
-              isStudent: false,
-              role: 'owner',
-            });
-          }
-        }, 2000);
+      // Get company ID from URL
+      const params = new URLSearchParams(window.location.search);
+      const companyId = params.get('companyId') || 
+                       window.location.pathname.split('/').find(part => part.startsWith('biz_'));
+
+      console.log('🔍 [WhopClientAuth] Company ID:', companyId);
+
+      if (!companyId) {
+        console.log('❌ [WhopClientAuth] No company ID - defaulting to student');
+        setAccessState({
+          loading: false,
+          isOwner: false,
+          isStudent: true,
+          role: 'student',
+        });
         return;
       }
 
+      // Check owner status via our server API (which has Whop headers)
       try {
-        // Get URL data from SDK (THIS is the real Whop URL)
-        const urlData = await sdk.getTopLevelUrlData({});
-        const whopUrl = urlData?.baseHref || urlData?.fullHref || '';
+        console.log('🔍 [WhopClientAuth] Calling server to check ownership...');
         
-        console.log('🔐 [WhopClientAuth] Whop URL from SDK:', whopUrl);
-        console.log('🔐 [WhopClientAuth] Checking for /joined/ pattern...');
-        console.log('🔐 [WhopClientAuth] URL includes /joined/:', whopUrl.includes('/joined/'));
+        const response = await fetch(`/api/auth/check-owner?companyId=${companyId}`);
+        const data = await response.json();
         
-        // WHOP FORMS PATTERN: /joined/ in SDK baseHref = student
-        const isStudent = whopUrl.includes('/joined/');
-        const isOwner = !isStudent;
+        console.log('🔍 [WhopClientAuth] Server response:', data);
         
-        console.log('🔍 [WhopClientAuth] FINAL Detection:', { isStudent, isOwner });
-        console.log('🔍 [WhopClientAuth] Will show:', isStudent ? 'STUDENT INTERFACE' : 'OWNER DASHBOARD');
-        
-        setAccessState({
-          loading: false,
-          isOwner,
-          isStudent,
-          role: isStudent ? 'student' : 'owner',
-        });
+        if (data.isOwner) {
+          console.log('✅ [WhopClientAuth] User IS the owner');
+          setAccessState({
+            loading: false,
+            isOwner: true,
+            isStudent: false,
+            role: 'owner',
+          });
+        } else {
+          console.log('✅ [WhopClientAuth] User is NOT the owner (student)');
+          setAccessState({
+            loading: false,
+            isOwner: false,
+            isStudent: true,
+            role: 'student',
+          });
+        }
       } catch (error) {
         console.error('❌ [WhopClientAuth] Error:', error);
-        // Default to owner on error
+        // Default to student on error (fail-closed)
         setAccessState({
           loading: false,
-          isOwner: true,
-          isStudent: false,
-          role: 'owner',
+          isOwner: false,
+          isStudent: true,
+          role: 'student',
         });
       }
     }
 
     checkAccess();
-  }, [sdk]);
+  }, []);
 
   // Loading state
   if (accessState.loading) {
@@ -84,7 +87,7 @@ export function WhopClientAuth({ children }: { children: React.ReactNode }) {
       <div className="min-h-screen bg-gradient-to-b from-[#0d0f12] to-[#14171c] flex items-center justify-center">
         <div className="text-center max-w-md mx-auto px-6">
           <div className="w-16 h-16 border-4 border-[#10B981] border-t-transparent rounded-full animate-spin mx-auto mb-6" />
-          <h2 className="text-2xl font-bold text-[#E5E7EB] mb-3">Loading...</h2>
+          <h2 className="text-2xl font-bold text-[#E5E7EB] mb-3">Checking access...</h2>
         </div>
       </div>
     );

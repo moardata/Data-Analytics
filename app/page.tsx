@@ -1,11 +1,9 @@
 /**
  * Whop App Entry Point
- * Redirects based on user type: students to surveys, operators to analytics
- * Based on Whop Forms app pattern analysis
+ * Simple redirect: if you're the owner, go to analytics. Otherwise, go to student surveys.
  */
 
 import { redirect } from 'next/navigation';
-import { detectUserType, getRedirectUrl } from '@/lib/auth/user-detection';
 import { headers } from 'next/headers';
 
 export default async function Page({
@@ -13,33 +11,12 @@ export default async function Page({
 }: {
   searchParams: Promise<{ 
     companyId?: string; 
-    userId?: string; 
-    userType?: string;
-    viewType?: string;
-    companyRoute?: string;
-    experienceId?: string;
   }>;
 }) {
-  // In Next.js 15, searchParams is a Promise
   const params = await searchParams;
+  const companyId = params.companyId || process.env.NEXT_PUBLIC_WHOP_COMPANY_ID || '';
   
-  // Get headers for Whop authentication
-  const headersList = await headers();
-  
-  // Convert to URLSearchParams for detection
-  const searchParamsObj = new URLSearchParams();
-  Object.entries(params).forEach(([key, value]) => {
-    if (value) searchParamsObj.set(key, value);
-  });
-  
-  // Get current URL for pattern detection
-  const url = headersList.get('referer') || '';
-  
-  // Detect user type with enhanced detection
-  const userInfo = detectUserType(searchParamsObj, headersList, url);
-  
-  // Get appropriate redirect URL
-  const redirectUrl = getRedirectUrl(userInfo);
-  
-  redirect(redirectUrl);
+  // For now, just redirect to analytics with company ID
+  // WhopClientAuth will handle student/owner detection
+  redirect(`/analytics?companyId=${companyId}`);
 }
