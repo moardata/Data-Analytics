@@ -339,7 +339,7 @@ function FormsContent() {
                         <CardContent>
                           <FormDeliverySettings
                             formId={form.id}
-                            companyId={clientId}
+                            companyId={clientId || ''}
                             onSettingsChange={(settings) => {
                               console.log('Delivery settings updated:', settings);
                               // TODO: Save settings to database
