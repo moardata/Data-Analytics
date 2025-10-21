@@ -211,8 +211,7 @@ function FormsContent() {
                               navigator.clipboard.writeText(publicUrl);
                               alert('Public form link copied to clipboard!');
                             }}
-                            variant="outline"
-                            className="gap-2 border-[#2A2F36] text-[#9AA4B2] hover:bg-[#2A2F36]"
+                            className="gap-2 bg-[#0B2C24] hover:bg-[#0E3A2F] text-white border border-[#17493A]"
                           >
                             <Share2 className="h-4 w-4" />
                             Share
@@ -242,9 +241,8 @@ function FormsContent() {
                                 alert('Failed to get embed code');
                               }
                             }}
-                            variant="outline"
                             size="sm"
-                            className="flex-1 gap-2 border-[#2A2F36] text-[#9AA4B2] hover:bg-[#2A2F36]"
+                            className="flex-1 gap-2 bg-[#0B2C24] hover:bg-[#0E3A2F] text-white border border-[#17493A]"
                           >
                             <BookOpen className="h-4 w-4" />
                             Course Embed
@@ -272,9 +270,8 @@ function FormsContent() {
                                 alert('Failed to get modal code');
                               }
                             }}
-                            variant="outline"
                             size="sm"
-                            className="flex-1 gap-2 border-[#2A2F36] text-[#9AA4B2] hover:bg-[#2A2F36]"
+                            className="flex-1 gap-2 bg-[#0B2C24] hover:bg-[#0E3A2F] text-white border border-[#17493A]"
                           >
                             <Code className="h-4 w-4" />
                             Popup Code
