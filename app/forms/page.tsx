@@ -17,6 +17,7 @@ import FormBuilderEnhanced from '@/components/FormBuilderEnhanced';
 import SurveyForm from '@/components/SurveyForm';
 import { DataForm, FormField } from '@/components/DataForm';
 import FormDeliverySettings from '@/components/FormDeliverySettings';
+import EmbedCodeGenerator from '@/components/EmbedCodeGenerator';
 import { supabase } from '@/lib/supabase';
 
 function FormsContent() {
@@ -25,7 +26,7 @@ function FormsContent() {
   
   const [forms, setForms] = useState<any[]>([]);
   const [selectedForm, setSelectedForm] = useState<any | null>(null);
-  const [activeTab, setActiveTab] = useState<'surveys' | 'builder' | 'schedule' | 'analytics' | 'export'>('surveys');
+  const [activeTab, setActiveTab] = useState<'surveys' | 'builder' | 'embed' | 'schedule' | 'analytics' | 'export'>('surveys');
 
   useEffect(() => {
     fetchForms();
@@ -141,6 +142,7 @@ function FormsContent() {
           {[
             { id: 'surveys', label: 'My Surveys', icon: FileText, description: 'View pre-saved surveys' },
             { id: 'builder', label: 'Customize', icon: Settings, description: 'Edit survey content' },
+            { id: 'embed', label: 'Embed Code', icon: Code, description: 'Get code for Whop courses' },
             { id: 'schedule', label: 'Schedule', icon: Calendar, description: 'Set timing & automation' },
             { id: 'analytics', label: 'Analytics', icon: BarChart3, description: 'View response data' },
             { id: 'export', label: 'Export Data', icon: Download, description: 'Download collected data' }
@@ -297,6 +299,78 @@ function FormsContent() {
         {activeTab === 'builder' && (
           <div>
             <FormBuilderEnhanced />
+          </div>
+        )}
+
+        {activeTab === 'embed' && (
+          <div className="space-y-6">
+            {forms.length === 0 ? (
+              <Card className="border border-[#2A2F36] bg-[#171A1F] shadow-lg">
+                <CardContent className="py-16 text-center">
+                  <Code className="h-16 w-16 text-[#9AA4B2] mx-auto mb-4" />
+                  <h3 className="text-xl font-semibold text-[#E1E4EA] mb-2">
+                    No Surveys Yet
+                  </h3>
+                  <p className="text-[#9AA4B2] mb-6">
+                    Create a survey first to get embed codes for your Whop courses
+                  </p>
+                  <Button
+                    onClick={() => setActiveTab('builder')}
+                    className="bg-[#10B981] hover:bg-[#0E9F71] text-white"
+                  >
+                    <Plus className="h-4 w-4 mr-2" />
+                    Create Survey
+                  </Button>
+                </CardContent>
+              </Card>
+            ) : (
+              <div className="space-y-6">
+                <div className="bg-[#0B2C24] border border-[#17493A] rounded-lg p-4">
+                  <h3 className="text-lg font-semibold text-[#10B981] mb-2 flex items-center gap-2">
+                    <Code className="h-5 w-5" />
+                    How to Embed Surveys in Whop Courses
+                  </h3>
+                  <p className="text-[#9AA4B2] text-sm mb-3">
+                    Get embed codes for your surveys below. Paste the code into your Whop course lesson content to show surveys directly to students.
+                  </p>
+                  <div className="flex items-center gap-2 text-xs text-[#9AA4B2]">
+                    <div className="flex items-center gap-1">
+                      <CheckCircle className="h-3 w-3 text-[#10B981]" />
+                      <span>Works in any Whop course/experience</span>
+                    </div>
+                    <span>•</span>
+                    <div className="flex items-center gap-1">
+                      <CheckCircle className="h-3 w-3 text-[#10B981]" />
+                      <span>Automatically tracks responses</span>
+                    </div>
+                    <span>•</span>
+                    <div className="flex items-center gap-1">
+                      <CheckCircle className="h-3 w-3 text-[#10B981]" />
+                      <span>Beautiful, responsive design</span>
+                    </div>
+                  </div>
+                </div>
+
+                {forms.map((form) => (
+                  <div key={form.id} className="space-y-4">
+                    <div className="flex items-center gap-3">
+                      <div className="flex-1">
+                        <h3 className="text-lg font-semibold text-[#E1E4EA]">{form.name}</h3>
+                        <p className="text-sm text-[#9AA4B2]">{form.description || 'No description'}</p>
+                      </div>
+                      <Badge className="bg-[#0B2C24] text-[#10B981] border-[#17493A]">
+                        {form.fields?.length || 0} questions
+                      </Badge>
+                    </div>
+                    <EmbedCodeGenerator
+                      formId={form.id}
+                      companyId={clientId || ''}
+                      formName={form.name}
+                    />
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         )}
 
