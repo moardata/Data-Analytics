@@ -249,26 +249,6 @@ export function WhopClientAuth({ children }: { children: React.ReactNode }) {
     );
   }
 
-  // Student redirect
-  if (accessState.isStudent && accessState.redirectUrl) {
-    // Redirect to student surveys page
-    window.location.href = accessState.redirectUrl;
-    return (
-      <div className="min-h-screen bg-gradient-to-b from-[#0d0f12] to-[#14171c] flex items-center justify-center">
-        <div className="text-center max-w-md mx-auto px-6">
-          <div className="w-16 h-16 border-4 border-[#10B981] border-t-transparent rounded-full animate-spin mx-auto mb-6" />
-          
-          <h2 className="text-2xl font-bold text-[#E5E7EB] mb-3">
-            Redirecting to Surveys...
-          </h2>
-          
-          <p className="text-[#9AA4B2] text-lg mb-4">
-            Taking you to your student surveys
-          </p>
-        </div>
-      </div>
-    );
-  }
 
   // Student Interface - Show student surveys directly
   if (accessState.isStudent) {
