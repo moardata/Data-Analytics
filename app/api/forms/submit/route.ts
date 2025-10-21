@@ -57,10 +57,38 @@ export async function POST(request: NextRequest) {
 
     const clientId = clientData.id; // This is the actual UUID
 
+    // First, create or get the entity record
+    console.log('👤 [Form Submit API] Creating/getting entity record for:', entityId);
+    const { data: entityData, error: entityError } = await supabase
+      .from('entities')
+      .upsert({
+        whop_user_id: entityId,
+        client_id: clientId,
+        name: `Student ${entityId}`,
+        email: null,
+        metadata: { source: 'form_submission' }
+      }, {
+        onConflict: 'client_id,whop_user_id',
+        ignoreDuplicates: false
+      })
+      .select()
+      .single();
+
+    console.log('📊 [Form Submit API] Entity result:', {
+      success: !!entityData,
+      entityId: entityData?.id,
+      error: entityError?.message
+    });
+
+    if (entityError || !entityData) {
+      console.error('❌ [Form Submit API] Entity creation failed:', entityError);
+      throw new Error(`Failed to create entity: ${entityError?.message}`);
+    }
+
     // Store form submission
     console.log('💾 [Form Submit API] Storing form submission:', {
       formId,
-      entityId,
+      entityId: entityData.id,
       clientId,
       responsesCount: Object.keys(responses).length
     });
@@ -69,7 +97,7 @@ export async function POST(request: NextRequest) {
       .from('form_submissions')
       .insert({
         form_id: formId,
-        entity_id: entityId,
+        entity_id: entityData.id,
         client_id: clientId,
         responses,
       })
@@ -92,7 +120,7 @@ export async function POST(request: NextRequest) {
       .from('events')
       .insert({
         client_id: clientId,
-        entity_id: entityId,
+        entity_id: entityData.id,
         event_type: 'form_submission',
         event_data: {
           form_id: formId,
@@ -106,10 +134,20 @@ export async function POST(request: NextRequest) {
       submission,
     });
 
-  } catch (error) {
-    console.error('Error submitting form:', error);
+  } catch (error: any) {
+    console.error('❌ [Form Submit API] Error submitting form:', error);
+    console.error('❌ [Form Submit API] Error details:', {
+      message: error?.message,
+      code: error?.code,
+      details: error?.details,
+      hint: error?.hint
+    });
     return NextResponse.json(
-      { error: 'Failed to submit form' },
+      { 
+        error: 'Failed to submit form',
+        details: error?.message || 'Unknown error',
+        code: error?.code
+      },
       { status: 500 }
     );
   }
