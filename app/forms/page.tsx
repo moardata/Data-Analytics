@@ -207,7 +207,9 @@ function FormsContent() {
                       <div className="space-y-2">
                         <div className="flex gap-2">
                           <Button 
-                            onClick={() => setSelectedForm(form)}
+                            onClick={() => {
+                              window.open(`/surveys/${form.id}?companyId=${clientId}&view=form`, '_blank');
+                            }}
                             className="flex-1 gap-2 bg-[#0B2C24] hover:bg-[#0E3A2F] text-white border border-[#17493A]"
                           >
                             <Eye className="h-4 w-4" />
@@ -215,14 +217,36 @@ function FormsContent() {
                           </Button>
                           <Button 
                             onClick={() => {
+                              window.open(`/surveys/${form.id}?companyId=${clientId}&view=admin`, '_blank');
+                            }}
+                            className="flex-1 gap-2 bg-[#10B981] hover:bg-[#0E9F71] text-white"
+                          >
+                            <Settings className="h-4 w-4" />
+                            Admin
+                          </Button>
+                        </div>
+                        <div className="flex gap-2">
+                          <Button 
+                            onClick={() => {
                               const publicUrl = `${window.location.origin}/forms/public/${form.id}?companyId=${clientId}`;
                               navigator.clipboard.writeText(publicUrl);
                               alert('Public form link copied to clipboard!');
                             }}
-                            className="gap-2 bg-[#0B2C24] hover:bg-[#0E3A2F] text-white border border-[#17493A]"
+                            className="flex-1 gap-2 bg-[#0B2C24] hover:bg-[#0E3A2F] text-white border border-[#17493A]"
                           >
                             <Share2 className="h-4 w-4" />
                             Share
+                          </Button>
+                          <Button 
+                            onClick={() => {
+                              const embedUrl = `${window.location.origin}/embed/survey/${form.id}?companyId=${clientId}`;
+                              navigator.clipboard.writeText(embedUrl);
+                              alert('Embed URL copied to clipboard!');
+                            }}
+                            className="flex-1 gap-2 bg-[#0B2C24] hover:bg-[#0E3A2F] text-white border border-[#17493A]"
+                          >
+                            <Code className="h-4 w-4" />
+                            Embed
                           </Button>
                         </div>
                         <div className="flex gap-2">
