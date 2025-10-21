@@ -22,8 +22,8 @@ export const dynamic = 'force-dynamic';
 type DateRange = 'week' | 'month' | 'quarter';
 
 function AnalyticsContent() {
-  // Use working authentication
-  const auth = useWhopAuth();
+  // SIMPLIFIED: Get company ID directly from URL (no auth needed)
+  const [companyId, setCompanyId] = useState<string | null>(null);
   
   const [dashboardData, setDashboardData] = useState<any>(null);
   const [range, setRange] = useState<DateRange>('week');
@@ -36,19 +36,28 @@ function AnalyticsContent() {
   const [syncMessage, setSyncMessage] = useState('');
 
   useEffect(() => {
+    // Get company ID from URL
+    const params = new URLSearchParams(window.location.search);
+    const companyIdFromUrl = params.get('companyId') || 
+                            window.location.pathname.split('/').find(part => part.startsWith('biz_'));
+    setCompanyId(companyIdFromUrl);
+    console.log('✅ Company ID from URL:', companyIdFromUrl);
+    
     // Detect if running in iframe
     const inIframe = window !== window.parent;
     setIsInIframe(inIframe);
     console.log('🔍 Iframe detection:', inIframe);
-    
-    // Only fetch data if user has company access
-    if (auth.hasCompanyAccess && auth.companyId && !auth.loading) {
+  }, []);
+  
+  useEffect(() => {
+    // Fetch data when company ID is available
+    if (companyId) {
       fetchData();
     }
-  }, [range, auth.hasCompanyAccess, auth.companyId, auth.loading]);
+  }, [range, companyId]);
 
   const createClientRecord = async () => {
-    if (!auth.companyId) return;
+    if (!companyId) return;
     
     try {
       const response = await fetch('/api/setup/client', {
@@ -57,9 +66,9 @@ function AnalyticsContent() {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          companyId: auth.companyId,
-          companyName: `Company ${auth.companyId}`,
-          companyEmail: `company@${auth.companyId}.com`,
+          companyId: companyId,
+          companyName: `Company ${companyId}`,
+          companyEmail: `company@${companyId}.com`,
         }),
       });
 
@@ -76,7 +85,7 @@ function AnalyticsContent() {
   };
 
   const handleSyncStudents = async () => {
-    if (!auth.companyId) {
+    if (!companyId) {
       setSyncMessage('❌ No company ID found');
       return;
     }
@@ -85,7 +94,7 @@ function AnalyticsContent() {
     setSyncMessage('🔄 Syncing students from Whop...');
 
     try {
-      const response = await fetch(`/api/sync/students?companyId=${auth.companyId}`, {
+      const response = await fetch(`/api/sync/students?companyId=${companyId}`, {
         method: 'POST',
       });
 
@@ -109,20 +118,20 @@ function AnalyticsContent() {
   };
 
   const fetchData = async () => {
-    if (!auth.companyId) {
+    if (!companyId) {
       setError('No company ID available');
       setLoading(false);
       return;
     }
     
-    console.log('📊 Fetching data for company:', auth.companyId);
+    console.log('📊 Fetching data for company:', companyId);
     
     setLoading(true);
     setError(null);
     setAccessError(null);
     try {
       // Use companyId from authenticated context
-      const apiUrl = `/api/analytics/metrics?companyId=${auth.companyId}&timeRange=${range}`;
+      const apiUrl = `/api/analytics/metrics?companyId=${companyId}&timeRange=${range}`;
       
       // Add iframe-specific headers if needed
       const fetchOptions: RequestInit = {
@@ -177,18 +186,18 @@ function AnalyticsContent() {
   };
 
   const handleExportEventsCsv = () => {
-    if (!auth.companyId) return;
-    window.open(`/api/export/csv?companyId=${auth.companyId}&type=events`, '_blank');
+    if (!companyId) return;
+    window.open(`/api/export/csv?companyId=${companyId}&type=events`, '_blank');
   };
 
   const handleExportSubscriptionsCsv = () => {
-    if (!auth.companyId) return;
-    window.open(`/api/export/csv?companyId=${auth.companyId}&type=subscriptions`, '_blank');
+    if (!companyId) return;
+    window.open(`/api/export/csv?companyId=${companyId}&type=subscriptions`, '_blank');
   };
 
   const handleExportPdf = () => {
-    if (!auth.companyId) return;
-    window.open(`/api/export/pdf?companyId=${auth.companyId}`, '_blank');
+    if (!companyId) return;
+    window.open(`/api/export/pdf?companyId=${companyId}`, '_blank');
   };
 
   const handleLogEvent = (evt: { name: string; sellerId: string; meta?: Record<string, any> }) => {
@@ -196,105 +205,15 @@ function AnalyticsContent() {
     // In production, send to your analytics service (e.g., PostHog, Mixpanel, etc.)
   };
 
-  // Show authentication loading state
-  if (auth.loading) {
+  // REMOVED: No authentication checks needed anymore
+
+  // Show loading state while getting company ID
+  if (!companyId) {
     return (
       <div className="min-h-screen bg-[#0f1115] flex items-center justify-center">
         <div className="text-[#D1D5DB] text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#10B981] mx-auto mb-4"></div>
-          <p>Authenticating with Whop...</p>
-          <p className="text-sm text-[#9AA4B2] mt-2">Verifying your access...</p>
-        </div>
-      </div>
-    );
-  }
-
-  // Show authentication error
-  if (auth.error || !auth.hasCompanyAccess) {
-    const isTestingMode = auth.error?.includes('TESTING MODE');
-    // Use a fixed URL pattern instead of window.location to avoid hydration mismatch
-    const testUrl = '/analytics?companyId=biz_3GYHNPbGkZCEky';
-    const urlFormat = '/analytics?companyId=YOUR_COMPANY_ID';
-    
-    return (
-      <div className="min-h-screen bg-[#0f1115] flex items-center justify-center">
-        <div className="text-center max-w-2xl mx-auto px-6">
-          <div className="mb-6">
-            <svg className="w-16 h-16 text-red-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-            </svg>
-          </div>
-          
-          <div className="text-red-400 text-xl font-semibold mb-3">
-            Access Through Whop Required
-          </div>
-          
-          <div className="text-[#9AA4B2] text-sm mb-6">
-            {auth.error || 'This app must be accessed through the Whop platform.'}
-          </div>
-          
-          <div className="bg-[#1E2228] border border-[#2A2F36] rounded-lg p-6 mb-6 text-left">
-            <div className="text-[#D1D5DB] text-sm font-medium mb-4">📋 To use this app:</div>
-            <ul className="text-[#9AA4B2] text-xs space-y-2">
-              <li>1. Install this app from the Whop App Store</li>
-              <li>2. Add it to one of your products</li>
-              <li>3. Open the app from your Whop dashboard</li>
-            </ul>
-          </div>
-          
-          <div className="bg-[#1E2228] border border-[#10B981]/30 rounded-lg p-4">
-            <div className="text-[#10B981] text-sm font-medium mb-2">🛠️ For Developers:</div>
-            <div className="text-[#9AA4B2] text-xs">
-              Run: <code className="bg-black/30 px-2 py-1 rounded text-[#10B981]">npm run dev:whop</code>
-              <br />
-              Then switch to Localhost mode in Whop settings.
-            </div>
-          </div>
-          
-          {isTestingMode ? (
-            <div className="bg-[#1E2228] border border-[#2A2F36] rounded-lg p-6 mb-6 text-left">
-              <div className="text-[#D1D5DB] text-sm font-medium mb-4">🧪 To test your app:</div>
-              
-              <div className="mb-4">
-                <div className="text-[#9AA4B2] text-xs mb-2">Click this URL to test:</div>
-                <a 
-                  href={testUrl}
-                  className="block bg-[#10B981]/10 border border-[#10B981]/30 rounded p-3 text-[#10B981] text-xs font-mono hover:bg-[#10B981]/20 transition-colors break-all"
-                >
-                  {testUrl}
-                </a>
-              </div>
-
-              <div className="border-t border-[#2A2F36] pt-4 mt-4">
-                <div className="text-[#9AA4B2] text-xs mb-2">Or copy this URL format:</div>
-                <div className="bg-black/30 rounded p-3 text-[#10B981] text-xs font-mono break-all">
-                  {urlFormat}
-                </div>
-              </div>
-
-              <div className="border-t border-[#2A2F36] pt-4 mt-4">
-                <div className="text-[#9AA4B2] text-xs mb-2">Your company ID is in Whop dashboard:</div>
-                <div className="text-[#10B981] text-xs">
-                  Go to your Whop company → Settings → Copy company ID (starts with "biz_")
-                </div>
-              </div>
-            </div>
-          ) : (
-            <div className="bg-[#1E2228] border border-[#2A2F36] rounded-lg p-4 mb-6">
-              <div className="text-[#D1D5DB] text-sm font-medium mb-2">Requirements:</div>
-              <ul className="text-[#9AA4B2] text-xs space-y-1 text-left">
-                <li>✓ Must be accessed through Whop</li>
-                <li>✓ Must have admin or owner role</li>
-                <li>✓ Must belong to the company</li>
-              </ul>
-            </div>
-          )}
-          
-          {auth.companyId && !isTestingMode && (
-            <div className="text-[#9AA4B2] text-xs mb-4">
-              Company ID: <span className="text-[#10B981] font-mono">{auth.companyId}</span>
-            </div>
-          )}
+          <p>Initializing Analytics...</p>
         </div>
       </div>
     );
@@ -395,11 +314,11 @@ function AnalyticsContent() {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
               </svg>
               <span className="text-[#D1D5DB] text-sm">
-                Authenticated as: <span className="text-[#10B981] font-semibold capitalize">{auth.accessLevel}</span>
+                Authenticated as: <span className="text-[#10B981] font-semibold capitalize">Owner</span>
               </span>
             </div>
             <div className="text-[#9AA4B2] text-xs font-mono">
-              {auth.companyId}
+              {companyId}
             </div>
           </div>
         </div>
