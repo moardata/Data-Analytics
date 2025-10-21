@@ -1,16 +1,9 @@
-/**
- * Whop Client-Side Authentication
- * Uses @whop/react hooks with improved student/operator detection
- * Based on Whop Forms app pattern analysis
- */
-
 'use client';
 
 import { useIframeSdk } from '@whop/react';
 import { useEffect, useState } from 'react';
 import { ShieldAlert, Crown, Users, BookOpen } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { detectUserType } from '@/lib/auth/user-detection';
 
 interface AccessState {
   loading: boolean;
@@ -30,23 +23,14 @@ export function WhopClientAuth({ children }: { children: React.ReactNode }) {
     isStudent: false,
     role: 'unknown',
   });
-  
-  const [hasRedirected, setHasRedirected] = useState(false);
 
   useEffect(() => {
     async function checkAccess() {
-      // Prevent multiple redirects
-      if (hasRedirected) {
-        console.log('🔄 [WhopClientAuth] Redirect already initiated, skipping...');
-        return;
-      }
-      
       console.log('🔐 [WhopClientAuth] Checking Whop iframe SDK...');
       console.log('🔐 [WhopClientAuth] SDK:', { hasSdk: !!sdk });
 
       if (!sdk) {
         console.log('⏳ [WhopClientAuth] Waiting for SDK...');
-        // Wait for SDK to load
         setTimeout(() => {
           if (!sdk) {
             console.log('❌ [WhopClientAuth] No SDK - blocking access for security');
@@ -63,125 +47,28 @@ export function WhopClientAuth({ children }: { children: React.ReactNode }) {
       }
 
       try {
-        // Get URL data from SDK to determine view type
+        // Get URL data from SDK (Whop Forms app pattern)
         const urlData = await sdk.getTopLevelUrlData({});
+        console.log('🔐 [WhopClientAuth] SDK data:', JSON.stringify(urlData, null, 2));
 
-        console.log('🔐 [WhopClientAuth] SDK data (FULL):', JSON.stringify(urlData, null, 2));
-        console.log('🔐 [WhopClientAuth] ViewType:', urlData?.viewType);
-        console.log('🔐 [WhopClientAuth] All URL data keys:', Object.keys(urlData || {}));
+        // Extract company ID for server verification
+        let companyId = urlData?.companyRoute || 
+                       new URLSearchParams(window.location.search).get('companyId') ||
+                       process.env.NEXT_PUBLIC_WHOP_COMPANY_ID;
+        
+        console.log('🔍 [WhopClientAuth] Company ID:', companyId);
+        console.log('🔍 [WhopClientAuth] ViewType:', urlData?.viewType);
+        console.log('🔍 [WhopClientAuth] BaseHref:', urlData?.baseHref);
 
-        // Use improved user detection logic with current URL (not SDK URL)
-        const searchParams = new URLSearchParams(window.location.search);
-        const currentUrl = window.location.href;
-        const userInfo = detectUserType(searchParams, undefined, currentUrl);
+        // Server verification (Whop Forms app pattern)
+        const response = await fetch(`/api/auth/permissions?companyId=${companyId}&viewType=${urlData?.viewType}&baseHref=${encodeURIComponent(urlData?.baseHref || '')}`);
+        const data = await response.json();
         
-        console.log('🔍 [WhopClientAuth] User detection result:', userInfo);
-        console.log('🔍 [WhopClientAuth] Current URL:', currentUrl);
-        console.log('🔍 [WhopClientAuth] Current URL includes /joined/:', currentUrl.includes('/joined/'));
-        console.log('🔍 [WhopClientAuth] Current URL includes /app/:', currentUrl.includes('/app/'));
-        console.log('🔍 [WhopClientAuth] Current URL includes /dashboard/:', currentUrl.includes('/dashboard/'));
-        console.log('🔍 [WhopClientAuth] ViewType from SDK:', urlData?.viewType);
-        console.log('🔍 [WhopClientAuth] Final detection - isStudent:', userInfo.isStudent, 'isOperator:', userInfo.isOperator);
+        console.log('🔍 [WhopClientAuth] Server verification result:', data);
         
-        // Check if this is a student access
-        if (userInfo.isStudent) {
-          console.log('🎓 [WhopClientAuth] Student detected - showing student interface');
-          
-          setAccessState({
-            loading: false,
-            isOwner: false,
-            isStudent: true,
-            role: 'student',
-            userName: 'Student',
-          });
-          return;
-        }
-        
-        // For operators, verify ownership via server-side API
-        console.log('👑 [WhopClientAuth] Operator detected - verifying ownership');
-        
-        try {
-          // Extract company ID from various sources
-          let companyId = userInfo.companyId || 
-                         new URLSearchParams(window.location.search).get('companyId') || 
-                         new URLSearchParams(window.location.search).get('company_id') ||
-                         process.env.NEXT_PUBLIC_WHOP_COMPANY_ID;
-          
-          // If no companyId in URL params, try to extract from URL data
-          if (!companyId && urlData) {
-            // Try to get company ID from experience ID or company route
-            if (urlData.experienceId) {
-              // Map experience ID to company ID
-              const experienceToCompanyMap: Record<string, string> = {
-                'exp_2BXhmdlqcnLGc5': 'biz_3GYHNPbGkZCEky', // Your experience -> your company
-              };
-              companyId = experienceToCompanyMap[urlData.experienceId] || 'biz_3GYHNPbGkZCEky';
-              console.log('🔍 [WhopClientAuth] Mapped experience to company:', urlData.experienceId, '->', companyId);
-            } else if (urlData.companyRoute) {
-              // Map company route to company ID
-              const routeToCompanyMap: Record<string, string> = {
-                'live-analytics': 'biz_3GYHNPbGkZCEky',
-                'creator-analytics': 'biz_3GYHNPbGkZCEky',
-                'data-analytics': 'biz_3GYHNPbGkZCEky',
-              };
-              companyId = routeToCompanyMap[urlData.companyRoute] || 'biz_3GYHNPbGkZCEky';
-              console.log('🔍 [WhopClientAuth] Mapped route to company:', urlData.companyRoute, '->', companyId);
-            }
-          }
-          
-          console.log('🔍 [WhopClientAuth] DEBUG - URL search params:', Object.fromEntries(new URLSearchParams(window.location.search).entries()));
-          console.log('🔍 [WhopClientAuth] DEBUG - Full URL:', window.location.href);
-          console.log('🔍 [WhopClientAuth] DEBUG - URL Data:', urlData);
-          console.log('🔍 [WhopClientAuth] DEBUG - Company ID found:', companyId);
-          
-          if (!companyId) {
-            console.log('❌ [WhopClientAuth] No company ID found - trying fallback');
-            // Try to get company ID from URL path or other sources
-            const pathParts = window.location.pathname.split('/');
-            const possibleCompanyId = pathParts.find(part => part.startsWith('biz_'));
-            
-            if (possibleCompanyId) {
-              console.log('🔍 [WhopClientAuth] Found company ID in URL path:', possibleCompanyId);
-              // Use the company ID from URL path
-              const response = await fetch(`/api/auth/permissions?companyId=${possibleCompanyId}`);
-              const data = await response.json();
-              
-              console.log('🔍 [WhopClientAuth] Server verification result (from path):', data);
-              
-              if (data.success && data.isOwner) {
-                console.log('✅ [WhopClientAuth] Server confirmed owner access (from path)');
-                setAccessState({
-                  loading: false,
-                  isOwner: true,
-                  isStudent: false,
-                  role: data.accessLevel || 'owner',
-                  userName: data.userId || 'Owner',
-                });
-                return;
-              }
-            }
-            
-            console.log('❌ [WhopClientAuth] No company ID found anywhere');
-            setAccessState({
-              loading: false,
-              isOwner: false,
-              isStudent: true,
-              role: 'none',
-              userName: 'Unknown',
-            });
-            return;
-          }
-          
-          console.log('🔍 [WhopClientAuth] Verifying ownership via server for company:', companyId);
-          
-          // Call our permissions API to verify ownership
-          const response = await fetch(`/api/auth/permissions?companyId=${companyId}`);
-          const data = await response.json();
-          
-          console.log('🔍 [WhopClientAuth] Server verification result:', data);
-          
-          if (data.success && data.isOwner) {
-            console.log('✅ [WhopClientAuth] Server confirmed owner access');
+        if (data.success) {
+          if (data.isOwner) {
+            console.log('✅ [WhopClientAuth] Server confirmed OWNER access');
             setAccessState({
               loading: false,
               isOwner: true,
@@ -190,7 +77,7 @@ export function WhopClientAuth({ children }: { children: React.ReactNode }) {
               userName: data.userId || 'Owner',
             });
           } else {
-            console.log('❌ [WhopClientAuth] Server denied access:', data.error);
+            console.log('✅ [WhopClientAuth] Server confirmed STUDENT access');
             setAccessState({
               loading: false,
               isOwner: false,
@@ -199,31 +86,24 @@ export function WhopClientAuth({ children }: { children: React.ReactNode }) {
               userName: data.userId || 'Student',
             });
           }
-        } catch (serverError) {
-          console.error('❌ [WhopClientAuth] Server verification failed:', serverError);
-          // On server error, grant access (fail-open for debugging)
-          console.warn('⚠️ [WhopClientAuth] Server error - granting access as fallback');
+        } else {
+          console.log('❌ [WhopClientAuth] Server denied access:', data.error);
           setAccessState({
             loading: false,
-            isOwner: true,
-            isStudent: false,
-            role: 'owner',
-            userName: 'User',
+            isOwner: false,
+            isStudent: true,
+            role: 'student',
+            userName: 'Student',
           });
         }
-        
-        return; // Exit early since we handled authentication
-
       } catch (error) {
-        console.error('❌ [WhopClientAuth] Error getting SDK data:', error);
-        // On error, GRANT ACCESS (fail-open for now while debugging)
-        console.warn('⚠️ [WhopClientAuth] Error - granting access as fallback');
+        console.error('❌ [WhopClientAuth] Error during access check:', error);
         setAccessState({
           loading: false,
-          isOwner: true,
-          isStudent: false,
-          role: 'owner',
-          userName: 'User',
+          isOwner: false,
+          isStudent: true,
+          role: 'student',
+          userName: 'Student',
         });
       }
     }
@@ -249,7 +129,6 @@ export function WhopClientAuth({ children }: { children: React.ReactNode }) {
       </div>
     );
   }
-
 
   // Student Interface - Show student surveys directly
   if (accessState.isStudent) {
@@ -318,7 +197,6 @@ export function WhopClientAuth({ children }: { children: React.ReactNode }) {
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-6">
-            {/* Main message */}
             <div className="text-center space-y-3">
               <p className="text-lg text-[#D1D5DB]">
                 Hi <span className="text-[#10B981] font-bold">{accessState.userName}</span>! 👋
@@ -330,69 +208,12 @@ export function WhopClientAuth({ children }: { children: React.ReactNode }) {
                 You're currently accessing this as a <span className="font-semibold text-[#E1E4EA]">{accessState.role}</span>.
               </p>
             </div>
-
-            {/* What students can do */}
-            <div className="bg-gradient-to-r from-[#1A1E25] to-[#20242B] rounded-lg p-6 border border-[#2A2F36]">
-              <div className="flex items-center gap-3 mb-4">
-                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500/20 to-blue-600/20 border-2 border-blue-500/30 flex items-center justify-center">
-                  <BookOpen className="h-5 w-5 text-blue-500" />
-                </div>
-                <h3 className="text-xl font-bold text-[#E1E4EA]">Student Access</h3>
-              </div>
-              <p className="text-[#D1D5DB] mb-4">
-                As a student, you can access surveys and forms assigned to you by your community owner.
-              </p>
-              <div className="flex gap-3">
-                <button 
-                  onClick={() => window.location.href = '/student/surveys'}
-                  className="flex-1 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold py-3 px-6 rounded-lg transition-all duration-200 transform hover:scale-105 shadow-lg"
-                >
-                  Go to Surveys
-                </button>
-              </div>
-            </div>
-
-            {/* Contact info */}
-            <div className="text-center pt-4 border-t border-[#2A2F36]">
-              <p className="text-[#9AA4B2] text-sm">
-                Need help? Contact your community owner or administrator.
-              </p>
-            </div>
           </CardContent>
         </Card>
       </div>
     );
   }
 
-  // Owner access granted - show the app
-  return (
-    <div className="min-h-screen bg-gradient-to-b from-[#0d0f12] to-[#14171c]">
-      {/* Success indicator */}
-      <div className="bg-gradient-to-r from-green-600/10 to-emerald-600/10 border-b border-green-500/20 p-4">
-        <div className="max-w-7xl mx-auto flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-green-500/20 to-emerald-500/20 border-2 border-green-500/30 flex items-center justify-center">
-              <Crown className="h-4 w-4 text-green-500" />
-            </div>
-            <div>
-              <p className="text-green-500 font-semibold">
-                ✅ Authenticated as: <span className="text-white">{accessState.role}</span>
-              </p>
-              <p className="text-green-400/80 text-sm">
-                Welcome back, {accessState.userName}!
-              </p>
-            </div>
-          </div>
-          <div className="text-right">
-            <p className="text-green-400/80 text-sm">
-              Company ID: {new URLSearchParams(window.location.search).get('companyId') || 'N/A'}
-            </p>
-          </div>
-        </div>
-      </div>
-
-      {/* Main app content */}
-      {children}
-    </div>
-  );
+  // Owner access - show full dashboard
+  return <>{children}</>;
 }

@@ -13,6 +13,13 @@ export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
     const companyId = searchParams.get('companyId');
+    const viewType = searchParams.get('viewType');
+    const baseHref = searchParams.get('baseHref');
+
+    console.log('🔐 [Permissions API GET] Whop Forms app pattern:');
+    console.log('🔐 [Permissions API GET] Company ID:', companyId);
+    console.log('🔐 [Permissions API GET] ViewType:', viewType);
+    console.log('🔐 [Permissions API GET] BaseHref:', baseHref);
 
     if (!companyId) {
       return NextResponse.json({
@@ -20,8 +27,6 @@ export async function GET(request: NextRequest) {
         error: 'Company ID is required'
       }, { status: 400 });
     }
-
-    console.log('🔐 [Permissions API GET] Checking ownership for company:', companyId);
     
     // Handle different types of company identifiers
     let actualCompanyId = companyId;
@@ -66,11 +71,34 @@ export async function GET(request: NextRequest) {
     const elapsed = Date.now() - startTime;
     console.log(`✅ [Permissions API GET] Complete in ${elapsed}ms - Owner: ${auth.isOwner}`);
 
+    // WHOP FORMS APP PATTERN: Determine if user is student or owner
+    // Based on viewType and baseHref patterns
+    let isStudent = false;
+    let isOwner = auth.isOwner;
+    
+    if (viewType === 'app' && baseHref && baseHref.includes('/joined/')) {
+      // Student pattern: viewType=app + /joined/ URL
+      isStudent = true;
+      isOwner = false;
+      console.log('🎓 [Permissions API GET] Student detected via Whop Forms pattern');
+    } else if (viewType === 'admin' || viewType === 'analytics' || baseHref?.includes('/dashboard/')) {
+      // Owner pattern: admin/analytics viewType or /dashboard/ URL
+      isStudent = false;
+      isOwner = true;
+      console.log('👑 [Permissions API GET] Owner detected via Whop Forms pattern');
+    } else {
+      // Fallback to server auth result
+      isStudent = !auth.isOwner;
+      isOwner = auth.isOwner;
+      console.log('🔍 [Permissions API GET] Using server auth result:', { isStudent, isOwner });
+    }
+
     return NextResponse.json({
       success: true,
-      isOwner: auth.isOwner,
+      isOwner: isOwner,
+      isStudent: isStudent,
       isAdmin: auth.isAdmin,
-      accessLevel: auth.accessLevel,
+      accessLevel: isOwner ? 'owner' : 'student',
       userId: auth.userId,
       companyId: auth.companyId,
       isTestMode: auth.isTestMode,
