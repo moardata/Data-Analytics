@@ -76,22 +76,41 @@ export async function GET(request: NextRequest) {
     let isStudent = false;
     let isOwner = auth.isOwner;
     
+    console.log('🔍 [Permissions API GET] Detection signals:');
+    console.log('  - viewType:', viewType);
+    console.log('  - baseHref:', baseHref);
+    console.log('  - baseHref includes /joined/:', baseHref?.includes('/joined/'));
+    console.log('  - baseHref includes /dashboard/:', baseHref?.includes('/dashboard/'));
+    console.log('  - auth.isOwner from Whop:', auth.isOwner);
+    
     if (viewType === 'app' && baseHref && baseHref.includes('/joined/')) {
       // Student pattern: viewType=app + /joined/ URL
       isStudent = true;
       isOwner = false;
-      console.log('🎓 [Permissions API GET] Student detected via Whop Forms pattern');
-    } else if (viewType === 'admin' || viewType === 'analytics' || baseHref?.includes('/dashboard/')) {
-      // Owner pattern: admin/analytics viewType or /dashboard/ URL
+      console.log('🎓 [Permissions API GET] ✅ STUDENT detected via Whop Forms pattern (viewType=app + /joined/)');
+    } else if (viewType === 'admin' || viewType === 'analytics') {
+      // Owner pattern: admin/analytics viewType
       isStudent = false;
       isOwner = true;
-      console.log('👑 [Permissions API GET] Owner detected via Whop Forms pattern');
+      console.log('👑 [Permissions API GET] ✅ OWNER detected via viewType:', viewType);
+    } else if (baseHref?.includes('/dashboard/')) {
+      // Owner pattern: /dashboard/ URL
+      isStudent = false;
+      isOwner = true;
+      console.log('👑 [Permissions API GET] ✅ OWNER detected via /dashboard/ URL');
+    } else if (auth.isOwner) {
+      // Fallback to Whop auth result
+      isStudent = false;
+      isOwner = true;
+      console.log('👑 [Permissions API GET] ✅ OWNER detected via Whop auth');
     } else {
-      // Fallback to server auth result
-      isStudent = !auth.isOwner;
-      isOwner = auth.isOwner;
-      console.log('🔍 [Permissions API GET] Using server auth result:', { isStudent, isOwner });
+      // Default to student
+      isStudent = true;
+      isOwner = false;
+      console.log('🎓 [Permissions API GET] ⚠️ STUDENT by default (no clear owner signal)');
     }
+    
+    console.log('🔍 [Permissions API GET] FINAL RESULT:', { isStudent, isOwner });
 
     return NextResponse.json({
       success: true,
