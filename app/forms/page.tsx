@@ -172,7 +172,7 @@ function FormsContent() {
         <div className="max-w-3xl mx-auto">
           <Button 
             onClick={() => setSelectedForm(null)}
-            className="mb-6 gap-2 text-lg bg-[#0B2C24] hover:bg-[#0E3A2F] text-white border border-[#17493A]"
+            className="mb-6 gap-2 text-lg bg-[#0a0a0a] hover:bg-[#1a1a1a] text-white border border-[#1a1a1a]"
           >
             ← Back to Forms
           </Button>
@@ -209,7 +209,7 @@ function FormsContent() {
             <h1 className="text-3xl font-bold text-[#E5E7EB] mb-2">
               Available Surveys
             </h1>
-            <p className="text-[#9AA4B2]">
+            <p className="text-[#A1A1AA]">
               Complete surveys to share your feedback and help improve the experience.
             </p>
           </div>
@@ -217,30 +217,30 @@ function FormsContent() {
           {forms.length === 0 ? (
             <div className="bg-[#171A1F] border border-[#2A2F36] rounded-2xl p-8 text-center">
               <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-[#0B2C24] flex items-center justify-center">
-                <FileText className="h-8 w-8 text-[#9AA4B2]" />
+                <FileText className="h-8 w-8 text-[#A1A1AA]" />
               </div>
               <h3 className="text-lg font-semibold text-[#E5E7EB] mb-2">
                 No Surveys Available
               </h3>
-              <p className="text-[#9AA4B2] text-sm">
+              <p className="text-[#A1A1AA] text-sm">
                 There are currently no surveys available. Check back later!
               </p>
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {forms.map((form) => (
-                <Card key={form.id} className="border border-[#2A2F36] bg-[#171A1F] shadow-lg hover:shadow-xl hover:shadow-[#10B981]/10 transition-all duration-300 hover:border-[#10B981]/30 group">
+                <Card key={form.id} className="border border-[#1a1a1a] bg-[#0f0f0f] shadow-lg hover:shadow-xl hover:shadow-[#10B981]/10 transition-all duration-300 hover:border-[#10B981]/30 group">
                   <CardHeader className="pb-3">
-                    <CardTitle className="text-[#E1E4EA] flex items-center gap-2 group-hover:text-[#10B981] transition-colors">
+                    <CardTitle className="text-[#F8FAFC] flex items-center gap-2 group-hover:text-[#10B981] transition-colors">
                       <FileText className="h-5 w-5 text-[#10B981]" />
                       {form.name}
                     </CardTitle>
-                    <CardDescription className="text-[#9AA4B2] group-hover:text-[#E1E4EA] transition-colors">
+                    <CardDescription className="text-[#A1A1AA] group-hover:text-[#F8FAFC] transition-colors">
                       {form.description || 'No description'}
                     </CardDescription>
                   </CardHeader>
                   <CardContent className="space-y-4">
-                    <div className="flex items-center gap-2 text-sm text-[#9AA4B2] group-hover:text-[#E1E4EA] transition-colors">
+                    <div className="flex items-center gap-2 text-sm text-[#A1A1AA] group-hover:text-[#F8FAFC] transition-colors">
                       <CheckCircle className="h-4 w-4 text-[#10B981]" />
                       {form.fields?.length || 0} fields
                     </div>
@@ -261,7 +261,7 @@ function FormsContent() {
                           window.open(`/forms/public/${form.id}?companyId=${clientId}`, '_blank');
                         }}
                         variant="outline"
-                        className="w-full gap-2 bg-transparent hover:bg-[#0B2C24] text-[#9AA4B2] hover:text-white border border-[#3A4047] hover:border-[#10B981]/30 transition-all duration-200"
+                        className="w-full gap-2 bg-transparent hover:bg-[#0B2C24] text-[#A1A1AA] hover:text-white border border-[#3A4047] hover:border-[#10B981]/30 transition-all duration-200"
                       >
                         <Eye className="h-4 w-4" />
                         Preview Form
@@ -278,15 +278,15 @@ function FormsContent() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-[#0d0f12] to-[#14171c] p-8">
+    <div className="min-h-screen bg-gradient-to-b from-[#0a0a0a] to-[#0f0f0f] p-8">
       <div className="max-w-6xl mx-auto space-y-8">
         {/* Header */}
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-5xl font-black text-[#E5E7EB] mb-2">
+            <h1 className="text-5xl font-black text-[#F8FAFC] mb-2">
               Surveys Section
             </h1>
-            <p className="text-xl font-bold text-[#9AA4B2]">
+            <p className="text-xl font-bold text-[#A1A1AA]">
               View, customize, schedule, and export survey data with seamless precision
             </p>
           </div>
@@ -299,7 +299,7 @@ function FormsContent() {
         </div>
 
         {/* Tab Navigation */}
-        <div className="flex gap-2 border-b border-[#2A2F36]">
+        <div className="flex gap-2 border-b border-[#1a1a1a]">
           {[
             { id: 'surveys', label: 'My Surveys', icon: FileText, description: 'View pre-saved surveys' },
             { id: 'builder', label: 'Customize', icon: Settings, description: 'Edit survey content' },
@@ -314,8 +314,8 @@ function FormsContent() {
                 onClick={() => setActiveTab(tab.id as any)}
                 className={`flex items-center gap-2 px-4 py-3 text-sm font-medium border-b-2 transition-all duration-200 ${
                   activeTab === tab.id
-                    ? 'border-[#10B981] text-[#10B981] bg-[#0B2C24]/20'
-                    : 'border-transparent text-[#9AA4B2] hover:text-[#E1E4EA] hover:bg-[#2A2F36]/20'
+                    ? 'border-[#10B981] text-[#10B981] bg-[#0B2C24]/30'
+                    : 'border-transparent text-[#A1A1AA] hover:text-[#F8FAFC] hover:bg-[#1a1a1a]/50'
                 }`}
                 title={tab.description}
               >
@@ -330,18 +330,18 @@ function FormsContent() {
         {activeTab === 'surveys' && (
           <div>
             {forms.length === 0 ? (
-              <Card className="border border-[#2A2F36] bg-[#171A1F] shadow-lg">
+              <Card className="border border-[#1a1a1a] bg-[#0f0f0f] shadow-lg">
                 <CardContent className="py-16 text-center">
                   <FileText className="h-16 w-16 mx-auto mb-4 text-[#2A2F36]" />
-                  <h3 className="text-2xl font-black text-[#E1E4EA] mb-2">
+                  <h3 className="text-2xl font-black text-[#F8FAFC] mb-2">
                     No forms yet
                   </h3>
-                  <p className="text-lg text-[#9AA4B2] mb-6">
+                  <p className="text-lg text-[#A1A1AA] mb-6">
                     Create your first form to start collecting student feedback
                   </p>
                   <Button 
                     onClick={() => setActiveTab('builder')}
-                    className="gap-2 bg-[#0B2C24] hover:bg-[#0E3A2F] text-white border border-[#17493A]"
+                    className="gap-2 bg-[#0a0a0a] hover:bg-[#1a1a1a] text-white border border-[#1a1a1a]"
                   >
                     <Plus className="h-5 w-5" />
                     Create Your First Form
@@ -353,18 +353,18 @@ function FormsContent() {
                 {forms
                   .filter(form => userRole === 'owner' || form.is_active)
                   .map((form) => (
-                  <Card key={form.id} className="border border-[#2A2F36] bg-[#171A1F] shadow-lg hover:shadow-xl hover:shadow-[#10B981]/10 transition-all duration-300 hover:border-[#10B981]/30 group">
+                  <Card key={form.id} className="border border-[#1a1a1a] bg-[#0f0f0f] shadow-lg hover:shadow-xl hover:shadow-[#10B981]/10 transition-all duration-300 hover:border-[#10B981]/30 group">
                     <CardHeader className="pb-3">
-                      <CardTitle className="text-[#E1E4EA] flex items-center gap-2 group-hover:text-[#10B981] transition-colors">
+                      <CardTitle className="text-[#F8FAFC] flex items-center gap-2 group-hover:text-[#10B981] transition-colors">
                         <FileText className="h-5 w-5 text-[#10B981]" />
                         {form.name}
                       </CardTitle>
-                      <CardDescription className="text-[#9AA4B2] group-hover:text-[#E1E4EA] transition-colors">
+                      <CardDescription className="text-[#A1A1AA] group-hover:text-[#F8FAFC] transition-colors">
                         {form.description || 'No description'}
                       </CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-4">
-                      <div className="flex items-center gap-2 text-sm text-[#9AA4B2] group-hover:text-[#E1E4EA] transition-colors">
+                      <div className="flex items-center gap-2 text-sm text-[#A1A1AA] group-hover:text-[#F8FAFC] transition-colors">
                         <CheckCircle className="h-4 w-4 text-[#10B981]" />
                         {form.fields?.length || 0} fields
                         {userRole === 'owner' && (
@@ -376,16 +376,16 @@ function FormsContent() {
                       <div className="space-y-2">
                         {/* Admin Action Buttons */}
                       <div className="flex gap-2">
-                          <Button 
-                            onClick={() => setSelectedForm(form)}
-                            className="flex-1 gap-2 bg-[#0B2C24] hover:bg-[#0E3A2F] text-white border border-[#17493A]"
-                          >
-                            <Eye className="h-4 w-4" />
+                        <Button 
+                          onClick={() => setSelectedForm(form)}
+                          className="flex-1 gap-2 bg-[#0a0a0a] hover:bg-[#1a1a1a] text-white border border-[#1a1a1a]"
+                        >
+                          <Eye className="h-4 w-4" />
                             Preview
                           </Button>
                           <Button 
                             onClick={() => setSelectedForm(form)}
-                            className="flex-1 gap-2 bg-[#0B2C24] hover:bg-[#0E3A2F] text-white border border-[#17493A]"
+                            className="flex-1 gap-2 bg-[#0a0a0a] hover:bg-[#1a1a1a] text-white border border-[#1a1a1a]"
                           >
                             <Settings className="h-4 w-4" />
                             Manage
@@ -425,7 +425,7 @@ function FormsContent() {
                               alert('Failed to update survey status. Please try again.');
                             }
                           }}
-                          className="w-full gap-2 bg-[#0B2C24] hover:bg-[#0E3A2F] text-white border border-[#17493A] font-medium py-3 px-6 rounded-lg transition-all duration-200"
+                          className="w-full gap-2 bg-[#0a0a0a] hover:bg-[#1a1a1a] text-white border border-[#1a1a1a] font-medium py-3 px-6 rounded-lg transition-all duration-200"
                         >
                           <FileText className="h-5 w-5" />
                           {form.is_active ? 'Unpublish from Students' : 'Publish to Students'}
@@ -449,13 +449,13 @@ function FormsContent() {
         {activeTab === 'submissions' && (
           <div className="space-y-6">
             {submissions.length === 0 ? (
-              <Card className="border border-[#2A2F36] bg-[#171A1F] shadow-lg">
+              <Card className="border border-[#1a1a1a] bg-[#0f0f0f] shadow-lg">
                 <CardContent className="py-16 text-center">
-                  <Users className="h-16 w-16 text-[#9AA4B2] mx-auto mb-4" />
-                  <h3 className="text-xl font-semibold text-[#E1E4EA] mb-2">
+                  <Users className="h-16 w-16 text-[#A1A1AA] mx-auto mb-4" />
+                  <h3 className="text-xl font-semibold text-[#F8FAFC] mb-2">
                     No Submissions Yet
                   </h3>
-                  <p className="text-[#9AA4B2] mb-6">
+                  <p className="text-[#A1A1AA] mb-6">
                     Form submissions will appear here once students start filling out your surveys
                   </p>
                   <Button
@@ -470,7 +470,7 @@ function FormsContent() {
             ) : (
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
-                  <h3 className="text-xl font-semibold text-[#E1E4EA]">
+                  <h3 className="text-xl font-semibold text-[#F8FAFC]">
                     Form Submissions ({submissions.length})
                   </h3>
                   <Badge className="bg-[#10B981] text-white border-0">
@@ -481,7 +481,7 @@ function FormsContent() {
 
                 <div className="space-y-3">
                   {submissions.map((submission) => (
-                    <Card key={submission.id} className="border border-[#2A2F36] bg-[#171A1F] hover:border-[#10B981]/30 transition-colors">
+                    <Card key={submission.id} className="border border-[#1a1a1a] bg-[#0f0f0f] hover:border-[#10B981]/30 transition-colors">
                       <CardHeader 
                         className="pb-3 cursor-pointer"
                         onClick={() => setSelectedSubmission(selectedSubmission?.id === submission.id ? null : submission)}
@@ -492,24 +492,24 @@ function FormsContent() {
                               <Users className="h-5 w-5 text-[#10B981]" />
                             </div>
                             <div>
-                              <CardTitle className="text-[#E1E4EA] text-lg">
+                              <CardTitle className="text-[#F8FAFC] text-lg">
                                 {submission.entities?.name || 'Anonymous User'}
                               </CardTitle>
-                              <CardDescription className="text-[#9AA4B2]">
+                              <CardDescription className="text-[#A1A1AA]">
                                 {submission.form_templates?.name || 'Unknown Form'}
                               </CardDescription>
                             </div>
                           </div>
                           <div className="flex items-center gap-4">
                             <div className="text-right">
-                              <div className="text-sm text-[#9AA4B2]">
+                              <div className="text-sm text-[#A1A1AA]">
                                 {new Date(submission.submitted_at).toLocaleDateString()}
                               </div>
-                              <div className="text-xs text-[#9AA4B2]">
+                              <div className="text-xs text-[#A1A1AA]">
                                 {new Date(submission.submitted_at).toLocaleTimeString()}
                               </div>
                             </div>
-                            <div className="text-[#9AA4B2]">
+                            <div className="text-[#A1A1AA]">
                               {selectedSubmission?.id === submission.id ? '▼' : '▶'}
                             </div>
                           </div>
@@ -519,20 +519,20 @@ function FormsContent() {
                       {selectedSubmission?.id === submission.id && (
                         <CardContent className="pt-0">
                           <div className="border-t border-[#2A2F36] pt-4">
-                            <h4 className="text-sm font-semibold text-[#E1E4EA] mb-3">Submission Details:</h4>
+                            <h4 className="text-sm font-semibold text-[#F8FAFC] mb-3">Submission Details:</h4>
                             <div className="space-y-3">
                               {Object.entries(submission.responses || {}).map(([fieldName, value]) => (
                                 <div key={fieldName} className="bg-[#0B2C24] rounded-lg p-3">
                                   <div className="text-sm font-medium text-[#10B981] mb-1">
                                     {fieldName}
                                   </div>
-                                  <div className="text-[#E1E4EA]">
+                                  <div className="text-[#F8FAFC]">
                                     {typeof value === 'object' ? JSON.stringify(value) : String(value)}
                                   </div>
                                 </div>
                               ))}
                             </div>
-                            <div className="mt-4 pt-3 border-t border-[#2A2F36] text-xs text-[#9AA4B2]">
+                            <div className="mt-4 pt-3 border-t border-[#2A2F36] text-xs text-[#A1A1AA]">
                               Submission ID: {submission.id}
                             </div>
                           </div>
@@ -548,23 +548,23 @@ function FormsContent() {
 
         {activeTab === 'analytics' && (
           <div>
-            <Card className="border border-[#2A2F36] bg-[#171A1F] shadow-lg">
+            <Card className="border border-[#1a1a1a] bg-[#0f0f0f] shadow-lg">
               <CardHeader>
-                <CardTitle className="text-[#E1E4EA] flex items-center gap-2">
+                <CardTitle className="text-[#F8FAFC] flex items-center gap-2">
                   <BarChart3 className="h-5 w-5 text-[#10B981]" />
                   Survey Analytics
                 </CardTitle>
-                <CardDescription className="text-[#9AA4B2]">
+                <CardDescription className="text-[#A1A1AA]">
                   View response data and insights from your surveys
                 </CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="text-center py-8">
                   <BarChart3 className="h-16 w-16 mx-auto mb-4 text-[#2A2F36]" />
-                  <h3 className="text-2xl font-black text-[#E1E4EA] mb-2">
+                  <h3 className="text-2xl font-black text-[#F8FAFC] mb-2">
                     Analytics Dashboard
                   </h3>
-                  <p className="text-lg text-[#9AA4B2] mb-6">
+                  <p className="text-lg text-[#A1A1AA] mb-6">
                     Detailed analytics and insights will be available soon
                   </p>
                 </div>
@@ -575,13 +575,13 @@ function FormsContent() {
 
         {activeTab === 'export' && (
           <div>
-            <Card className="border border-[#2A2F36] bg-[#171A1F] shadow-lg">
+            <Card className="border border-[#1a1a1a] bg-[#0f0f0f] shadow-lg">
               <CardHeader>
-                <CardTitle className="text-[#E1E4EA] flex items-center gap-2">
+                <CardTitle className="text-[#F8FAFC] flex items-center gap-2">
                   <Download className="h-5 w-5 text-[#10B981]" />
                   Export Survey Data
                 </CardTitle>
-                <CardDescription className="text-[#9AA4B2]">
+                <CardDescription className="text-[#A1A1AA]">
                   Download collected survey responses in various formats
                 </CardDescription>
               </CardHeader>
@@ -589,7 +589,7 @@ function FormsContent() {
                 <div className="space-y-4">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <Button 
-                      className="gap-2 bg-[#0B2C24] hover:bg-[#0E3A2F] text-white border border-[#17493A] h-12"
+                      className="gap-2 bg-[#0a0a0a] hover:bg-[#1a1a1a] text-white border border-[#1a1a1a] h-12"
                       onClick={() => {
                         // TODO: Implement CSV export
                         alert('CSV export feature coming soon!');
@@ -599,7 +599,7 @@ function FormsContent() {
                       Export as CSV
                     </Button>
                     <Button 
-                      className="gap-2 bg-[#0B2C24] hover:bg-[#0E3A2F] text-white border border-[#17493A] h-12"
+                      className="gap-2 bg-[#0a0a0a] hover:bg-[#1a1a1a] text-white border border-[#1a1a1a] h-12"
                       onClick={() => {
                         // TODO: Implement PDF export
                         alert('PDF export feature coming soon!');
@@ -610,7 +610,7 @@ function FormsContent() {
                     </Button>
                   </div>
                   <div className="text-center py-4">
-                    <p className="text-[#9AA4B2]">
+                    <p className="text-[#A1A1AA]">
                       Export all collected survey data over time into organized files
                     </p>
                   </div>
@@ -623,27 +623,27 @@ function FormsContent() {
 
       {/* Inline Form Preview Modal */}
       {selectedForm && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-[#171A1F] border border-[#2A2F36] rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-hidden">
-            <div className="flex items-center justify-between p-4 border-b border-[#2A2F36]">
-              <h3 className="text-lg font-semibold text-[#E1E4EA]">
+        <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50 p-4">
+          <div className="bg-[#0f0f0f] border border-[#1a1a1a] rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-hidden">
+            <div className="flex items-center justify-between p-4 border-b border-[#1a1a1a]">
+              <h3 className="text-lg font-semibold text-[#F8FAFC]">
                 {selectedForm.name} - Preview
               </h3>
               <Button
                 onClick={() => setSelectedForm(null)}
                 variant="ghost"
                 size="sm"
-                className="text-[#9AA4B2] hover:text-[#E1E4EA]"
+                className="text-[#A1A1AA] hover:text-[#F8FAFC]"
               >
                 <X className="h-4 w-4" />
               </Button>
             </div>
             <div className="p-6 overflow-y-auto max-h-[calc(90vh-80px)]">
               <div className="mb-4">
-                <p className="text-[#9AA4B2] text-sm">
+                <p className="text-[#A1A1AA] text-sm">
                   {selectedForm.description || 'No description provided'}
                 </p>
-                <p className="text-[#9AA4B2] text-xs mt-1">
+                <p className="text-[#A1A1AA] text-xs mt-1">
                   {selectedForm.fields?.length || 0} fields
                 </p>
               </div>
