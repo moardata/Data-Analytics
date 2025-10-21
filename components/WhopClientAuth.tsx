@@ -58,6 +58,13 @@ export function WhopClientAuth({ children }: { children: React.ReactNode }) {
         const data = await response.json();
         
         console.log('🔍 [WhopClientAuth] Server response:', data);
+        console.log('🔍 [WhopClientAuth] Full response details:', JSON.stringify(data, null, 2));
+        
+        // Check if this is a temporary/fallback response
+        if (data.temporary) {
+          console.warn('⚠️ [WhopClientAuth] TEMPORARY AUTH - Not using real Whop authentication!');
+          console.warn('⚠️ [WhopClientAuth] Reason:', data.reason || data.error || 'Unknown');
+        }
         
         if (data.isOwner) {
           console.log('✅ [WhopClientAuth] User IS the owner');
