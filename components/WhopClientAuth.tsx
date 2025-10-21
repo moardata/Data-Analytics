@@ -63,14 +63,16 @@ export function WhopClientAuth({ children }: { children: React.ReactNode }) {
         console.log('🔐 [WhopClientAuth] ViewType:', urlData?.viewType);
         console.log('🔐 [WhopClientAuth] All URL data keys:', Object.keys(urlData || {}));
 
-        // Use improved user detection logic
+        // Use improved user detection logic with SDK data
         const searchParams = new URLSearchParams(window.location.search);
-        const userInfo = detectUserType(searchParams, undefined, window.location.href);
+        const sdkUrl = urlData?.baseHref || urlData?.fullHref || window.location.href;
+        const userInfo = detectUserType(searchParams, undefined, sdkUrl);
         
         console.log('🔍 [WhopClientAuth] User detection result:', userInfo);
         console.log('🔍 [WhopClientAuth] Current URL:', window.location.href);
-        console.log('🔍 [WhopClientAuth] URL includes /joined/:', window.location.href.includes('/joined/'));
-        console.log('🔍 [WhopClientAuth] URL includes /app/:', window.location.href.includes('/app/'));
+        console.log('🔍 [WhopClientAuth] SDK URL (baseHref):', sdkUrl);
+        console.log('🔍 [WhopClientAuth] SDK URL includes /joined/:', sdkUrl.includes('/joined/'));
+        console.log('🔍 [WhopClientAuth] SDK URL includes /app/:', sdkUrl.includes('/app/'));
         console.log('🔍 [WhopClientAuth] ViewType from SDK:', urlData?.viewType);
         
         // Check if this is a student access

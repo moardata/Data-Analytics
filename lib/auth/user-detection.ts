@@ -60,7 +60,7 @@ export function detectUserType(
     }
   }
   
-  // Check viewType parameter
+  // Check viewType parameter (highest priority for student detection)
   if (viewType) {
     console.log('🔍 [UserDetection] ViewType detected:', viewType);
     if (viewType === 'app') {
