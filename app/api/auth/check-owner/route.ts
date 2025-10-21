@@ -64,61 +64,74 @@ export async function GET(request: NextRequest) {
       console.log('✅ [Check Owner] User ID from token:', userId);
 
       // Now check if this user owns the company
-      // STRATEGY: Owners don't have memberships, students do
-      // Try to get user's memberships - if none, they're the owner
+      // STRATEGY: Use Whop SDK to check memberships
+      // Owners don't have memberships to their own company, students do
       try {
-        console.log('🔍 [Check Owner] Checking memberships for user...');
+        console.log('🔍 [Check Owner] Checking memberships via Whop SDK...');
         
-        // Try to get memberships for this user in this company
         let hasMembership = false;
         let isOwner = false;
         
         try {
-          // Use Whop API to check memberships
-          const membershipsResponse = await fetch(
-            `https://api.whop.com/api/v5/memberships?user_id=${userId}&company_id=${companyId}`,
-            {
-              headers: {
-                'Authorization': `Bearer ${process.env.WHOP_API_KEY}`,
-                'Content-Type': 'application/json',
-              }
+          // Use Whop SDK to list memberships for this user
+          const memberships = await whopClient.memberships.list({
+            user_id: userId,
+            company_id: companyId,
+          });
+          
+          console.log('📊 [Check Owner] Memberships response:', memberships);
+          
+          // Check if response has data
+          if (memberships && typeof memberships === 'object') {
+            const membershipData = memberships as any;
+            
+            // Check various possible response formats
+            if (Array.isArray(membershipData)) {
+              hasMembership = membershipData.length > 0;
+            } else if (Array.isArray(membershipData.data)) {
+              hasMembership = membershipData.data.length > 0;
+            } else if (membershipData.memberships && Array.isArray(membershipData.memberships)) {
+              hasMembership = membershipData.memberships.length > 0;
             }
+            
+            console.log('🔍 [Check Owner] Has membership:', hasMembership);
+          }
+          
+          // Inverse logic: If user has membership, they're a student (not owner)
+          isOwner = !hasMembership;
+          
+          console.log(isOwner 
+            ? '✅ [Check Owner] No memberships → User IS the owner' 
+            : '❌ [Check Owner] Has memberships → User is a student'
           );
           
-          if (membershipsResponse.ok) {
-            const membershipsData = await membershipsResponse.json();
-            console.log('📊 [Check Owner] Memberships data:', membershipsData);
-            
-            // If data is an array and has items, user has memberships (student)
-            // If empty or no data, user is owner
-            hasMembership = Array.isArray(membershipsData.data) && membershipsData.data.length > 0;
-            isOwner = !hasMembership;
-            
-            console.log(hasMembership 
-              ? '❌ [Check Owner] User HAS memberships - is a student' 
-              : '✅ [Check Owner] User has NO memberships - is the owner'
-            );
-          } else {
-            console.log('⚠️ [Check Owner] Memberships API returned:', membershipsResponse.status);
-            // If we can't check memberships, assume owner (fail-open)
-            isOwner = true;
-          }
+          return NextResponse.json({ 
+            isOwner,
+            userId: userId.substring(0, 10) + '...',
+            companyId,
+            method: 'sdk_membership_check',
+            debug: {
+              user_id: userId,
+              has_membership: hasMembership,
+            }
+          });
+          
         } catch (membershipError: any) {
-          console.error('❌ [Check Owner] Membership check error:', membershipError.message);
-          // If membership check fails, assume owner (fail-open)
-          isOwner = true;
+          console.error('❌ [Check Owner] Membership check failed:', membershipError);
+          console.error('❌ [Check Owner] Error details:', membershipError.message || membershipError);
+          
+          // IMPORTANT: Fail-closed for security
+          // If we can't determine ownership, default to student
+          return NextResponse.json({ 
+            isOwner: false,
+            userId: userId.substring(0, 10) + '...',
+            companyId,
+            method: 'membership_check_failed',
+            temporary: true,
+            error: 'Membership check failed - defaulting to student access',
+            details: membershipError.message || String(membershipError)
+          });
         }
-        
-        return NextResponse.json({ 
-          isOwner,
-          userId: userId.substring(0, 10) + '...',
-          companyId,
-          method: 'membership_check',
-          debug: {
-            user_id: userId,
-            has_membership: hasMembership,
-          }
-        });
         
       } catch (apiError: any) {
         console.error('❌ [Check Owner] Whop API error:', apiError.message || apiError);
