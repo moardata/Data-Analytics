@@ -12,7 +12,21 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const { formId, entityId, companyId, responses } = body;
 
+    console.log('📝 [Form Submit API] Received submission:', {
+      formId,
+      entityId,
+      companyId,
+      responsesCount: Object.keys(responses || {}).length,
+      hasResponses: !!responses
+    });
+
     if (!formId || !entityId || !companyId || !responses) {
+      console.error('❌ [Form Submit API] Missing required fields:', {
+        formId: !!formId,
+        entityId: !!entityId,
+        companyId: !!companyId,
+        responses: !!responses
+      });
       return NextResponse.json(
         { error: 'Missing required fields' },
         { status: 400 }
@@ -20,13 +34,21 @@ export async function POST(request: NextRequest) {
     }
 
     // First, get the client record for this company
+    console.log('🔍 [Form Submit API] Looking up client for company:', companyId);
     const { data: clientData, error: clientError } = await supabase
       .from('clients')
       .select('id')
       .eq('company_id', companyId)
       .single();
 
+    console.log('📊 [Form Submit API] Client lookup result:', {
+      found: !!clientData,
+      clientId: clientData?.id,
+      error: clientError?.message
+    });
+
     if (clientError || !clientData) {
+      console.error('❌ [Form Submit API] Client not found:', clientError);
       return NextResponse.json(
         { error: 'Client not found for this company' },
         { status: 404 }
@@ -36,6 +58,13 @@ export async function POST(request: NextRequest) {
     const clientId = clientData.id; // This is the actual UUID
 
     // Store form submission
+    console.log('💾 [Form Submit API] Storing form submission:', {
+      formId,
+      entityId,
+      clientId,
+      responsesCount: Object.keys(responses).length
+    });
+
     const { data: submission, error } = await supabase
       .from('form_submissions')
       .insert({
@@ -47,7 +76,14 @@ export async function POST(request: NextRequest) {
       .select()
       .single();
 
+    console.log('📊 [Form Submit API] Submission result:', {
+      success: !!submission,
+      submissionId: submission?.id,
+      error: error?.message
+    });
+
     if (error) {
+      console.error('❌ [Form Submit API] Database error:', error);
       throw error;
     }
 

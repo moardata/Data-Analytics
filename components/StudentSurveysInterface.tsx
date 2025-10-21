@@ -59,26 +59,46 @@ export default function StudentSurveysInterface({ companyId }: StudentSurveysInt
 
   const handleFormSubmit = async (responses: Record<string, any>) => {
     try {
+      const submissionData = {
+        formId: selectedSurvey.id,
+        entityId: `student_${Date.now()}`,
+        companyId: companyId,
+        responses,
+      };
+
+      console.log('📝 [StudentSurveysInterface] Submitting form:', {
+        formId: selectedSurvey.id,
+        entityId: submissionData.entityId,
+        companyId: companyId,
+        responsesCount: Object.keys(responses).length,
+        responses: responses
+      });
+
       const response = await fetch('/api/forms/submit', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          formId: selectedSurvey.id,
-          entityId: `student_${Date.now()}`,
-          companyId: companyId,
-          responses,
-        }),
+        body: JSON.stringify(submissionData),
+      });
+
+      console.log('📊 [StudentSurveysInterface] Submission response:', {
+        ok: response.ok,
+        status: response.status,
+        statusText: response.statusText
       });
 
       if (response.ok) {
+        const result = await response.json();
+        console.log('✅ [StudentSurveysInterface] Submission successful:', result);
         setSubmitted(true);
         // Refresh surveys list
         fetchSurveys();
       } else {
-        alert('Failed to submit survey. Please try again.');
+        const errorData = await response.json();
+        console.error('❌ [StudentSurveysInterface] Submission failed:', errorData);
+        alert(`Failed to submit survey: ${errorData.error || 'Unknown error'}`);
       }
     } catch (error) {
-      console.error('Error submitting form:', error);
+      console.error('❌ [StudentSurveysInterface] Error submitting form:', error);
       alert('Failed to submit survey. Please try again.');
     }
   };
