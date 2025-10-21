@@ -9,7 +9,7 @@ import React, { Suspense, useState, useEffect } from 'react';
 import { useSearchParams } from 'next/navigation';
 
 export const dynamic = 'force-dynamic';
-import { Plus, FileText, Eye, CheckCircle, Share2, Copy, BookOpen, Code, Download, Settings, BarChart3, Clock, Users } from 'lucide-react';
+import { Plus, FileText, Eye, CheckCircle, Share2, Copy, BookOpen, Code, Download, Settings, BarChart3, Clock, Users, X } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -377,18 +377,14 @@ function FormsContent() {
                         {/* Admin Action Buttons */}
                       <div className="flex gap-2">
                           <Button 
-                            onClick={() => {
-                              window.open(`/forms/public/${form.id}?companyId=${clientId}`, '_blank');
-                            }}
+                            onClick={() => setSelectedForm(form)}
                             className="flex-1 gap-2 bg-[#0B2C24] hover:bg-[#0E3A2F] text-white border border-[#17493A]"
                           >
                             <Eye className="h-4 w-4" />
                             Preview
                           </Button>
                           <Button 
-                            onClick={() => {
-                              window.open(`/surveys/${form.id}?companyId=${clientId}&view=admin`, '_blank');
-                            }}
+                            onClick={() => setSelectedForm(form)}
                             className="flex-1 gap-2 bg-[#0B2C24] hover:bg-[#0E3A2F] text-white border border-[#17493A]"
                           >
                             <Settings className="h-4 w-4" />
@@ -435,32 +431,6 @@ function FormsContent() {
                           {form.is_active ? 'Unpublish from Students' : 'Publish to Students'}
                         </Button>
                         
-                        {/* Additional Admin Actions */}
-                        <div className="flex gap-2">
-                          <Button 
-                            onClick={() => {
-                              const publicUrl = `${window.location.origin}/forms/public/${form.id}?companyId=${clientId}`;
-                              navigator.clipboard.writeText(publicUrl);
-                              alert('Public form link copied to clipboard!');
-                            }}
-                            size="sm"
-                            className="flex-1 gap-2 bg-[#0B2C24] hover:bg-[#0E3A2F] text-white border border-[#17493A]"
-                          >
-                            <Share2 className="h-4 w-4" />
-                            Share
-                          </Button>
-                          <Button 
-                            onClick={() => {
-                              // Navigate to analytics for this form
-                              window.open(`/analytics?formId=${form.id}&companyId=${clientId}`, '_blank');
-                            }}
-                            size="sm"
-                            className="flex-1 gap-2 bg-[#0B2C24] hover:bg-[#0E3A2F] text-white border border-[#17493A]"
-                          >
-                            <BarChart3 className="h-4 w-4" />
-                            Analytics
-                          </Button>
-                        </div>
                       </div>
                     </CardContent>
                   </Card>
@@ -650,6 +620,47 @@ function FormsContent() {
           </div>
         )}
       </div>
+
+      {/* Inline Form Preview Modal */}
+      {selectedForm && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-[#171A1F] border border-[#2A2F36] rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-hidden">
+            <div className="flex items-center justify-between p-4 border-b border-[#2A2F36]">
+              <h3 className="text-lg font-semibold text-[#E1E4EA]">
+                {selectedForm.name} - Preview
+              </h3>
+              <Button
+                onClick={() => setSelectedForm(null)}
+                variant="ghost"
+                size="sm"
+                className="text-[#9AA4B2] hover:text-[#E1E4EA]"
+              >
+                <X className="h-4 w-4" />
+              </Button>
+            </div>
+            <div className="p-6 overflow-y-auto max-h-[calc(90vh-80px)]">
+              <div className="mb-4">
+                <p className="text-[#9AA4B2] text-sm">
+                  {selectedForm.description || 'No description provided'}
+                </p>
+                <p className="text-[#9AA4B2] text-xs mt-1">
+                  {selectedForm.fields?.length || 0} fields
+                </p>
+              </div>
+              <DataForm
+                formId={selectedForm.id}
+                fields={selectedForm.fields}
+                onSubmit={() => {
+                  alert('This is a preview - form submission is disabled');
+                }}
+                title=""
+                description=""
+                disabled={true}
+              />
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
