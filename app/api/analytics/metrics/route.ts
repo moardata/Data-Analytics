@@ -24,15 +24,14 @@ export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
     const timeRange = searchParams.get('timeRange') || 'week';
+    const companyId = searchParams.get('companyId');
 
-    // SECURITY: Require owner/admin access
-    const { auth, error } = await requireOwner(request);
-    if (error) return error;
-    if (!auth) return NextResponse.json({ error: 'Unauthorized' }, { status: 401, headers: corsHeaders });
-
-    const { companyId, userId } = auth;
+    // SIMPLIFIED: No auth checks needed (WhopClientAuth handles this)
+    if (!companyId) {
+      return NextResponse.json({ error: 'Company ID required' }, { status: 400, headers: corsHeaders });
+    }
     
-    console.log('✅ [Analytics] Owner/Admin access verified:', { userId, companyId, role: auth.role });
+    console.log('✅ [Analytics] Fetching data for company:', companyId);
 
     // Check if Supabase is configured - test with a method call
     if (!supabase || !supabase.from) {

@@ -51,8 +51,26 @@ export function WhopClientAuth({ children }: { children: React.ReactNode }) {
     );
   }
 
-  // Student Interface
+  // Student Interface - Redirect to student surveys page
   if (accessState.isStudent) {
+    // Use the existing student surveys page component
+    if (typeof window !== 'undefined') {
+      const currentPath = window.location.pathname;
+      // Only redirect if not already on student surveys page
+      if (!currentPath.includes('/student/surveys')) {
+        window.location.href = '/student/surveys';
+        return (
+          <div className="min-h-screen bg-gradient-to-b from-[#0d0f12] to-[#14171c] flex items-center justify-center">
+            <div className="text-center">
+              <div className="w-16 h-16 border-4 border-[#10B981] border-t-transparent rounded-full animate-spin mx-auto mb-6" />
+              <p className="text-[#9AA4B2]">Redirecting to your surveys...</p>
+            </div>
+          </div>
+        );
+      }
+    }
+    
+    // If already on surveys page or SSR, render the content
     return (
       <div className="min-h-screen bg-gradient-to-b from-[#0d0f12] to-[#14171c]">
         <div className="bg-[#12151A] border-b border-[#2A2F36] px-6 py-4">
@@ -68,33 +86,7 @@ export function WhopClientAuth({ children }: { children: React.ReactNode }) {
           </div>
         </div>
         
-        <div className="p-6">
-          <div className="max-w-4xl mx-auto">
-            <div className="grid gap-6">
-              <div className="bg-gradient-to-r from-[#1A1E25] to-[#20242B] border border-[#2A2F36] rounded-lg p-6">
-                <h2 className="text-xl font-semibold text-[#E1E4EA] mb-2">
-                  Welcome, Student! 👋
-                </h2>
-                <p className="text-[#D1D5DB]">
-                  You have access to complete surveys assigned by your community.
-                </p>
-              </div>
-              
-              <div className="bg-[#1A1E25] border border-[#2A2F36] rounded-lg p-6">
-                <h3 className="text-lg font-semibold text-[#E1E4EA] mb-4">Available Surveys</h3>
-                <div className="text-center py-8">
-                  <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-[#10B981]/20 flex items-center justify-center">
-                    <BookOpen className="h-8 w-8 text-[#10B981]" />
-                  </div>
-                  <p className="text-[#9AA4B2] mb-4">No surveys available at the moment</p>
-                  <p className="text-sm text-[#6B7280]">
-                    Your community owner will assign surveys for you to complete.
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+        {children}
       </div>
     );
   }
