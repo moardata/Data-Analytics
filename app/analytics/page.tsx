@@ -39,7 +39,8 @@ function AnalyticsContent() {
     // Get company ID from URL
     const params = new URLSearchParams(window.location.search);
     const companyIdFromUrl = params.get('companyId') || 
-                            window.location.pathname.split('/').find(part => part.startsWith('biz_'));
+                            window.location.pathname.split('/').find(part => part.startsWith('biz_')) || 
+                            null;
     setCompanyId(companyIdFromUrl);
     console.log('✅ Company ID from URL:', companyIdFromUrl);
     
