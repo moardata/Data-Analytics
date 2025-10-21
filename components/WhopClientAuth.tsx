@@ -60,6 +60,14 @@ export function WhopClientAuth({ children }: { children: React.ReactNode }) {
         console.log('🔍 [WhopClientAuth] Server response:', data);
         console.log('🔍 [WhopClientAuth] Full response details:', JSON.stringify(data, null, 2));
         
+        // Log debug info if available
+        if (data.debug) {
+          console.log('🔍 [WhopClientAuth] DEBUG INFO:');
+          console.log('  - Company owner_id:', data.debug.company_owner_id);
+          console.log('  - Current user_id:', data.debug.user_id);
+          console.log('  - Match?', data.debug.company_owner_id === data.debug.user_id);
+        }
+        
         // Check if this is a temporary/fallback response
         if (data.temporary) {
           console.warn('⚠️ [WhopClientAuth] TEMPORARY AUTH - Not using real Whop authentication!');
