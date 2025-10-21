@@ -385,7 +385,7 @@ function FormsContent() {
                             onClick={() => {
                               window.open(`/forms/public/${form.id}?companyId=${clientId}`, '_blank');
                             }}
-                            className="flex-1 gap-2 bg-[#0B2C24] hover:bg-[#0E3A2F] text-white border border-[#17493A]"
+                            className="flex-1 gap-2 bg-[#10B981] hover:bg-[#0E9F71] text-white"
                           >
                             <Eye className="h-4 w-4" />
                             Preview
@@ -403,20 +403,41 @@ function FormsContent() {
                         
                         {/* Publish to Students Button */}
                         <Button 
-                          onClick={() => {
-                            // Toggle the survey's active status
-                            const newStatus = !form.is_active;
-                            // Here you would typically make an API call to update the form status
-                            alert(`Survey ${newStatus ? 'published' : 'unpublished'} to students!`);
+                          onClick={async () => {
+                            try {
+                              const newStatus = !form.is_active;
+                              
+                              // Make API call to update the form status
+                              const response = await fetch('/api/forms/toggle-status', {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({
+                                  formId: form.id,
+                                  companyId: clientId,
+                                  isActive: newStatus
+                                })
+                              });
+                              
+                              if (response.ok) {
+                                // Update the form in the local state
+                                setForms(forms.map(f => 
+                                  f.id === form.id 
+                                    ? { ...f, is_active: newStatus }
+                                    : f
+                                ));
+                                alert(`Survey ${newStatus ? 'published' : 'unpublished'} to students!`);
+                              } else {
+                                alert('Failed to update survey status. Please try again.');
+                              }
+                            } catch (error) {
+                              console.error('Error updating form status:', error);
+                              alert('Failed to update survey status. Please try again.');
+                            }
                           }}
-                          className={`w-full gap-2 font-medium py-3 px-6 rounded-lg transition-all duration-200 ${
-                            form.is_active 
-                              ? 'bg-[#10B981] hover:bg-[#0E9F71] text-white hover:shadow-lg hover:shadow-[#10B981]/25' 
-                              : 'bg-[#2A2F36] hover:bg-[#3A4047] text-[#9AA4B2] hover:text-white border border-[#3A4047]'
-                          }`}
+                          className="w-full gap-2 bg-[#10B981] hover:bg-[#0E9F71] text-white font-medium py-3 px-6 rounded-lg transition-all duration-200 hover:shadow-lg hover:shadow-[#10B981]/25"
                         >
                           <FileText className="h-5 w-5" />
-                          {form.is_active ? 'Published to Students' : 'Publish to Students'}
+                          {form.is_active ? 'Unpublish from Students' : 'Publish to Students'}
                         </Button>
                         
                         {/* Additional Admin Actions */}
@@ -427,9 +448,8 @@ function FormsContent() {
                               navigator.clipboard.writeText(publicUrl);
                               alert('Public form link copied to clipboard!');
                             }}
-                            variant="outline"
                             size="sm"
-                            className="flex-1 gap-2 bg-transparent hover:bg-[#0B2C24] text-[#9AA4B2] hover:text-white border border-[#3A4047] hover:border-[#10B981]/30"
+                            className="flex-1 gap-2 bg-[#10B981] hover:bg-[#0E9F71] text-white"
                           >
                             <Share2 className="h-4 w-4" />
                             Share
@@ -439,9 +459,8 @@ function FormsContent() {
                               // Navigate to analytics for this form
                               window.open(`/analytics?formId=${form.id}&companyId=${clientId}`, '_blank');
                             }}
-                            variant="outline"
                             size="sm"
-                            className="flex-1 gap-2 bg-transparent hover:bg-[#0B2C24] text-[#9AA4B2] hover:text-white border border-[#3A4047] hover:border-[#10B981]/30"
+                            className="flex-1 gap-2 bg-[#10B981] hover:bg-[#0E9F71] text-white"
                           >
                             <BarChart3 className="h-4 w-4" />
                             Analytics
