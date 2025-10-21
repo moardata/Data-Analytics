@@ -655,7 +655,6 @@ function FormsContent() {
                 }}
                 title=""
                 description=""
-                disabled={true}
               />
             </div>
           </div>
