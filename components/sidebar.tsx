@@ -51,17 +51,15 @@ export function Sidebar() {
     <aside 
       className="fixed left-0 top-0 h-screen w-16 border-r border-[#2A2F36] bg-[#12151A] flex flex-col z-50"
     >
-        {/* Logo - Always collapsed */}
+        {/* Empty space for alignment */}
         <div className="p-6 border-b border-[#2A2F36]">
           <div className="flex items-center justify-center">
-            <div className="w-8 h-8 bg-[#1E2228] rounded-lg flex items-center justify-center group cursor-pointer" title="CreatorIQ">
-              <span className="text-[#9AA4B2] font-bold text-sm">C</span>
-            </div>
+            <div className="w-8 h-8"></div>
           </div>
         </div>
 
         {/* Navigation Items */}
-        <nav className="flex-1 p-4 space-y-1">
+        <nav className="flex-1 p-4 space-y-2">
           {navItems.map((item) => {
             const isActive = pathname === item.href || pathname?.startsWith(item.href)
             const Icon = item.icon
@@ -71,14 +69,14 @@ export function Sidebar() {
                 key={item.href}
                 href={`${item.href}${queryString}`}
                 className={cn(
-                  "flex items-center justify-center px-3 py-2 rounded-lg text-sm font-medium transition-colors duration-150 group relative",
+                  "flex items-center justify-center w-10 h-10 rounded-lg text-sm font-medium transition-colors duration-150 group relative mx-auto",
                   isActive
                     ? "bg-[#1E2228] text-[#E5E7EB]"
                     : "text-zinc-300 hover:bg-[#0F1319] hover:text-[#E5E7EB]"
                 )}
                 title={item.label}
               >
-                <Icon className="h-4 w-4 flex-shrink-0" />
+                <Icon className="h-5 w-5 flex-shrink-0" />
                 {/* Tooltip for collapsed state */}
                 <div className="absolute left-full ml-2 px-2 py-1 bg-[#1E2228] text-white text-sm rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-50">
                   {item.label}
@@ -89,7 +87,7 @@ export function Sidebar() {
         </nav>
 
         {/* Bottom Items */}
-        <div className="p-4 border-t border-[#2A2F36] space-y-1">
+        <div className="p-4 border-t border-[#2A2F36] space-y-2">
           {bottomItems.map((item) => {
             const isActive = pathname === item.href
             const Icon = item.icon
@@ -99,14 +97,14 @@ export function Sidebar() {
                 key={item.href}
                 href={`${item.href}${queryString}`}
                 className={cn(
-                  "flex items-center justify-center px-3 py-2 rounded-lg text-sm font-medium transition-colors duration-150 group relative",
+                  "flex items-center justify-center w-10 h-10 rounded-lg text-sm font-medium transition-colors duration-150 group relative mx-auto",
                   isActive
                     ? "bg-[#1E2228] text-[#E5E7EB]"
                     : "text-zinc-300 hover:bg-[#0F1319] hover:text-[#E5E7EB]"
                 )}
                 title={item.label}
               >
-                <Icon className="h-4 w-4 flex-shrink-0" />
+                <Icon className="h-5 w-5 flex-shrink-0" />
                 {/* Tooltip for collapsed state */}
                 <div className="absolute left-full ml-2 px-2 py-1 bg-[#1E2228] text-white text-sm rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-50">
                   {item.label}
