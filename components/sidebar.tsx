@@ -14,16 +14,16 @@ import {
   Settings,
   TrendingUp,
   Users,
-  Crown,
   Zap
 } from 'lucide-react'
+import { BrainMicrochipIcon } from '@/components/icons/BrainMicrochipIcon'
 import { cn } from '@/lib/utils/cn'
 import { useSidebar } from '@/contexts/sidebar-context'
 
 const navItems = [
   { href: '/analytics', label: 'Dashboard', icon: LayoutDashboard },
   { href: '/forms', label: 'Forms', icon: FileText },
-  { href: '/insights', label: 'AI Insights', icon: Crown },
+  { href: '/insights', label: 'AI Insights', icon: BrainMicrochipIcon },
   { href: '/students', label: 'Students', icon: Users },
   { href: '/revenue', label: 'Revenue', icon: TrendingUp },
 ]
