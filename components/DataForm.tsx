@@ -300,7 +300,7 @@ export function DataForm({ formId, fields, onSubmit, title, description }: DataF
               : 'bg-[#0B2C24] hover:bg-[#0E3A2F] text-white border border-[#17493A] hover:border-[#10B981] hover:shadow-[#10B981]/20'
           }`}
         >
-          {submitting ? '⏳ Submitting...' : '✅ Submit'}
+          {submitting ? 'Submitting...' : 'Submit'}
         </button>
       </form>
     </div>
