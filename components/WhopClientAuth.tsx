@@ -68,6 +68,10 @@ export function WhopClientAuth({ children }: { children: React.ReactNode }) {
         const userInfo = detectUserType(searchParams, undefined, window.location.href);
         
         console.log('🔍 [WhopClientAuth] User detection result:', userInfo);
+        console.log('🔍 [WhopClientAuth] Current URL:', window.location.href);
+        console.log('🔍 [WhopClientAuth] URL includes /joined/:', window.location.href.includes('/joined/'));
+        console.log('🔍 [WhopClientAuth] URL includes /app/:', window.location.href.includes('/app/'));
+        console.log('🔍 [WhopClientAuth] ViewType from SDK:', urlData?.viewType);
         
         // Check if this is a student access
         if (userInfo.isStudent) {

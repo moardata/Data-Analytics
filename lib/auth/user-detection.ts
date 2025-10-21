@@ -48,11 +48,13 @@ export function detectUserType(
   if (url) {
     // Pattern: /joined/company/app/ = student access
     if (url.includes('/joined/') && url.includes('/app/')) {
+      console.log('🎓 [UserDetection] Student detected via URL pattern:', url);
       isStudent = true;
       isOperator = false;
     }
     // Pattern: /dashboard/company = operator access
     else if (url.includes('/dashboard/') || url.includes('/analytics')) {
+      console.log('👑 [UserDetection] Operator detected via URL pattern:', url);
       isStudent = false;
       isOperator = true;
     }
@@ -60,10 +62,13 @@ export function detectUserType(
   
   // Check viewType parameter
   if (viewType) {
+    console.log('🔍 [UserDetection] ViewType detected:', viewType);
     if (viewType === 'app') {
+      console.log('🎓 [UserDetection] Student detected via viewType:', viewType);
       isStudent = true;
       isOperator = false;
     } else if (viewType === 'admin' || viewType === 'analytics') {
+      console.log('👑 [UserDetection] Operator detected via viewType:', viewType);
       isStudent = false;
       isOperator = true;
     }
