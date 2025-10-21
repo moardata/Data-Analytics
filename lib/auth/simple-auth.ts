@@ -104,13 +104,9 @@ export async function simpleAuth(request: Request): Promise<SimpleAuthResult> {
         console.log('🧪 [SimpleAuth] TESTING MODE - No Whop headers detected (development only)');
         userId = `test_${companyId.substring(4, 12)}`; // Consistent test user ID
       } else {
-        // TEMPORARY: Allow access for debugging - we need to see what's happening
-        console.log('🔍 [SimpleAuth] DEBUG - Allowing access temporarily for debugging');
-        userId = `debug_${companyId.substring(4, 12)}`;
-        
-        // PRODUCTION: No Whop auth = deny access (SECURITY: No bypasses in production)
-        // console.log('🔒 [SimpleAuth] PRODUCTION - No Whop authentication found, denying access');
-        // throw new Error('Whop authentication required. Please access this app through the Whop platform.');
+        // PRODUCTION: No Whop auth = deny access (SECURITY)
+        console.log('🔒 [SimpleAuth] PRODUCTION - No Whop authentication found, denying access');
+        throw new Error('Whop authentication required. Please access this app through the Whop platform.');
       }
     }
     
