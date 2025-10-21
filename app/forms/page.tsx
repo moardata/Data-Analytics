@@ -326,27 +326,39 @@ function FormsContent() {
             ) : (
               <div className="space-y-6">
                 <div className="bg-[#0B2C24] border border-[#17493A] rounded-lg p-4">
-                  <h3 className="text-lg font-semibold text-[#10B981] mb-2 flex items-center gap-2">
-                    <Code className="h-5 w-5" />
-                    How to Embed Surveys in Whop Courses
-                  </h3>
-                  <p className="text-[#9AA4B2] text-sm mb-3">
-                    Get embed codes for your surveys below. Paste the code into your Whop course lesson content to show surveys directly to students.
-                  </p>
-                  <div className="flex items-center gap-2 text-xs text-[#9AA4B2]">
-                    <div className="flex items-center gap-1">
-                      <CheckCircle className="h-3 w-3 text-[#10B981]" />
-                      <span>Works in any Whop course/experience</span>
+                  <div className="flex items-start justify-between mb-3">
+                    <div>
+                      <h3 className="text-lg font-semibold text-[#10B981] mb-1 flex items-center gap-2">
+                        <Code className="h-5 w-5" />
+                        How to Embed Surveys in Whop Courses
+                      </h3>
+                      <p className="text-[#9AA4B2] text-sm">
+                        Copy the embed code below and paste it into your Whop course lesson content.
+                      </p>
                     </div>
-                    <span>•</span>
-                    <div className="flex items-center gap-1">
-                      <CheckCircle className="h-3 w-3 text-[#10B981]" />
-                      <span>Automatically tracks responses</span>
+                    <Badge className="bg-[#10B981] text-white border-0">
+                      Recommended
+                    </Badge>
+                  </div>
+                  <div className="space-y-3">
+                    <div className="flex items-center gap-2 text-xs text-[#9AA4B2]">
+                      <div className="flex items-center gap-1">
+                        <CheckCircle className="h-3 w-3 text-[#10B981]" />
+                        <span>Students see survey IN your Whop course</span>
+                      </div>
+                      <span>•</span>
+                      <div className="flex items-center gap-1">
+                        <CheckCircle className="h-3 w-3 text-[#10B981]" />
+                        <span>No "sending" or scheduling needed</span>
+                      </div>
+                      <span>•</span>
+                      <div className="flex items-center gap-1">
+                        <CheckCircle className="h-3 w-3 text-[#10B981]" />
+                        <span>Always available in that lesson</span>
+                      </div>
                     </div>
-                    <span>•</span>
-                    <div className="flex items-center gap-1">
-                      <CheckCircle className="h-3 w-3 text-[#10B981]" />
-                      <span>Beautiful, responsive design</span>
+                    <div className="bg-[#14171c] border border-[#2A2F36] rounded p-3 text-xs text-[#9AA4B2]">
+                      <strong className="text-[#10B981]">💡 Pro Tip:</strong> Place the embed code at the end of a lesson to collect feedback, or at the beginning to quiz knowledge before teaching!
                     </div>
                   </div>
                 </div>
@@ -376,6 +388,42 @@ function FormsContent() {
 
         {activeTab === 'schedule' && (
           <div className="space-y-6">
+            {/* Deprecation Notice */}
+            <div className="bg-yellow-500/10 border border-yellow-500/30 rounded-lg p-4">
+              <div className="flex items-start gap-3">
+                <div className="w-10 h-10 rounded-full bg-yellow-500/20 flex items-center justify-center flex-shrink-0">
+                  <span className="text-xl">⚠️</span>
+                </div>
+                <div>
+                  <h3 className="text-lg font-semibold text-yellow-500 mb-1">
+                    Use "Embed Code" Tab Instead
+                  </h3>
+                  <p className="text-[#9AA4B2] text-sm mb-3">
+                    This scheduling system was designed for auto-showing surveys in a separate app. Since your surveys should appear <strong className="text-[#E1E4EA]">inside your Whop courses</strong>, use the <strong className="text-[#10B981]">"Embed Code"</strong> tab instead.
+                  </p>
+                  <div className="flex gap-3">
+                    <Button
+                      onClick={() => setActiveTab('embed')}
+                      className="bg-[#10B981] hover:bg-[#0E9F71] text-white"
+                      size="sm"
+                    >
+                      <Code className="h-4 w-4 mr-2" />
+                      Go to Embed Code
+                    </Button>
+                    <Button
+                      onClick={() => window.open('/WHOP_COURSE_INTEGRATION.md', '_blank')}
+                      variant="outline"
+                      className="bg-[#0B2C24] hover:bg-[#0E3A2F] text-white border border-[#17493A]"
+                      size="sm"
+                    >
+                      <FileText className="h-4 w-4 mr-2" />
+                      Read Guide
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
             {forms.length === 0 ? (
               <Card className="border border-[#2A2F36] bg-[#171A1F] shadow-lg">
                 <CardContent className="py-16 text-center">
