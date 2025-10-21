@@ -30,11 +30,7 @@ export async function simpleAuth(request: Request): Promise<SimpleAuthResult> {
   const startTime = Date.now();
   console.log('🔐 [SimpleAuth] Starting authentication...');
   
-  // Known admin company IDs that should have access even without Whop auth
-  const knownAdminCompanies = [
-    'biz_3GYHNPbGkZCEky', // Your company
-    'biz_Jkhjc11f6HHRxh', // Test company
-  ];
+        // SECURITY: No hardcoded admin company bypasses in production
   
   try {
     // Step 1: Get company ID from URL (REQUIRED)
@@ -96,22 +92,17 @@ export async function simpleAuth(request: Request): Promise<SimpleAuthResult> {
     
     // Step 3: If no Whop auth, check if we can use test mode
     if (!userId) {
-      const isDevelopment = process.env.NODE_ENV === 'development' || 
-                           process.env.ENABLE_TEST_MODE === 'true';
+      // SECURITY: Only allow test mode in development with explicit flag
+      const isDevelopment = process.env.NODE_ENV === 'development';
+      const isTestModeEnabled = process.env.ENABLE_TEST_MODE === 'true';
       
-      if (isDevelopment) {
+      if (isDevelopment && isTestModeEnabled) {
         console.log('🧪 [SimpleAuth] TESTING MODE - No Whop headers detected (development only)');
         userId = `test_${companyId.substring(4, 12)}`; // Consistent test user ID
       } else {
-        // PRODUCTION: Check if this is a known admin company ID
-        if (knownAdminCompanies.includes(companyId)) {
-          console.log('🔓 [SimpleAuth] PRODUCTION - Known admin company, granting access');
-          userId = `admin_${companyId.substring(4, 12)}`; // Admin user ID
-        } else {
-          // PRODUCTION: No Whop auth = deny access
-          console.log('🔒 [SimpleAuth] PRODUCTION - No Whop authentication found, denying access');
-          throw new Error('Whop authentication required. Please access this app through the Whop platform.');
-        }
+        // PRODUCTION: No Whop auth = deny access (SECURITY: No bypasses in production)
+        console.log('🔒 [SimpleAuth] PRODUCTION - No Whop authentication found, denying access');
+        throw new Error('Whop authentication required. Please access this app through the Whop platform.');
       }
     }
     

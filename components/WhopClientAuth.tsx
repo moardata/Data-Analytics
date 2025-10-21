@@ -42,12 +42,12 @@ export function WhopClientAuth({ children }: { children: React.ReactNode }) {
         // Wait for SDK to load
         setTimeout(() => {
           if (!sdk) {
-            console.log('🧪 [WhopClientAuth] No SDK - test mode (grant access for dev)');
+            console.log('❌ [WhopClientAuth] No SDK - blocking access for security');
             setAccessState({
               loading: false,
-              isOwner: true, // Grant access in test mode
-              role: 'test',
-              userName: 'Test User',
+              isOwner: false, // Block access for security
+              role: 'none',
+              userName: 'Unknown',
             });
           }
         }, 3000);
