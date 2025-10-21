@@ -18,21 +18,46 @@ export async function GET(request: NextRequest) {
     }
 
     const headersList = await headers();
+    
+    // Log ALL headers for debugging
+    const allHeaders: Record<string, string> = {};
+    headersList.forEach((value, key) => {
+      allHeaders[key] = value;
+    });
+    console.log('🔐 [Check Owner] ALL Headers:', allHeaders);
+    
     const whopUserId = headersList.get('x-whop-user-id');
     const whopCompanyId = headersList.get('x-whop-company-id');
+    const whopAccessToken = headersList.get('x-whop-access-token');
     
-    console.log('🔐 [Check Owner] Headers:', {
+    console.log('🔐 [Check Owner] Whop Headers:', {
       userId: whopUserId,
       companyId: whopCompanyId,
+      hasAccessToken: !!whopAccessToken,
       requestedCompany: companyId,
     });
 
-    // Check if user owns this company
-    // For now, if there's a whop user ID and company ID matches, they're the owner
-    const isOwner = !!whopUserId && (whopCompanyId === companyId || 
-                                     process.env.NEXT_PUBLIC_WHOP_COMPANY_ID === companyId);
+    // CRITICAL: If no Whop headers, everyone is a student (fail-closed)
+    if (!whopUserId) {
+      console.log('⚠️ [Check Owner] NO WHOP HEADERS - User is student');
+      return NextResponse.json({ 
+        isOwner: false,
+        reason: 'No Whop user ID in headers',
+        userId: null,
+        companyId: null,
+      });
+    }
 
-    console.log('🔍 [Check Owner] Result:', { isOwner });
+    // Check if user owns this company
+    const isOwner = whopCompanyId === companyId || 
+                   process.env.NEXT_PUBLIC_WHOP_COMPANY_ID === companyId;
+
+    console.log('🔍 [Check Owner] Ownership check:', { 
+      whopCompanyId,
+      requestedCompanyId: companyId,
+      matches: whopCompanyId === companyId,
+      isOwner 
+    });
 
     return NextResponse.json({ 
       isOwner,
