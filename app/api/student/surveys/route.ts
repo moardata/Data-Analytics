@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getStudentAllowedSurveys } from '@/lib/auth/student-access';
+import { supabaseServer as supabase } from '@/lib/supabase-server';
 
 /**
  * Student Surveys API
@@ -26,43 +27,59 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    // Get surveys allowed for this student
+    // Check if Supabase is available
+    if (!supabase) {
+      return NextResponse.json(
+        { error: 'Database not available' },
+        { status: 503 }
+      );
+    }
+
+    // First, get the client record for this company
+    const { data: clientData, error: clientError } = await supabase
+      .from('clients')
+      .select('id')
+      .eq('company_id', companyId)
+      .single();
+
+    if (clientError || !clientData) {
+      return NextResponse.json(
+        { error: 'Company not found' },
+        { status: 404 }
+      );
+    }
+
+    // Get all active forms for this client
+    const { data: forms, error: formsError } = await supabase
+      .from('form_templates')
+      .select('*')
+      .eq('client_id', clientData.id)
+      .eq('is_active', true)
+      .order('created_at', { ascending: false });
+
+    if (formsError) {
+      console.error('Error fetching forms:', formsError);
+      return NextResponse.json(
+        { error: 'Failed to fetch forms' },
+        { status: 500 }
+      );
+    }
+
+    // Get surveys allowed for this student (for access control)
     const allowedSurveys = await getStudentAllowedSurveys(companyId, userId);
     
-    // For now, return mock data with the allowed surveys
-    // In production, this would fetch from your database
-    const mockSurveys = [
-      {
-        id: 'survey-1',
-        name: 'Course Feedback Survey',
-        description: 'Help us improve this course by sharing your thoughts',
-        fields: [
-          { id: 'rating', label: 'How would you rate this course?', type: 'rating', required: true },
-          { id: 'feedback', label: 'What did you think?', type: 'long_text', required: false }
-        ],
-        estimatedTime: '3',
-        deadline: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(), // 7 days from now
-        completed: false,
-        completedAt: null
-      },
-      {
-        id: 'survey-2',
-        name: 'Learning Assessment',
-        description: 'Quick quiz to test your understanding',
-        fields: [
-          { id: 'question1', label: 'What did you learn most?', type: 'radio', required: true },
-          { id: 'question2', label: 'Rate your confidence level', type: 'rating', required: true }
-        ],
-        estimatedTime: '5',
-        deadline: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString(), // 14 days from now
-        completed: true,
-        completedAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString() // 2 days ago
-      }
-    ];
-
-    // Filter to only include allowed surveys
-    const studentSurveys = mockSurveys.filter(survey => 
-      allowedSurveys.some(allowed => allowed.surveyId === survey.id)
+    // Convert forms to survey format and filter by access
+    const studentSurveys = (forms || []).map(form => ({
+      id: form.id,
+      name: form.name,
+      description: form.description || 'Complete this survey to help improve our community',
+      fields: form.fields || [],
+      estimatedTime: '5', // Default estimate
+      deadline: null, // No deadline for now
+      completed: false, // TODO: Check if student completed this survey
+      completedAt: null
+    })).filter(survey => 
+      allowedSurveys.some(allowed => allowed.surveyId === survey.id) || allowedSurveys.length === 0
     );
 
     return NextResponse.json({
