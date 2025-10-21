@@ -89,21 +89,15 @@ export function WhopClientAuth({ children }: { children: React.ReactNode }) {
             redirectUrl,
           });
           
-          // Try to use Whop SDK navigation first, fallback to window.location
+          // Perform redirect after state update
           setTimeout(() => {
             console.log('🔄 [WhopClientAuth] Redirecting to:', redirectUrl);
             try {
-              // Try using Whop SDK navigation if available
-              if (sdk && typeof sdk.navigate === 'function') {
-                sdk.navigate(redirectUrl);
-              } else {
-                // Fallback to window.location
-                window.location.href = redirectUrl;
-              }
+              window.location.href = redirectUrl;
             } catch (error) {
               console.error('❌ [WhopClientAuth] Redirect error:', error);
-              // Final fallback
-              window.location.href = redirectUrl;
+              // Try alternative redirect method
+              window.location.assign(redirectUrl);
             }
           }, 100);
           return;
