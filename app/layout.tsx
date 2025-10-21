@@ -4,6 +4,8 @@ import { Inter } from "next/font/google";
 import { Suspense } from "react";
 import { Sidebar } from "@/components/sidebar";
 import { WhopClientAuth } from "@/components/WhopClientAuth";
+import { SidebarProvider } from "@/contexts/sidebar-context";
+import { MainContent } from "@/components/main-content";
 import "./globals.css";
 
 const inter = Inter({
@@ -27,14 +29,16 @@ export default function RootLayout({
 			<body className={`${inter.variable} font-sans antialiased`}>
 				<WhopApp>
 					<WhopClientAuth>
-						<div className="flex min-h-screen bg-gradient-to-b from-[#0d0f12] to-[#14171c]">
-							<Suspense fallback={<div className="w-64" />}>
-								<Sidebar />
-							</Suspense>
-							<main className="flex-1 ml-64">
-								{children}
-							</main>
-						</div>
+						<SidebarProvider>
+							<div className="flex min-h-screen bg-gradient-to-b from-[#0d0f12] to-[#14171c]">
+								<Suspense fallback={<div className="w-64 md:w-16" />}>
+									<Sidebar />
+								</Suspense>
+								<MainContent>
+									{children}
+								</MainContent>
+							</div>
+						</SidebarProvider>
 					</WhopClientAuth>
 				</WhopApp>
 			</body>
