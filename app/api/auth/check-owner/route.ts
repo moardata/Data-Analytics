@@ -4,12 +4,8 @@ import whopClient from '@/lib/whop-client';
 /**
  * Check if current user is the owner of a company
  * 
- * ISSUE: Whop doesn't provide user context in iframe apps
- * SOLUTION: Use Whop API to check company ownership
- * 
- * For now, we'll use a simpler approach:
- * - Try to verify ownership via Whop API
- * - If that fails, grant access (fail-open temporarily)
+ * Uses the x-whop-user-token header that Whop provides
+ * Decodes the JWT to get user ID, then checks ownership
  */
 export async function GET(request: NextRequest) {
   try {
@@ -24,86 +20,95 @@ export async function GET(request: NextRequest) {
     }
 
     console.log('🔐 [Check Owner] Company ID:', companyId);
-    console.log('🔍 [Check Owner] Checking all request headers...');
     
-    // Log ALL headers to see what Whop is actually sending
-    const headersList = request.headers;
-    const allHeaders: Record<string, string> = {};
-    headersList.forEach((value, key) => {
-      allHeaders[key] = value.substring(0, 100); // First 100 chars
-    });
-    console.log('📋 [Check Owner] All headers:', JSON.stringify(allHeaders, null, 2));
-
-    // Try to get user ID from various header possibilities
-    const possibleUserHeaders = [
-      'x-whop-user-id',
-      'whop-user-id', 
-      'user-id',
-      'x-user-id',
-      'authorization',
-      'x-whop-token',
-      'whop-token'
-    ];
+    // Get the Whop user token from headers
+    const userToken = request.headers.get('x-whop-user-token');
     
-    let userId: string | undefined;
-    for (const headerName of possibleUserHeaders) {
-      const value = headersList.get(headerName);
-      if (value) {
-        console.log(`✅ [Check Owner] Found header ${headerName}:`, value.substring(0, 50));
-        userId = value;
-        break;
-      }
-    }
-
-    if (!userId) {
-      console.log('⚠️ [Check Owner] No user ID in headers - cannot determine ownership');
-      console.log('⚠️ [Check Owner] Granting access (fail-open) until Whop auth is configured');
+    if (!userToken) {
+      console.log('⚠️ [Check Owner] No x-whop-user-token header found');
       
       // TEMPORARY: Grant access when we can't determine user
       return NextResponse.json({ 
         isOwner: true,
         temporary: true,
-        reason: 'No Whop user headers found - granting access',
-        note: 'Add ENABLE_TEST_MODE=true to Vercel env OR configure Whop app OAuth scopes'
+        reason: 'No x-whop-user-token header - granting access'
       });
     }
 
-    // If we have a user ID, try to check ownership via Whop API
+    console.log('✅ [Check Owner] Found x-whop-user-token');
+
+    // Decode the JWT to get user ID (JWT structure: header.payload.signature)
     try {
-      console.log('🔍 [Check Owner] Checking ownership via Whop API...');
+      const tokenParts = userToken.split('.');
+      if (tokenParts.length !== 3) {
+        throw new Error('Invalid JWT structure');
+      }
+
+      // Decode the payload (middle part)
+      const payload = JSON.parse(Buffer.from(tokenParts[1], 'base64').toString());
+      console.log('🔍 [Check Owner] Token payload:', payload);
       
-      const company = await whopClient.companies.retrieve(companyId);
-      const companyData = company as any;
+      // Get user ID from token (could be 'sub', 'user_id', 'userId', etc.)
+      const userId = payload.sub || payload.user_id || payload.userId || payload.id;
       
-      console.log('📊 [Check Owner] Company data:', {
-        id: companyData.id,
-        owner_id: companyData.owner_id,
-        created_by: companyData.created_by,
-      });
+      if (!userId) {
+        console.log('⚠️ [Check Owner] No user ID in token payload');
+        return NextResponse.json({ 
+          isOwner: true,
+          temporary: true,
+          reason: 'No user ID in token',
+          payload
+        });
+      }
+
+      console.log('✅ [Check Owner] User ID from token:', userId);
+
+      // Now check if this user owns the company
+      try {
+        const company = await whopClient.companies.retrieve(companyId);
+        const companyData = company as any;
+        
+        console.log('📊 [Check Owner] Company data:', {
+          id: companyData.id,
+          owner_id: companyData.owner_id,
+          created_by: companyData.created_by,
+        });
+        
+        // Check if user is the owner
+        const isOwner = companyData.owner_id === userId || 
+                       companyData.created_by === userId ||
+                       companyData.creator_id === userId;
+        
+        console.log(isOwner ? '✅ [Check Owner] User IS the owner' : '❌ [Check Owner] User is NOT the owner');
+        
+        return NextResponse.json({ 
+          isOwner,
+          userId: userId.substring(0, 10) + '...',
+          companyId,
+          method: 'jwt_decode_and_api'
+        });
+        
+      } catch (apiError: any) {
+        console.error('❌ [Check Owner] Whop API error:', apiError.message || apiError);
+        
+        // If API fails, grant access (fail-open)
+        return NextResponse.json({ 
+          isOwner: true,
+          temporary: true,
+          error: 'Whop API check failed - granting access',
+          details: apiError.message
+        });
+      }
+
+    } catch (decodeError: any) {
+      console.error('❌ [Check Owner] JWT decode error:', decodeError.message);
       
-      // Check if user is the owner
-      const isOwner = companyData.owner_id === userId || 
-                     companyData.created_by === userId ||
-                     companyData.creator_id === userId;
-      
-      console.log(isOwner ? '✅ [Check Owner] User IS the owner' : '❌ [Check Owner] User is NOT the owner');
-      
-      return NextResponse.json({ 
-        isOwner,
-        userId: userId.substring(0, 10) + '...',
-        companyId,
-        method: 'whop_api'
-      });
-      
-    } catch (apiError: any) {
-      console.error('❌ [Check Owner] Whop API error:', apiError.message || apiError);
-      
-      // If API fails, grant access (fail-open)
+      // If JWT decode fails, grant access (fail-open)
       return NextResponse.json({ 
         isOwner: true,
         temporary: true,
-        error: 'Whop API check failed - granting access',
-        details: apiError.message
+        error: 'JWT decode failed - granting access',
+        details: decodeError.message
       });
     }
 
