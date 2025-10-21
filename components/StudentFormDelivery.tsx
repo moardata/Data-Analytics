@@ -50,13 +50,27 @@ export default function StudentFormDelivery({
   const fetchForm = async () => {
     try {
       setLoading(true);
+      console.log('Fetching form:', formId, 'for company:', companyId);
+      
+      // Try to fetch the real form first
       const response = await fetch(`/api/forms/public?formId=${formId}&companyId=${companyId}`);
       const data = await response.json();
 
-      if (response.ok) {
+      if (response.ok && data.form) {
+        console.log('Real form found:', data.form);
         setForm(data.form);
       } else {
-        console.error('Failed to fetch form:', data.error);
+        console.log('No real form found, trying test form...');
+        // Fallback to test form
+        const testResponse = await fetch('/api/forms/test');
+        const testData = await testResponse.json();
+        
+        if (testResponse.ok && testData.form) {
+          console.log('Using test form:', testData.form);
+          setForm(testData.form);
+        } else {
+          console.error('Failed to fetch test form:', testData.error);
+        }
       }
     } catch (error) {
       console.error('Error fetching form:', error);

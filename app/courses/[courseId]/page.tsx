@@ -248,10 +248,10 @@ function CourseContent({ courseId }: { courseId: string }) {
         </div>
 
         {/* Survey Delivery */}
-        {showSurvey && activeFormId && (
+        {showSurvey && (
           <StudentFormDelivery
-            formId={activeFormId}
-            companyId={companyId || ''}
+            formId={activeFormId || 'test-form-id'}
+            companyId={companyId || 'test-company'}
             courseId={courseId}
             autoShow={true}
             delay={1000}
@@ -263,14 +263,25 @@ function CourseContent({ courseId }: { courseId: string }) {
         )}
         
         {/* Debug Info */}
-        {process.env.NODE_ENV === 'development' && (
-          <div className="fixed bottom-4 right-4 bg-black/80 text-white p-4 rounded-lg text-xs">
-            <div>showSurvey: {showSurvey.toString()}</div>
-            <div>activeFormId: {activeFormId || 'null'}</div>
-            <div>companyId: {companyId || 'null'}</div>
-            <div>courseId: {courseId}</div>
+        <div className="fixed bottom-4 right-4 bg-black/80 text-white p-4 rounded-lg text-xs max-w-xs">
+          <div className="font-bold mb-2">🔍 Debug Panel</div>
+          <div>showSurvey: <span className={showSurvey ? 'text-green-400' : 'text-red-400'}>{showSurvey.toString()}</span></div>
+          <div>activeFormId: <span className={activeFormId ? 'text-green-400' : 'text-red-400'}>{activeFormId || 'null'}</span></div>
+          <div>companyId: <span className={companyId ? 'text-green-400' : 'text-red-400'}>{companyId || 'null'}</span></div>
+          <div>courseId: {courseId}</div>
+          <div>completedModules: [{completedModules.join(', ')}]</div>
+          <div className="mt-2">
+            <button 
+              onClick={() => {
+                console.log('Manual survey trigger');
+                setShowSurvey(true);
+              }}
+              className="bg-blue-600 hover:bg-blue-700 px-2 py-1 rounded text-xs"
+            >
+              Force Show Survey
+            </button>
           </div>
-        )}
+        </div>
       </div>
     </div>
   );
