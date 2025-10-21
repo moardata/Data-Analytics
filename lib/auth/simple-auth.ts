@@ -116,13 +116,13 @@ export async function simpleAuth(request: Request): Promise<SimpleAuthResult> {
     let isAdmin = false;
     
     if (isRealWhopAuth) {
-      // Real Whop authentication - check actual role
+      // Real Whop authentication - check actual role using CORRECT SDK method
       try {
         console.log('🔍 [SimpleAuth] Checking user role for company...');
         
-        const accessPromise = whopSdk.access.checkIfUserHasAccessToCompany({
-          userId,
-          companyId,
+        // CORRECT METHOD: whopClient.users.checkAccess()
+        const accessPromise = whopSdk.client.users.checkAccess(companyId, {
+          id: userId,
         });
         const accessTimeout = new Promise<null>((resolve) => 
           setTimeout(() => resolve(null), 2000) // 2 second timeout (increased)
@@ -131,19 +131,20 @@ export async function simpleAuth(request: Request): Promise<SimpleAuthResult> {
         const accessCheck = await Promise.race([accessPromise, accessTimeout]);
         
         if (accessCheck) {
-          const role = accessCheck.accessLevel?.toString().toLowerCase() || 'member';
+          // access_level: 'admin' | 'customer' | 'no_access'
+          const role = accessCheck.access_level || 'no_access';
           
           // Determine access level based on role
-          isOwner = role === 'owner' || role === 'creator';
-          isAdmin = isOwner || role === 'admin' || role === 'administrator';
-          accessLevel = isOwner ? 'owner' : isAdmin ? 'admin' : 'member';
+          isOwner = role === 'admin'; // Whop returns 'admin' for owners
+          isAdmin = isOwner;
+          accessLevel = isOwner ? 'owner' : role === 'customer' ? 'member' : 'test';
           
           console.log('✅ [SimpleAuth] User role determined:', { 
             role, 
             isOwner, 
             isAdmin, 
             accessLevel,
-            hasAccess: accessCheck.hasAccess 
+            hasAccess: accessCheck.has_access 
           });
         } else {
           console.log('❌ [SimpleAuth] Access check timed out - BLOCKING ACCESS (fail-closed for security)');

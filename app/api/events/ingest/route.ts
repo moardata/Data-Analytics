@@ -36,13 +36,13 @@ export async function POST(request: NextRequest) {
       );
     }
     
-    // Check if user has admin access to this company
-    const accessCheck = await whopSdk.access.checkIfUserHasAccessToCompany({
-      userId,
-      companyId,
+    // Check if user has admin access to this company (using CORRECT SDK method)
+    const accessCheck = await whopSdk.client.users.checkAccess(companyId, {
+      id: userId,
     });
     
-    if (!accessCheck.hasAccess || accessCheck.accessLevel !== 'admin') {
+    // access_level: 'admin' (owner), 'customer' (student), 'no_access'
+    if (!accessCheck.has_access || accessCheck.access_level !== 'admin') {
       return NextResponse.json(
         { error: 'Unauthorized. Admin access required.' },
         { status: 403 }

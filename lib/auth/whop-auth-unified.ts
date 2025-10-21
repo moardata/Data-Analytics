@@ -94,9 +94,9 @@ export async function authenticateWhopUser(context?: WhopRequestContext): Promis
     let accessCheck: any;
     
     try {
-      const accessPromise = whopSdk.access.checkIfUserHasAccessToCompany({
-        userId,
-        companyId,
+      // CORRECT METHOD: whopClient.users.checkAccess()
+      const accessPromise = whopSdk.client.users.checkAccess(companyId, {
+        id: userId,
       });
       const accessTimeout = new Promise<null>((resolve) => 
         setTimeout(() => resolve(null), 2000) // 2 second timeout
@@ -107,15 +107,15 @@ export async function authenticateWhopUser(context?: WhopRequestContext): Promis
       if (!accessCheck) {
         console.log('⚠️ Company access check timed out - granting access for testing');
         // Timeout - assume access for testing
-        accessCheck = { hasAccess: true, accessLevel: 'admin' };
+        accessCheck = { has_access: true, access_level: 'admin' };
       }
     } catch (accessError) {
       console.log('⚠️ Company access check failed:', accessError);
       // Error - assume access for testing
-      accessCheck = { hasAccess: true, accessLevel: 'admin' };
+      accessCheck = { has_access: true, access_level: 'admin' };
     }
 
-    if (!accessCheck.hasAccess) {
+    if (!accessCheck.has_access) {
       console.warn('❌ User does not have access to company:', { userId, companyId });
       return {
         userId,
@@ -129,9 +129,10 @@ export async function authenticateWhopUser(context?: WhopRequestContext): Promis
     }
 
     // Step 5: Determine access level
-    const accessLevel = (accessCheck.accessLevel?.toString().toLowerCase() || 'admin') as any;
-    const isOwner = accessLevel === 'owner' || accessLevel === 'creator';
-    const isAdmin = isOwner || accessLevel === 'admin' || accessLevel === 'administrator';
+    // access_level: 'admin' | 'customer' | 'no_access'
+    const accessLevel = (accessCheck.access_level || 'customer') as any;
+    const isOwner = accessLevel === 'admin'; // Whop returns 'admin' for owners
+    const isAdmin = isOwner;
 
     console.log('✅ Access verified:', { userId, companyId, accessLevel, isAdmin });
 
