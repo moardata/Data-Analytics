@@ -141,14 +141,16 @@ function PublicFormContent({ formId }: { formId: string }) {
   );
 }
 
-export default function PublicFormPage({ params }: { params: { formId: string } }) {
+export default async function PublicFormPage({ params }: { params: Promise<{ formId: string }> }) {
+  const { formId } = await params;
+  
   return (
     <Suspense fallback={
       <div className="min-h-screen bg-gradient-to-b from-[#0d0f12] to-[#14171c] flex items-center justify-center">
         <Loader2 className="h-8 w-8 animate-spin text-[#10B981]" />
       </div>
     }>
-      <PublicFormContent formId={params.formId} />
+      <PublicFormContent formId={formId} />
     </Suspense>
   );
 }
