@@ -31,9 +31,17 @@ export function WhopClientAuth({ children }: { children: React.ReactNode }) {
     isStudent: false,
     role: 'unknown',
   });
+  
+  const [hasRedirected, setHasRedirected] = useState(false);
 
   useEffect(() => {
     async function checkAccess() {
+      // Prevent multiple redirects
+      if (hasRedirected) {
+        console.log('🔄 [WhopClientAuth] Redirect already initiated, skipping...');
+        return;
+      }
+      
       console.log('🔐 [WhopClientAuth] Checking Whop iframe SDK...');
       console.log('🔐 [WhopClientAuth] SDK:', { hasSdk: !!sdk });
 
@@ -79,6 +87,9 @@ export function WhopClientAuth({ children }: { children: React.ReactNode }) {
         if (userInfo.isStudent) {
           console.log('🎓 [WhopClientAuth] Student detected - redirecting to surveys');
           const redirectUrl = getRedirectUrl(userInfo);
+          
+          // Set redirect flag to prevent multiple redirects
+          setHasRedirected(true);
           
           setAccessState({
             loading: false,
@@ -245,11 +256,11 @@ export function WhopClientAuth({ children }: { children: React.ReactNode }) {
           <div className="w-16 h-16 border-4 border-[#10B981] border-t-transparent rounded-full animate-spin mx-auto mb-6" />
           
           <h2 className="text-2xl font-bold text-[#E5E7EB] mb-3">
-            Loading Analytics Dashboard...
+            {accessState.isStudent ? 'Loading Student Surveys...' : 'Loading Analytics Dashboard...'}
           </h2>
           
           <p className="text-[#9AA4B2] text-lg mb-4">
-            Verifying your access permissions
+            {accessState.isStudent ? 'Preparing your survey access...' : 'Verifying your access permissions'}
           </p>
         </div>
       </div>
