@@ -53,7 +53,7 @@ export function Sidebar() {
     >
 
         {/* Navigation Items */}
-        <nav className="flex-1 pt-2 px-4 space-y-2">
+        <nav className="flex-1 pt-6 px-4 space-y-2">
           {navItems.map((item) => {
             const isActive = pathname === item.href || pathname?.startsWith(item.href)
             const Icon = item.icon
