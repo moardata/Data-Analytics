@@ -63,12 +63,17 @@ export function detectUserType(
   // Check viewType parameter (highest priority for student detection)
   if (viewType) {
     console.log('🔍 [UserDetection] ViewType detected:', viewType);
-    if (viewType === 'app') {
-      console.log('🎓 [UserDetection] Student detected via viewType:', viewType);
+    // Only detect as student if viewType is 'app' AND URL contains /joined/
+    if (viewType === 'app' && url && url.includes('/joined/')) {
+      console.log('🎓 [UserDetection] Student detected via viewType + URL pattern:', viewType, url);
       isStudent = true;
       isOperator = false;
     } else if (viewType === 'admin' || viewType === 'analytics') {
       console.log('👑 [UserDetection] Operator detected via viewType:', viewType);
+      isStudent = false;
+      isOperator = true;
+    } else if (viewType === 'app' && (!url || !url.includes('/joined/'))) {
+      console.log('👑 [UserDetection] Owner with viewType=app detected (not student):', viewType, url);
       isStudent = false;
       isOperator = true;
     }

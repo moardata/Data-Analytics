@@ -81,6 +81,7 @@ export function WhopClientAuth({ children }: { children: React.ReactNode }) {
         console.log('🔍 [WhopClientAuth] SDK URL includes /joined/:', sdkUrl.includes('/joined/'));
         console.log('🔍 [WhopClientAuth] SDK URL includes /app/:', sdkUrl.includes('/app/'));
         console.log('🔍 [WhopClientAuth] ViewType from SDK:', urlData?.viewType);
+        console.log('🔍 [WhopClientAuth] Final detection - isStudent:', userInfo.isStudent, 'isOperator:', userInfo.isOperator);
         
         // Check if this is a student access
         if (userInfo.isStudent) {
