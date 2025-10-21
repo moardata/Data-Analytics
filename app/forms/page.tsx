@@ -1,6 +1,6 @@
 /**
- * Forms Management Page - Dark Emerald Theme
- * Create and manage custom data collection forms
+ * Surveys Section - Comprehensive Survey Management
+ * View, customize, schedule, and export survey data with clean UI
  */
 
 'use client';
@@ -9,7 +9,7 @@ import React, { Suspense, useState, useEffect } from 'react';
 import { useSearchParams } from 'next/navigation';
 
 export const dynamic = 'force-dynamic';
-import { Plus, FileText, Eye, CheckCircle, Share2, Copy, BookOpen, Code } from 'lucide-react';
+import { Plus, FileText, Eye, CheckCircle, Share2, Copy, BookOpen, Code, Calendar, Download, Settings, BarChart3, Clock, Users } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -24,7 +24,7 @@ function FormsContent() {
   
   const [forms, setForms] = useState<any[]>([]);
   const [selectedForm, setSelectedForm] = useState<any | null>(null);
-  const [activeTab, setActiveTab] = useState<'forms' | 'builder' | 'survey'>('forms');
+  const [activeTab, setActiveTab] = useState<'surveys' | 'builder' | 'schedule' | 'analytics' | 'export'>('surveys');
 
   useEffect(() => {
     fetchForms();
@@ -114,31 +114,40 @@ function FormsContent() {
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-5xl font-black text-[#E5E7EB] mb-2">
-              Forms Management
+              Surveys Section
             </h1>
             <p className="text-xl font-bold text-[#9AA4B2]">
-              Create custom forms to collect student feedback
+              View, customize, schedule, and export survey data with seamless precision
             </p>
+          </div>
+          <div className="flex items-center gap-4">
+            <Badge className="bg-[#0B2C24] text-[#10B981] border-[#17493A] px-3 py-1">
+              <Users className="h-3 w-3 mr-1" />
+              {forms.length} Active Surveys
+            </Badge>
           </div>
         </div>
 
         {/* Tab Navigation */}
         <div className="flex gap-2 border-b border-[#2A2F36]">
           {[
-            { id: 'forms', label: 'My Forms', icon: FileText },
-            { id: 'builder', label: 'Form Builder', icon: Plus },
-            { id: 'survey', label: 'Survey Demo', icon: CheckCircle }
+            { id: 'surveys', label: 'My Surveys', icon: FileText, description: 'View pre-saved surveys' },
+            { id: 'builder', label: 'Customize', icon: Settings, description: 'Edit survey content' },
+            { id: 'schedule', label: 'Schedule', icon: Calendar, description: 'Set timing & automation' },
+            { id: 'analytics', label: 'Analytics', icon: BarChart3, description: 'View response data' },
+            { id: 'export', label: 'Export Data', icon: Download, description: 'Download collected data' }
           ].map((tab) => {
             const Icon = tab.icon;
             return (
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id as any)}
-                className={`flex items-center gap-2 px-4 py-3 text-sm font-medium border-b-2 transition-colors ${
+                className={`flex items-center gap-2 px-4 py-3 text-sm font-medium border-b-2 transition-all duration-200 ${
                   activeTab === tab.id
-                    ? 'border-[#10B981] text-[#10B981]'
-                    : 'border-transparent text-[#9AA4B2] hover:text-[#E1E4EA]'
+                    ? 'border-[#10B981] text-[#10B981] bg-[#0B2C24]/20'
+                    : 'border-transparent text-[#9AA4B2] hover:text-[#E1E4EA] hover:bg-[#2A2F36]/20'
                 }`}
+                title={tab.description}
               >
                 <Icon className="h-4 w-4" />
                 {tab.label}
@@ -148,7 +157,7 @@ function FormsContent() {
         </div>
 
         {/* Tab Content */}
-        {activeTab === 'forms' && (
+        {activeTab === 'surveys' && (
           <div>
             {forms.length === 0 ? (
               <Card className="border border-[#2A2F36] bg-[#171A1F] shadow-lg">
@@ -172,19 +181,19 @@ function FormsContent() {
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {forms.map((form) => (
-                  <Card key={form.id} className="border border-[#2A2F36] bg-[#171A1F] shadow-lg hover:shadow-xl transition-shadow">
-                    <CardHeader>
-                      <CardTitle className="text-[#E1E4EA] flex items-center gap-2">
+                  <Card key={form.id} className="border border-[#2A2F36] bg-[#171A1F] shadow-lg hover:shadow-xl hover:shadow-[#10B981]/10 transition-all duration-300 hover:border-[#10B981]/30 group">
+                    <CardHeader className="pb-3">
+                      <CardTitle className="text-[#E1E4EA] flex items-center gap-2 group-hover:text-[#10B981] transition-colors">
                         <FileText className="h-5 w-5 text-[#10B981]" />
                         {form.name}
                       </CardTitle>
-                      <CardDescription className="text-[#9AA4B2]">
+                      <CardDescription className="text-[#9AA4B2] group-hover:text-[#E1E4EA] transition-colors">
                         {form.description || 'No description'}
                       </CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-4">
-                      <div className="flex items-center gap-2 text-sm text-[#9AA4B2]">
-                        <CheckCircle className="h-4 w-4" />
+                      <div className="flex items-center gap-2 text-sm text-[#9AA4B2] group-hover:text-[#E1E4EA] transition-colors">
+                        <CheckCircle className="h-4 w-4 text-[#10B981]" />
                         {form.fields?.length || 0} fields
                       </div>
                       <div className="space-y-2">
@@ -286,9 +295,104 @@ function FormsContent() {
           </div>
         )}
 
-        {activeTab === 'survey' && (
+        {activeTab === 'schedule' && (
           <div>
-            <SurveyForm />
+            <Card className="border border-[#2A2F36] bg-[#171A1F] shadow-lg">
+              <CardHeader>
+                <CardTitle className="text-[#E1E4EA] flex items-center gap-2">
+                  <Calendar className="h-5 w-5 text-[#10B981]" />
+                  Survey Scheduling
+                </CardTitle>
+                <CardDescription className="text-[#9AA4B2]">
+                  Set up automated survey distribution and timing
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="text-center py-8">
+                  <Clock className="h-16 w-16 mx-auto mb-4 text-[#2A2F36]" />
+                  <h3 className="text-2xl font-black text-[#E1E4EA] mb-2">
+                    Scheduling Coming Soon
+                  </h3>
+                  <p className="text-lg text-[#9AA4B2] mb-6">
+                    Automated survey distribution and timing features will be available soon
+                  </p>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        )}
+
+        {activeTab === 'analytics' && (
+          <div>
+            <Card className="border border-[#2A2F36] bg-[#171A1F] shadow-lg">
+              <CardHeader>
+                <CardTitle className="text-[#E1E4EA] flex items-center gap-2">
+                  <BarChart3 className="h-5 w-5 text-[#10B981]" />
+                  Survey Analytics
+                </CardTitle>
+                <CardDescription className="text-[#9AA4B2]">
+                  View response data and insights from your surveys
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="text-center py-8">
+                  <BarChart3 className="h-16 w-16 mx-auto mb-4 text-[#2A2F36]" />
+                  <h3 className="text-2xl font-black text-[#E1E4EA] mb-2">
+                    Analytics Dashboard
+                  </h3>
+                  <p className="text-lg text-[#9AA4B2] mb-6">
+                    Detailed analytics and insights will be available soon
+                  </p>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        )}
+
+        {activeTab === 'export' && (
+          <div>
+            <Card className="border border-[#2A2F36] bg-[#171A1F] shadow-lg">
+              <CardHeader>
+                <CardTitle className="text-[#E1E4EA] flex items-center gap-2">
+                  <Download className="h-5 w-5 text-[#10B981]" />
+                  Export Survey Data
+                </CardTitle>
+                <CardDescription className="text-[#9AA4B2]">
+                  Download collected survey responses in various formats
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <Button 
+                      className="gap-2 bg-[#0B2C24] hover:bg-[#0E3A2F] text-white border border-[#17493A] h-12"
+                      onClick={() => {
+                        // TODO: Implement CSV export
+                        alert('CSV export feature coming soon!');
+                      }}
+                    >
+                      <Download className="h-4 w-4" />
+                      Export as CSV
+                    </Button>
+                    <Button 
+                      className="gap-2 bg-[#0B2C24] hover:bg-[#0E3A2F] text-white border border-[#17493A] h-12"
+                      onClick={() => {
+                        // TODO: Implement PDF export
+                        alert('PDF export feature coming soon!');
+                      }}
+                    >
+                      <Download className="h-4 w-4" />
+                      Export as PDF
+                    </Button>
+                  </div>
+                  <div className="text-center py-4">
+                    <p className="text-[#9AA4B2]">
+                      Export all collected survey data over time into organized files
+                    </p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
           </div>
         )}
       </div>
