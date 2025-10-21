@@ -11,11 +11,11 @@ import { useEffect } from 'react'
 import { 
   LayoutDashboard, 
   FileText, 
-  Sparkles, 
   Settings,
   TrendingUp,
   Users,
-  Crown
+  Crown,
+  Zap
 } from 'lucide-react'
 import { cn } from '@/lib/utils/cn'
 import { useSidebar } from '@/contexts/sidebar-context'
@@ -23,13 +23,13 @@ import { useSidebar } from '@/contexts/sidebar-context'
 const navItems = [
   { href: '/analytics', label: 'Dashboard', icon: LayoutDashboard },
   { href: '/forms', label: 'Forms', icon: FileText },
-  { href: '/insights', label: 'AI Insights', icon: Sparkles },
+  { href: '/insights', label: 'AI Insights', icon: Crown },
   { href: '/students', label: 'Students', icon: Users },
   { href: '/revenue', label: 'Revenue', icon: TrendingUp },
 ]
 
 const bottomItems = [
-  { href: '/upgrade', label: 'Upgrade', icon: Crown },
+  { href: '/upgrade', label: 'Upgrade', icon: Zap },
   { href: '/settings', label: 'Settings', icon: Settings },
 ]
 
