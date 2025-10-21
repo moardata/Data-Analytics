@@ -51,15 +51,9 @@ export function Sidebar() {
     <aside 
       className="fixed left-0 top-0 h-screen w-16 border-r border-[#2A2F36] bg-[#12151A] flex flex-col z-50"
     >
-        {/* Empty space for alignment */}
-        <div className="p-6 border-b border-[#2A2F36]">
-          <div className="flex items-center justify-center">
-            <div className="w-8 h-8"></div>
-          </div>
-        </div>
 
         {/* Navigation Items */}
-        <nav className="flex-1 p-4 space-y-2">
+        <nav className="flex-1 pt-2 px-4 space-y-2">
           {navItems.map((item) => {
             const isActive = pathname === item.href || pathname?.startsWith(item.href)
             const Icon = item.icon
@@ -87,7 +81,7 @@ export function Sidebar() {
         </nav>
 
         {/* Bottom Items */}
-        <div className="p-4 border-t border-[#2A2F36] space-y-2">
+        <div className="pb-4 px-4 border-t border-[#2A2F36] space-y-2">
           {bottomItems.map((item) => {
             const isActive = pathname === item.href
             const Icon = item.icon
