@@ -50,12 +50,19 @@ export async function GET(request: NextRequest) {
     }
 
     // Get all active forms for this client
+    console.log('🔍 [Student Surveys API] Fetching forms for client:', clientData.id);
     const { data: forms, error: formsError } = await supabase
       .from('form_templates')
       .select('*')
       .eq('client_id', clientData.id)
       .eq('is_active', true)
       .order('created_at', { ascending: false });
+
+    console.log('📊 [Student Surveys API] Forms query result:', {
+      found: forms?.length || 0,
+      forms: forms?.map(f => ({ id: f.id, name: f.name, is_active: f.is_active })),
+      error: formsError?.message
+    });
 
     if (formsError) {
       console.error('Error fetching forms:', formsError);

@@ -41,6 +41,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Update the form's active status
+    console.log('🔄 [Toggle Status API] Updating form:', { formId, clientId: clientData.id, isActive });
     const { data: updatedForm, error: updateError } = await supabase
       .from('form_templates')
       .update({ 
@@ -52,7 +53,14 @@ export async function POST(request: NextRequest) {
       .select()
       .single();
 
+    console.log('📊 [Toggle Status API] Update result:', {
+      success: !!updatedForm,
+      form: updatedForm ? { id: updatedForm.id, name: updatedForm.name, is_active: updatedForm.is_active } : null,
+      error: updateError?.message
+    });
+
     if (updateError || !updatedForm) {
+      console.error('❌ [Toggle Status API] Update failed:', updateError);
       return NextResponse.json(
         { error: 'Failed to update form status' },
         { status: 500 }
