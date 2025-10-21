@@ -1,9 +1,11 @@
 "use client";
 
 import * as React from "react";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils/cn";
+import { Eye, Save, FileText, Copy, Download, Settings, Star, Plus } from "lucide-react";
+import { DataForm } from "./DataForm";
 
 // -----------------------------
 // Types
@@ -37,12 +39,64 @@ export type FormDraft = {
   fields: FormField[];
 };
 
+export type SurveyPreset = {
+  id: string;
+  name: string;
+  description: string;
+  category: string;
+  fields: FormField[];
+  isTemplate?: boolean;
+};
+
 // -----------------------------
 // Helpers
 // -----------------------------
 const newId = () => Math.random().toString(36).slice(2, 9);
 
 const DEFAULT_RATING_MAX = 5;
+
+// Survey Presets and Templates
+const SURVEY_PRESETS: SurveyPreset[] = [
+  {
+    id: "customer-satisfaction",
+    name: "Customer Satisfaction Survey",
+    description: "Measure customer satisfaction and experience",
+    category: "Customer Feedback",
+    isTemplate: true,
+    fields: [
+      { id: "rating", label: "How satisfied are you with our service?", type: "rating", required: true, max: 5 },
+      { id: "recommend", label: "Would you recommend us to others?", type: "radio", required: true, options: ["Yes", "No", "Maybe"] },
+      { id: "improvements", label: "What can we improve?", type: "long_text", placeholder: "Please share your suggestions..." }
+    ]
+  },
+  {
+    id: "course-feedback",
+    name: "Course Feedback Form",
+    description: "Collect feedback from students about course content",
+    category: "Education",
+    isTemplate: true,
+    fields: [
+      { id: "course-rating", label: "Rate this course", type: "rating", required: true, max: 5 },
+      { id: "instructor", label: "How was the instructor?", type: "radio", required: true, options: ["Excellent", "Good", "Average", "Poor"] },
+      { id: "content", label: "Was the content helpful?", type: "radio", required: true, options: ["Very helpful", "Somewhat helpful", "Not helpful"] },
+      { id: "suggestions", label: "Any suggestions for improvement?", type: "long_text", placeholder: "Your feedback helps us improve..." }
+    ]
+  },
+  {
+    id: "event-feedback",
+    name: "Event Feedback Survey",
+    description: "Gather feedback after events and workshops",
+    category: "Events",
+    isTemplate: true,
+    fields: [
+      { id: "overall", label: "Overall event rating", type: "rating", required: true, max: 5 },
+      { id: "organization", label: "How well was the event organized?", type: "radio", required: true, options: ["Excellent", "Good", "Average", "Poor"] },
+      { id: "speakers", label: "Rate the speakers", type: "rating", required: true, max: 5 },
+      { id: "venue", label: "How was the venue?", type: "radio", required: true, options: ["Excellent", "Good", "Average", "Poor"] },
+      { id: "feedback", label: "Additional comments", type: "long_text", placeholder: "Share your thoughts about the event..." }
+    ]
+  }
+];
 
 const TYPE_OPTIONS: { value: FieldType; label: string }[] = [
   { value: "short_text", label: "Short text" },
@@ -74,6 +128,11 @@ export default function FormBuilderEnhanced() {
   const [options, setOptions] = React.useState<string[]>([]);
   const [newOption, setNewOption] = React.useState("");
   const [ratingMax, setRatingMax] = React.useState<number>(DEFAULT_RATING_MAX);
+
+  // Preview and preset state
+  const [showPreview, setShowPreview] = React.useState(false);
+  const [showPresets, setShowPresets] = React.useState(false);
+  const [savedPresets, setSavedPresets] = React.useState<SurveyPreset[]>([]);
 
   // Derived UI flags
   const needsOptions = type === "radio" || type === "checkbox" || type === "select" || type === "multiselect";
@@ -146,6 +205,36 @@ export default function FormBuilderEnhanced() {
     });
   }
 
+  // Preset management functions
+  function loadPreset(preset: SurveyPreset) {
+    setDraft({
+      name: preset.name,
+      description: preset.description,
+      fields: preset.fields.map(field => ({ ...field, id: newId() }))
+    });
+    setShowPresets(false);
+  }
+
+  function saveAsPreset() {
+    if (!draft.name.trim() || draft.fields.length === 0) return;
+    
+    const preset: SurveyPreset = {
+      id: newId(),
+      name: draft.name,
+      description: draft.description || "",
+      category: "Custom",
+      fields: draft.fields,
+      isTemplate: false
+    };
+    
+    setSavedPresets(prev => [...prev, preset]);
+    alert('Survey saved as preset!');
+  }
+
+  function loadTemplate(template: SurveyPreset) {
+    loadPreset(template);
+  }
+
   // Save handler with Supabase integration
   async function handleSave() {
     try {
@@ -195,9 +284,38 @@ export default function FormBuilderEnhanced() {
 
         <CardContent className="relative p-6 sm:p-8 space-y-8">
           {/* Header */}
-          <div>
-            <h1 className="text-xl font-semibold tracking-tight text-white">Form Builder</h1>
-            <p className="mt-1 text-sm text-zinc-400">Create custom forms to collect student feedback</p>
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-xl font-semibold tracking-tight text-white">Survey Customization</h1>
+              <p className="mt-1 text-sm text-zinc-400">Create, customize, and preview surveys with presets</p>
+            </div>
+            <div className="flex gap-2">
+              <Button
+                onClick={() => setShowPresets(!showPresets)}
+                className="gap-2 bg-[#0B2C24] hover:bg-[#0E3A2F] text-white border border-[#17493A]"
+                size="sm"
+              >
+                <Star className="h-4 w-4" />
+                Templates
+              </Button>
+              <Button
+                onClick={() => setShowPreview(!showPreview)}
+                className="gap-2 bg-[#0B2C24] hover:bg-[#0E3A2F] text-white border border-[#17493A]"
+                size="sm"
+              >
+                <Eye className="h-4 w-4" />
+                Preview
+              </Button>
+              <Button
+                onClick={saveAsPreset}
+                disabled={!draft.name.trim() || draft.fields.length === 0}
+                className="gap-2 bg-[#0B2C24] hover:bg-[#0E3A2F] text-white border border-[#17493A] disabled:opacity-50"
+                size="sm"
+              >
+                <Save className="h-4 w-4" />
+                Save Preset
+              </Button>
+            </div>
           </div>
 
           {/* Form meta */}
@@ -327,6 +445,126 @@ export default function FormBuilderEnhanced() {
               </ul>
             )}
           </section>
+
+          {/* Preset Templates */}
+          {showPresets && (
+            <section className="space-y-4">
+              <div className="flex items-center justify-between">
+                <h3 className="text-lg font-semibold text-white">Survey Templates</h3>
+                <Button
+                  onClick={() => setShowPresets(false)}
+                  className="text-zinc-400 hover:text-white"
+                  variant="ghost"
+                  size="sm"
+                >
+                  Close
+                </Button>
+              </div>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {SURVEY_PRESETS.map((preset) => (
+                  <Card key={preset.id} className="border border-[#2A2F36] bg-[#171A1F] hover:border-[#10B981]/30 transition-colors">
+                    <CardHeader className="pb-3">
+                      <CardTitle className="text-[#E1E4EA] text-sm flex items-center gap-2">
+                        <Star className="h-4 w-4 text-[#10B981]" />
+                        {preset.name}
+                      </CardTitle>
+                      <p className="text-xs text-[#9AA4B2]">{preset.description}</p>
+                      <div className="flex items-center gap-2 text-xs text-[#9AA4B2]">
+                        <FileText className="h-3 w-3" />
+                        {preset.fields.length} questions
+                      </div>
+                    </CardHeader>
+                    <CardContent className="pt-0">
+                      <Button
+                        onClick={() => loadTemplate(preset)}
+                        className="w-full gap-2 bg-[#0B2C24] hover:bg-[#0E3A2F] text-white border border-[#17493A]"
+                        size="sm"
+                      >
+                        <Plus className="h-4 w-4" />
+                        Use Template
+                      </Button>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+
+              {/* Saved Presets */}
+              {savedPresets.length > 0 && (
+                <div className="space-y-4">
+                  <h4 className="text-md font-semibold text-white">Your Saved Presets</h4>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {savedPresets.map((preset) => (
+                      <Card key={preset.id} className="border border-[#2A2F36] bg-[#171A1F] hover:border-[#10B981]/30 transition-colors">
+                        <CardHeader className="pb-3">
+                          <CardTitle className="text-[#E1E4EA] text-sm flex items-center gap-2">
+                            <Save className="h-4 w-4 text-[#10B981]" />
+                            {preset.name}
+                          </CardTitle>
+                          <p className="text-xs text-[#9AA4B2]">{preset.description}</p>
+                          <div className="flex items-center gap-2 text-xs text-[#9AA4B2]">
+                            <FileText className="h-3 w-3" />
+                            {preset.fields.length} questions
+                          </div>
+                        </CardHeader>
+                        <CardContent className="pt-0">
+                          <Button
+                            onClick={() => loadPreset(preset)}
+                            className="w-full gap-2 bg-[#0B2C24] hover:bg-[#0E3A2F] text-white border border-[#17493A]"
+                            size="sm"
+                          >
+                            <Copy className="h-4 w-4" />
+                            Load Preset
+                          </Button>
+                        </CardContent>
+                      </Card>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </section>
+          )}
+
+          {/* Live Preview */}
+          {showPreview && (
+            <section className="space-y-4">
+              <div className="flex items-center justify-between">
+                <h3 className="text-lg font-semibold text-white">Live Preview</h3>
+                <Button
+                  onClick={() => setShowPreview(false)}
+                  className="text-zinc-400 hover:text-white"
+                  variant="ghost"
+                  size="sm"
+                >
+                  Close
+                </Button>
+              </div>
+              
+              <Card className="border border-[#2A2F36] bg-[#171A1F]">
+                <CardContent className="p-6">
+                  {draft.fields.length > 0 ? (
+                    <DataForm
+                      formId="preview"
+                      fields={draft.fields}
+                      onSubmit={() => alert('Preview mode - form not submitted')}
+                      title={draft.name || "Preview Survey"}
+                      description={draft.description}
+                    />
+                  ) : (
+                    <div className="text-center py-8">
+                      <FileText className="h-16 w-16 mx-auto mb-4 text-[#2A2F36]" />
+                      <h3 className="text-lg font-semibold text-[#E1E4EA] mb-2">
+                        No fields yet
+                      </h3>
+                      <p className="text-[#9AA4B2]">
+                        Add some fields to see the preview
+                      </p>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            </section>
+          )}
 
           {/* Add field composer */}
           <section className="space-y-4">
