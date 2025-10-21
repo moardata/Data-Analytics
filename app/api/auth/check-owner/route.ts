@@ -113,18 +113,6 @@ export async function GET(request: NextRequest) {
           details: accessError.message || String(accessError)
         });
       }
-        
-      } catch (apiError: any) {
-        console.error('❌ [Check Owner] Whop API error:', apiError.message || apiError);
-        
-        // If API fails, grant access (fail-open)
-        return NextResponse.json({ 
-          isOwner: true,
-          temporary: true,
-          error: 'Whop API check failed - granting access',
-          details: apiError.message
-        });
-      }
 
     } catch (decodeError: any) {
       console.error('❌ [Check Owner] JWT decode error:', decodeError.message);
