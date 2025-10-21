@@ -68,11 +68,12 @@ export async function GET(request: NextRequest) {
         const company = await whopClient.companies.retrieve(companyId);
         const companyData = company as any;
         
-        console.log('📊 [Check Owner] Company data:', {
-          id: companyData.id,
-          owner_id: companyData.owner_id,
-          created_by: companyData.created_by,
-        });
+        // Log FULL company data to see all fields
+        console.log('📊 [Check Owner] FULL Company data:', JSON.stringify(companyData, null, 2));
+        console.log('🔍 [Check Owner] User ID to match:', userId);
+        console.log('🔍 [Check Owner] Company owner_id:', companyData.owner_id);
+        console.log('🔍 [Check Owner] Company created_by:', companyData.created_by);
+        console.log('🔍 [Check Owner] Company creator_id:', companyData.creator_id);
         
         // Check if user is the owner
         const isOwner = companyData.owner_id === userId || 
@@ -80,12 +81,21 @@ export async function GET(request: NextRequest) {
                        companyData.creator_id === userId;
         
         console.log(isOwner ? '✅ [Check Owner] User IS the owner' : '❌ [Check Owner] User is NOT the owner');
+        console.log('🔍 [Check Owner] Match results:', {
+          owner_id_match: companyData.owner_id === userId,
+          created_by_match: companyData.created_by === userId,
+          creator_id_match: companyData.creator_id === userId,
+        });
         
         return NextResponse.json({ 
           isOwner,
           userId: userId.substring(0, 10) + '...',
           companyId,
-          method: 'jwt_decode_and_api'
+          method: 'jwt_decode_and_api',
+          debug: {
+            company_owner_id: companyData.owner_id,
+            user_id: userId,
+          }
         });
         
       } catch (apiError: any) {
