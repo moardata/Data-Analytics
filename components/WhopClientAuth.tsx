@@ -9,6 +9,7 @@ interface AccessState {
   isOwner: boolean;
   isStudent: boolean;
   role: string;
+  companyId: string;
 }
 
 export function WhopClientAuth({ children }: { children: React.ReactNode }) {
@@ -17,6 +18,7 @@ export function WhopClientAuth({ children }: { children: React.ReactNode }) {
     isOwner: false,
     isStudent: false,
     role: 'unknown',
+    companyId: '',
   });
 
   useEffect(() => {
@@ -37,6 +39,7 @@ export function WhopClientAuth({ children }: { children: React.ReactNode }) {
           isOwner: false,
           isStudent: true,
           role: 'student',
+          companyId: '',
         });
         return;
       }
@@ -83,6 +86,7 @@ export function WhopClientAuth({ children }: { children: React.ReactNode }) {
             isOwner: true,
             isStudent: false,
             role: 'owner',
+            companyId: companyId,
           });
         } else {
           console.log('✅ [WhopClientAuth] User is NOT the owner (student)');
@@ -91,6 +95,7 @@ export function WhopClientAuth({ children }: { children: React.ReactNode }) {
             isOwner: false,
             isStudent: true,
             role: 'student',
+            companyId: companyId,
           });
         }
       } catch (error) {
@@ -101,6 +106,7 @@ export function WhopClientAuth({ children }: { children: React.ReactNode }) {
           isOwner: false,
           isStudent: true,
           role: 'student',
+          companyId: companyId,
         });
       }
     }
