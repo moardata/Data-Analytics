@@ -9,14 +9,13 @@ import React, { Suspense, useState, useEffect } from 'react';
 import { useSearchParams } from 'next/navigation';
 
 export const dynamic = 'force-dynamic';
-import { Plus, FileText, Eye, CheckCircle, Share2, Copy, BookOpen, Code, Calendar, Download, Settings, BarChart3, Clock, Users } from 'lucide-react';
+import { Plus, FileText, Eye, CheckCircle, Share2, Copy, BookOpen, Code, Download, Settings, BarChart3, Clock, Users } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import FormBuilderEnhanced from '@/components/FormBuilderEnhanced';
 import SurveyForm from '@/components/SurveyForm';
 import { DataForm, FormField } from '@/components/DataForm';
-import FormDeliverySettings from '@/components/FormDeliverySettings';
 import EmbedCodeGenerator from '@/components/EmbedCodeGenerator';
 import { supabase } from '@/lib/supabase';
 
@@ -26,7 +25,7 @@ function FormsContent() {
   
   const [forms, setForms] = useState<any[]>([]);
   const [selectedForm, setSelectedForm] = useState<any | null>(null);
-  const [activeTab, setActiveTab] = useState<'surveys' | 'builder' | 'embed' | 'schedule' | 'analytics' | 'export'>('surveys');
+  const [activeTab, setActiveTab] = useState<'surveys' | 'builder' | 'embed' | 'analytics' | 'export'>('surveys');
 
   useEffect(() => {
     fetchForms();
@@ -143,7 +142,6 @@ function FormsContent() {
             { id: 'surveys', label: 'My Surveys', icon: FileText, description: 'View pre-saved surveys' },
             { id: 'builder', label: 'Customize', icon: Settings, description: 'Edit survey content' },
             { id: 'embed', label: 'Embed Code', icon: Code, description: 'Get code for Whop courses' },
-            { id: 'schedule', label: 'Schedule', icon: Calendar, description: 'Set timing & automation' },
             { id: 'analytics', label: 'Analytics', icon: BarChart3, description: 'View response data' },
             { id: 'export', label: 'Export Data', icon: Download, description: 'Download collected data' }
           ].map((tab) => {
@@ -381,104 +379,6 @@ function FormsContent() {
                     />
                   </div>
                 ))}
-              </div>
-            )}
-          </div>
-        )}
-
-        {activeTab === 'schedule' && (
-          <div className="space-y-6">
-            {/* Deprecation Notice */}
-            <div className="bg-yellow-500/10 border border-yellow-500/30 rounded-lg p-4">
-              <div className="flex items-start gap-3">
-                <div className="w-10 h-10 rounded-full bg-yellow-500/20 flex items-center justify-center flex-shrink-0">
-                  <span className="text-xl">⚠️</span>
-                </div>
-                <div>
-                  <h3 className="text-lg font-semibold text-yellow-500 mb-1">
-                    Use "Embed Code" Tab Instead
-                  </h3>
-                  <p className="text-[#9AA4B2] text-sm mb-3">
-                    This scheduling system was designed for auto-showing surveys in a separate app. Since your surveys should appear <strong className="text-[#E1E4EA]">inside your Whop courses</strong>, use the <strong className="text-[#10B981]">"Embed Code"</strong> tab instead.
-                  </p>
-                  <div className="flex gap-3">
-                    <Button
-                      onClick={() => setActiveTab('embed')}
-                      className="bg-[#10B981] hover:bg-[#0E9F71] text-white"
-                      size="sm"
-                    >
-                      <Code className="h-4 w-4 mr-2" />
-                      Go to Embed Code
-                    </Button>
-                    <Button
-                      onClick={() => window.open('/WHOP_COURSE_INTEGRATION.md', '_blank')}
-                      variant="outline"
-                      className="bg-[#0B2C24] hover:bg-[#0E3A2F] text-white border border-[#17493A]"
-                      size="sm"
-                    >
-                      <FileText className="h-4 w-4 mr-2" />
-                      Read Guide
-                    </Button>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {forms.length === 0 ? (
-              <Card className="border border-[#2A2F36] bg-[#171A1F] shadow-lg">
-                <CardContent className="py-16 text-center">
-                  <Calendar className="h-16 w-16 mx-auto mb-4 text-[#2A2F36]" />
-                  <h3 className="text-2xl font-black text-[#E1E4EA] mb-2">
-                    No surveys to schedule
-                  </h3>
-                  <p className="text-lg text-[#9AA4B2] mb-6">
-                    Create a survey first to set up delivery scheduling
-                  </p>
-                  <Button 
-                    onClick={() => setActiveTab('builder')}
-                    className="gap-2 bg-[#0B2C24] hover:bg-[#0E3A2F] text-white border border-[#17493A]"
-                  >
-                    <Plus className="h-5 w-5" />
-                    Create Survey
-                  </Button>
-                </CardContent>
-              </Card>
-            ) : (
-              <div className="space-y-6">
-                <div>
-                  <h2 className="text-2xl font-bold text-[#E1E4EA] mb-2">
-                    Survey Delivery Settings
-                  </h2>
-                  <p className="text-[#9AA4B2]">
-                    Configure how and when surveys are delivered to students
-                  </p>
-                </div>
-                
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                  {forms.map((form) => (
-                    <div key={form.id} className="space-y-4">
-                      <Card className="border border-[#2A2F36] bg-[#171A1F] shadow-lg">
-                        <CardHeader className="pb-3">
-                          <CardTitle className="text-[#E1E4EA] text-sm flex items-center gap-2">
-                            <FileText className="h-4 w-4 text-[#10B981]" />
-                            {form.name}
-                          </CardTitle>
-                          <p className="text-xs text-[#9AA4B2]">{form.description}</p>
-                        </CardHeader>
-                        <CardContent>
-                          <FormDeliverySettings
-                            formId={form.id}
-                            companyId={clientId || ''}
-                            onSettingsChange={(settings) => {
-                              console.log('Delivery settings updated:', settings);
-                              // TODO: Save settings to database
-                            }}
-                          />
-                        </CardContent>
-                      </Card>
-                    </div>
-                  ))}
-                </div>
               </div>
             )}
           </div>
