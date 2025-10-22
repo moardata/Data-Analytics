@@ -49,7 +49,7 @@ export function Sidebar() {
 
   return (
     <aside 
-      className="fixed left-0 top-16 h-screen w-16 border-r border-[#2A2F36] bg-[#12151A] flex flex-col z-50"
+      className="fixed left-0 top-16 h-screen w-16 border-r border-[#1a1a1a] bg-[#0a0a0a] flex flex-col z-50"
     >
 
         {/* Navigation Items */}
@@ -64,14 +64,14 @@ export function Sidebar() {
                 className={cn(
                   "flex items-center justify-center w-10 h-10 rounded-lg text-sm font-medium transition-colors duration-150 group relative mx-auto",
                   isActive
-                    ? "bg-[#1E2228] text-[#E5E7EB]"
-                    : "text-zinc-300 hover:bg-[#0F1319] hover:text-[#E5E7EB]"
+                    ? "bg-[#1a1a1a] text-[#F8FAFC]"
+                    : "text-[#A1A1AA] hover:bg-[#0f0f0f] hover:text-[#F8FAFC]"
                 )}
                 title={item.label}
               >
                   <item.icon className="h-5 w-5 flex-shrink-0" />
                 {/* Tooltip for collapsed state */}
-                <div className="absolute left-full ml-2 px-2 py-1 bg-[#1E2228] text-white text-sm rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-50">
+                <div className="absolute left-full ml-2 px-2 py-1 bg-[#0f0f0f] text-[#F8FAFC] text-sm rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-50">
                   {item.label}
                 </div>
               </Link>
@@ -80,7 +80,7 @@ export function Sidebar() {
         </nav>
 
         {/* Bottom Items */}
-        <div className="pb-4 px-4 border-t border-[#2A2F36] space-y-2">
+        <div className="pb-4 px-4 border-t border-[#1a1a1a] space-y-2">
           {bottomItems.map((item) => {
             const isActive = pathname === item.href
             const Icon = item.icon
@@ -92,14 +92,14 @@ export function Sidebar() {
                 className={cn(
                   "flex items-center justify-center w-10 h-10 rounded-lg text-sm font-medium transition-colors duration-150 group relative mx-auto",
                   isActive
-                    ? "bg-[#1E2228] text-[#E5E7EB]"
-                    : "text-zinc-300 hover:bg-[#0F1319] hover:text-[#E5E7EB]"
+                    ? "bg-[#1a1a1a] text-[#F8FAFC]"
+                    : "text-[#A1A1AA] hover:bg-[#0f0f0f] hover:text-[#F8FAFC]"
                 )}
                 title={item.label}
               >
                 <Icon className="h-5 w-5 flex-shrink-0" />
                 {/* Tooltip for collapsed state */}
-                <div className="absolute left-full ml-2 px-2 py-1 bg-[#1E2228] text-white text-sm rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-50">
+                <div className="absolute left-full ml-2 px-2 py-1 bg-[#0f0f0f] text-[#F8FAFC] text-sm rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-50">
                   {item.label}
                 </div>
               </Link>

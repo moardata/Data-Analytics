@@ -89,9 +89,9 @@ function StatHeader({ title, value, sub, delta }: { title: string; value: string
   return (
     <div className="flex items-start justify-between">
       <div>
-        <div className="text-[13px] text-zinc-400">{title}</div>
-        <div className="mt-1 text-2xl font-semibold text-white">{value}</div>
-        {sub && <div className="text-sm text-zinc-500">{sub}</div>}
+        <div className="text-[13px] text-[#A1A1AA]">{title}</div>
+        <div className="mt-1 text-2xl font-semibold text-[#F8FAFC]">{value}</div>
+        {sub && <div className="text-sm text-[#A1A1AA]">{sub}</div>}
       </div>
       {delta && (
         <div className="rounded-full bg-emerald-900/20 px-2 py-1 text-[12px] font-medium text-emerald-300 border border-emerald-700/40">
@@ -106,8 +106,8 @@ function Panel({ children, className }: React.PropsWithChildren<{ className?: st
   return (
     <Card
       className={cn(
-        'relative rounded-2xl border border-[#2A2F36] bg-[#16191F] overflow-hidden',
-        'shadow-[0_0_0_1px_rgba(42,47,54,0.6),0_24px_60px_-20px_rgba(0,0,0,0.65),inset_0_1px_0_rgba(255,255,255,0.04)]',
+        'relative rounded-2xl border border-[#1a1a1a] bg-[#0f0f0f] overflow-hidden',
+        'shadow-[0_0_0_1px_rgba(26,26,26,0.6),0_24px_60px_-20px_rgba(0,0,0,0.65),inset_0_1px_0_rgba(255,255,255,0.04)]',
         className
       )}
     >
@@ -169,25 +169,25 @@ function DashboardToolbar({ onExportPdf }: { onExportPdf?: () => void }) {
 
   return (
     <div className="flex flex-wrap items-center gap-2">
-      <div className="text-lg font-semibold text-white">Dashboard</div>
+      <div className="text-lg font-semibold text-[#F8FAFC]">Dashboard</div>
       <div className="ml-auto flex items-center gap-2">
         <Link href={`/analytics${queryString}`}>
-          <Button className="border border-[#2A2F36] bg-[#0B2C24]/40 hover:bg-[#0B2C24]/60">
+          <Button className="border border-[#1a1a1a] bg-[#0a0a0a] hover:bg-[#1a1a1a] text-[#F8FAFC]">
             <Calendar className="mr-2 h-4 w-4" /> Analytics
           </Button>
         </Link>
         <Link href={`/insights${queryString}`}>
-          <Button className="border border-[#2A2F36] bg-[#0B2C24]/40 hover:bg-[#0B2C24]/60">AI Insights</Button>
+          <Button className="border border-[#1a1a1a] bg-[#0a0a0a] hover:bg-[#1a1a1a] text-[#F8FAFC]">AI Insights</Button>
         </Link>
         <Link href={`/forms${queryString}`}>
-          <Button className="border border-[#2A2F36] bg-[#0B2C24]/40 hover:bg-[#0B2C24]/60">Forms</Button>
+          <Button className="border border-[#1a1a1a] bg-[#0a0a0a] hover:bg-[#1a1a1a] text-[#F8FAFC]">Forms</Button>
         </Link>
         <Link href={`/students${queryString}`}>
-          <Button className="border border-[#2A2F36] bg-[#0B2C24]/40 hover:bg-[#0B2C24]/60">Students</Button>
+          <Button className="border border-[#1a1a1a] bg-[#0a0a0a] hover:bg-[#1a1a1a] text-[#F8FAFC]">Students</Button>
         </Link>
         <Button 
           onClick={onExportPdf}
-          className="border border-emerald-700/60 bg-emerald-900/40 hover:bg-emerald-900/60"
+          className="border border-[#10B981] bg-[#10B981] hover:bg-[#0E3A2F] text-white"
         >
           <Download className="mr-2 h-4 w-4" /> Export
         </Button>

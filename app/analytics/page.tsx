@@ -211,8 +211,8 @@ function AnalyticsContent() {
   // Show loading state while getting company ID
   if (!companyId) {
     return (
-      <div className="min-h-screen bg-[#0f1115] flex items-center justify-center">
-        <div className="text-[#D1D5DB] text-center">
+      <div className="min-h-screen bg-gradient-to-b from-[#0a0a0a] to-[#0f0f0f] flex items-center justify-center">
+        <div className="text-[#F8FAFC] text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#10B981] mx-auto mb-4"></div>
           <p>Initializing Analytics...</p>
         </div>
@@ -222,8 +222,8 @@ function AnalyticsContent() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#0f1115] flex items-center justify-center">
-        <div className="text-[#D1D5DB] text-center">
+      <div className="min-h-screen bg-gradient-to-b from-[#0a0a0a] to-[#0f0f0f] flex items-center justify-center">
+        <div className="text-[#F8FAFC] text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#10B981] mx-auto mb-4"></div>
           <p>Loading dashboard...</p>
         </div>
@@ -233,11 +233,11 @@ function AnalyticsContent() {
 
   if (accessError) {
     return (
-      <div className="min-h-screen bg-[#0f1115] flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-b from-[#0a0a0a] to-[#0f0f0f] flex items-center justify-center">
         <div className="text-center max-w-md mx-auto">
           <div className="text-red-400 text-xl mb-2">Access Denied</div>
-          <div className="text-[#9AA4B2] text-sm mb-6">{accessError}</div>
-          <div className="text-[#9AA4B2] text-xs">
+          <div className="text-[#A1A1AA] text-sm mb-6">{accessError}</div>
+          <div className="text-[#A1A1AA] text-xs">
             If you believe this is an error, please contact your company administrator.
           </div>
         </div>
@@ -249,16 +249,16 @@ function AnalyticsContent() {
     const isClientNotFound = error.includes('Client not found') || error.includes('needs initialization');
     
     return (
-      <div className="min-h-screen bg-[#0f1115] flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-b from-[#0a0a0a] to-[#0f0f0f] flex items-center justify-center">
         <div className="text-center max-w-md mx-auto">
           <div className="text-red-400 text-xl mb-2">
             {isClientNotFound ? 'No Data Yet' : 'Error loading dashboard'}
           </div>
-          <div className="text-[#9AA4B2] text-sm mb-6">{error}</div>
+          <div className="text-[#A1A1AA] text-sm mb-6">{error}</div>
           
           {isClientNotFound && (
             <div className="space-y-4">
-              <p className="text-[#D1D5DB] text-sm mb-4">
+              <p className="text-[#F8FAFC] text-sm mb-4">
                 Import your existing students from Whop to get started:
               </p>
               <button
@@ -305,20 +305,20 @@ function AnalyticsContent() {
   }
 
   return (
-    <div className="min-h-screen bg-[#0f1115]">
+    <div className="min-h-screen bg-gradient-to-b from-[#0a0a0a] to-[#0f0f0f]">
       <div className="max-w-[1600px] mx-auto p-6">
         {/* User Role Badge */}
         <div className="mb-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="flex items-center gap-2 bg-[#1E2228] border border-[#2A2F36] rounded-lg px-3 py-2">
+            <div className="flex items-center gap-2 bg-[#0f0f0f] border border-[#1a1a1a] rounded-lg px-3 py-2">
               <svg className="w-4 h-4 text-[#10B981]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
               </svg>
-              <span className="text-[#D1D5DB] text-sm">
+              <span className="text-[#F8FAFC] text-sm">
                 Authenticated as: <span className="text-[#10B981] font-semibold capitalize">Owner</span>
               </span>
             </div>
-            <div className="text-[#9AA4B2] text-xs font-mono">
+            <div className="text-[#A1A1AA] text-xs font-mono">
               {companyId}
             </div>
           </div>
@@ -328,11 +328,11 @@ function AnalyticsContent() {
         
         {/* Sync Students Button - Always visible when no data */}
         {dashboardData && dashboardData.totalStudents === 0 && (
-          <div className="mb-6 p-4 bg-[#1E2228] rounded-lg border border-[#2A2F36]">
+          <div className="mb-6 p-4 bg-[#0f0f0f] rounded-lg border border-[#1a1a1a]">
             <div className="flex items-center justify-between">
               <div>
-                <h3 className="text-lg font-semibold text-white mb-2">No Students Found</h3>
-                <p className="text-[#9AA4B2] text-sm">
+                <h3 className="text-lg font-semibold text-[#F8FAFC] mb-2">No Students Found</h3>
+                <p className="text-[#A1A1AA] text-sm">
                   Import your existing students from Whop to start tracking analytics.
                 </p>
               </div>
