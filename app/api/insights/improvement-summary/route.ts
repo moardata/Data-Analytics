@@ -159,8 +159,15 @@ Format your response as JSON with the following structure:
 `;
 
   try {
-    const response = await generateWithOpenAI(prompt);
-    return JSON.parse(response);
+    // Create a text array format that generateWithOpenAI expects
+    const textData = [{
+      text: prompt,
+      source: 'improvement_analysis',
+      timestamp: new Date().toISOString()
+    }];
+    
+    const response = await generateWithOpenAI(textData);
+    return response;
   } catch (error) {
     console.error('Error generating improvement summary:', error);
     return {
