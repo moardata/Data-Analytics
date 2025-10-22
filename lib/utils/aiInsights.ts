@@ -174,52 +174,65 @@ export async function generateInsightsForClient(
 }
 
 /**
- * Generate insights using OpenAI Responses API with gpt-5-nano
+ * Generate insights using OpenAI with enhanced engagement and sentiment analysis
  */
 async function generateWithOpenAI(texts: any[]): Promise<AIAnalysisResult> {
   const textSample = texts.slice(0, 30).map(t => t.text).join('\n---\n');
 
-  const prompt = `You are analyzing ${texts.length} student feedback responses for a real estate course creator. Identify the TOP 3-4 MOST ACTIONABLE themes.
+  const prompt = `You are an expert AI analyst for online course creators. Analyze ${texts.length} student feedback responses and provide actionable insights focused on:
 
-For EACH theme, provide:
-- title: Specific, descriptive name (not generic)
+1. ENGAGEMENT METRICS: Course completion rates, drop-off points, student activity patterns
+2. SENTIMENT ANALYSIS: Overall student satisfaction, pain points, positive feedback
+3. TREND IDENTIFICATION: Emerging patterns, recurring issues, success factors
+4. PERFORMANCE OPTIMIZATION: Specific areas for improvement with clear metrics
+
+For EACH insight, provide:
+- title: Specific, descriptive name (include module/lesson if mentioned)
 - share_pct: Realistic percentage of responses mentioning this (0-100)
 - sentiment: positive, negative, or neutral
-- suggested_action: SPECIFIC, detailed action the creator should take (include examples or numbers)
+- suggested_action: SPECIFIC, detailed action with metrics and examples
 - urgency: low, medium, or high
 
-BE SPECIFIC. Use actual details from the feedback. Don't be generic.
+FOCUS ON ACTIONABLE INSIGHTS. Be specific about:
+- Which modules/lessons have issues
+- Specific technical problems (video quality, loading, mobile issues)
+- Content gaps or confusion points
+- Engagement patterns and drop-off points
+- Positive feedback to amplify
 
-Example of GOOD insight:
+Example of EXCELLENT insight:
 {
-  "title": "Video buffering on mobile (Module 5)",
-  "share_pct": 15,
+  "title": "Mobile video crashes in Module 3 (Real Estate Law)",
+  "share_pct": 23,
   "sentiment": "negative",
-  "suggested_action": "Fix video hosting for Module 5 - students report crashes on mobile. Consider switching to adaptive bitrate streaming or compressing video files.",
+  "suggested_action": "Fix mobile video player for Module 3 - 23% of students report crashes. Implement adaptive bitrate streaming and test on iOS/Android. Consider breaking 45-min video into 3 shorter segments.",
   "urgency": "high"
 }
 
-Example of BAD (generic) insight:
+Example of GOOD engagement insight:
 {
-  "title": "Content quality",
-  "share_pct": 50,
-  "sentiment": "positive",
-  "suggested_action": "Keep making good content",
-  "urgency": "low"
+  "title": "High drop-off after Module 2 quiz",
+  "share_pct": 18,
+  "sentiment": "negative", 
+  "suggested_action": "Redesign Module 2 quiz - 18% of students drop off here. Make quiz less intimidating, add hints, or break into smaller assessments. Consider pre-quiz preparation materials.",
+  "urgency": "medium"
 }
 
-Feedback:
+Student Feedback Data:
 ${textSample}
 
-Return JSON with 3-4 themes, a summary, and key takeaways:
+Return JSON with 4-5 focused insights, summary, and key takeaways:
 {
-  "themes": [{ "title": "...", "share_pct": 50, "sentiment": "positive", "suggested_action": "...", "urgency": "medium" }],
-  "summary": "2-3 sentence overview with specifics",
-  "key_takeaways": ["Specific takeaway 1", "Specific takeaway 2", "Specific takeaway 3"]
+  "themes": [
+    { "title": "...", "share_pct": 25, "sentiment": "negative", "suggested_action": "...", "urgency": "high" },
+    { "title": "...", "share_pct": 40, "sentiment": "positive", "suggested_action": "...", "urgency": "low" }
+  ],
+  "summary": "2-3 sentence overview highlighting key engagement patterns and sentiment trends",
+  "key_takeaways": ["Specific actionable takeaway 1", "Specific takeaway 2", "Specific takeaway 3"]
 }`;
 
   try {
-    // Use standard Chat Completions API with gpt-4o-mini (cheap and fast)
+    // Use Chat Completions API with enhanced parameters for better insights
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
       headers: {
@@ -227,14 +240,21 @@ Return JSON with 3-4 themes, a summary, and key takeaways:
         'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`,
       },
       body: JSON.stringify({
-        model: 'gpt-4o-mini',
+        model: 'gpt-4o-mini', // Cost-effective model for insights
         messages: [
-          { role: 'system', content: 'You are an expert at analyzing student feedback for online course creators. Be specific and actionable. Avoid generic advice. Return only valid JSON.' },
+          { 
+            role: 'system', 
+            content: 'You are an expert AI analyst specializing in online education and course optimization. You excel at identifying engagement patterns, sentiment trends, and actionable recommendations. Always provide specific, data-driven insights with clear metrics and examples. Return only valid JSON.' 
+          },
           { role: 'user', content: prompt }
         ],
-        response_format: { type: 'json_object' },
-        temperature: 0.8,
-        max_tokens: 1000
+        response_format: { type: 'json_object' }, // Ensures structured JSON output
+        temperature: 0.7, // Balanced creativity and consistency
+        max_tokens: 1500, // Increased for more detailed insights
+        top_p: 0.9, // Nucleus sampling for better quality
+        frequency_penalty: 0.1, // Reduces repetition
+        presence_penalty: 0.1, // Encourages topic diversity
+        stream: false // Ensure complete response
       }),
     });
 

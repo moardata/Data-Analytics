@@ -13,6 +13,7 @@ import { Zap, RefreshCw, TrendingUp, AlertCircle, Lightbulb, Sparkles } from 'lu
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { InsightsGrid, Insight } from '@/components/AIInsightsGrid';
+import EngagementMetrics from '@/components/EngagementMetrics';
 
 // ---------------------- THEME ----------------------
 const theme = {
@@ -110,12 +111,17 @@ function InsightsContent() {
     metricDeltaPct: ins.meta?.share_pct
   }));
 
-  // Get insight statistics
+  // Get enhanced insight statistics
   const insightStats = {
     total: insights.length,
     recommendations: insights.filter(i => i.insight_type === 'recommendation').length,
     alerts: insights.filter(i => i.insight_type === 'alert').length,
     trends: insights.filter(i => i.insight_type === 'trend').length,
+    // Enhanced metrics
+    highUrgency: insights.filter(i => i.metadata?.urgency === 'high').length,
+    positiveSentiment: insights.filter(i => i.metadata?.sentiment === 'positive').length,
+    negativeSentiment: insights.filter(i => i.metadata?.sentiment === 'negative').length,
+    aiGenerated: insights.filter(i => i.metadata?.ai_generated === true).length,
   };
 
   if (loading && insights.length === 0) {
@@ -163,8 +169,8 @@ function InsightsContent() {
           </div>
         </div>
 
-        {/* Stats Cards */}
-        <section className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        {/* Enhanced Stats Cards */}
+        <section className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
           <Card className={`${theme.panel} ${theme.border} rounded-xl overflow-hidden relative`}>
             <div className="absolute inset-0 bg-gradient-to-b from-transparent to-[#0d1015]/50 pointer-events-none" />
             <CardContent className="p-4 relative z-10">
@@ -199,12 +205,42 @@ function InsightsContent() {
             <div className="absolute inset-0 bg-gradient-to-b from-transparent to-[#0d1015]/50 pointer-events-none" />
             <CardContent className="p-4 relative z-10">
               <div className="flex items-center gap-3">
-                <div className="w-8 h-8 rounded-lg bg-yellow-500/20 flex items-center justify-center">
-                  <AlertCircle className="h-4 w-4 text-yellow-400" />
+                <div className="w-8 h-8 rounded-lg bg-red-500/20 flex items-center justify-center">
+                  <AlertCircle className="h-4 w-4 text-red-400" />
                 </div>
                 <div>
-                  <div className="text-lg font-semibold">{insightStats.alerts}</div>
-                  <div className={`${theme.subtext} text-xs`}>Alerts</div>
+                  <div className="text-lg font-semibold">{insightStats.highUrgency}</div>
+                  <div className={`${theme.subtext} text-xs`}>High Priority</div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className={`${theme.panel} ${theme.border} rounded-xl overflow-hidden relative`}>
+            <div className="absolute inset-0 bg-gradient-to-b from-transparent to-[#0d1015]/50 pointer-events-none" />
+            <CardContent className="p-4 relative z-10">
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 rounded-lg bg-green-500/20 flex items-center justify-center">
+                  <TrendingUp className="h-4 w-4 text-green-400" />
+                </div>
+                <div>
+                  <div className="text-lg font-semibold">{insightStats.positiveSentiment}</div>
+                  <div className={`${theme.subtext} text-xs`}>Positive</div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className={`${theme.panel} ${theme.border} rounded-xl overflow-hidden relative`}>
+            <div className="absolute inset-0 bg-gradient-to-b from-transparent to-[#0d1015]/50 pointer-events-none" />
+            <CardContent className="p-4 relative z-10">
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 rounded-lg bg-orange-500/20 flex items-center justify-center">
+                  <AlertCircle className="h-4 w-4 text-orange-400" />
+                </div>
+                <div>
+                  <div className="text-lg font-semibold">{insightStats.negativeSentiment}</div>
+                  <div className={`${theme.subtext} text-xs`}>Issues</div>
                 </div>
               </div>
             </CardContent>
@@ -215,15 +251,24 @@ function InsightsContent() {
             <CardContent className="p-4 relative z-10">
               <div className="flex items-center gap-3">
                 <div className="w-8 h-8 rounded-lg bg-purple-500/20 flex items-center justify-center">
-                  <TrendingUp className="h-4 w-4 text-purple-400" />
+                  <Zap className="h-4 w-4 text-purple-400" />
                 </div>
                 <div>
-                  <div className="text-lg font-semibold">{insightStats.trends}</div>
-                  <div className={`${theme.subtext} text-xs`}>Trends</div>
+                  <div className="text-lg font-semibold">{insightStats.aiGenerated}</div>
+                  <div className={`${theme.subtext} text-xs`}>AI Generated</div>
                 </div>
               </div>
             </CardContent>
           </Card>
+        </section>
+
+        {/* Engagement Metrics Section */}
+        <section>
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-lg font-medium text-[#F8FAFC]">Engagement Analytics</h2>
+            <p className="text-sm text-[#A1A1AA]">Detailed metrics and trends</p>
+          </div>
+          <EngagementMetrics companyId={clientId || ''} />
         </section>
 
         {/* Insights Grid */}
