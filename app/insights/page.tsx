@@ -36,10 +36,41 @@ const theme = {
 
 function InsightsContent() {
   const searchParams = useSearchParams();
-  const clientId = searchParams.get('clientId');
+  const [companyId, setCompanyId] = useState<string | null>(null);
+  const [clientId, setClientId] = useState<string | null>(null);
   const [insights, setInsights] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const [activeTab, setActiveTab] = useState('insights');
+
+  // Get company ID from URL (same as analytics page)
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const companyIdFromUrl = params.get('companyId') || 
+                            window.location.pathname.split('/').find(part => part.startsWith('biz_')) || 
+                            null;
+    setCompanyId(companyIdFromUrl);
+    console.log('✅ Company ID from URL:', companyIdFromUrl);
+  }, []);
+
+  // Convert company ID to client ID
+  useEffect(() => {
+    if (companyId) {
+      fetchClientId(companyId);
+    }
+  }, [companyId]);
+
+  const fetchClientId = async (companyId: string) => {
+    try {
+      const response = await fetch(`/api/analytics/metrics?companyId=${companyId}`);
+      if (response.ok) {
+        // If the API call succeeds, we know the client exists
+        // We'll get the client ID from the insights API
+        setClientId('found'); // Placeholder - the API will handle the lookup
+      }
+    } catch (error) {
+      console.error('Error fetching client ID:', error);
+    }
+  };
 
   // Transform insights for the grid
   const transformedInsights: Insight[] = insights.map(insight => ({
@@ -55,19 +86,29 @@ function InsightsContent() {
   }));
 
   const generateInsights = async () => {
-    if (!clientId) return;
+    if (!companyId) {
+      console.error('No company ID available');
+      return;
+    }
     
     setLoading(true);
     try {
       const response = await fetch('/api/insights/generate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ clientId })
+        body: JSON.stringify({
+          timeRange: 'week',
+          includeAnomalies: true
+        })
       });
 
       if (response.ok) {
         const data = await response.json();
+        console.log('Generated insights:', data);
         setInsights(data.insights || []);
+      } else {
+        const errorData = await response.json();
+        console.error('API Error:', errorData);
       }
     } catch (error) {
       console.error('Error generating insights:', error);
@@ -75,6 +116,18 @@ function InsightsContent() {
       setLoading(false);
     }
   };
+
+  // Show loading state while getting company ID
+  if (!companyId) {
+    return (
+      <div className={`min-h-screen ${theme.bg} flex items-center justify-center`}>
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#10B981] mx-auto mb-4"></div>
+          <p className="text-[#F8FAFC]">Loading AI Insights...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className={`min-h-screen ${theme.bg}`}>
@@ -95,11 +148,11 @@ function InsightsContent() {
           <div className="flex items-center gap-3">
             <Button 
               onClick={generateInsights}
-              disabled={loading}
+              disabled={loading || !companyId}
               className="bg-[#0a0a0a] hover:bg-[#1a1a1a] text-white border border-[#1a1a1a] rounded-xl px-6 py-3 gap-2 transition-all"
             >
               <Zap className="h-4 w-4" />
-              {loading ? 'Generating...' : 'Generate Insights'}
+              {!companyId ? 'Loading...' : loading ? 'Generating...' : 'Generate Insights'}
             </Button>
             <Button 
               variant="outline"
@@ -233,11 +286,11 @@ function InsightsContent() {
                     </p>
                     <Button 
                       onClick={generateInsights}
-                      disabled={loading}
+                      disabled={loading || !companyId}
                       className="bg-[#0a0a0a] hover:bg-[#1a1a1a] text-white border border-[#1a1a1a] rounded-xl px-6 py-3 gap-2 transition-all"
                     >
                       <Zap className="h-4 w-4" />
-                      Generate Your First Insights
+                      {!companyId ? 'Loading...' : loading ? 'Generating...' : 'Generate Your First Insights'}
                     </Button>
                   </CardContent>
                 </Card>
