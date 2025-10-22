@@ -27,6 +27,7 @@ interface Action {
   improvement_description: string;
   created_at: string;
   insights: {
+    id: string;
     title: string;
     category: string;
   };
