@@ -203,10 +203,10 @@ function FormsContent() {
   // Student Interface
   if (userRole === 'student') {
     return (
-      <div className="min-h-screen bg-[#0f1115] p-8">
+      <div className="min-h-screen bg-gradient-to-b from-[#0a0a0a] to-[#0f0f0f] p-8">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-8">
-            <h1 className="text-3xl font-bold text-[#E5E7EB] mb-2">
+            <h1 className="text-3xl font-bold text-[#F8FAFC] mb-2">
               Available Surveys
             </h1>
             <p className="text-[#A1A1AA]">
@@ -215,11 +215,11 @@ function FormsContent() {
           </div>
 
           {forms.length === 0 ? (
-            <div className="bg-[#171A1F] border border-[#2A2F36] rounded-2xl p-8 text-center">
+            <div className="bg-[#0f0f0f] border border-[#1a1a1a] rounded-2xl p-8 text-center">
               <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-[#0B2C24] flex items-center justify-center">
                 <FileText className="h-8 w-8 text-[#A1A1AA]" />
               </div>
-              <h3 className="text-lg font-semibold text-[#E5E7EB] mb-2">
+              <h3 className="text-lg font-semibold text-[#F8FAFC] mb-2">
                 No Surveys Available
               </h3>
               <p className="text-[#A1A1AA] text-sm">
