@@ -14,6 +14,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { InsightsGrid, Insight } from '@/components/AIInsightsGrid';
 import EngagementMetrics from '@/components/EngagementMetrics';
+import DataCollectionDashboard from '@/components/DataCollectionDashboard';
 
 // ---------------------- THEME ----------------------
 const theme = {
@@ -260,6 +261,15 @@ function InsightsContent() {
               </div>
             </CardContent>
           </Card>
+        </section>
+
+        {/* Data Collection Section */}
+        <section>
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-lg font-medium text-[#F8FAFC]">Data Collection Status</h2>
+            <p className="text-sm text-[#A1A1AA]">Multi-tenant data collection and AI processing</p>
+          </div>
+          <DataCollectionDashboard companyId={clientId || ''} />
         </section>
 
         {/* Engagement Metrics Section */}

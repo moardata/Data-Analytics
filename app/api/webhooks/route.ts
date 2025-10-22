@@ -194,8 +194,11 @@ async function processWebhookEvent(webhookData: any, webhookEventId: string | nu
 
 		console.log(`Stored ${normalized.eventType} event for user ${userId}`);
 
-		// Handle specific event types
-		await handleSpecificEventType(webhookData, entity.id, clientId);
+	// Handle specific event types
+	await handleSpecificEventType(webhookData, entity.id, clientId);
+
+	// Enhanced data collection for AI insights
+	await collectEventDataForAI(webhookData, entity.id, clientId);
 
 		// Mark as completed
 		if (webhookEventId) {
@@ -490,5 +493,82 @@ async function updateSubscriptionStatus(whopSubscriptionId: string, status: stri
 		console.error('Error updating subscription status:', error);
 	} else {
 		console.log(`Updated subscription ${whopSubscriptionId} to ${status}`);
+	}
+}
+
+/**
+ * Enhanced data collection for AI insights
+ * Collects and processes event data specifically for AI analysis
+ */
+async function collectEventDataForAI(webhookData: any, entityId: string, clientId: string) {
+	try {
+		const { action, data } = webhookData;
+		
+		// Track course completion events
+		if (action === 'membership.experienced_claimed' || action === 'membership.created') {
+			await supabase.from('events').insert({
+				client_id: clientId,
+				entity_id: entityId,
+				event_type: 'course_enrollment',
+				event_data: {
+					action: 'enrolled',
+					experience_id: data.experience_id,
+					plan_id: data.plan_id,
+					enrollment_date: new Date().toISOString()
+				}
+			});
+		}
+
+		// Track activity events for engagement analysis
+		if (action === 'membership.experienced_claimed') {
+			await supabase.from('events').insert({
+				client_id: clientId,
+				entity_id: entityId,
+				event_type: 'engagement',
+				event_data: {
+					action: 'course_access',
+					experience_id: data.experience_id,
+					engagement_type: 'initial_access',
+					timestamp: new Date().toISOString()
+				}
+			});
+		}
+
+		// Track payment events for revenue analysis
+		if (action === 'payment.succeeded') {
+			await supabase.from('events').insert({
+				client_id: clientId,
+				entity_id: entityId,
+				event_type: 'revenue',
+				event_data: {
+					action: 'payment_received',
+					amount: data.final_amount,
+					currency: data.currency,
+					payment_method: data.payment_method,
+					revenue_date: new Date().toISOString()
+				}
+			});
+		}
+
+		// Track subscription changes for retention analysis
+		if (action.startsWith('membership.')) {
+			await supabase.from('events').insert({
+				client_id: clientId,
+				entity_id: entityId,
+				event_type: 'subscription_change',
+				event_data: {
+					action: action,
+					plan_id: data.plan_id,
+					status: data.status,
+					change_date: new Date().toISOString()
+				}
+			});
+		}
+
+		console.log(`📊 [AI Data Collection] Enhanced data collected for ${action}`);
+		
+	} catch (error) {
+		console.error('Error in enhanced data collection:', error);
+		// Don't throw - this is supplementary data collection
 	}
 }

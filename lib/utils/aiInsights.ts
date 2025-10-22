@@ -52,17 +52,41 @@ export async function generateInsightsForClient(
   }
 
   try {
-    // Get text data from form submissions directly
+    // Get comprehensive data using the enhanced data collection API
     const daysAgo = range === 'week' ? 7 : range === 'month' ? 30 : 90;
     const startDate = new Date(Date.now() - daysAgo * 86400000).toISOString();
 
+    // Get survey responses with enhanced data
     const { data: formSubmissions } = await supabase
       .from('form_submissions')
-      .select('responses, submitted_at')
+      .select(`
+        responses, 
+        submitted_at,
+        form_templates(name, description),
+        entities(name, email)
+      `)
       .eq('client_id', clientId)
       .gte('submitted_at', startDate)
       .order('submitted_at', { ascending: false })
       .limit(100);
+
+    // Get engagement data for context
+    const { data: engagementEvents } = await supabase
+      .from('events')
+      .select('event_type, event_data, created_at')
+      .eq('client_id', clientId)
+      .eq('event_type', 'engagement')
+      .gte('created_at', startDate)
+      .order('created_at', { ascending: false });
+
+    // Get course completion data
+    const { data: completionEvents } = await supabase
+      .from('events')
+      .select('event_type, event_data, created_at')
+      .eq('client_id', clientId)
+      .in('event_type', ['course_enrollment', 'course_completion'])
+      .gte('created_at', startDate)
+      .order('created_at', { ascending: false });
 
     if (!formSubmissions || formSubmissions.length === 0) {
       // No data - mark as completed and return stub insights
@@ -76,15 +100,20 @@ export async function generateInsightsForClient(
       return getStubInsights(clientId);
     }
 
-    // Extract text from form responses
+    // Extract text from form responses with enhanced context
     const textPool = formSubmissions.flatMap(submission => {
       const texts: any[] = [];
+      const formName = submission.form_templates?.name || 'Unknown Form';
+      const studentName = submission.entities?.name || 'Anonymous';
+      
       Object.values(submission.responses || {}).forEach(value => {
         if (typeof value === 'string' && value.length > 10) {
           texts.push({
             id: Math.random().toString(),
             text: value,
             source: 'form_submission',
+            formName: formName,
+            studentName: studentName,
             created_at: submission.submitted_at
           });
         }
@@ -92,8 +121,27 @@ export async function generateInsightsForClient(
       return texts;
     });
 
-    // Scrub PII from texts
-    const scrubbedTexts = textPool.map(item => ({
+    // Add engagement context
+    const engagementContext = engagementEvents?.map(event => ({
+      id: Math.random().toString(),
+      text: `Engagement: ${event.event_data?.action || 'activity'} at ${new Date(event.created_at).toLocaleDateString()}`,
+      source: 'engagement_log',
+      created_at: event.created_at
+    })) || [];
+
+    // Add completion context
+    const completionContext = completionEvents?.map(event => ({
+      id: Math.random().toString(),
+      text: `Course Progress: ${event.event_type} - ${event.event_data?.action || 'activity'}`,
+      source: 'completion_log',
+      created_at: event.created_at
+    })) || [];
+
+    // Combine all text sources
+    const allTexts = [...textPool, ...engagementContext, ...completionContext];
+
+    // Scrub PII from all texts
+    const scrubbedTexts = allTexts.map(item => ({
       ...item,
       text: scrubText(item.text)
     }));
