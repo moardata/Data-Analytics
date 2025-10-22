@@ -16,7 +16,7 @@ const supabase = createClient(
 const COMPANY_IDS = ['biz_Jkhjc11f6HHRxh', 'biz_3GYHNPbGkZCEky'];
 
 // Mock data generators
-function generateMockStudents(companyId, count = 20) {
+function generateMockStudents(clientId, count = 20) {
   const students = [];
   const firstNames = ['Alex', 'Jordan', 'Taylor', 'Casey', 'Morgan', 'Riley', 'Avery', 'Quinn', 'Sage', 'River', 'Phoenix', 'Blake', 'Drew', 'Cameron', 'Hayden', 'Skyler', 'Rowan', 'Emery', 'Finley', 'Harper'];
   const lastNames = ['Smith', 'Johnson', 'Williams', 'Brown', 'Jones', 'Garcia', 'Miller', 'Davis', 'Rodriguez', 'Martinez', 'Hernandez', 'Lopez', 'Gonzalez', 'Wilson', 'Anderson', 'Thomas', 'Taylor', 'Moore', 'Jackson', 'Martin'];
@@ -27,10 +27,14 @@ function generateMockStudents(companyId, count = 20) {
     const email = `${firstName.toLowerCase()}.${lastName.toLowerCase()}${i + 1}@example.com`;
     
     students.push({
-      id: `student_${companyId}_${i + 1}`,
-      client_id: companyId,
+      client_id: clientId,
+      whop_user_id: `whop_${clientId}_${i + 1}`,
       name: `${firstName} ${lastName}`,
       email: email,
+      metadata: {
+        source: 'mock_data',
+        generated_at: new Date().toISOString()
+      },
       created_at: new Date(Date.now() - Math.random() * 30 * 24 * 60 * 60 * 1000).toISOString(),
       updated_at: new Date().toISOString()
     });
@@ -39,27 +43,28 @@ function generateMockStudents(companyId, count = 20) {
   return students;
 }
 
-function generateMockEvents(companyId, studentCount = 20) {
+function generateMockEvents(clientId, entityIds, studentCount = 20) {
   const events = [];
-  const eventTypes = ['course_started', 'course_completed', 'lesson_viewed', 'quiz_completed', 'assignment_submitted', 'forum_posted', 'certificate_earned'];
+  const eventTypes = ['order', 'subscription', 'activity', 'form_submission', 'custom'];
   const courses = ['Web Development Fundamentals', 'Advanced React', 'Python for Data Science', 'UI/UX Design', 'Digital Marketing', 'Project Management'];
   
   for (let i = 0; i < studentCount * 15; i++) {
     const eventType = eventTypes[Math.floor(Math.random() * eventTypes.length)];
     const course = courses[Math.floor(Math.random() * courses.length)];
-    const studentId = `student_${companyId}_${Math.floor(Math.random() * studentCount) + 1}`;
+    const entityId = entityIds[Math.floor(Math.random() * entityIds.length)];
     
     events.push({
-      id: `event_${companyId}_${i + 1}`,
-      client_id: companyId,
-      entity_id: studentId,
+      client_id: clientId,
+      entity_id: entityId,
       event_type: eventType,
       event_data: {
         course_name: course,
         lesson_title: `Lesson ${Math.floor(Math.random() * 20) + 1}`,
-        score: eventType === 'quiz_completed' ? Math.floor(Math.random() * 40) + 60 : null,
-        duration_minutes: Math.floor(Math.random() * 120) + 15
+        score: eventType === 'activity' ? Math.floor(Math.random() * 40) + 60 : null,
+        duration_minutes: Math.floor(Math.random() * 120) + 15,
+        source: 'mock_data'
       },
+      whop_event_id: `whop_event_${clientId}_${i + 1}`,
       created_at: new Date(Date.now() - Math.random() * 30 * 24 * 60 * 60 * 1000).toISOString()
     });
   }
@@ -67,25 +72,29 @@ function generateMockEvents(companyId, studentCount = 20) {
   return events;
 }
 
-function generateMockSubscriptions(companyId, studentCount = 20) {
+function generateMockSubscriptions(clientId, entityIds, studentCount = 20) {
   const subscriptions = [];
-  const plans = ['Basic', 'Pro', 'Premium', 'Enterprise'];
-  const statuses = ['active', 'cancelled', 'expired', 'paused'];
+  const planIds = ['plan_basic', 'plan_pro', 'plan_premium', 'plan_enterprise'];
+  const statuses = ['active', 'cancelled', 'expired', 'trialing'];
+  const amounts = [29.99, 49.99, 99.99, 199.99];
   
   for (let i = 0; i < studentCount; i++) {
-    const studentId = `student_${companyId}_${i + 1}`;
-    const plan = plans[Math.floor(Math.random() * plans.length)];
+    const entityId = entityIds[i];
+    const planId = planIds[Math.floor(Math.random() * planIds.length)];
     const status = statuses[Math.floor(Math.random() * statuses.length)];
+    const amount = amounts[Math.floor(Math.random() * amounts.length)];
     const startDate = new Date(Date.now() - Math.random() * 90 * 24 * 60 * 60 * 1000);
     
     subscriptions.push({
-      id: `sub_${companyId}_${i + 1}`,
-      client_id: companyId,
-      entity_id: studentId,
-      plan_name: plan,
+      client_id: clientId,
+      entity_id: entityId,
+      whop_subscription_id: `whop_sub_${clientId}_${i + 1}`,
+      plan_id: planId,
       status: status,
-      start_date: startDate.toISOString(),
-      end_date: status === 'active' ? new Date(startDate.getTime() + 30 * 24 * 60 * 60 * 1000).toISOString() : null,
+      amount: amount,
+      currency: 'USD',
+      started_at: startDate.toISOString(),
+      expires_at: status === 'active' ? new Date(startDate.getTime() + 30 * 24 * 60 * 60 * 1000).toISOString() : null,
       created_at: startDate.toISOString(),
       updated_at: new Date().toISOString()
     });
@@ -168,52 +177,52 @@ function generateMockFormSubmissions(companyId, studentCount = 20, templateCount
   return submissions;
 }
 
-function generateMockInsights(companyId) {
+function generateMockInsights(clientId) {
   const insights = [
     {
+      insight_type: 'alert',
       title: 'High Drop-off Rate in Module 3',
       content: 'Students are showing a 45% drop-off rate in Module 3: Advanced Concepts. This suggests the content may be too challenging or not well-explained.',
-      category: 'issue',
-      priority: 'high',
-      confidence: 0.87,
-      status: 'generated',
-      tags: ['drop-off', 'module-3', 'difficulty'],
-      created_at: new Date(Date.now() - Math.random() * 7 * 24 * 60 * 60 * 1000).toISOString()
+      severity: 'high',
+      metadata: {
+        drop_off_rate: 0.45,
+        module: 'Module 3',
+        tags: ['drop-off', 'module-3', 'difficulty']
+      }
     },
     {
+      insight_type: 'trend',
       title: 'Positive Feedback on Interactive Elements',
       content: 'Students consistently rate interactive elements (quizzes, hands-on exercises) highly. Consider adding more interactive content to other modules.',
-      category: 'positive',
-      priority: 'medium',
-      confidence: 0.92,
-      status: 'generated',
-      tags: ['interactive', 'engagement', 'positive'],
-      created_at: new Date(Date.now() - Math.random() * 5 * 24 * 60 * 60 * 1000).toISOString()
+      severity: 'info',
+      metadata: {
+        feedback_score: 4.8,
+        element_type: 'interactive',
+        tags: ['interactive', 'engagement', 'positive']
+      }
     },
     {
-      title: 'Recommendation: Add Video Tutorials',
+      insight_type: 'recommendation',
+      title: 'Add Video Tutorials',
       content: 'Based on student feedback, adding video tutorials for complex concepts would improve comprehension and reduce support requests.',
-      category: 'recommendation',
-      priority: 'medium',
-      confidence: 0.78,
-      status: 'generated',
-      tags: ['video', 'tutorial', 'comprehension'],
-      created_at: new Date(Date.now() - Math.random() * 3 * 24 * 60 * 60 * 1000).toISOString()
+      severity: 'medium',
+      metadata: {
+        recommendation_type: 'content_improvement',
+        expected_impact: 'high',
+        tags: ['video', 'tutorial', 'comprehension']
+      }
     }
   ];
   
   return insights.map((insight, index) => ({
-    id: `insight_${companyId}_${index + 1}`,
-    client_id: companyId,
+    client_id: clientId,
+    insight_type: insight.insight_type,
     title: insight.title,
     content: insight.content,
-    category: insight.category,
-    priority: insight.priority,
-    confidence: insight.confidence,
-    status: insight.status,
-    tags: insight.tags,
-    created_at: insight.created_at,
-    updated_at: new Date().toISOString()
+    metadata: insight.metadata,
+    severity: insight.severity,
+    dismissed: false,
+    created_at: new Date(Date.now() - Math.random() * 7 * 24 * 60 * 60 * 1000).toISOString()
   }));
 }
 
@@ -257,42 +266,56 @@ async function generateFreshData() {
     for (const companyId of COMPANY_IDS) {
       console.log(`\n📊 Generating data for ${companyId}...`);
       
-      // Create client
-      await supabase.from('clients').insert({
-        id: companyId,
-        name: `Company ${companyId.slice(-6)}`,
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString()
-      });
-      console.log(`✅ Created client: ${companyId}`);
+      // Create client first
+      const { data: clientData, error: clientError } = await supabase
+        .from('clients')
+        .insert({
+          whop_user_id: `whop_${companyId}`,
+          company_id: companyId,
+          email: `admin@${companyId}.com`,
+          name: `Company ${companyId.slice(-6)}`,
+          subscription_tier: 'pro',
+          current_tier: 'atom',
+          subscription_status: 'active'
+        })
+        .select()
+        .single();
+      
+      if (clientError) {
+        console.log(`❌ Error creating client: ${clientError.message}`);
+        continue;
+      }
+      
+      const clientId = clientData.id;
+      console.log(`✅ Created client: ${companyId} (ID: ${clientId})`);
       
       // Generate students
-      const students = generateMockStudents(companyId, 25);
-      await supabase.from('entities').insert(students);
+      const students = generateMockStudents(clientId, 25);
+      const { data: studentData, error: studentError } = await supabase
+        .from('entities')
+        .insert(students)
+        .select('id');
+      
+      if (studentError) {
+        console.log(`❌ Error creating students: ${studentError.message}`);
+        continue;
+      }
+      
+      const entityIds = studentData.map(s => s.id);
       console.log(`✅ Generated ${students.length} students`);
       
       // Generate events
-      const events = generateMockEvents(companyId, 25);
+      const events = generateMockEvents(clientId, entityIds, 25);
       await supabase.from('events').insert(events);
       console.log(`✅ Generated ${events.length} events`);
       
       // Generate subscriptions
-      const subscriptions = generateMockSubscriptions(companyId, 25);
+      const subscriptions = generateMockSubscriptions(clientId, entityIds, 25);
       await supabase.from('subscriptions').insert(subscriptions);
       console.log(`✅ Generated ${subscriptions.length} subscriptions`);
       
-      // Generate form templates
-      const templates = generateMockFormTemplates(companyId);
-      await supabase.from('form_templates').insert(templates);
-      console.log(`✅ Generated ${templates.length} form templates`);
-      
-      // Generate form submissions
-      const submissions = generateMockFormSubmissions(companyId, 25, templates.length);
-      await supabase.from('form_submissions').insert(submissions);
-      console.log(`✅ Generated ${submissions.length} form submissions`);
-      
       // Generate insights
-      const insights = generateMockInsights(companyId);
+      const insights = generateMockInsights(clientId);
       await supabase.from('insights').insert(insights);
       console.log(`✅ Generated ${insights.length} insights`);
       
