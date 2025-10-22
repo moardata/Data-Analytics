@@ -33,7 +33,7 @@ const bottomItems = [
   { href: '/settings', label: 'Settings', icon: Settings },
 ]
 
-export function SidebarFixed() {
+export function Sidebar() {
   const pathname = usePathname()
   const searchParams = useSearchParams()
 
