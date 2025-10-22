@@ -19,6 +19,7 @@ import StructuredAIInsights from '@/components/StructuredAIInsights';
 import EnhancedInsightsDisplay from '@/components/EnhancedInsightsDisplay';
 import DataStorageDashboard from '@/components/DataStorageDashboard';
 import ActionFeedbackLoop from '@/components/ActionFeedbackLoop';
+import ExportsReportsDashboard from '@/components/ExportsReportsDashboard';
 
 // ---------------------- THEME ----------------------
 const theme = {
@@ -319,6 +320,15 @@ function InsightsContent() {
             <p className="text-sm text-[#A1A1AA]">Track creator actions and measure improvements</p>
           </div>
           <ActionFeedbackLoop companyId={clientId || ''} />
+        </section>
+
+        {/* Exports & Reports Section */}
+        <section>
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-lg font-medium text-[#F8FAFC]">Exports & Reports</h2>
+            <p className="text-sm text-[#A1A1AA]">Download comprehensive analytics and insights</p>
+          </div>
+          <ExportsReportsDashboard companyId={clientId || ''} />
         </section>
 
         {/* Insights Grid */}
