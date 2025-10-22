@@ -86,14 +86,20 @@ function InsightsContent() {
   }));
 
   const generateInsights = async () => {
+    console.log('🚀 Generate Insights clicked');
+    console.log('Company ID:', companyId);
+    
     if (!companyId) {
-      console.error('No company ID available');
+      console.error('❌ No company ID available');
       return;
     }
     
     setLoading(true);
+    console.log('⏳ Starting insight generation...');
+    
     try {
-      const response = await fetch('/api/insights/generate', {
+      console.log('📡 Making API call to /api/insights/generate');
+      const response = await fetch(`/api/insights/generate?companyId=${companyId}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -102,18 +108,25 @@ function InsightsContent() {
         })
       });
 
+      console.log('📊 Response status:', response.status);
+      console.log('📊 Response ok:', response.ok);
+
       if (response.ok) {
         const data = await response.json();
-        console.log('Generated insights:', data);
+        console.log('✅ Generated insights:', data);
         setInsights(data.insights || []);
+        console.log('📈 Insights set:', data.insights?.length || 0, 'insights');
       } else {
         const errorData = await response.json();
-        console.error('API Error:', errorData);
+        console.error('❌ API Error:', errorData);
+        alert(`Error: ${errorData.error || 'Failed to generate insights'}`);
       }
     } catch (error) {
-      console.error('Error generating insights:', error);
+      console.error('❌ Error generating insights:', error);
+      alert(`Error: ${error instanceof Error ? error.message : 'Unknown error'}`);
     } finally {
       setLoading(false);
+      console.log('✅ Loading finished');
     }
   };
 
