@@ -215,7 +215,7 @@ function processEngagementMetrics(events: any[]) {
     return acc;
   }, {} as Record<string, number>);
 
-  const dailyActivityEntries = Object.entries(dailyActivity);
+  const dailyActivityEntries = Object.entries(dailyActivity) as [string, number][];
   const mostActiveDayEntry = dailyActivityEntries.reduce((a, b) => a[1] > b[1] ? a : b, ['', 0] as [string, number]);
   
   return {
