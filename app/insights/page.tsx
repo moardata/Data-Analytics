@@ -42,15 +42,14 @@ function InsightsContent() {
   // Transform insights for the grid
   const transformedInsights: Insight[] = insights.map(insight => ({
     id: insight.id,
-    title: insight.title,
-    description: insight.content,
-    category: insight.category,
-    confidence: insight.confidence,
-    status: insight.status,
-    createdAt: insight.createdAt,
-    priority: insight.priority,
-    tags: insight.tags,
-    actions: insight.actions
+    headline: insight.title,
+    detail: insight.content,
+    createdAt: insight.createdAt || new Date().toISOString(),
+    severity: insight.priority === 'high' ? 'critical' : 
+              insight.priority === 'medium' ? 'warning' : 
+              insight.category === 'positive' ? 'success' : 'info',
+    tags: insight.tags || [],
+    metricDeltaPct: insight.confidence ? Math.round(insight.confidence * 100) : undefined
   }));
 
   const generateInsights = async () => {
