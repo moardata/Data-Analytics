@@ -11,7 +11,8 @@
     "verify": "node scripts/verify-setup.js",
     "purge-mock-data": "node scripts/purge-and-regenerate-mock-data.js",
     "force-purge": "node scripts/force-purge-data.js",
-    "verify-data": "node scripts/verify-data.js"
+    "verify-data": "node scripts/verify-data.js",
+    "generate-comprehensive": "node scripts/generate-comprehensive-mock-data.js"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.38.4",
