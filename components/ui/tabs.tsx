@@ -77,5 +77,25 @@ export function TabsTrigger({ value, children, className }: TabsTriggerProps) {
   );
 }
 
+interface TabsContentProps {
+  value: string;
+  children: React.ReactNode;
+  className?: string;
+}
+
+export function TabsContent({ value, children, className }: TabsContentProps) {
+  const { value: selectedValue } = useTabsContext();
+  
+  if (value !== selectedValue) {
+    return null;
+  }
+
+  return (
+    <div className={cn('mt-4', className)}>
+      {children}
+    </div>
+  );
+}
+
 
 
