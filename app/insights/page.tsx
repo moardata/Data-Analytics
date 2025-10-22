@@ -20,6 +20,7 @@ import EnhancedInsightsDisplay from '@/components/EnhancedInsightsDisplay';
 import DataStorageDashboard from '@/components/DataStorageDashboard';
 import ActionFeedbackLoop from '@/components/ActionFeedbackLoop';
 import ExportsReportsDashboard from '@/components/ExportsReportsDashboard';
+import SystemHealthDashboard from '@/components/SystemHealthDashboard';
 
 // ---------------------- THEME ----------------------
 const theme = {
@@ -329,6 +330,15 @@ function InsightsContent() {
             <p className="text-sm text-[#A1A1AA]">Download comprehensive analytics and insights</p>
           </div>
           <ExportsReportsDashboard companyId={clientId || ''} />
+        </section>
+
+        {/* System Health & Meta Data Section */}
+        <section>
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-lg font-medium text-[#F8FAFC]">System Health & Meta Data</h2>
+            <p className="text-sm text-[#A1A1AA]">Monitor data freshness and AI response times</p>
+          </div>
+          <SystemHealthDashboard companyId={clientId || ''} />
         </section>
 
         {/* Insights Grid */}
