@@ -142,8 +142,8 @@ export async function GET(request: NextRequest) {
     switch (action) {
       case 'get_insights':
         result = await getInsightsWithMetadata(clientId, {
-          status,
-          category,
+          status: status || undefined,
+          category: category || undefined,
           limit,
           offset
         });
