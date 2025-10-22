@@ -587,26 +587,36 @@ function FormsContent() {
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <Button 
                       className="gap-2 bg-[#0a0a0a] hover:bg-[#1a1a1a] text-white border border-[#1a1a1a] h-12"
                       onClick={() => {
-                        // TODO: Implement CSV export
-                        alert('CSV export feature coming soon!');
+                        // Export survey templates as CSV
+                        window.open('/api/export/csv?type=surveys', '_blank');
                       }}
                     >
                       <Download className="h-4 w-4" />
-                      Export as CSV
+                      Export Templates (CSV)
                     </Button>
                     <Button 
                       className="gap-2 bg-[#0a0a0a] hover:bg-[#1a1a1a] text-white border border-[#1a1a1a] h-12"
                       onClick={() => {
-                        // TODO: Implement PDF export
-                        alert('PDF export feature coming soon!');
+                        // Export survey responses as CSV
+                        window.open('/api/export/csv?type=survey_responses', '_blank');
                       }}
                     >
                       <Download className="h-4 w-4" />
-                      Export as PDF
+                      Export Responses (CSV)
+                    </Button>
+                    <Button 
+                      className="gap-2 bg-[#0a0a0a] hover:bg-[#1a1a1a] text-white border border-[#1a1a1a] h-12"
+                      onClick={() => {
+                        // Export analytics report as PDF
+                        window.open('/api/export/pdf', '_blank');
+                      }}
+                    >
+                      <Download className="h-4 w-4" />
+                      Analytics Report (PDF)
                     </Button>
                   </div>
                   <div className="text-center py-4">

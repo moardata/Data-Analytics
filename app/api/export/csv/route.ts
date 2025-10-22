@@ -56,6 +56,16 @@ export async function GET(request: NextRequest) {
         filename = 'insights_export.csv';
         break;
       
+      case 'surveys':
+        csvContent = await exportSurveys(clientId);
+        filename = 'surveys_export.csv';
+        break;
+      
+      case 'survey_responses':
+        csvContent = await exportSurveyResponses(clientId);
+        filename = 'survey_responses_export.csv';
+        break;
+      
       default:
         return NextResponse.json(
           { error: 'Invalid export type' },
@@ -166,6 +176,61 @@ async function exportInsights(clientId: string): Promise<string> {
   insights.forEach(insight => {
     const content = insight.content.replace(/"/g, '""');
     csv += `"${insight.id}","${insight.insight_type}","${insight.title}","${content}","${insight.created_at}"\n`;
+  });
+
+  return csv;
+}
+
+async function exportSurveys(clientId: string): Promise<string> {
+  const { data: surveys } = await supabase
+    .from('form_templates')
+    .select('*')
+    .eq('client_id', clientId)
+    .order('created_at', { ascending: false });
+
+  if (!surveys || surveys.length === 0) {
+    return 'No data available';
+  }
+
+  // CSV Header
+  let csv = 'ID,Name,Description,Fields,Active,Created At,Updated At\n';
+
+  // CSV Rows
+  surveys.forEach(survey => {
+    const fields = JSON.stringify(survey.fields).replace(/"/g, '""');
+    const description = (survey.description || '').replace(/"/g, '""');
+    csv += `"${survey.id}","${survey.name}","${description}","${fields}","${survey.is_active}","${survey.created_at}","${survey.updated_at}"\n`;
+  });
+
+  return csv;
+}
+
+async function exportSurveyResponses(clientId: string): Promise<string> {
+  const { data: responses } = await supabase
+    .from('form_submissions')
+    .select(`
+      *,
+      form_templates(name),
+      entities(name, email)
+    `)
+    .eq('client_id', clientId)
+    .order('submitted_at', { ascending: false });
+
+  if (!responses || responses.length === 0) {
+    return 'No data available';
+  }
+
+  // CSV Header
+  let csv = 'ID,Form Name,Student Name,Student Email,Responses,Submitted At\n';
+
+  // CSV Rows
+  responses.forEach(response => {
+    const formName = response.form_templates?.name || 'Unknown Form';
+    const studentName = response.entities?.name || 'Unknown Student';
+    const studentEmail = response.entities?.email || '';
+    const responsesData = JSON.stringify(response.responses).replace(/"/g, '""');
+    
+    csv += `"${response.id}","${formName}","${studentName}","${studentEmail}","${responsesData}","${response.submitted_at}"\n`;
   });
 
   return csv;
