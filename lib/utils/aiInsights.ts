@@ -224,7 +224,7 @@ export async function generateInsightsForClient(
 /**
  * Generate insights using OpenAI with enhanced engagement and sentiment analysis
  */
-async function generateWithOpenAI(texts: any[]): Promise<AIAnalysisResult> {
+export async function generateWithOpenAI(texts: any[]): Promise<AIAnalysisResult> {
   const textSample = texts.slice(0, 30).map(t => t.text).join('\n---\n');
 
   const prompt = `You are an expert AI analyst for online course creators. Analyze ${texts.length} student feedback responses and provide actionable insights focused on:

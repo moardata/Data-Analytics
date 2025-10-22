@@ -1,12 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '@/lib/supabase-server';
+import { supabaseServer as supabase } from '@/lib/supabase-server';
 import { generateWithOpenAI } from '@/lib/utils/aiInsights';
 
 export async function POST(request: NextRequest) {
   try {
     const { clientId, insightId, actionId } = await request.json();
     
-    const supabase = createClient();
+    // Use the imported supabase client
     
     // Get improvement tracking data
     const { data: improvementData, error: improvementError } = await supabase
@@ -79,7 +79,7 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Client ID required' }, { status: 400 });
     }
 
-    const supabase = createClient();
+    // Use the imported supabase client
     
     // Get improvement summaries for this client
     const { data: summaries, error } = await supabase

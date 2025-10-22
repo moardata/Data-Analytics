@@ -1,11 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '@/lib/supabase-server';
+import { supabaseServer as supabase } from '@/lib/supabase-server';
 
 export async function POST(request: NextRequest) {
   try {
     const { clientId, insightId, actionId, newMetrics } = await request.json();
     
-    const supabase = createClient();
+    // Use the imported supabase client
     
     // Get the original metrics from the action
     const { data: actionData, error: actionError } = await supabase
@@ -67,7 +67,7 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Client ID required' }, { status: 400 });
     }
 
-    const supabase = createClient();
+    // Use the imported supabase client
     
     // Get improvement tracking data for this client
     const { data: improvements, error } = await supabase
