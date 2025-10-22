@@ -49,14 +49,14 @@ function RevenueContent() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-gradient-to-b from-[#0d0f12] to-[#14171c]">
+      <div className="flex items-center justify-center min-h-screen bg-gradient-to-b from-[#0a0a0a] to-[#0f0f0f]">
         <div className="w-16 h-16 border-4 border-[#10B981] border-t-transparent rounded-full animate-spin" />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-[#0d0f12] to-[#14171c] p-8">
+    <div className="min-h-screen bg-gradient-to-b from-[#0a0a0a] to-[#0f0f0f] p-8">
       <div className="max-w-7xl mx-auto">
         <RevenueDashboard revenueData={revenue} onExport={handleExport} />
       </div>
@@ -67,7 +67,7 @@ function RevenueContent() {
 export default function RevenuePage() {
   return (
     <Suspense fallback={
-      <div className="flex items-center justify-center min-h-screen bg-gradient-to-b from-[#0d0f12] to-[#14171c]">
+      <div className="flex items-center justify-center min-h-screen bg-gradient-to-b from-[#0a0a0a] to-[#0f0f0f]">
         <div className="w-16 h-16 border-4 border-[#10B981] border-t-transparent rounded-full animate-spin" />
       </div>
     }>

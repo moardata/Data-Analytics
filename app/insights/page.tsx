@@ -17,11 +17,11 @@ import { InsightsGrid, Insight } from '@/components/AIInsightsGrid';
 
 // ---------------------- THEME ----------------------
 const theme = {
-  bg: "bg-gradient-to-b from-[#0d0f12] to-[#14171c]",
-  panel: "bg-gradient-to-br from-[#1A1E25] via-[#20242B] to-[#1A1E25] shadow-[inset_0_1px_0_rgba(255,255,255,0.05),0_2px_12px_rgba(0,0,0,0.6)] backdrop-blur-md",
-  border: "border border-[#2E343C]/70",
-  text: "text-[#E1E4EA]",
-  subtext: "text-[#9AA4B2]",
+  bg: "bg-gradient-to-b from-[#0a0a0a] to-[#0f0f0f]",
+  panel: "bg-gradient-to-br from-[#0f0f0f] via-[#1a1a1a] to-[#0f0f0f] shadow-[inset_0_1px_0_rgba(255,255,255,0.05),0_2px_12px_rgba(0,0,0,0.6)] backdrop-blur-md",
+  border: "border border-[#1a1a1a]/70",
+  text: "text-[#F8FAFC]",
+  subtext: "text-[#A1A1AA]",
   accent: "#10B981",
 };
 
