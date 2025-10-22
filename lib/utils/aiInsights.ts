@@ -103,8 +103,8 @@ export async function generateInsightsForClient(
     // Extract text from form responses with enhanced context
     const textPool = formSubmissions.flatMap(submission => {
       const texts: any[] = [];
-      const formName = submission.form_templates?.name || 'Unknown Form';
-      const studentName = submission.entities?.name || 'Anonymous';
+      const formName = (submission.form_templates as any)?.name || 'Unknown Form';
+      const studentName = (submission.entities as any)?.name || 'Anonymous';
       
       Object.values(submission.responses || {}).forEach(value => {
         if (typeof value === 'string' && value.length > 10) {
