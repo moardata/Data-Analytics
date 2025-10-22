@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { BookOpen } from 'lucide-react';
-import StudentSurveysInterface from './StudentSurveysInterface';
+import StudentSurveysInterface from '@/components/StudentSurveysInterface';
 
 interface AccessState {
   loading: boolean;
@@ -24,12 +24,21 @@ export function WhopClientAuth({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     async function checkAccess() {
       try {
+        console.log('🔐 [WhopClientAuth] Starting access check...');
+        
+        // Safety check for window object
+        if (typeof window === 'undefined') {
+          console.warn('⚠️ [WhopClientAuth] Window object not available (SSR)');
+          return;
+        }
+
         console.log('🔐 [WhopClientAuth] Checking owner status via server...');
 
         // Get company ID from URL
         const params = new URLSearchParams(window.location.search);
         const companyId = params.get('companyId') || 
-                         window.location.pathname.split('/').find(part => part.startsWith('biz_'));
+                         window.location.pathname.split('/').find(part => part.startsWith('biz_')) || 
+                         '';
 
         console.log('🔍 [WhopClientAuth] Company ID:', companyId);
 

@@ -5,6 +5,7 @@ import { Suspense } from "react";
 import { Sidebar } from "@/components/sidebar";
 import { TopBar } from "@/components/top-bar";
 import { WhopClientAuth } from "@/components/WhopClientAuth";
+import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { SidebarProvider } from "@/contexts/sidebar-context";
 import { MainContent } from "@/components/main-content";
 import "./globals.css";
@@ -28,23 +29,25 @@ export default function RootLayout({
 	return (
 		<html lang="en" className="dark">
 			<body className={`${inter.variable} font-sans antialiased`}>
-				<WhopApp>
-					<WhopClientAuth>
-						<SidebarProvider>
-							<div className="flex min-h-screen bg-gradient-to-b from-[#0a0a0a] to-[#0f0f0f]">
-								<Suspense fallback={<div className="w-16" />}>
-									<Sidebar />
-								</Suspense>
-								<div className="flex-1 flex flex-col">
-									<TopBar />
-									<MainContent>
-										{children}
-									</MainContent>
+				<ErrorBoundary>
+					<WhopApp>
+						<WhopClientAuth>
+							<SidebarProvider>
+								<div className="flex min-h-screen bg-gradient-to-b from-[#0a0a0a] to-[#0f0f0f]">
+									<Suspense fallback={<div className="w-16" />}>
+										<Sidebar />
+									</Suspense>
+									<div className="flex-1 flex flex-col">
+										<TopBar />
+										<MainContent>
+											{children}
+										</MainContent>
+									</div>
 								</div>
-							</div>
-						</SidebarProvider>
-					</WhopClientAuth>
-				</WhopApp>
+							</SidebarProvider>
+						</WhopClientAuth>
+					</WhopApp>
+				</ErrorBoundary>
 			</body>
 		</html>
 	);
