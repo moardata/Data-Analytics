@@ -17,6 +17,7 @@ import EngagementMetrics from '@/components/EngagementMetrics';
 import DataCollectionDashboard from '@/components/DataCollectionDashboard';
 import StructuredAIInsights from '@/components/StructuredAIInsights';
 import EnhancedInsightsDisplay from '@/components/EnhancedInsightsDisplay';
+import DataStorageDashboard from '@/components/DataStorageDashboard';
 
 // ---------------------- THEME ----------------------
 const theme = {
@@ -272,6 +273,15 @@ function InsightsContent() {
             <p className="text-sm text-[#A1A1AA]">Multi-tenant data collection and AI processing</p>
           </div>
           <DataCollectionDashboard companyId={clientId || ''} />
+        </section>
+
+        {/* Data Storage Section */}
+        <section>
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-lg font-medium text-[#F8FAFC]">Data Storage Status</h2>
+            <p className="text-sm text-[#A1A1AA]">Insights storage with timestamps, metadata, and progress tracking</p>
+          </div>
+          <DataStorageDashboard companyId={clientId || ''} />
         </section>
 
         {/* Enhanced Insights Display Section */}
