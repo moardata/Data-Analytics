@@ -31,7 +31,7 @@ export default function RootLayout({
 				<WhopApp>
 					<WhopClientAuth>
 						<SidebarProvider>
-							<div className="flex min-h-screen bg-gradient-to-b from-[#0d0f12] to-[#14171c]">
+							<div className="flex min-h-screen bg-gradient-to-b from-[#0a0a0a] to-[#0f0f0f]">
 								<Suspense fallback={<div className="w-16" />}>
 									<Sidebar />
 								</Suspense>

@@ -23,26 +23,27 @@ export function WhopClientAuth({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     async function checkAccess() {
-      console.log('🔐 [WhopClientAuth] Checking owner status via server...');
+      try {
+        console.log('🔐 [WhopClientAuth] Checking owner status via server...');
 
-      // Get company ID from URL
-      const params = new URLSearchParams(window.location.search);
-      const companyId = params.get('companyId') || 
-                       window.location.pathname.split('/').find(part => part.startsWith('biz_'));
+        // Get company ID from URL
+        const params = new URLSearchParams(window.location.search);
+        const companyId = params.get('companyId') || 
+                         window.location.pathname.split('/').find(part => part.startsWith('biz_'));
 
-      console.log('🔍 [WhopClientAuth] Company ID:', companyId);
+        console.log('🔍 [WhopClientAuth] Company ID:', companyId);
 
-      if (!companyId) {
-        console.log('❌ [WhopClientAuth] No company ID - defaulting to student');
-        setAccessState({
-          loading: false,
-          isOwner: false,
-          isStudent: true,
-          role: 'student',
-          companyId: '',
-        });
-        return;
-      }
+        if (!companyId) {
+          console.log('❌ [WhopClientAuth] No company ID - defaulting to student');
+          setAccessState({
+            loading: false,
+            isOwner: false,
+            isStudent: true,
+            role: 'student',
+            companyId: '',
+          });
+          return;
+        }
 
       // FIRST: Check what headers Whop is actually sending
       try {
@@ -109,6 +110,17 @@ export function WhopClientAuth({ children }: { children: React.ReactNode }) {
           companyId: companyId,
         });
       }
+      } catch (error) {
+        console.error('❌ [WhopClientAuth] Fatal error:', error);
+        // Default to student on fatal error
+        setAccessState({
+          loading: false,
+          isOwner: false,
+          isStudent: true,
+          role: 'student',
+          companyId: '',
+        });
+      }
     }
 
     checkAccess();
@@ -117,10 +129,10 @@ export function WhopClientAuth({ children }: { children: React.ReactNode }) {
   // Loading state
   if (accessState.loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-[#0d0f12] to-[#14171c] flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-b from-[#0a0a0a] to-[#0f0f0f] flex items-center justify-center">
         <div className="text-center max-w-md mx-auto px-6">
           <div className="w-16 h-16 border-4 border-[#10B981] border-t-transparent rounded-full animate-spin mx-auto mb-6" />
-          <h2 className="text-2xl font-bold text-[#E5E7EB] mb-3">Checking access...</h2>
+          <h2 className="text-2xl font-bold text-[#F8FAFC] mb-3">Checking access...</h2>
         </div>
       </div>
     );
