@@ -382,3 +382,50 @@ COMMENT ON TABLE course_enrollments IS 'Tracks which members are enrolled in whi
 COMMENT ON TABLE lesson_interactions IS 'Tracks member progress and interactions with lessons';
 COMMENT ON TABLE webhook_events IS 'Audit log of all Whop webhook events received by the application';
 
+-- ============================================================================
+-- FEEDBACK LOOP TABLES
+-- ============================================================================
+
+-- Insight Actions table: Tracks actions taken on insights
+CREATE TABLE IF NOT EXISTS insight_actions (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  insight_id UUID NOT NULL REFERENCES insights(id) ON DELETE CASCADE,
+  action_type TEXT NOT NULL,
+  improvement_description TEXT,
+  metrics_before JSONB,
+  metrics_after JSONB,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- Improvement Tracking table: Tracks improvement results
+CREATE TABLE IF NOT EXISTS improvement_tracking (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  client_id UUID NOT NULL REFERENCES clients(id) ON DELETE CASCADE,
+  insight_id UUID NOT NULL REFERENCES insights(id) ON DELETE CASCADE,
+  action_id UUID NOT NULL REFERENCES insight_actions(id) ON DELETE CASCADE,
+  metrics_before JSONB,
+  metrics_after JSONB,
+  improvement_percentage DECIMAL(5,2),
+  improvement_summary TEXT,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- Improvement Summaries table: AI-generated improvement summaries
+CREATE TABLE IF NOT EXISTS improvement_summaries (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  client_id UUID NOT NULL REFERENCES clients(id) ON DELETE CASCADE,
+  insight_id UUID NOT NULL REFERENCES insights(id) ON DELETE CASCADE,
+  action_id UUID NOT NULL REFERENCES insight_actions(id) ON DELETE CASCADE,
+  improvement_id UUID NOT NULL REFERENCES improvement_tracking(id) ON DELETE CASCADE,
+  summary_content TEXT NOT NULL,
+  key_metrics JSONB,
+  recommendations JSONB,
+  confidence_score DECIMAL(3,2),
+  generated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- Add comments for feedback loop tables
+COMMENT ON TABLE insight_actions IS 'Tracks actions taken by creators based on insights';
+COMMENT ON TABLE improvement_tracking IS 'Tracks improvement results after actions are taken';
+COMMENT ON TABLE improvement_summaries IS 'AI-generated summaries of improvement results';
+
