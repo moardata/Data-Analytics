@@ -259,7 +259,7 @@ export default function EnhancedInsightsDisplay({ companyId }: EnhancedInsightsD
       </div>
 
       {/* Tabs */}
-      <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+      <Tabs value={activeTab} onValueChange={setActiveTab}>
         <TabsList className="grid w-full grid-cols-3 bg-[#0f0f0f] border border-[#1a1a1a]">
           <TabsTrigger value="current" className="data-[state=active]:bg-[#10B981]/20 data-[state=active]:text-[#10B981]">
             Current ({insights.filter(i => i.status !== 'done').length})
