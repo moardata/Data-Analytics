@@ -39,6 +39,7 @@ function InsightsContent() {
   const clientId = searchParams.get('clientId');
   const [insights, setInsights] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
+  const [activeTab, setActiveTab] = useState('insights');
 
   // Transform insights for the grid
   const transformedInsights: Insight[] = insights.map(insight => ({
@@ -185,7 +186,7 @@ function InsightsContent() {
         </div>
 
         {/* Tabbed Interface */}
-        <Tabs defaultValue="insights" className="w-full">
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
           <TabsList className="grid w-full grid-cols-5 bg-[#0f0f0f] border border-[#1a1a1a]">
             <TabsTrigger value="insights" className="data-[state=active]:bg-[#10B981] data-[state=active]:text-white">
               <Sparkles className="h-4 w-4 mr-2" />
