@@ -13,6 +13,7 @@ import { Zap, RefreshCw, TrendingUp, AlertCircle, Lightbulb, Sparkles, Activity,
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { InsightsGrid, Insight } from '@/components/AIInsightsGrid';
 import EngagementMetrics from '@/components/EngagementMetrics';
 import DataCollectionDashboard from '@/components/DataCollectionDashboard';
@@ -183,149 +184,139 @@ function InsightsContent() {
           </Card>
         </div>
 
-        {/* Data Collection & Processing Section */}
-        <section>
-          <div className="flex items-center justify-between mb-6">
-            <div>
-              <h2 className="text-xl font-semibold text-[#F8FAFC]">Data Collection & Processing</h2>
-              <p className="text-sm text-[#A1A1AA]">Multi-tenant data collection, AI processing, and system health monitoring</p>
-            </div>
-            <Badge variant="outline" className="border-[#10B981]/30 text-[#10B981] bg-[#10B981]/10">
-              <Activity className="h-3 w-3 mr-1" />
-              Active Collection
-            </Badge>
-          </div>
-          
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <div>
-              <h3 className="text-lg font-medium text-[#F8FAFC] mb-4">Data Collection Status</h3>
-              <DataCollectionDashboard companyId={clientId || ''} />
-            </div>
-            <div>
-              <h3 className="text-lg font-medium text-[#F8FAFC] mb-4">System Health & Meta Data</h3>
-              <SystemHealthDashboard companyId={clientId || ''} />
-            </div>
-          </div>
-        </section>
+        {/* Tabbed Interface */}
+        <Tabs defaultValue="insights" className="w-full">
+          <TabsList className="grid w-full grid-cols-5 bg-[#0f0f0f] border border-[#1a1a1a]">
+            <TabsTrigger value="insights" className="data-[state=active]:bg-[#10B981] data-[state=active]:text-white">
+              <Sparkles className="h-4 w-4 mr-2" />
+              My Insights
+            </TabsTrigger>
+            <TabsTrigger value="analytics" className="data-[state=active]:bg-[#8B5CF6] data-[state=active]:text-white">
+              <Brain className="h-4 w-4 mr-2" />
+              Analytics
+            </TabsTrigger>
+            <TabsTrigger value="actions" className="data-[state=active]:bg-[#F59E0B] data-[state=active]:text-white">
+              <Target className="h-4 w-4 mr-2" />
+              Actions
+            </TabsTrigger>
+            <TabsTrigger value="data" className="data-[state=active]:bg-[#3B82F6] data-[state=active]:text-white">
+              <Activity className="h-4 w-4 mr-2" />
+              Data
+            </TabsTrigger>
+            <TabsTrigger value="reports" className="data-[state=active]:bg-[#10B981] data-[state=active]:text-white">
+              <Download className="h-4 w-4 mr-2" />
+              Reports
+            </TabsTrigger>
+          </TabsList>
 
-        {/* AI Insights & Analytics Section */}
-        <section>
-          <div className="flex items-center justify-between mb-6">
-            <div>
-              <h2 className="text-xl font-semibold text-[#F8FAFC]">AI Insights & Analytics</h2>
-              <p className="text-sm text-[#A1A1AA]">AI-powered insights, structured analysis, and engagement metrics</p>
-            </div>
-            <Badge variant="outline" className="border-[#8B5CF6]/30 text-[#8B5CF6] bg-[#8B5CF6]/10">
-              <Brain className="h-3 w-3 mr-1" />
-              AI Powered
-            </Badge>
-          </div>
-          
-          <div className="space-y-6">
-            <div>
-              <h3 className="text-lg font-medium text-[#F8FAFC] mb-4">Enhanced Insights Display</h3>
-              <EnhancedInsightsDisplay companyId={clientId || ''} />
-            </div>
-            
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {/* My Insights Tab */}
+          <TabsContent value="insights" className="mt-6">
+            <div className="space-y-6">
               <div>
-                <h3 className="text-lg font-medium text-[#F8FAFC] mb-4">Structured AI Analysis</h3>
-                <StructuredAIInsights companyId={clientId || ''} />
+                <h3 className="text-lg font-medium text-[#F8FAFC] mb-4">Enhanced Insights Display</h3>
+                <EnhancedInsightsDisplay companyId={clientId || ''} />
               </div>
-              <div>
-                <h3 className="text-lg font-medium text-[#F8FAFC] mb-4">Engagement Analytics</h3>
-                <EngagementMetrics companyId={clientId || ''} />
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* Action & Improvement Section */}
-        <section>
-          <div className="flex items-center justify-between mb-6">
-            <div>
-              <h2 className="text-xl font-semibold text-[#F8FAFC]">Action & Improvement</h2>
-              <p className="text-sm text-[#A1A1AA]">Track actions, measure improvements, and manage data storage</p>
-            </div>
-            <Badge variant="outline" className="border-[#F59E0B]/30 text-[#F59E0B] bg-[#F59E0B]/10">
-              <Target className="h-3 w-3 mr-1" />
-              Continuous Improvement
-            </Badge>
-          </div>
-          
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <div>
-              <h3 className="text-lg font-medium text-[#F8FAFC] mb-4">Action & Feedback Loop</h3>
-              <ActionFeedbackLoop companyId={clientId || ''} />
-            </div>
-            <div>
-              <h3 className="text-lg font-medium text-[#F8FAFC] mb-4">Data Storage & History</h3>
-              <DataStorageDashboard companyId={clientId || ''} />
-            </div>
-          </div>
-        </section>
-
-        {/* Reports & Export Section */}
-        <section>
-          <div className="flex items-center justify-between mb-6">
-            <div>
-              <h2 className="text-xl font-semibold text-[#F8FAFC]">Reports & Export</h2>
-              <p className="text-sm text-[#A1A1AA]">Download comprehensive analytics, insights, and system reports</p>
-            </div>
-            <Badge variant="outline" className="border-[#3B82F6]/30 text-[#3B82F6] bg-[#3B82F6]/10">
-              <Download className="h-3 w-3 mr-1" />
-              Export Ready
-            </Badge>
-          </div>
-          
-          <div>
-            <h3 className="text-lg font-medium text-[#F8FAFC] mb-4">Export Options & Reports</h3>
-            <ExportsReportsDashboard companyId={clientId || ''} />
-          </div>
-        </section>
-
-        {/* Insights Grid */}
-        <section>
-          {transformedInsights.length === 0 ? (
-            <Card className={`${theme.panel} ${theme.border} rounded-xl overflow-hidden relative`}>
-              <div className="absolute inset-0 bg-gradient-to-b from-transparent to-[#0d1015]/50 pointer-events-none" />
-              <CardContent className="py-16 text-center relative z-10">
-                <div className="w-16 h-16 mx-auto mb-4 rounded-xl bg-[#1a1a1a] flex items-center justify-center">
-                  <Sparkles className="h-8 w-8 text-[#A1A1AA]" />
+              
+              {transformedInsights.length === 0 ? (
+                <Card className={`${theme.panel} ${theme.border} rounded-xl overflow-hidden relative`}>
+                  <div className="absolute inset-0 bg-gradient-to-b from-transparent to-[#0d1015]/50 pointer-events-none" />
+                  <CardContent className="py-16 text-center relative z-10">
+                    <div className="w-16 h-16 mx-auto mb-4 rounded-xl bg-[#1a1a1a] flex items-center justify-center">
+                      <Sparkles className="h-8 w-8 text-[#A1A1AA]" />
+                    </div>
+                    <h3 className="text-xl font-semibold text-[#F8FAFC] mb-2">
+                      No insights yet
+                    </h3>
+                    <p className={`${theme.subtext} mb-6 max-w-md mx-auto`}>
+                      Click "Generate Insights" to analyze your student data and get AI-powered recommendations
+                    </p>
+                    <Button 
+                      onClick={generateInsights}
+                      disabled={loading}
+                      className="bg-[#0a0a0a] hover:bg-[#1a1a1a] text-white border border-[#1a1a1a] rounded-xl px-6 py-3 gap-2 transition-all"
+                    >
+                      <Zap className="h-4 w-4" />
+                      Generate Your First Insights
+                    </Button>
+                  </CardContent>
+                </Card>
+              ) : (
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <h3 className="text-lg font-medium text-[#F8FAFC]">Recent Insights</h3>
+                    <div className={`${theme.subtext} text-sm`}>
+                      {transformedInsights.length} insights available
+                    </div>
+                  </div>
+                  <InsightsGrid 
+                    items={transformedInsights}
+                    columns={{ base: 1, md: 2, xl: 3 }}
+                    onOpen={(id) => console.log('Opened insight:', id)}
+                    accent="#10B981"
+                  />
                 </div>
-                <h3 className="text-xl font-semibold text-[#F8FAFC] mb-2">
-                  No insights yet
-                </h3>
-                <p className={`${theme.subtext} mb-6 max-w-md mx-auto`}>
-                  Click "Generate Insights" to analyze your student data and get AI-powered recommendations
-                </p>
-                <Button 
-                  onClick={generateInsights}
-                  disabled={loading}
-                  className="bg-[#0a0a0a] hover:bg-[#1a1a1a] text-white border border-[#1a1a1a] rounded-xl px-6 py-3 gap-2 transition-all"
-                >
-                  <Zap className="h-4 w-4" />
-                  Generate Your First Insights
-                </Button>
-              </CardContent>
-            </Card>
-          ) : (
-            <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <h2 className="text-lg font-medium text-[#F8FAFC]">Recent Insights</h2>
-                <div className={`${theme.subtext} text-sm`}>
-                  {transformedInsights.length} insights available
+              )}
+            </div>
+          </TabsContent>
+
+          {/* Analytics Tab */}
+          <TabsContent value="analytics" className="mt-6">
+            <div className="space-y-6">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <div>
+                  <h3 className="text-lg font-medium text-[#F8FAFC] mb-4">Structured AI Analysis</h3>
+                  <StructuredAIInsights companyId={clientId || ''} />
+                </div>
+                <div>
+                  <h3 className="text-lg font-medium text-[#F8FAFC] mb-4">Engagement Analytics</h3>
+                  <EngagementMetrics companyId={clientId || ''} />
                 </div>
               </div>
-              <InsightsGrid 
-                items={transformedInsights}
-                columns={{ base: 1, md: 2, xl: 3 }}
-                onOpen={(id) => console.log('Opened insight:', id)}
-                accent="#10B981"
-              />
             </div>
-          )}
-        </section>
+          </TabsContent>
+
+          {/* Actions Tab */}
+          <TabsContent value="actions" className="mt-6">
+            <div className="space-y-6">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <div>
+                  <h3 className="text-lg font-medium text-[#F8FAFC] mb-4">Action & Feedback Loop</h3>
+                  <ActionFeedbackLoop companyId={clientId || ''} />
+                </div>
+                <div>
+                  <h3 className="text-lg font-medium text-[#F8FAFC] mb-4">Data Storage & History</h3>
+                  <DataStorageDashboard companyId={clientId || ''} />
+                </div>
+              </div>
+            </div>
+          </TabsContent>
+
+          {/* Data Tab */}
+          <TabsContent value="data" className="mt-6">
+            <div className="space-y-6">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <div>
+                  <h3 className="text-lg font-medium text-[#F8FAFC] mb-4">Data Collection Status</h3>
+                  <DataCollectionDashboard companyId={clientId || ''} />
+                </div>
+                <div>
+                  <h3 className="text-lg font-medium text-[#F8FAFC] mb-4">System Health & Meta Data</h3>
+                  <SystemHealthDashboard companyId={clientId || ''} />
+                </div>
+              </div>
+            </div>
+          </TabsContent>
+
+          {/* Reports Tab */}
+          <TabsContent value="reports" className="mt-6">
+            <div className="space-y-6">
+              <div>
+                <h3 className="text-lg font-medium text-[#F8FAFC] mb-4">Export Options & Reports</h3>
+                <ExportsReportsDashboard companyId={clientId || ''} />
+              </div>
+            </div>
+          </TabsContent>
+        </Tabs>
       </div>
     </div>
   );
