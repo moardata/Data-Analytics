@@ -36,6 +36,24 @@ export async function POST(request: NextRequest) {
     const improvementSummary = await generateImprovementSummary(improvementData);
 
     // Store the generated summary
+    const summaryContent = 'summary' in improvementSummary 
+      ? improvementSummary.summary 
+      : 'content' in improvementSummary 
+        ? improvementSummary.content 
+        : 'No summary available';
+    
+    const keyMetrics = 'themes' in improvementSummary 
+      ? improvementSummary.themes 
+      : 'keyMetrics' in improvementSummary 
+        ? improvementSummary.keyMetrics 
+        : [];
+    
+    const recommendations = 'key_takeaways' in improvementSummary 
+      ? improvementSummary.key_takeaways 
+      : 'recommendations' in improvementSummary 
+        ? improvementSummary.recommendations 
+        : [];
+
     const { data: summaryData, error: summaryError } = await supabase
       .from('improvement_summaries')
       .insert({
@@ -43,9 +61,9 @@ export async function POST(request: NextRequest) {
         insight_id: insightId,
         action_id: actionId,
         improvement_id: improvementData.id,
-        summary_content: improvementSummary.summary || improvementSummary.content || 'No summary available',
-        key_metrics: improvementSummary.themes || improvementSummary.keyMetrics || [],
-        recommendations: improvementSummary.key_takeaways || improvementSummary.recommendations || [],
+        summary_content: summaryContent,
+        key_metrics: keyMetrics,
+        recommendations: recommendations,
         confidence_score: 0.85, // Default confidence since AIAnalysisResult doesn't have confidence
         generated_at: new Date().toISOString()
       })
@@ -61,9 +79,9 @@ export async function POST(request: NextRequest) {
       success: true, 
       summaryId: summaryData.id,
       summary: {
-        content: improvementSummary.summary || improvementSummary.content || 'No summary available',
-        keyMetrics: improvementSummary.themes || improvementSummary.keyMetrics || [],
-        recommendations: improvementSummary.key_takeaways || improvementSummary.recommendations || [],
+        content: summaryContent,
+        keyMetrics: keyMetrics,
+        recommendations: recommendations,
         confidence: 0.85
       }
     });
