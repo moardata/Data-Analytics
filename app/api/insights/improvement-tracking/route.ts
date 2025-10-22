@@ -114,7 +114,12 @@ function calculateImprovementMetrics(before: any, after: any) {
     };
   }
 
-  const improvements = [];
+  const improvements: Array<{
+    metric: string;
+    before: number;
+    after: number;
+    improvement: number;
+  }> = [];
   let totalImprovement = 0;
   let metricCount = 0;
 
