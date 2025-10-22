@@ -147,7 +147,7 @@ function InsightsContent() {
             <Button 
               onClick={generateInsights}
               disabled={loading}
-              className={`${theme.panel} ${theme.border} text-white hover:bg-[#0E3A2F] rounded-xl px-4 py-2 gap-2 transition-all shadow-inner shadow-[#0A0C0F]/20`}
+              className="bg-[#0a0a0a] hover:bg-[#1a1a1a] text-white border border-[#1a1a1a] rounded-xl px-4 py-2 gap-2 transition-all"
             >
               <Zap className="h-4 w-4" />
               {loading ? 'Generating...' : 'Generate Insights'}
@@ -156,7 +156,7 @@ function InsightsContent() {
               onClick={refreshInsights}
               disabled={loading}
               variant="outline"
-              className={`${theme.border} ${theme.text} hover:bg-[#252A31] hover:text-[#E1E4EA] rounded-xl px-4 py-2 gap-2 transition-all border-[#2E343C]/70 text-[#E1E4EA]`}
+              className="border border-[#1a1a1a] text-[#A1A1AA] hover:bg-[#1a1a1a] hover:text-white rounded-xl px-4 py-2 gap-2 transition-all"
             >
               <RefreshCw className="h-4 w-4" />
               Refresh
@@ -233,10 +233,10 @@ function InsightsContent() {
             <Card className={`${theme.panel} ${theme.border} rounded-xl overflow-hidden relative`}>
               <div className="absolute inset-0 bg-gradient-to-b from-transparent to-[#0d1015]/50 pointer-events-none" />
               <CardContent className="py-16 text-center relative z-10">
-                <div className="w-16 h-16 mx-auto mb-4 rounded-xl bg-[#2E343C]/50 flex items-center justify-center">
-                  <BrainMicrochipIcon className="h-8 w-8 text-[#9AA4B2]" />
+                <div className="w-16 h-16 mx-auto mb-4 rounded-xl bg-[#1a1a1a] flex items-center justify-center">
+                  <BrainMicrochipIcon className="h-8 w-8 text-[#A1A1AA]" />
                 </div>
-                <h3 className="text-xl font-semibold text-[#E1E4EA] mb-2">
+                <h3 className="text-xl font-semibold text-[#F8FAFC] mb-2">
                   No insights yet
                 </h3>
                 <p className={`${theme.subtext} mb-6 max-w-md mx-auto`}>
@@ -245,7 +245,7 @@ function InsightsContent() {
                 <Button 
                   onClick={generateInsights}
                   disabled={loading}
-                  className={`${theme.panel} ${theme.border} text-white hover:bg-[#0E3A2F] rounded-xl px-6 py-3 gap-2 transition-all shadow-inner shadow-[#0A0C0F]/20`}
+                  className="bg-[#0a0a0a] hover:bg-[#1a1a1a] text-white border border-[#1a1a1a] rounded-xl px-6 py-3 gap-2 transition-all"
                 >
                   <Zap className="h-4 w-4" />
                   Generate Your First Insights
@@ -255,7 +255,7 @@ function InsightsContent() {
           ) : (
             <div className="space-y-4">
               <div className="flex items-center justify-between">
-                <h2 className="text-lg font-medium text-[#E1E4EA]">Recent Insights</h2>
+                <h2 className="text-lg font-medium text-[#F8FAFC]">Recent Insights</h2>
                 <div className={`${theme.subtext} text-sm`}>
                   {transformedInsights.length} insights available
                 </div>
@@ -277,7 +277,7 @@ function InsightsContent() {
 export default function InsightsPage() {
   return (
     <Suspense fallback={
-      <div className="flex items-center justify-center min-h-screen bg-gradient-to-b from-[#0d0f12] to-[#14171c]">
+      <div className="flex items-center justify-center min-h-screen bg-gradient-to-b from-[#0a0a0a] to-[#0f0f0f]">
         <div className="w-16 h-16 border-4 border-[#10B981] border-t-transparent rounded-full animate-spin" />
       </div>
     }>
