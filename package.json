@@ -8,7 +8,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "verify": "node scripts/verify-setup.js"
+    "verify": "node scripts/verify-setup.js",
+    "purge-mock-data": "node scripts/purge-and-regenerate-mock-data.js"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.38.4",
@@ -19,6 +20,7 @@
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "date-fns": "^2.30.0",
+    "dotenv": "^17.2.3",
     "framer-motion": "^10.16.4",
     "jose": "^5.2.0",
     "lucide-react": "^0.462.0",
