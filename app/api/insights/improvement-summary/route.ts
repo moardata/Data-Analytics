@@ -43,10 +43,10 @@ export async function POST(request: NextRequest) {
         insight_id: insightId,
         action_id: actionId,
         improvement_id: improvementData.id,
-        summary_content: improvementSummary.content,
-        key_metrics: improvementSummary.keyMetrics,
-        recommendations: improvementSummary.recommendations,
-        confidence_score: improvementSummary.confidence,
+        summary_content: improvementSummary.summary || improvementSummary.content || 'No summary available',
+        key_metrics: improvementSummary.themes || improvementSummary.keyMetrics || [],
+        recommendations: improvementSummary.key_takeaways || improvementSummary.recommendations || [],
+        confidence_score: 0.85, // Default confidence since AIAnalysisResult doesn't have confidence
         generated_at: new Date().toISOString()
       })
       .select()
@@ -60,7 +60,12 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ 
       success: true, 
       summaryId: summaryData.id,
-      summary: improvementSummary
+      summary: {
+        content: improvementSummary.summary || improvementSummary.content || 'No summary available',
+        keyMetrics: improvementSummary.themes || improvementSummary.keyMetrics || [],
+        recommendations: improvementSummary.key_takeaways || improvementSummary.recommendations || [],
+        confidence: 0.85
+      }
     });
 
   } catch (error) {
