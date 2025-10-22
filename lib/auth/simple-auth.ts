@@ -35,16 +35,22 @@ export async function simpleAuth(request: Request): Promise<SimpleAuthResult> {
   try {
     // Step 1: Get company ID from URL (REQUIRED)
     const url = new URL(request.url);
+    console.log('🔍 [SimpleAuth] Full URL:', request.url);
+    console.log('🔍 [SimpleAuth] Search params:', url.searchParams.toString());
+    console.log('🔍 [SimpleAuth] companyId param:', url.searchParams.get('companyId'));
+    console.log('🔍 [SimpleAuth] company_id param:', url.searchParams.get('company_id'));
+    console.log('🔍 [SimpleAuth] ENV company ID:', process.env.NEXT_PUBLIC_WHOP_COMPANY_ID);
+    
     const companyId = url.searchParams.get('companyId') || 
                      url.searchParams.get('company_id') ||
                      process.env.NEXT_PUBLIC_WHOP_COMPANY_ID;
     
     if (!companyId) {
-      console.log('❌ [SimpleAuth] No company ID found');
+      console.log('❌ [SimpleAuth] No company ID found in any source');
       throw new Error('Company ID required');
     }
     
-    console.log('✅ [SimpleAuth] Company ID:', companyId);
+    console.log('✅ [SimpleAuth] Company ID found:', companyId);
     
     // Step 2: Try to validate with Whop (with timeout)
     let userId: string | undefined;

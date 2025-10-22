@@ -21,9 +21,14 @@ export async function OPTIONS() {
 
 export async function POST(request: NextRequest) {
   try {
+    console.log('🔍 [Insights Generate] Starting POST request');
+    console.log('🔍 [Insights Generate] Request URL:', request.url);
+    
     // Use simple auth (never hangs)
     const auth = await simpleAuth(request);
     const companyId = auth.companyId;
+    
+    console.log('✅ [Insights Generate] Auth successful, companyId:', companyId);
 
     // First, get the client record for this company
     const { data: clientData, error: clientError } = await supabase
