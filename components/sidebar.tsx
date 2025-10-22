@@ -14,16 +14,16 @@ import {
   Settings,
   TrendingUp,
   Users,
-  Zap
+  Zap,
+  Sparkles
 } from 'lucide-react'
-import { BrainMicrochipIcon } from '@/components/icons/BrainMicrochipIcon'
 import { cn } from '@/lib/utils/cn'
 import { useSidebar } from '@/contexts/sidebar-context'
 
 const navItems = [
   { href: '/analytics', label: 'Dashboard', icon: LayoutDashboard },
   { href: '/forms', label: 'Forms', icon: FileText },
-  { href: '/insights', label: 'AI Insights', icon: BrainMicrochipIcon },
+  { href: '/insights', label: 'AI Insights', icon: Sparkles },
   { href: '/students', label: 'Students', icon: Users },
   { href: '/revenue', label: 'Revenue', icon: TrendingUp },
 ]
@@ -69,15 +69,7 @@ export function Sidebar() {
                 )}
                 title={item.label}
               >
-                 {/* Force brain icon for insights */}
-                 {item.href === '/insights' ? (
-                   <>
-                     {console.log('Rendering brain icon for insights')}
-                     <BrainMicrochipIcon className="h-5 w-5 flex-shrink-0" key="brain-icon" />
-                   </>
-                 ) : (
-                   <item.icon className="h-5 w-5 flex-shrink-0" />
-                 )}
+                  <item.icon className="h-5 w-5 flex-shrink-0" />
                 {/* Tooltip for collapsed state */}
                 <div className="absolute left-full ml-2 px-2 py-1 bg-[#1E2228] text-white text-sm rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-50">
                   {item.label}

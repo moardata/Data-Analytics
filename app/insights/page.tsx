@@ -9,8 +9,7 @@ import { Suspense, useState, useEffect } from 'react';
 import { useSearchParams } from 'next/navigation';
 
 export const dynamic = 'force-dynamic';
-import { Zap, RefreshCw, TrendingUp, AlertCircle, Lightbulb } from 'lucide-react';
-import { BrainMicrochipIcon } from '@/components/icons/BrainMicrochipIcon';
+import { Zap, RefreshCw, TrendingUp, AlertCircle, Lightbulb, Sparkles } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { InsightsGrid, Insight } from '@/components/AIInsightsGrid';
@@ -135,7 +134,7 @@ function InsightsContent() {
           <div>
             <h1 className="text-2xl md:text-3xl font-semibold flex items-center gap-3">
               <div className="w-10 h-10 rounded-lg bg-[#10B981] flex items-center justify-center">
-                <BrainMicrochipIcon className="h-6 w-6 text-white" />
+                <Sparkles className="h-6 w-6 text-white" />
               </div>
               AI Insights
             </h1>
@@ -171,7 +170,7 @@ function InsightsContent() {
             <CardContent className="p-4 relative z-10">
               <div className="flex items-center gap-3">
                 <div className="w-8 h-8 rounded-lg bg-[#10B981]/20 flex items-center justify-center">
-                  <BrainMicrochipIcon className="h-4 w-4 text-[#10B981]" />
+                  <Sparkles className="h-4 w-4 text-[#10B981]" />
                 </div>
                 <div>
                   <div className="text-lg font-semibold">{insightStats.total}</div>
@@ -234,7 +233,7 @@ function InsightsContent() {
               <div className="absolute inset-0 bg-gradient-to-b from-transparent to-[#0d1015]/50 pointer-events-none" />
               <CardContent className="py-16 text-center relative z-10">
                 <div className="w-16 h-16 mx-auto mb-4 rounded-xl bg-[#1a1a1a] flex items-center justify-center">
-                  <BrainMicrochipIcon className="h-8 w-8 text-[#A1A1AA]" />
+                  <Sparkles className="h-8 w-8 text-[#A1A1AA]" />
                 </div>
                 <h3 className="text-xl font-semibold text-[#F8FAFC] mb-2">
                   No insights yet
