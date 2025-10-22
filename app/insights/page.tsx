@@ -9,9 +9,10 @@ import { Suspense, useState, useEffect } from 'react';
 import { useSearchParams } from 'next/navigation';
 
 export const dynamic = 'force-dynamic';
-import { Zap, RefreshCw, TrendingUp, AlertCircle, Lightbulb, Sparkles } from 'lucide-react';
+import { Zap, RefreshCw, TrendingUp, AlertCircle, Lightbulb, Sparkles, Activity, Brain, Target, Download } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
 import { InsightsGrid, Insight } from '@/components/AIInsightsGrid';
 import EngagementMetrics from '@/components/EngagementMetrics';
 import DataCollectionDashboard from '@/components/DataCollectionDashboard';
@@ -34,116 +35,51 @@ const theme = {
 
 function InsightsContent() {
   const searchParams = useSearchParams();
-  const clientId = searchParams.get('companyId') || process.env.NEXT_PUBLIC_WHOP_COMPANY_ID;
-  
-  const [insights, setInsights] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
+  const clientId = searchParams.get('clientId');
+  const [insights, setInsights] = useState<Insight[]>([]);
+  const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
-    fetchInsights();
-  }, [clientId]);
-
-  const fetchInsights = async () => {
-    setLoading(true);
-    try {
-      const response = await fetch(`/api/insights/generate?companyId=${clientId}&limit=20`);
-      const data = await response.json();
-      setInsights(data.insights || []);
-    } catch (error) {
-      console.error('Error fetching insights:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
+  // Transform insights for the grid
+  const transformedInsights: Insight[] = insights.map(insight => ({
+    id: insight.id,
+    title: insight.title,
+    description: insight.content,
+    category: insight.category,
+    confidence: insight.confidence,
+    status: insight.status,
+    createdAt: insight.createdAt,
+    priority: insight.priority,
+    tags: insight.tags,
+    actions: insight.actions
+  }));
 
   const generateInsights = async () => {
+    if (!clientId) return;
+    
+    setLoading(true);
     try {
-      setLoading(true);
       const response = await fetch('/api/insights/generate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ 
-          companyId: clientId,
-          timeRange: 'week',
-          includeAnomalies: true 
-        }),
+        body: JSON.stringify({ clientId })
       });
-      
-      const data = await response.json();
-      if (data.success) {
-        setInsights(data.insights);
-        alert(`Generated ${data.count} new insights!`);
+
+      if (response.ok) {
+        const data = await response.json();
+        setInsights(data.insights || []);
       }
     } catch (error) {
       console.error('Error generating insights:', error);
-      alert('Failed to generate insights');
     } finally {
       setLoading(false);
     }
   };
-
-  const refreshInsights = async () => {
-    try {
-      setLoading(true);
-      const response = await fetch('/api/insights/generate', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ 
-          companyId: clientId,
-          force: true 
-        }),
-      });
-      
-      const data = await response.json();
-      if (data.success) {
-        setInsights(data.insights);
-        alert('Insights refreshed!');
-      }
-    } catch (error) {
-      console.error('Error refreshing insights:', error);
-      alert('Failed to refresh insights');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // Transform insights to match AI grid format
-  const transformedInsights: Insight[] = insights.map(ins => ({
-    id: ins.id || Math.random().toString(),
-    headline: ins.title || 'Insight',
-    detail: ins.content || ins.body || '',
-    createdAt: ins.created_at || ins.createdAt || new Date().toISOString(),
-    severity: ins.severity === 'alert' ? 'critical' : ins.severity === 'warning' ? 'warning' : ins.type === 'recommendation' ? 'success' : 'info',
-    tags: ins.meta?.tags || [],
-    metricDeltaPct: ins.meta?.share_pct
-  }));
-
-  // Get enhanced insight statistics
-  const insightStats = {
-    total: insights.length,
-    recommendations: insights.filter(i => i.insight_type === 'recommendation').length,
-    alerts: insights.filter(i => i.insight_type === 'alert').length,
-    trends: insights.filter(i => i.insight_type === 'trend').length,
-    // Enhanced metrics
-    highUrgency: insights.filter(i => i.metadata?.urgency === 'high').length,
-    positiveSentiment: insights.filter(i => i.metadata?.sentiment === 'positive').length,
-    negativeSentiment: insights.filter(i => i.metadata?.sentiment === 'negative').length,
-    aiGenerated: insights.filter(i => i.metadata?.ai_generated === true).length,
-  };
-
-  if (loading && insights.length === 0) {
-    return (
-      <div className={`${theme.bg} ${theme.text} min-h-screen flex items-center justify-center`}>
-        <div className="w-16 h-16 border-4 border-[#10B981] border-t-transparent rounded-full animate-spin" />
-      </div>
-    );
-  }
 
   return (
-    <div className={`${theme.bg} ${theme.text} min-h-screen w-full`}>
-      <div className="mx-auto max-w-[1240px] px-4 py-6 space-y-6">
-        {/* Header Section */}
-        <div className="flex items-center justify-between flex-wrap gap-4">
+    <div className={`min-h-screen ${theme.bg}`}>
+      <div className="container mx-auto px-4 py-8">
+        {/* Header */}
+        <div className="flex items-center justify-between mb-8">
           <div>
             <h1 className="text-2xl md:text-3xl font-semibold flex items-center gap-3">
               <div className="w-10 h-10 rounded-lg bg-[#10B981] flex items-center justify-center">
@@ -151,194 +87,202 @@ function InsightsContent() {
               </div>
               AI Insights
             </h1>
-            <p className={`${theme.subtext} text-sm mt-1`}>
+            <p className="text-[#A1A1AA] mt-2">
               AI-powered recommendations and analytics for your community
             </p>
           </div>
-          <div className="flex gap-2">
+          <div className="flex items-center gap-3">
             <Button 
               onClick={generateInsights}
               disabled={loading}
-              className="bg-[#0a0a0a] hover:bg-[#1a1a1a] text-white border border-[#1a1a1a] rounded-xl px-4 py-2 gap-2 transition-all"
+              className="bg-[#0a0a0a] hover:bg-[#1a1a1a] text-white border border-[#1a1a1a] rounded-xl px-6 py-3 gap-2 transition-all"
             >
               <Zap className="h-4 w-4" />
               {loading ? 'Generating...' : 'Generate Insights'}
             </Button>
             <Button 
-              onClick={refreshInsights}
-              disabled={loading}
               variant="outline"
-              className="border border-[#1a1a1a] text-[#A1A1AA] hover:bg-[#1a1a1a] hover:text-white rounded-xl px-4 py-2 gap-2 transition-all"
+              className="border-[#1a1a1a] text-[#A1A1AA] hover:bg-[#1a1a1a] rounded-xl px-4 py-3"
             >
               <RefreshCw className="h-4 w-4" />
-              Refresh
             </Button>
           </div>
         </div>
 
-        {/* Enhanced Stats Cards */}
-        <section className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
-          <Card className={`${theme.panel} ${theme.border} rounded-xl overflow-hidden relative`}>
-            <div className="absolute inset-0 bg-gradient-to-b from-transparent to-[#0d1015]/50 pointer-events-none" />
-            <CardContent className="p-4 relative z-10">
-              <div className="flex items-center gap-3">
-                <div className="w-8 h-8 rounded-lg bg-[#10B981]/20 flex items-center justify-center">
-                  <Sparkles className="h-4 w-4 text-[#10B981]" />
-                </div>
-                <div>
-                  <div className="text-lg font-semibold">{insightStats.total}</div>
-                  <div className={`${theme.subtext} text-xs`}>Total Insights</div>
-                </div>
+        {/* Stats Cards */}
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-8">
+          <Card className={`${theme.panel} ${theme.border} rounded-xl p-4`}>
+            <div className="flex items-center gap-3">
+              <div className="w-8 h-8 rounded-lg bg-[#10B981]/20 flex items-center justify-center">
+                <Sparkles className="h-4 w-4 text-[#10B981]" />
               </div>
-            </CardContent>
+              <div>
+                <p className="text-2xl font-bold text-[#F8FAFC]">{insights.length}</p>
+                <p className="text-xs text-[#A1A1AA]">Total Insights</p>
+              </div>
+            </div>
           </Card>
 
-          <Card className={`${theme.panel} ${theme.border} rounded-xl overflow-hidden relative`}>
-            <div className="absolute inset-0 bg-gradient-to-b from-transparent to-[#0d1015]/50 pointer-events-none" />
-            <CardContent className="p-4 relative z-10">
-              <div className="flex items-center gap-3">
-                <div className="w-8 h-8 rounded-lg bg-blue-500/20 flex items-center justify-center">
-                  <Lightbulb className="h-4 w-4 text-blue-400" />
-                </div>
-                <div>
-                  <div className="text-lg font-semibold">{insightStats.recommendations}</div>
-                  <div className={`${theme.subtext} text-xs`}>Recommendations</div>
-                </div>
+          <Card className={`${theme.panel} ${theme.border} rounded-xl p-4`}>
+            <div className="flex items-center gap-3">
+              <div className="w-8 h-8 rounded-lg bg-[#8B5CF6]/20 flex items-center justify-center">
+                <Lightbulb className="h-4 w-4 text-[#8B5CF6]" />
               </div>
-            </CardContent>
+              <div>
+                <p className="text-2xl font-bold text-[#F8FAFC]">{insights.filter(i => i.category === 'recommendation').length}</p>
+                <p className="text-xs text-[#A1A1AA]">Recommendations</p>
+              </div>
+            </div>
           </Card>
 
-          <Card className={`${theme.panel} ${theme.border} rounded-xl overflow-hidden relative`}>
-            <div className="absolute inset-0 bg-gradient-to-b from-transparent to-[#0d1015]/50 pointer-events-none" />
-            <CardContent className="p-4 relative z-10">
-              <div className="flex items-center gap-3">
-                <div className="w-8 h-8 rounded-lg bg-red-500/20 flex items-center justify-center">
-                  <AlertCircle className="h-4 w-4 text-red-400" />
-                </div>
-                <div>
-                  <div className="text-lg font-semibold">{insightStats.highUrgency}</div>
-                  <div className={`${theme.subtext} text-xs`}>High Priority</div>
-                </div>
+          <Card className={`${theme.panel} ${theme.border} rounded-xl p-4`}>
+            <div className="flex items-center gap-3">
+              <div className="w-8 h-8 rounded-lg bg-[#EF4444]/20 flex items-center justify-center">
+                <AlertCircle className="h-4 w-4 text-[#EF4444]" />
               </div>
-            </CardContent>
+              <div>
+                <p className="text-2xl font-bold text-[#F8FAFC]">{insights.filter(i => i.priority === 'high').length}</p>
+                <p className="text-xs text-[#A1A1AA]">High Priority</p>
+              </div>
+            </div>
           </Card>
 
-          <Card className={`${theme.panel} ${theme.border} rounded-xl overflow-hidden relative`}>
-            <div className="absolute inset-0 bg-gradient-to-b from-transparent to-[#0d1015]/50 pointer-events-none" />
-            <CardContent className="p-4 relative z-10">
-              <div className="flex items-center gap-3">
-                <div className="w-8 h-8 rounded-lg bg-green-500/20 flex items-center justify-center">
-                  <TrendingUp className="h-4 w-4 text-green-400" />
-                </div>
-                <div>
-                  <div className="text-lg font-semibold">{insightStats.positiveSentiment}</div>
-                  <div className={`${theme.subtext} text-xs`}>Positive</div>
-                </div>
+          <Card className={`${theme.panel} ${theme.border} rounded-xl p-4`}>
+            <div className="flex items-center gap-3">
+              <div className="w-8 h-8 rounded-lg bg-[#F59E0B]/20 flex items-center justify-center">
+                <AlertCircle className="h-4 w-4 text-[#F59E0B]" />
               </div>
-            </CardContent>
+              <div>
+                <p className="text-2xl font-bold text-[#F8FAFC]">{insights.filter(i => i.category === 'issue').length}</p>
+                <p className="text-xs text-[#A1A1AA]">Issues</p>
+              </div>
+            </div>
           </Card>
 
-          <Card className={`${theme.panel} ${theme.border} rounded-xl overflow-hidden relative`}>
-            <div className="absolute inset-0 bg-gradient-to-b from-transparent to-[#0d1015]/50 pointer-events-none" />
-            <CardContent className="p-4 relative z-10">
-              <div className="flex items-center gap-3">
-                <div className="w-8 h-8 rounded-lg bg-orange-500/20 flex items-center justify-center">
-                  <AlertCircle className="h-4 w-4 text-orange-400" />
-                </div>
-                <div>
-                  <div className="text-lg font-semibold">{insightStats.negativeSentiment}</div>
-                  <div className={`${theme.subtext} text-xs`}>Issues</div>
-                </div>
+          <Card className={`${theme.panel} ${theme.border} rounded-xl p-4`}>
+            <div className="flex items-center gap-3">
+              <div className="w-8 h-8 rounded-lg bg-[#10B981]/20 flex items-center justify-center">
+                <Zap className="h-4 w-4 text-[#10B981]" />
               </div>
-            </CardContent>
+              <div>
+                <p className="text-2xl font-bold text-[#F8FAFC]">{insights.filter(i => i.status === 'generated').length}</p>
+                <p className="text-xs text-[#A1A1AA]">AI Generated</p>
+              </div>
+            </div>
           </Card>
 
-          <Card className={`${theme.panel} ${theme.border} rounded-xl overflow-hidden relative`}>
-            <div className="absolute inset-0 bg-gradient-to-b from-transparent to-[#0d1015]/50 pointer-events-none" />
-            <CardContent className="p-4 relative z-10">
-              <div className="flex items-center gap-3">
-                <div className="w-8 h-8 rounded-lg bg-purple-500/20 flex items-center justify-center">
-                  <Zap className="h-4 w-4 text-purple-400" />
-                </div>
-                <div>
-                  <div className="text-lg font-semibold">{insightStats.aiGenerated}</div>
-                  <div className={`${theme.subtext} text-xs`}>AI Generated</div>
-                </div>
+          <Card className={`${theme.panel} ${theme.border} rounded-xl p-4`}>
+            <div className="flex items-center gap-3">
+              <div className="w-8 h-8 rounded-lg bg-[#10B981]/20 flex items-center justify-center">
+                <TrendingUp className="h-4 w-4 text-[#10B981]" />
               </div>
-            </CardContent>
+              <div>
+                <p className="text-2xl font-bold text-[#F8FAFC]">{insights.filter(i => i.category === 'positive').length}</p>
+                <p className="text-xs text-[#A1A1AA]">Positive</p>
+              </div>
+            </div>
           </Card>
+        </div>
+
+        {/* Data Collection & Processing Section */}
+        <section>
+          <div className="flex items-center justify-between mb-6">
+            <div>
+              <h2 className="text-xl font-semibold text-[#F8FAFC]">Data Collection & Processing</h2>
+              <p className="text-sm text-[#A1A1AA]">Multi-tenant data collection, AI processing, and system health monitoring</p>
+            </div>
+            <Badge variant="outline" className="border-[#10B981]/30 text-[#10B981] bg-[#10B981]/10">
+              <Activity className="h-3 w-3 mr-1" />
+              Active Collection
+            </Badge>
+          </div>
+          
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div>
+              <h3 className="text-lg font-medium text-[#F8FAFC] mb-4">Data Collection Status</h3>
+              <DataCollectionDashboard companyId={clientId || ''} />
+            </div>
+            <div>
+              <h3 className="text-lg font-medium text-[#F8FAFC] mb-4">System Health & Meta Data</h3>
+              <SystemHealthDashboard companyId={clientId || ''} />
+            </div>
+          </div>
         </section>
 
-        {/* Data Collection Section */}
+        {/* AI Insights & Analytics Section */}
         <section>
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-medium text-[#F8FAFC]">Data Collection Status</h2>
-            <p className="text-sm text-[#A1A1AA]">Multi-tenant data collection and AI processing</p>
+          <div className="flex items-center justify-between mb-6">
+            <div>
+              <h2 className="text-xl font-semibold text-[#F8FAFC]">AI Insights & Analytics</h2>
+              <p className="text-sm text-[#A1A1AA]">AI-powered insights, structured analysis, and engagement metrics</p>
+            </div>
+            <Badge variant="outline" className="border-[#8B5CF6]/30 text-[#8B5CF6] bg-[#8B5CF6]/10">
+              <Brain className="h-3 w-3 mr-1" />
+              AI Powered
+            </Badge>
           </div>
-          <DataCollectionDashboard companyId={clientId || ''} />
+          
+          <div className="space-y-6">
+            <div>
+              <h3 className="text-lg font-medium text-[#F8FAFC] mb-4">Enhanced Insights Display</h3>
+              <EnhancedInsightsDisplay companyId={clientId || ''} />
+            </div>
+            
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <div>
+                <h3 className="text-lg font-medium text-[#F8FAFC] mb-4">Structured AI Analysis</h3>
+                <StructuredAIInsights companyId={clientId || ''} />
+              </div>
+              <div>
+                <h3 className="text-lg font-medium text-[#F8FAFC] mb-4">Engagement Analytics</h3>
+                <EngagementMetrics companyId={clientId || ''} />
+              </div>
+            </div>
+          </div>
         </section>
 
-        {/* Data Storage Section */}
+        {/* Action & Improvement Section */}
         <section>
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-medium text-[#F8FAFC]">Data Storage Status</h2>
-            <p className="text-sm text-[#A1A1AA]">Insights storage with timestamps, metadata, and progress tracking</p>
+          <div className="flex items-center justify-between mb-6">
+            <div>
+              <h2 className="text-xl font-semibold text-[#F8FAFC]">Action & Improvement</h2>
+              <p className="text-sm text-[#A1A1AA]">Track actions, measure improvements, and manage data storage</p>
+            </div>
+            <Badge variant="outline" className="border-[#F59E0B]/30 text-[#F59E0B] bg-[#F59E0B]/10">
+              <Target className="h-3 w-3 mr-1" />
+              Continuous Improvement
+            </Badge>
           </div>
-          <DataStorageDashboard companyId={clientId || ''} />
+          
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div>
+              <h3 className="text-lg font-medium text-[#F8FAFC] mb-4">Action & Feedback Loop</h3>
+              <ActionFeedbackLoop companyId={clientId || ''} />
+            </div>
+            <div>
+              <h3 className="text-lg font-medium text-[#F8FAFC] mb-4">Data Storage & History</h3>
+              <DataStorageDashboard companyId={clientId || ''} />
+            </div>
+          </div>
         </section>
 
-        {/* Enhanced Insights Display Section */}
+        {/* Reports & Export Section */}
         <section>
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-medium text-[#F8FAFC]">Insights Display</h2>
-            <p className="text-sm text-[#A1A1AA]">Card-based insights with categories, severity indicators, and actions</p>
+          <div className="flex items-center justify-between mb-6">
+            <div>
+              <h2 className="text-xl font-semibold text-[#F8FAFC]">Reports & Export</h2>
+              <p className="text-sm text-[#A1A1AA]">Download comprehensive analytics, insights, and system reports</p>
+            </div>
+            <Badge variant="outline" className="border-[#3B82F6]/30 text-[#3B82F6] bg-[#3B82F6]/10">
+              <Download className="h-3 w-3 mr-1" />
+              Export Ready
+            </Badge>
           </div>
-          <EnhancedInsightsDisplay companyId={clientId || ''} />
-        </section>
-
-        {/* Structured AI Analysis Section */}
-        <section>
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-medium text-[#F8FAFC]">AI Analysis Results</h2>
-            <p className="text-sm text-[#A1A1AA]">Structured analysis focusing on drop-offs, sentiment, and engagement</p>
+          
+          <div>
+            <h3 className="text-lg font-medium text-[#F8FAFC] mb-4">Export Options & Reports</h3>
+            <ExportsReportsDashboard companyId={clientId || ''} />
           </div>
-          <StructuredAIInsights companyId={clientId || ''} />
-        </section>
-
-        {/* Engagement Metrics Section */}
-        <section>
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-medium text-[#F8FAFC]">Engagement Analytics</h2>
-            <p className="text-sm text-[#A1A1AA]">Detailed metrics and trends</p>
-          </div>
-          <EngagementMetrics companyId={clientId || ''} />
-        </section>
-
-        {/* Action & Feedback Loop Section */}
-        <section>
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-medium text-[#F8FAFC]">Action & Feedback Loop</h2>
-            <p className="text-sm text-[#A1A1AA]">Track creator actions and measure improvements</p>
-          </div>
-          <ActionFeedbackLoop companyId={clientId || ''} />
-        </section>
-
-        {/* Exports & Reports Section */}
-        <section>
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-medium text-[#F8FAFC]">Exports & Reports</h2>
-            <p className="text-sm text-[#A1A1AA]">Download comprehensive analytics and insights</p>
-          </div>
-          <ExportsReportsDashboard companyId={clientId || ''} />
-        </section>
-
-        {/* System Health & Meta Data Section */}
-        <section>
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-medium text-[#F8FAFC]">System Health & Meta Data</h2>
-            <p className="text-sm text-[#A1A1AA]">Monitor data freshness and AI response times</p>
-          </div>
-          <SystemHealthDashboard companyId={clientId || ''} />
         </section>
 
         {/* Insights Grid */}
