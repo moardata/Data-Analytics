@@ -16,6 +16,7 @@ import { InsightsGrid, Insight } from '@/components/AIInsightsGrid';
 import EngagementMetrics from '@/components/EngagementMetrics';
 import DataCollectionDashboard from '@/components/DataCollectionDashboard';
 import StructuredAIInsights from '@/components/StructuredAIInsights';
+import EnhancedInsightsDisplay from '@/components/EnhancedInsightsDisplay';
 
 // ---------------------- THEME ----------------------
 const theme = {
@@ -271,6 +272,15 @@ function InsightsContent() {
             <p className="text-sm text-[#A1A1AA]">Multi-tenant data collection and AI processing</p>
           </div>
           <DataCollectionDashboard companyId={clientId || ''} />
+        </section>
+
+        {/* Enhanced Insights Display Section */}
+        <section>
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-lg font-medium text-[#F8FAFC]">Insights Display</h2>
+            <p className="text-sm text-[#A1A1AA]">Card-based insights with categories, severity indicators, and actions</p>
+          </div>
+          <EnhancedInsightsDisplay companyId={clientId || ''} />
         </section>
 
         {/* Structured AI Analysis Section */}
