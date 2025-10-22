@@ -36,7 +36,7 @@ const theme = {
 function InsightsContent() {
   const searchParams = useSearchParams();
   const clientId = searchParams.get('clientId');
-  const [insights, setInsights] = useState<Insight[]>([]);
+  const [insights, setInsights] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
 
   // Transform insights for the grid
