@@ -215,11 +215,14 @@ function processEngagementMetrics(events: any[]) {
     return acc;
   }, {} as Record<string, number>);
 
+  const dailyActivityEntries = Object.entries(dailyActivity);
+  const mostActiveDayEntry = dailyActivityEntries.reduce((a, b) => a[1] > b[1] ? a : b, ['', 0] as [string, number]);
+  
   return {
     totalEvents: events.length,
     engagementByType,
     dailyActivity,
-    mostActiveDay: Object.entries(dailyActivity).reduce((a, b) => a[1] > b[1] ? a : b, ['', 0])[0],
+    mostActiveDay: mostActiveDayEntry[0],
     averageDailyActivity: events.length / Object.keys(dailyActivity).length || 0
   };
 }
