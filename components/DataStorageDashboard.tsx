@@ -54,7 +54,7 @@ export default function DataStorageDashboard({ companyId }: DataStorageDashboard
       setLoading(true);
       
       // Fetch statistics
-      const statsResponse = await fetch(`/api/data-storage?action=get_statistics`);
+      const statsResponse = await fetch(`/api/data-storage?action=get_statistics&companyId=${companyId}`);
       const statsResult = await statsResponse.json();
       
       if (statsResult.success) {
@@ -62,7 +62,7 @@ export default function DataStorageDashboard({ companyId }: DataStorageDashboard
       }
 
       // Fetch history
-      const historyResponse = await fetch(`/api/data-storage?action=get_history&limit=10`);
+      const historyResponse = await fetch(`/api/data-storage?action=get_history&limit=10&companyId=${companyId}`);
       const historyResult = await historyResponse.json();
       
       if (historyResult.success) {

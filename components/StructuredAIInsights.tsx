@@ -50,7 +50,7 @@ export default function StructuredAIInsights({ companyId }: StructuredAIInsights
   const fetchAnalysis = async () => {
     try {
       setLoading(true);
-      const response = await fetch(`/api/insights/analyze?range=week`);
+      const response = await fetch(`/api/insights/analyze?range=week&companyId=${companyId}`);
       const result = await response.json();
       
       if (result.success) {
@@ -66,7 +66,7 @@ export default function StructuredAIInsights({ companyId }: StructuredAIInsights
   const handleAnalyze = async () => {
     setAnalyzing(true);
     try {
-      const response = await fetch('/api/insights/analyze', {
+      const response = await fetch(`/api/insights/analyze?companyId=${companyId}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ timeRange: 'week', forceRefresh: true })

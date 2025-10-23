@@ -60,7 +60,7 @@ export default function EnhancedInsightsDisplay({ companyId }: EnhancedInsightsD
   const fetchInsights = async () => {
     try {
       setLoading(true);
-      const response = await fetch(`/api/insights/analyze?range=week`);
+      const response = await fetch(`/api/insights/analyze?range=week&companyId=${companyId}`);
       const result = await response.json();
       
       if (result.success && result.analysis.insights) {

@@ -73,8 +73,8 @@ export default function ActionFeedbackLoop({ companyId }: ActionFeedbackLoopProp
       
       // Fetch actions and improvements in parallel
       const [actionsResponse, improvementsResponse] = await Promise.all([
-        fetch(`/api/insights/feedback-loop?clientId=${companyId}`),
-        fetch(`/api/insights/improvement-tracking?clientId=${companyId}`)
+        fetch(`/api/insights/feedback-loop?companyId=${companyId}`),
+        fetch(`/api/insights/improvement-tracking?companyId=${companyId}`)
       ]);
 
       if (!actionsResponse.ok || !improvementsResponse.ok) {

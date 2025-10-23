@@ -54,14 +54,28 @@ export async function POST(request: NextRequest) {
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
-    const clientId = searchParams.get('clientId');
+    const companyIdParam = searchParams.get('companyId') || searchParams.get('clientId');
     const actionType = searchParams.get('actionType');
     
-    if (!clientId) {
-      return NextResponse.json({ error: 'Client ID required' }, { status: 400 });
+    if (!companyIdParam) {
+      return NextResponse.json({ error: 'Company ID required' }, { status: 400 });
     }
 
-    // Use the imported supabase client
+    // Get the client record for this company
+    const { data: clientData, error: clientError } = await supabase
+      .from('clients')
+      .select('id')
+      .eq('company_id', companyIdParam)
+      .single();
+
+    if (clientError || !clientData) {
+      return NextResponse.json(
+        { error: 'Client not found for this company' },
+        { status: 404 }
+      );
+    }
+
+    const clientId = clientData.id; // This is the actual UUID
     
     // Get actions taken by this client
     let query = supabase
@@ -71,10 +85,10 @@ export async function GET(request: NextRequest) {
         insights!inner(
           id,
           title,
-          company_id
+          client_id
         )
       `)
-      .eq('insights.company_id', clientId)
+      .eq('insights.client_id', clientId)
       .order('created_at', { ascending: false });
 
     if (actionType) {
