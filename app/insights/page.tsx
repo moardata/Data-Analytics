@@ -18,8 +18,6 @@ import { InsightsGrid, Insight } from '@/components/AIInsightsGrid';
 import EngagementMetrics from '@/components/EngagementMetrics';
 import DataCollectionDashboard from '@/components/DataCollectionDashboard';
 import StructuredAIInsights from '@/components/StructuredAIInsights';
-import EnhancedInsightsDisplay from '@/components/EnhancedInsightsDisplay';
-import DataStorageDashboard from '@/components/DataStorageDashboard';
 import ActionFeedbackLoop from '@/components/ActionFeedbackLoop';
 import ExportsReportsDashboard from '@/components/ExportsReportsDashboard';
 import SystemHealthDashboard from '@/components/SystemHealthDashboard';
@@ -340,11 +338,6 @@ function InsightsContent() {
           {/* My Insights Tab */}
           <TabsContent value="insights" className="mt-6">
             <div className="space-y-6">
-              <div>
-                <h3 className="text-lg font-medium text-[#F8FAFC] mb-4">Enhanced Insights Display</h3>
-                <EnhancedInsightsDisplay companyId={clientId || ''} />
-              </div>
-              
               {transformedInsights.length === 0 ? (
                 <Card className={`${theme.panel} ${theme.border} rounded-xl overflow-hidden relative`}>
                   <div className="absolute inset-0 bg-gradient-to-b from-transparent to-[#0d1015]/50 pointer-events-none" />
@@ -406,15 +399,9 @@ function InsightsContent() {
           {/* Actions Tab */}
           <TabsContent value="actions" className="mt-6">
             <div className="space-y-6">
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                <div>
-                  <h3 className="text-lg font-medium text-[#F8FAFC] mb-4">Action & Feedback Loop</h3>
-                  <ActionFeedbackLoop companyId={clientId || ''} />
-                </div>
-                <div>
-                  <h3 className="text-lg font-medium text-[#F8FAFC] mb-4">Data Storage & History</h3>
-                  <DataStorageDashboard companyId={clientId || ''} />
-                </div>
+              <div>
+                <h3 className="text-lg font-medium text-[#F8FAFC] mb-4">Action & Feedback Loop</h3>
+                <ActionFeedbackLoop companyId={clientId || ''} />
               </div>
             </div>
           </TabsContent>
