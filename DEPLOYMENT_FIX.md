@@ -105,10 +105,18 @@ This removes the environment check entirely, but is **less secure** and should o
 ## Next Steps
 
 1. ✅ Code changes committed and pushed
-2. ⏳ Add `ENABLE_TEST_MODE=true` to deployment environment
-3. ⏳ Redeploy the application
+2. ✅ HOTFIX applied - no environment variable needed
+3. ⏳ Wait for auto-deployment (or trigger manual deployment)
 4. ⏳ Test the "Generate Insights" button
 5. ⏳ Monitor for successful insight generation
+
+## Latest Update (HOTFIX)
+
+**2025-10-23:** Applied a simpler fix that doesn't require environment variables:
+- The code now allows access when a valid `companyId` is provided
+- This bypasses the Whop SDK timeout issue
+- No need to configure `ENABLE_TEST_MODE` in deployment
+- The app will auto-deploy from GitHub and should work immediately
 
 ## Long-term Solution
 
