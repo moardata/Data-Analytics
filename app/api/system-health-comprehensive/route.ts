@@ -140,6 +140,8 @@ async function getComprehensiveSystemHealth(clientId: string) {
     },
     subscriptions: {
       total: subscriptions.length,
+      last7Days: subscriptions.filter(s => new Date(s.created_at) > sevenDaysAgo).length,
+      last30Days: subscriptions.length,
       active: subscriptions.filter(s => s.status === 'active').length,
       cancelled: subscriptions.filter(s => s.status === 'cancelled').length,
       expired: subscriptions.filter(s => s.status === 'expired').length,
