@@ -41,6 +41,7 @@ function InsightsContent() {
   const [insights, setInsights] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const [activeTab, setActiveTab] = useState('insights');
+  const [showSuccess, setShowSuccess] = useState(false);
 
   // Get company ID from URL (same as analytics page)
   useEffect(() => {
@@ -146,6 +147,10 @@ function InsightsContent() {
         console.log('✅ Generated insights:', data);
         setInsights(data.insights || []);
         console.log('📈 Insights set:', data.insights?.length || 0, 'insights');
+        
+        // Show success popup
+        setShowSuccess(true);
+        setTimeout(() => setShowSuccess(false), 3000); // Auto-hide after 3 seconds
       } else {
         const errorData = await response.json();
         console.error('❌ API Error:', errorData);
@@ -175,6 +180,23 @@ function InsightsContent() {
 
   return (
     <div className={`min-h-screen ${theme.bg}`}>
+      {/* Success Popup */}
+      {showSuccess && (
+        <div className="fixed top-4 right-4 z-50 animate-in slide-in-from-right-5 duration-300">
+          <div className="bg-[#10B981] text-white px-6 py-4 rounded-xl shadow-lg flex items-center gap-3">
+            <div className="w-6 h-6 rounded-full bg-white/20 flex items-center justify-center">
+              <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+              </svg>
+            </div>
+            <div>
+              <p className="font-semibold">Insights Generated!</p>
+              <p className="text-sm opacity-90">AI analysis completed successfully</p>
+            </div>
+          </div>
+        </div>
+      )}
+      
       <div className="container mx-auto px-4 py-8">
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
