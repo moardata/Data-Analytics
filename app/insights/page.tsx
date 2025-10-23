@@ -69,14 +69,17 @@ function InsightsContent() {
 
   const fetchClientId = async (companyId: string) => {
     try {
-      const response = await fetch(`/api/analytics/metrics?companyId=${companyId}`);
+      // Fetch the actual client UUID from the database
+      const response = await fetch(`/api/client/lookup?companyId=${companyId}`);
       if (response.ok) {
-        // If the API call succeeds, we know the client exists
-        // We'll get the client ID from the insights API
-        setClientId('found'); // Placeholder - the API will handle the lookup
+        const data = await response.json();
+        setClientId(data.clientId);
+        console.log('✅ Got client UUID:', data.clientId);
       }
     } catch (error) {
       console.error('Error fetching client ID:', error);
+      // Fallback: use companyId directly for components that can handle it
+      setClientId(companyId);
     }
   };
 
@@ -222,7 +225,12 @@ function InsightsContent() {
             </Button>
             <Button 
               variant="outline"
+              onClick={() => {
+                loadExistingInsights();
+                window.location.reload();
+              }}
               className="border-[#1a1a1a] text-[#A1A1AA] hover:bg-[#1a1a1a] rounded-xl px-4 py-3"
+              title="Refresh insights"
             >
               <RefreshCw className="h-4 w-4" />
             </Button>
