@@ -27,73 +27,8 @@ import CommitmentDistribution from '@/components/metrics/CommitmentDistribution'
  * All metrics are cached and auto-refreshed via cron jobs
  */
 
-// Colors
-const EMERALD = '#10B981'; // emerald-500
-const EMERALD_DARK = '#0E3A2F';
+// Colors (kept for Panel component styling)
 const PANEL_BORDER = '#2A2F36';
-const PANEL_BG = '#16191F';
-
-// ----------------------------------------
-// Small chart primitives
-// ----------------------------------------
-function Sparkline({ data }: { data: { day: string; v: number }[] }) {
-  return (
-    <ResponsiveContainer width="100%" height={84}>
-      <LineChart data={data} margin={{ top: 4, right: 4, left: 0, bottom: 0 }}>
-        <CartesianGrid stroke="#1d2127" vertical={false} />
-        <XAxis dataKey="day" hide />
-        <YAxis hide domain={[0, 'dataMax + 20%']} />
-        <Tooltip
-          contentStyle={{ background: '#0F1319', border: `1px solid ${PANEL_BORDER}`, borderRadius: 10 }}
-          labelStyle={{ color: '#E5E7EB' }}
-          itemStyle={{ color: '#E5E7EB' }}
-        />
-        <Line type="monotone" dataKey="v" stroke={EMERALD} strokeWidth={2} dot={false} />
-      </LineChart>
-    </ResponsiveContainer>
-  );
-}
-
-function Donut({ data }: { data: { name: string; value: number }[] }) {
-  const total = data.reduce((a, b) => a + b.value, 0);
-  return (
-    <ResponsiveContainer width="100%" height={140}>
-      <PieChart>
-        <Pie data={data} dataKey="value" innerRadius={40} outerRadius={60} paddingAngle={2}>
-          {data.map((_, i) => (
-            <Cell key={i} fill={i === 0 ? EMERALD : i === 1 ? '#64748B' : '#ef4444'} />
-          ))}
-        </Pie>
-        <Tooltip
-          formatter={(v: number, n: string) => [`${v}%`, n]}
-          contentStyle={{ background: '#0F1319', border: `1px solid ${PANEL_BORDER}`, borderRadius: 10 }}
-          labelStyle={{ color: '#E5E7EB' }}
-          itemStyle={{ color: '#E5E7EB' }}
-        />
-      </PieChart>
-    </ResponsiveContainer>
-  );
-}
-
-// ----------------------------------------
-// Reusable UI bits
-// ----------------------------------------
-function StatHeader({ title, value, sub, delta }: { title: string; value: string; sub?: string; delta?: string }) {
-  return (
-    <div className="flex items-start justify-between">
-      <div>
-        <div className="text-[13px] text-[#A1A1AA]">{title}</div>
-        <div className="mt-1 text-2xl font-semibold text-[#F8FAFC]">{value}</div>
-        {sub && <div className="text-sm text-[#A1A1AA]">{sub}</div>}
-      </div>
-      {delta && (
-        <div className="rounded-full bg-emerald-900/20 px-2 py-1 text-[12px] font-medium text-emerald-300 border border-emerald-700/40">
-          {delta}
-        </div>
-      )}
-    </div>
-  );
-}
 
 function Panel({ children, className }: React.PropsWithChildren<{ className?: string }>) {
   return (
