@@ -64,14 +64,14 @@ export async function calculatePopularContent(clientId: string): Promise<Popular
 
   // Calculate trends and format results
   const content = Array.from(todayAnalysis.entries()).map(([expId, data]) => {
-    const yesterdayData = yesterdayAnalysis.get(expId) || { engagements: 0, uniqueStudents: 0 };
+    const yesterdayData = yesterdayAnalysis.get(expId) || { engagements: 0, uniqueStudents: new Set() };
     const trend = calculateTrend(data.engagements, yesterdayData.engagements);
 
     return {
       experienceId: expId,
       name: formatContentName(expId),
       engagements: data.engagements,
-      uniqueStudents: data.uniqueStudents,
+      uniqueStudents: data.uniqueStudents.size,
       trend
     };
   }).sort((a, b) => b.engagements - a.engagements);
