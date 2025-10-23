@@ -115,6 +115,9 @@ Return JSON in this format:
     });
 
     const resultText = completion.choices[0].message.content;
+    if (!resultText) {
+      throw new Error('No content received from OpenAI');
+    }
     const result = JSON.parse(resultText);
     
     return result;
