@@ -11,14 +11,20 @@ import { scrubText } from './piiScrubber';
 let _openai: OpenAI | null = null;
 
 function getOpenAI(): OpenAI | null {
-  if (!process.env.OPENAI_API_KEY) return null;
+  if (!process.env.OPENAI_API_KEY) {
+    console.error('❌ OPENAI_API_KEY not found in environment');
+    return null;
+  }
   if (!_openai) {
-    _openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+    const key = process.env.OPENAI_API_KEY;
+    console.log('🔑 Initializing OpenAI with key ending in:', key.substring(key.length - 10));
+    _openai = new OpenAI({ apiKey: key });
   }
   return _openai;
 }
 
-const openai = getOpenAI();
+// Force re-initialization every time to avoid stale cache
+const openai = null; // Will be lazily initialized in generateWithOpenAI
 
 export interface InsightTheme {
   title: string;
@@ -217,14 +223,15 @@ export async function generateInsightsForClient(
     }));
 
     // MUST have OpenAI configured - no bullshit fallbacks
+    const apiKey = process.env.OPENAI_API_KEY;
     console.log('🔍 AI Generation Check:', {
-      hasOpenAI: !!openai,
-      hasAPIKey: !!process.env.OPENAI_API_KEY,
-      apiKeyLength: process.env.OPENAI_API_KEY?.length || 0,
+      hasAPIKey: !!apiKey,
+      apiKeyLength: apiKey?.length || 0,
+      apiKeyEnding: apiKey ? '...' + apiKey.substring(apiKey.length - 10) : 'NO KEY',
       textCount: scrubbedTexts.length
     });
     
-    if (!openai || !process.env.OPENAI_API_KEY) {
+    if (!apiKey) {
       console.error('❌ FATAL: OpenAI not configured');
       throw new Error('OpenAI API key not found. Check Vercel environment variables.');
     }
@@ -280,6 +287,12 @@ export async function generateInsightsForClient(
  */
 export async function generateWithOpenAI(texts: any[]): Promise<AIAnalysisResult> {
   const textSample = texts.slice(0, 30).map(t => t.text).join('\n---\n');
+  
+  // Get fresh OpenAI client instance
+  const freshOpenAI = getOpenAI();
+  if (!freshOpenAI) {
+    throw new Error('OpenAI client not initialized - OPENAI_API_KEY not set');
+  }
 
   const prompt = `You are an expert AI analyst for online course/membership businesses. Analyze ${texts.length} data points including survey responses, event patterns, subscription metrics, and behavioral analytics.
 
@@ -337,12 +350,8 @@ Return JSON with 4-5 focused insights, summary, and key takeaways:
 }`;
 
   try {
-    if (!openai) {
-      throw new Error('OpenAI client not initialized - OPENAI_API_KEY not set');
-    }
-
-    // Use OpenAI SDK with enhanced parameters for better insights
-    const response = await openai.chat.completions.create({
+    // Use fresh OpenAI client instance
+    const response = await freshOpenAI.chat.completions.create({
       model: 'gpt-4o-mini', // Cost-effective model for insights
       messages: [
         { 
