@@ -89,19 +89,46 @@ export async function generateInsightsForClient(
       .order('created_at', { ascending: false });
 
     if (!formSubmissions || formSubmissions.length === 0) {
-      // No data - fail with clear error message
+      // No data - generate demo insights to show what's possible
+      console.log('⚠️ No form submissions found, generating demo insights');
+      
       if (aiRunId) {
         await supabase
           .from('ai_runs')
           .update({ 
-            status: 'failed', 
+            status: 'completed', 
             finished_at: new Date().toISOString(),
-            error: 'No student feedback data available'
+            meta: { range, demo_mode: true }
           })
           .eq('id', aiRunId);
       }
 
-      throw new Error('No student feedback data available. Please collect survey responses before generating insights.');
+      // Return demo insights showing what AI can do
+      const demoInsights = [
+        {
+          client_id: clientId,
+          title: 'Getting Started: AI Insights Ready',
+          content: 'Your AI insights system is configured and ready! Start collecting student feedback through forms to get real AI-powered insights about engagement, satisfaction, and areas for improvement.',
+          insight_type: 'recommendation',
+          metadata: {
+            ai_generated: false,
+            model: 'demo',
+            demo_mode: true,
+            next_steps: [
+              'Create feedback forms in the Forms section',
+              'Send forms to your students',
+              'Come back here to generate real AI insights'
+            ]
+          }
+        }
+      ];
+
+      const { data, error } = await supabase
+        .from('insights')
+        .insert(demoInsights)
+        .select();
+
+      return data || demoInsights;
     }
 
     // Extract text from form responses with enhanced context
@@ -158,10 +185,45 @@ export async function generateInsightsForClient(
       textCount: scrubbedTexts.length
     });
     
-    // Fail fast if OpenAI is not configured
+    // Handle missing OpenAI configuration gracefully
     if (!openai || !process.env.OPENAI_API_KEY) {
-      console.error('❌ OpenAI not configured - cannot generate insights');
-      throw new Error('OpenAI API key is required for AI insights generation. Please configure OPENAI_API_KEY in your environment variables.');
+      console.error('❌ OpenAI not configured - returning setup instructions');
+      
+      if (aiRunId) {
+        await supabase
+          .from('ai_runs')
+          .update({ 
+            status: 'completed', 
+            finished_at: new Date().toISOString(),
+            meta: { range, needs_api_key: true }
+          })
+          .eq('id', aiRunId);
+      }
+
+      const setupInsight = [{
+        client_id: clientId,
+        title: 'Setup Required: OpenAI API Key Missing',
+        content: 'To use AI-powered insights, add your OpenAI API key to Vercel environment variables. Go to Project Settings → Environment Variables → Add OPENAI_API_KEY',
+        insight_type: 'alert',
+        metadata: {
+          ai_generated: false,
+          model: 'none',
+          requires_setup: true,
+          instructions: [
+            '1. Get API key from https://platform.openai.com/api-keys',
+            '2. Add OPENAI_API_KEY to Vercel environment variables',
+            '3. Redeploy your app',
+            '4. Come back and generate insights again'
+          ]
+        }
+      }];
+
+      const { data } = await supabase
+        .from('insights')
+        .insert(setupInsight)
+        .select();
+
+      return data || setupInsight;
     }
     
     console.log('🤖 Attempting OpenAI API call...');
