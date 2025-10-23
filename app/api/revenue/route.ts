@@ -41,12 +41,12 @@ export async function GET(request: NextRequest) {
 
     const clientId = clientData.id;
 
-    // Fetch revenue events (orders)
+    // Fetch revenue events (payment.succeeded events contain revenue data)
     const { data: events, error: eventsError } = await supabase
       .from('events')
       .select('*')
       .eq('client_id', clientId)
-      .eq('event_type', 'order')
+      .in('event_type', ['payment.succeeded', 'order', 'payment_intent.succeeded'])
       .order('created_at', { ascending: false })
       .limit(1000);
 
@@ -58,16 +58,39 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    // Calculate total revenue
-    const totalRevenue = (events || []).reduce((sum, event) => {
-      return sum + (event.event_data?.amount || 0);
-    }, 0);
+    // Calculate total revenue and format events
+    let totalRevenue = 0;
+    const formattedEvents = (events || []).map(event => {
+      // Extract amount from various possible locations
+      const amount = event.event_data?.amount || 
+                     event.event_data?.total || 
+                     event.event_data?.value ||
+                     event.metadata?.amount ||
+                     0;
+      
+      totalRevenue += amount;
+      
+      return {
+        ...event,
+        amount,
+        date: event.created_at,
+        type: event.event_type
+      };
+    });
+
+    console.log(`💰 [Revenue API] Found ${formattedEvents.length} revenue events, total: $${totalRevenue}`);
 
     return NextResponse.json({
-      revenue: events || [],
+      revenue: formattedEvents,
       total: totalRevenue,
-      count: events?.length || 0,
+      count: formattedEvents.length,
       timestamp: new Date().toISOString(),
+      debug: {
+        clientId,
+        companyId,
+        eventTypes: [...new Set(formattedEvents.map(e => e.event_type))],
+        hasData: formattedEvents.length > 0
+      }
     }, { headers: corsHeaders });
 
   } catch (error: any) {
