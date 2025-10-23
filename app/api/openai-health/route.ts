@@ -14,7 +14,7 @@ export async function GET() {
   try {
     const openai = new OpenAI({ apiKey: key });
     // Lightweight request to test the key
-    const models = await openai.models.list({ limit: 1 });
+    const models = await openai.models.list();
     return new Response("OK", { status: 200 });
   } catch (e: any) {
     return new Response(`OpenAI check failed: ${e?.status || ""} ${e?.message || e}`, { status: 500 });
