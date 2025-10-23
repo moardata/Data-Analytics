@@ -9,3 +9,4 @@ const nextConfig: NextConfig = {
 };
 
 export default withWhopAppConfig(nextConfig);
+// Force redeploy to pick up new OpenAI API key
