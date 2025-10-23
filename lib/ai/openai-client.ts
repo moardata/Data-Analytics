@@ -6,9 +6,22 @@
 
 import OpenAI from 'openai';
 
-// Initialize OpenAI client
-export const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
+// Lazy-initialize OpenAI client to avoid caching env vars at build time
+let _openai: OpenAI | null = null;
+
+function getOpenAI(): OpenAI {
+  if (!_openai) {
+    _openai = new OpenAI({
+      apiKey: process.env.OPENAI_API_KEY,
+    });
+  }
+  return _openai;
+}
+
+export const openai = new Proxy({} as OpenAI, {
+  get(target, prop) {
+    return (getOpenAI() as any)[prop];
+  }
 });
 
 /**

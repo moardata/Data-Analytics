@@ -7,10 +7,18 @@ import OpenAI from 'openai';
 import { supabaseServer as supabase } from '@/lib/supabase-server';
 import { scrubText } from './piiScrubber';
 
-// Initialize OpenAI client
-const openai = process.env.OPENAI_API_KEY 
-  ? new OpenAI({ apiKey: process.env.OPENAI_API_KEY })
-  : null;
+// Lazy-initialize OpenAI client to avoid caching env vars at build time
+let _openai: OpenAI | null = null;
+
+function getOpenAI(): OpenAI | null {
+  if (!process.env.OPENAI_API_KEY) return null;
+  if (!_openai) {
+    _openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+  }
+  return _openai;
+}
+
+const openai = getOpenAI();
 
 export interface InsightTheme {
   title: string;
