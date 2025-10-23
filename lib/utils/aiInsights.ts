@@ -89,15 +89,19 @@ export async function generateInsightsForClient(
       .order('created_at', { ascending: false });
 
     if (!formSubmissions || formSubmissions.length === 0) {
-      // No data - mark as completed and return stub insights
+      // No data - fail with clear error message
       if (aiRunId) {
         await supabase
           .from('ai_runs')
-          .update({ status: 'completed', finished_at: new Date().toISOString() })
+          .update({ 
+            status: 'failed', 
+            finished_at: new Date().toISOString(),
+            error: 'No student feedback data available'
+          })
           .eq('id', aiRunId);
       }
 
-      return getStubInsights(clientId);
+      throw new Error('No student feedback data available. Please collect survey responses before generating insights.');
     }
 
     // Extract text from form responses with enhanced context
@@ -146,9 +150,7 @@ export async function generateInsightsForClient(
       text: scrubText(item.text)
     }));
 
-    // Generate insights using AI or stub
-    let result: AIAnalysisResult;
-    
+    // Generate insights using AI ONLY - no fallbacks
     console.log('🔍 AI Generation Check:', {
       hasOpenAI: !!openai,
       hasAPIKey: !!process.env.OPENAI_API_KEY,
@@ -156,36 +158,23 @@ export async function generateInsightsForClient(
       textCount: scrubbedTexts.length
     });
     
-    let isAIGenerated = false;
-    
-    if (openai && process.env.OPENAI_API_KEY) {
-      try {
-        console.log('🤖 Attempting OpenAI API call...');
-        console.log('📊 Data being sent to OpenAI:', {
-          textCount: scrubbedTexts.length,
-          sampleText: scrubbedTexts[0]?.substring(0, 100) + '...' || 'No text'
-        });
-        
-        result = await generateWithOpenAI(scrubbedTexts);
-        isAIGenerated = true;
-        console.log('✅ OpenAI API success! Generated themes:', result.themes.length);
-      } catch (error: any) {
-        console.error('❌ OpenAI API failed:', {
-          message: error.message,
-          status: error.status,
-          code: error.code,
-          type: error.type,
-          stack: error.stack?.substring(0, 500)
-        });
-        result = generateStubAnalysis(scrubbedTexts);
-        isAIGenerated = false;
-        console.log('⚠️ Using stub insights as fallback');
-      }
-    } else {
-      console.log('⚠️ OpenAI not configured, using stub insights');
-      result = generateStubAnalysis(scrubbedTexts);
-      isAIGenerated = false;
+    // Fail fast if OpenAI is not configured
+    if (!openai || !process.env.OPENAI_API_KEY) {
+      console.error('❌ OpenAI not configured - cannot generate insights');
+      throw new Error('OpenAI API key is required for AI insights generation. Please configure OPENAI_API_KEY in your environment variables.');
     }
+    
+    console.log('🤖 Attempting OpenAI API call...');
+    console.log('📊 Data being sent to OpenAI:', {
+      textCount: scrubbedTexts.length,
+      sampleText: scrubbedTexts[0]?.text?.substring(0, 100) + '...' || 'No text'
+    });
+    
+    // Generate insights using OpenAI - throw error if fails
+    const result = await generateWithOpenAI(scrubbedTexts);
+    const isAIGenerated = true;
+    
+    console.log('✅ OpenAI API success! Generated themes:', result.themes.length);
 
     // Store insights in database
     const insights = await storeInsights(clientId, result, isAIGenerated);
@@ -325,59 +314,8 @@ Return JSON with 4-5 focused insights, summary, and key takeaways:
 /**
  * Generate stub analysis when OpenAI is not available
  */
-function generateStubAnalysis(texts: any[]): AIAnalysisResult {
-  // Generate insights based on actual data patterns
-  const totalTexts = texts.length;
-  const hasData = totalTexts > 0;
-  
-  if (!hasData) {
-    return {
-      themes: [
-        {
-          title: 'No data available',
-          share_pct: 100,
-          sentiment: 'neutral',
-          suggested_action: 'Start collecting student feedback and engagement data to generate meaningful insights.',
-          urgency: 'low'
-        }
-      ],
-      summary: 'No student feedback data available yet. Start collecting responses to generate AI insights.',
-      key_takeaways: [
-        'Begin collecting student feedback through forms and surveys',
-        'Track student engagement and progress metrics',
-        'Set up regular data collection processes'
-      ]
-    };
-  }
-
-  // Generate insights based on actual data volume
-  const engagementLevel = totalTexts < 5 ? 'low' : totalTexts < 20 ? 'medium' : 'high';
-  
-  return {
-    themes: [
-      {
-        title: 'Data collection progress',
-        share_pct: 60,
-        sentiment: 'positive',
-        suggested_action: `You have ${totalTexts} data points. Continue collecting feedback to improve insight quality.`,
-        urgency: 'low'
-      },
-      {
-        title: 'Engagement analysis needed',
-        share_pct: 40,
-        sentiment: 'neutral',
-        suggested_action: `Your engagement level is ${engagementLevel}. Consider implementing more feedback collection methods.`,
-        urgency: 'medium'
-      }
-    ],
-    summary: `Based on ${totalTexts} data points, your engagement level is ${engagementLevel}. Continue collecting data for better insights.`,
-    key_takeaways: [
-      `You have ${totalTexts} data points collected`,
-      `Engagement level: ${engagementLevel}`,
-      'Continue collecting feedback for more detailed insights'
-    ]
-  };
-}
+// REMOVED: generateStubAnalysis - No fallback fake insights allowed
+// AI insights must be real or fail with a clear error message
 
 /**
  * Store insights in database
@@ -407,21 +345,7 @@ async function storeInsights(clientId: string, result: AIAnalysisResult, isAIGen
   return data || [];
 }
 
-/**
- * Get stub insights when no data available
- */
-function getStubInsights(clientId: string): any[] {
-  return [
-    {
-      client_id: clientId,
-      title: 'No data yet',
-      content: 'Collect more student responses to generate insights',
-      insight_type: 'weekly_summary',
-      metadata: {},
-      created_at: new Date().toISOString()
-    }
-  ];
-}
+// REMOVED: getStubInsights - No fake insights allowed
 
 /**
  * Detect anomalies in metrics

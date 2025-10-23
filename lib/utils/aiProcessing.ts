@@ -44,18 +44,19 @@ export async function processDataWithAI(
     const dataCollection = await collectComprehensiveData(clientId, timeRange);
     
     if (!dataCollection.hasData) {
-      return getNoDataResult();
+      throw new Error('No student feedback data available. Please collect survey responses before generating insights.');
     }
 
     // Prepare data for AI analysis
     const analysisData = prepareDataForAnalysis(dataCollection);
     
+    // Fail fast if OpenAI is not configured
     if (!openai || !process.env.OPENAI_API_KEY) {
-      console.log('⚠️ [AI Processing] OpenAI not configured, using fallback analysis');
-      return generateFallbackAnalysis(analysisData);
+      console.error('❌ [AI Processing] OpenAI not configured');
+      throw new Error('OpenAI API key is required for AI insights generation. Please configure OPENAI_API_KEY in your environment variables.');
     }
 
-    // Perform AI analysis with structured prompts
+    // Perform AI analysis with structured prompts - throw error if fails
     const aiResult = await performStructuredAIAnalysis(analysisData);
     
     // Store insights in database
@@ -65,7 +66,8 @@ export async function processDataWithAI(
 
   } catch (error) {
     console.error('❌ [AI Processing] Error in AI analysis:', error);
-    return getErrorResult(error);
+    // Re-throw the error instead of returning a fake result
+    throw error;
   }
 }
 
@@ -410,84 +412,5 @@ async function storeAIInsights(clientId: string, result: AIAnalysisResult) {
   }
 }
 
-/**
- * Fallback analysis when OpenAI is not available
- */
-function generateFallbackAnalysis(data: any): AIAnalysisResult {
-  const insights: AIInsight[] = [];
-  
-  // Generate basic insights from data patterns
-  if (data.sentimentTrends.negativePercentage > 30) {
-    insights.push({
-      insight: `Negative sentiment detected in ${data.sentimentTrends.negativePercentage}% of responses`,
-      recommendation: 'Review course content and delivery methods to address student concerns',
-      category: 'sentiment',
-      confidence: 70,
-      severity: 'medium',
-      dataPoints: data.totalResponses,
-      affectedStudents: Math.round(data.totalStudents * (data.sentimentTrends.negativePercentage / 100))
-    });
-  }
-
-  if (data.completionPatterns.completionRate < 50) {
-    insights.push({
-      insight: `Low completion rate of ${data.completionPatterns.completionRate.toFixed(1)}%`,
-      recommendation: 'Investigate course pacing and content difficulty to improve completion rates',
-      category: 'drop_off',
-      confidence: 80,
-      severity: 'high',
-      dataPoints: data.completionPatterns.totalCompletions,
-      affectedStudents: data.totalStudents
-    });
-  }
-
-  return {
-    insights,
-    summary: `Analysis of ${data.totalResponses} responses from ${data.totalStudents} students`,
-    keyFindings: insights.map(i => i.insight),
-    confidence: 60,
-    dataQuality: data.totalResponses > 10 ? 'good' : 'fair'
-  };
-}
-
-/**
- * No data result
- */
-function getNoDataResult(): AIAnalysisResult {
-  return {
-    insights: [{
-      insight: 'No student data available for analysis',
-      recommendation: 'Start collecting student feedback and engagement data to generate insights',
-      category: 'general',
-      confidence: 100,
-      severity: 'low',
-      dataPoints: 0,
-      affectedStudents: 0
-    }],
-    summary: 'No data available for AI analysis',
-    keyFindings: ['No student data collected yet'],
-    confidence: 100,
-    dataQuality: 'poor'
-  };
-}
-
-/**
- * Error result
- */
-function getErrorResult(error: any): AIAnalysisResult {
-  return {
-    insights: [{
-      insight: 'Error occurred during AI analysis',
-      recommendation: 'Check data collection and try again',
-      category: 'general',
-      confidence: 0,
-      severity: 'low',
-      dataPoints: 0,
-      affectedStudents: 0
-    }],
-    summary: 'Analysis failed due to error',
-    keyFindings: ['Analysis error occurred'],
-    confidence: 0,
-    dataQuality: 'poor'
-  };
-}
+// REMOVED: All fallback functions (generateFallbackAnalysis, getNoDataResult, getErrorResult)
+// No fake insights allowed - must use real AI or fail with clear error message
