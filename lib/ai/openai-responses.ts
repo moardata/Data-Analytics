@@ -114,7 +114,8 @@ ${texts.join('\n')}`;
  * Check if OpenAI Responses API is configured
  */
 export function isResponsesAPIConfigured(): boolean {
-  return !!OPENAI_API_KEY && OPENAI_API_KEY.length > 20;
+  const key = process.env.OPENAI_API_KEY;
+  return !!key && key.length > 20;
 }
 
 
