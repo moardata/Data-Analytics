@@ -27,6 +27,7 @@ function FormsContent() {
   
   const [forms, setForms] = useState<any[]>([]);
   const [selectedForm, setSelectedForm] = useState<any | null>(null);
+  const [editingForm, setEditingForm] = useState<any | null>(null);
   const [activeTab, setActiveTab] = useState<'surveys' | 'builder' | 'submissions' | 'analytics' | 'export'>('surveys');
   const [userRole, setUserRole] = useState<'owner' | 'student' | 'loading'>('loading');
   const [submissions, setSubmissions] = useState<any[]>([]);
@@ -314,7 +315,13 @@ function FormsContent() {
             return (
               <button
                 key={tab.id}
-                onClick={() => setActiveTab(tab.id as any)}
+                onClick={() => {
+                  // Clear editing form when clicking Builder tab from another tab (to create new form)
+                  if (tab.id === 'builder' && activeTab !== 'builder') {
+                    setEditingForm(null);
+                  }
+                  setActiveTab(tab.id as any);
+                }}
                 className={`flex items-center gap-2 px-4 py-3 text-sm font-medium border-b-2 transition-all duration-200 ${
                   activeTab === tab.id
                     ? 'border-[#10B981] text-[#10B981] bg-[#0B2C24]/30'
@@ -387,7 +394,10 @@ function FormsContent() {
                             Preview
                           </Button>
                           <Button 
-                            onClick={() => setSelectedForm(form)}
+                            onClick={() => {
+                              setEditingForm(form);
+                              setActiveTab('builder');
+                            }}
                             className="flex-1 gap-2 bg-[#0a0a0a] hover:bg-[#1a1a1a] text-white border border-[#1a1a1a]"
                           >
                             <Settings className="h-4 w-4" />
@@ -445,7 +455,15 @@ function FormsContent() {
 
         {activeTab === 'builder' && (
           <div>
-            <FormBuilderEnhanced />
+            <FormBuilderEnhanced 
+              existingForm={editingForm}
+              onSaveComplete={() => {
+                // Refresh forms list and go back to surveys tab
+                fetchForms();
+                setEditingForm(null);
+                setActiveTab('surveys');
+              }}
+            />
           </div>
         )}
 

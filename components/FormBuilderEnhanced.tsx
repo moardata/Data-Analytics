@@ -113,12 +113,36 @@ const TYPE_OPTIONS: { value: FieldType; label: string }[] = [
 // -----------------------------
 // Component
 // -----------------------------
-export default function FormBuilderEnhanced() {
+interface FormBuilderEnhancedProps {
+  existingForm?: {
+    id: string;
+    name: string;
+    description?: string;
+    fields: FormField[];
+  } | null;
+  onSaveComplete?: () => void;
+}
+
+export default function FormBuilderEnhanced({ existingForm, onSaveComplete }: FormBuilderEnhancedProps = {}) {
   const [draft, setDraft] = React.useState<FormDraft>({
     name: "",
     description: "",
     fields: [],
   });
+  
+  const [isEditMode, setIsEditMode] = React.useState(false);
+
+  // Load existing form data if provided
+  React.useEffect(() => {
+    if (existingForm) {
+      setDraft({
+        name: existingForm.name,
+        description: existingForm.description || "",
+        fields: existingForm.fields,
+      });
+      setIsEditMode(true);
+    }
+  }, [existingForm]);
 
   // Add-field composer state
   const [label, setLabel] = React.useState("");
@@ -242,23 +266,44 @@ export default function FormBuilderEnhanced() {
       const urlParams = new URLSearchParams(window.location.search);
       const companyId = urlParams.get('companyId') || process.env.NEXT_PUBLIC_WHOP_COMPANY_ID;
       
-      const response = await fetch('/api/forms/create', {
+      // Determine if we're creating or updating
+      const endpoint = isEditMode && existingForm 
+        ? '/api/forms/update' 
+        : '/api/forms/create';
+      
+      const payload = isEditMode && existingForm
+        ? { 
+            formId: existingForm.id,
+            companyId: companyId,
+            formData: draft 
+          }
+        : { 
+            companyId: companyId,
+            formData: draft 
+          };
+      
+      const response = await fetch(endpoint, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ 
-          companyId: companyId,
-          formData: draft 
-        }),
+        body: JSON.stringify(payload),
       });
       
       if (response.ok) {
-        alert('Form saved successfully!');
-        // Reset form
-        setDraft({
-          name: "",
-          description: "",
-          fields: [],
-        });
+        alert(isEditMode ? 'Form updated successfully!' : 'Form created successfully!');
+        
+        // Call the callback if provided
+        if (onSaveComplete) {
+          onSaveComplete();
+        }
+        
+        // Reset form only if creating new
+        if (!isEditMode) {
+          setDraft({
+            name: "",
+            description: "",
+            fields: [],
+          });
+        }
       } else {
         alert('Failed to save form. Please try again.');
       }
@@ -709,7 +754,7 @@ export default function FormBuilderEnhanced() {
                 onClick={handleSave}
                 disabled={!draft.name.trim()}
               >
-                Save form
+                {isEditMode ? 'Update Form' : 'Save Form'}
               </Button>
             </div>
           </section>
