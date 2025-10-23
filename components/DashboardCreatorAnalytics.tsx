@@ -7,7 +7,7 @@ import { useSearchParams } from 'next/navigation';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils/cn';
-import { Calendar, Download, RefreshCw } from 'lucide-react';
+import { Calendar, Download, RefreshCw, Sync } from 'lucide-react';
 
 // New metric components
 import ConsistencyScoreGauge from '@/components/metrics/ConsistencyScoreGauge';
@@ -76,7 +76,7 @@ interface DashboardMetrics {
 // ----------------------------------------
 // Toolbar with navigation (uses searchParams)
 // ----------------------------------------
-function DashboardToolbar({ onExportPdf }: { onExportPdf?: () => void }) {
+function DashboardToolbar({ onExportPdf, onSync }: { onExportPdf?: () => void; onSync?: () => void }) {
   const searchParams = useSearchParams();
   
   // Preserve companyId and experienceId in navigation
@@ -93,11 +93,12 @@ function DashboardToolbar({ onExportPdf }: { onExportPdf?: () => void }) {
     <div className="flex flex-wrap items-center gap-2">
       <div className="text-lg font-semibold text-[#F8FAFC]">Dashboard</div>
       <div className="ml-auto flex items-center gap-2">
-        <Link href={`/analytics${queryString}`}>
-          <Button className="border border-[#1a1a1a] bg-[#0a0a0a] hover:bg-[#1a1a1a] text-[#F8FAFC]">
-            <Calendar className="mr-2 h-4 w-4" /> Analytics
-          </Button>
-        </Link>
+        <Button 
+          onClick={onSync}
+          className="border border-[#1a1a1a] bg-[#0a0a0a] hover:bg-[#1a1a1a] text-[#F8FAFC]"
+        >
+          <Sync className="mr-2 h-4 w-4" /> Sync Data
+        </Button>
         <Link href={`/insights${queryString}`}>
           <Button className="border border-[#1a1a1a] bg-[#0a0a0a] hover:bg-[#1a1a1a] text-[#F8FAFC]">AI Insights</Button>
         </Link>
@@ -125,6 +126,7 @@ export default function DashboardCreatorAnalytics({ clientId, onExportEventsCsv,
   const [metrics, setMetrics] = useState<DashboardMetrics | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [syncing, setSyncing] = useState(false);
 
   // Fetch metrics data
   useEffect(() => {
