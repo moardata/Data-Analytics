@@ -20,6 +20,21 @@ import EmbedCodeGenerator from '@/components/EmbedCodeGenerator';
 import { supabase } from '@/lib/supabase';
 import { WhopClientAuth } from '@/components/WhopClientAuth';
 import { fixFormFieldIds } from '@/lib/utils/formHelpers';
+import { 
+  BarChart, 
+  Bar, 
+  LineChart, 
+  Line, 
+  PieChart, 
+  Pie, 
+  Cell,
+  XAxis, 
+  YAxis, 
+  CartesianGrid, 
+  Tooltip, 
+  Legend, 
+  ResponsiveContainer 
+} from 'recharts';
 
 function FormsContent() {
   const searchParams = useSearchParams();
@@ -32,6 +47,7 @@ function FormsContent() {
   const [userRole, setUserRole] = useState<'owner' | 'student' | 'loading'>('loading');
   const [submissions, setSubmissions] = useState<any[]>([]);
   const [selectedSubmission, setSelectedSubmission] = useState<any | null>(null);
+  const [analytics, setAnalytics] = useState<any>(null);
 
   useEffect(() => {
     fetchForms();
@@ -147,6 +163,89 @@ function FormsContent() {
       setSubmissions([]);
     }
   };
+
+  const calculateAnalytics = () => {
+    if (submissions.length === 0 || forms.length === 0) {
+      setAnalytics(null);
+      return;
+    }
+
+    // Calculate stats per form
+    const formStats = forms.map(form => {
+      const formSubs = submissions.filter(sub => sub.form_template_id === form.id);
+      return {
+        formName: form.name,
+        responseCount: formSubs.length
+      };
+    });
+
+    // Calculate timeline data (responses per day for last 7 days)
+    const last7Days = Array.from({ length: 7 }, (_, i) => {
+      const date = new Date();
+      date.setDate(date.getDate() - (6 - i));
+      return date.toISOString().split('T')[0];
+    });
+
+    const timelineData = last7Days.map(day => ({
+      date: new Date(day).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
+      responses: submissions.filter(sub => 
+        sub.submitted_at?.startsWith(day)
+      ).length
+    }));
+
+    // Calculate question analytics
+    const questionAnalytics: any[] = [];
+    forms.forEach(form => {
+      const formSubs = submissions.filter(sub => sub.form_template_id === form.id);
+      
+      form.fields?.forEach((field: any) => {
+        const fieldResponses = formSubs
+          .map(sub => sub.responses?.[field.label])
+          .filter(val => val !== undefined && val !== null && val !== '');
+
+        if (fieldResponses.length === 0) return;
+
+        if (field.type === 'rating' || field.type === 'number') {
+          // Calculate average for numeric fields
+          const avg = fieldResponses.reduce((sum, val) => sum + Number(val), 0) / fieldResponses.length;
+          questionAnalytics.push({
+            formName: form.name,
+            question: field.label,
+            type: field.type,
+            average: avg.toFixed(2),
+            responseCount: fieldResponses.length
+          });
+        } else if (field.type === 'radio' || field.type === 'select') {
+          // Calculate distribution for choice fields
+          const distribution: Record<string, number> = {};
+          fieldResponses.forEach(val => {
+            const key = String(val);
+            distribution[key] = (distribution[key] || 0) + 1;
+          });
+          questionAnalytics.push({
+            formName: form.name,
+            question: field.label,
+            type: field.type,
+            distribution: Object.entries(distribution).map(([name, value]) => ({ name, value })),
+            responseCount: fieldResponses.length
+          });
+        }
+      });
+    });
+
+    setAnalytics({
+      totalResponses: submissions.length,
+      formStats,
+      timelineData,
+      questionAnalytics
+    });
+  };
+
+  useEffect(() => {
+    if (activeTab === 'analytics') {
+      calculateAnalytics();
+    }
+  }, [activeTab, submissions, forms]);
 
   const handleFormSubmit = async (responses: Record<string, any>) => {
     const demoEntityId = 'student_' + Date.now();
@@ -568,29 +667,179 @@ function FormsContent() {
         )}
 
         {activeTab === 'analytics' && (
-          <div>
-            <Card className="border border-[#1a1a1a] bg-[#0f0f0f] shadow-lg">
-              <CardHeader>
-                <CardTitle className="text-[#F8FAFC] flex items-center gap-2">
-                  <BarChart3 className="h-5 w-5 text-[#10B981]" />
-                  Survey Analytics
-                </CardTitle>
-                <CardDescription className="text-[#A1A1AA]">
-                  View response data and insights from your surveys
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="text-center py-8">
+          <div className="space-y-6">
+            {!analytics || analytics.totalResponses === 0 ? (
+              <Card className="border border-[#1a1a1a] bg-[#0f0f0f] shadow-lg">
+                <CardContent className="py-16 text-center">
                   <BarChart3 className="h-16 w-16 mx-auto mb-4 text-[#2A2F36]" />
                   <h3 className="text-2xl font-black text-[#F8FAFC] mb-2">
-                    Analytics Dashboard
+                    No Analytics Data Yet
                   </h3>
                   <p className="text-lg text-[#A1A1AA] mb-6">
-                    Detailed analytics and insights will be available soon
+                    Analytics will appear here once you start receiving form responses
                   </p>
+                  <Button
+                    onClick={() => setActiveTab('surveys')}
+                    className="bg-[#10B981] hover:bg-[#0E9F71] text-white"
+                  >
+                    <FileText className="h-4 w-4 mr-2" />
+                    View Surveys
+                  </Button>
+                </CardContent>
+              </Card>
+            ) : (
+              <>
+                {/* Summary Stats */}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                  <Card className="border border-[#1a1a1a] bg-[#0f0f0f] shadow-lg">
+                    <CardHeader className="pb-3">
+                      <CardTitle className="text-sm font-medium text-[#A1A1AA]">Total Responses</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="text-4xl font-black text-[#10B981]">
+                        {analytics.totalResponses}
+                      </div>
+                    </CardContent>
+                  </Card>
+                  
+                  <Card className="border border-[#1a1a1a] bg-[#0f0f0f] shadow-lg">
+                    <CardHeader className="pb-3">
+                      <CardTitle className="text-sm font-medium text-[#A1A1AA]">Active Surveys</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="text-4xl font-black text-[#10B981]">
+                        {forms.filter(f => f.is_active).length}
+                      </div>
+                    </CardContent>
+                  </Card>
+                  
+                  <Card className="border border-[#1a1a1a] bg-[#0f0f0f] shadow-lg">
+                    <CardHeader className="pb-3">
+                      <CardTitle className="text-sm font-medium text-[#A1A1AA]">Avg Response Rate</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="text-4xl font-black text-[#10B981]">
+                        {analytics.formStats.length > 0 
+                          ? Math.round(analytics.totalResponses / analytics.formStats.length)
+                          : 0}
+                      </div>
+                      <div className="text-xs text-[#A1A1AA] mt-1">per survey</div>
+                    </CardContent>
+                  </Card>
                 </div>
-              </CardContent>
-            </Card>
+
+                {/* Response Timeline */}
+                <Card className="border border-[#1a1a1a] bg-[#0f0f0f] shadow-lg">
+                  <CardHeader>
+                    <CardTitle className="text-[#F8FAFC]">Response Timeline (Last 7 Days)</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <ResponsiveContainer width="100%" height={300}>
+                      <LineChart data={analytics.timelineData}>
+                        <CartesianGrid strokeDasharray="3 3" stroke="#1a1a1a" />
+                        <XAxis dataKey="date" stroke="#A1A1AA" />
+                        <YAxis stroke="#A1A1AA" />
+                        <Tooltip 
+                          contentStyle={{ 
+                            backgroundColor: '#0f0f0f', 
+                            border: '1px solid #1a1a1a',
+                            borderRadius: '8px'
+                          }}
+                          labelStyle={{ color: '#F8FAFC' }}
+                          itemStyle={{ color: '#10B981' }}
+                        />
+                        <Line type="monotone" dataKey="responses" stroke="#10B981" strokeWidth={3} />
+                      </LineChart>
+                    </ResponsiveContainer>
+                  </CardContent>
+                </Card>
+
+                {/* Responses per Form */}
+                <Card className="border border-[#1a1a1a] bg-[#0f0f0f] shadow-lg">
+                  <CardHeader>
+                    <CardTitle className="text-[#F8FAFC]">Responses per Survey</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <ResponsiveContainer width="100%" height={300}>
+                      <BarChart data={analytics.formStats}>
+                        <CartesianGrid strokeDasharray="3 3" stroke="#1a1a1a" />
+                        <XAxis dataKey="formName" stroke="#A1A1AA" />
+                        <YAxis stroke="#A1A1AA" />
+                        <Tooltip 
+                          contentStyle={{ 
+                            backgroundColor: '#0f0f0f', 
+                            border: '1px solid #1a1a1a',
+                            borderRadius: '8px'
+                          }}
+                          labelStyle={{ color: '#F8FAFC' }}
+                          itemStyle={{ color: '#10B981' }}
+                        />
+                        <Bar dataKey="responseCount" fill="#10B981" />
+                      </BarChart>
+                    </ResponsiveContainer>
+                  </CardContent>
+                </Card>
+
+                {/* Question-level Analytics */}
+                {analytics.questionAnalytics.length > 0 && (
+                  <Card className="border border-[#1a1a1a] bg-[#0f0f0f] shadow-lg">
+                    <CardHeader>
+                      <CardTitle className="text-[#F8FAFC]">Question Analytics</CardTitle>
+                      <CardDescription className="text-[#A1A1AA]">
+                        Detailed breakdown of responses by question
+                      </CardDescription>
+                    </CardHeader>
+                    <CardContent className="space-y-6">
+                      {analytics.questionAnalytics.map((qa: any, idx: number) => (
+                        <div key={idx} className="border-b border-[#1a1a1a] pb-6 last:border-0">
+                          <div className="mb-4">
+                            <div className="text-sm font-medium text-[#10B981] mb-1">{qa.formName}</div>
+                            <div className="text-lg font-semibold text-[#F8FAFC]">{qa.question}</div>
+                            <div className="text-sm text-[#A1A1AA]">
+                              {qa.responseCount} responses
+                            </div>
+                          </div>
+
+                          {qa.type === 'rating' || qa.type === 'number' ? (
+                            <div className="bg-[#0B2C24] rounded-lg p-4">
+                              <div className="text-3xl font-black text-[#10B981]">
+                                {qa.average}
+                              </div>
+                              <div className="text-sm text-[#A1A1AA] mt-1">Average Rating</div>
+                            </div>
+                          ) : qa.distribution ? (
+                            <ResponsiveContainer width="100%" height={250}>
+                              <PieChart>
+                                <Pie
+                                  data={qa.distribution}
+                                  dataKey="value"
+                                  nameKey="name"
+                                  cx="50%"
+                                  cy="50%"
+                                  outerRadius={80}
+                                  label={(entry) => `${entry.name}: ${entry.value}`}
+                                >
+                                  {qa.distribution.map((_: any, index: number) => (
+                                    <Cell key={`cell-${index}`} fill={['#10B981', '#3B82F6', '#F59E0B', '#EF4444', '#8B5CF6'][index % 5]} />
+                                  ))}
+                                </Pie>
+                                <Tooltip 
+                                  contentStyle={{ 
+                                    backgroundColor: '#0f0f0f', 
+                                    border: '1px solid #1a1a1a',
+                                    borderRadius: '8px'
+                                  }}
+                                />
+                              </PieChart>
+                            </ResponsiveContainer>
+                          ) : null}
+                        </div>
+                      ))}
+                    </CardContent>
+                  </Card>
+                )}
+              </>
+            )}
           </div>
         )}
 
