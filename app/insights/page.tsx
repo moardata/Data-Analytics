@@ -119,7 +119,8 @@ function InsightsContent() {
       } else {
         const errorData = await response.json();
         console.error('❌ API Error:', errorData);
-        alert(`Error: ${errorData.error || 'Failed to generate insights'}`);
+        console.error('❌ Full error object:', JSON.stringify(errorData, null, 2));
+        alert(`Error: ${errorData.error || 'Failed to generate insights'}\n\nFull error: ${JSON.stringify(errorData, null, 2)}`);
       }
     } catch (error) {
       console.error('❌ Error generating insights:', error);
