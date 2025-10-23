@@ -269,44 +269,42 @@ Return JSON with 4-5 focused insights, summary, and key takeaways:
 }`;
 
   try {
-    // Use Chat Completions API with enhanced parameters for better insights
-    const response = await fetch('https://api.openai.com/v1/chat/completions', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`,
-      },
-      body: JSON.stringify({
-        model: 'gpt-4o-mini', // Cost-effective model for insights
-        messages: [
-          { 
-            role: 'system', 
-            content: 'You are an expert AI analyst specializing in online education and course optimization. You excel at identifying engagement patterns, sentiment trends, and actionable recommendations. Always provide specific, data-driven insights with clear metrics and examples. Return only valid JSON.' 
-          },
-          { role: 'user', content: prompt }
-        ],
-        response_format: { type: 'json_object' }, // Ensures structured JSON output
-        temperature: 0.7, // Balanced creativity and consistency
-        max_tokens: 1500, // Increased for more detailed insights
-        top_p: 0.9, // Nucleus sampling for better quality
-        frequency_penalty: 0.1, // Reduces repetition
-        presence_penalty: 0.1, // Encourages topic diversity
-        stream: false // Ensure complete response
-      }),
-    });
-
-    if (!response.ok) {
-      const error = await response.json();
-      console.error('OpenAI API error:', error);
-      throw new Error(`OpenAI API error: ${JSON.stringify(error)}`);
+    if (!openai) {
+      throw new Error('OpenAI client not initialized - OPENAI_API_KEY not set');
     }
 
-    const data = await response.json();
-    const resultText = data.choices[0].message.content;
+    // Use OpenAI SDK with enhanced parameters for better insights
+    const response = await openai.chat.completions.create({
+      model: 'gpt-4o-mini', // Cost-effective model for insights
+      messages: [
+        { 
+          role: 'system', 
+          content: 'You are an expert AI analyst specializing in online education and course optimization. You excel at identifying engagement patterns, sentiment trends, and actionable recommendations. Always provide specific, data-driven insights with clear metrics and examples. Return only valid JSON.' 
+        },
+        { role: 'user', content: prompt }
+      ],
+      response_format: { type: 'json_object' }, // Ensures structured JSON output
+      temperature: 0.7, // Balanced creativity and consistency
+      max_tokens: 1500, // Increased for more detailed insights
+      top_p: 0.9, // Nucleus sampling for better quality
+      frequency_penalty: 0.1, // Reduces repetition
+      presence_penalty: 0.1, // Encourages topic diversity
+    });
+
+    const resultText = response.choices[0].message.content;
+    if (!resultText) {
+      throw new Error('OpenAI returned empty response');
+    }
+    
     const result = JSON.parse(resultText);
     return result as AIAnalysisResult;
-  } catch (error) {
-    console.error('Failed to use OpenAI:', error);
+  } catch (error: any) {
+    console.error('Failed to use OpenAI:', {
+      message: error.message,
+      status: error.status,
+      code: error.code,
+      type: error.type
+    });
     throw error;
   }
 }
