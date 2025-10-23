@@ -8,6 +8,7 @@ const nextConfig: NextConfig = {
 	},
 	// Force server-side env vars to be available at runtime
 	serverRuntimeConfig: {
+		OPENAI_API_KEY: process.env.OPENAI_API_KEY,
 		SUPABASE_SECRET_KEY: process.env.SUPABASE_SECRET_KEY,
 		SUPABASE_SERVICE_ROLE_KEY: process.env.SUPABASE_SERVICE_ROLE_KEY,
 		SUPABASE_KEY: process.env.SUPABASE_KEY,
@@ -17,6 +18,7 @@ const nextConfig: NextConfig = {
 	},
 	env: {
 		// Explicitly expose server-side environment variables
+		OPENAI_API_KEY: process.env.OPENAI_API_KEY,
 		SUPABASE_SECRET_KEY: process.env.SUPABASE_SECRET_KEY,
 		SUPABASE_SERVICE_ROLE_KEY: process.env.SUPABASE_SERVICE_ROLE_KEY,
 		SUPABASE_KEY: process.env.SUPABASE_KEY,
