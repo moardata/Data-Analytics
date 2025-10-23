@@ -57,7 +57,7 @@ export async function calculateAhaMomentScore(clientId: string): Promise<AhaMome
 
   return {
     topExperiences: experienceAnalysis.slice(0, 5), // Top 5
-    avgTimeToFirstBreakthrough,
+    avgTimeToFirstBreakthrough: avgTimeToBreakthrough,
     stagnantStudents: stagnantStudents.length,
     stagnantStudentsList: stagnantStudents.slice(0, 20) // Top 20 at-risk
   };
