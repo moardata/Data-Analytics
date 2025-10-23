@@ -8,6 +8,11 @@ import { NextResponse } from 'next/server';
 export async function GET() {
   const key = process.env.OPENAI_API_KEY;
   
+  // Also log to console to compare with instrumentation
+  console.log('🔍 [Debug Endpoint] OPENAI_API_KEY exists:', !!key);
+  console.log('🔍 [Debug Endpoint] OPENAI_API_KEY ending:', key ? '...' + key.substring(key.length - 10) : 'NO KEY');
+  console.log('🔍 [Debug Endpoint] All env vars with OPENAI:', Object.keys(process.env).filter(k => k.includes('OPENAI')));
+  
   return NextResponse.json({
     timestamp: new Date().toISOString(),
     environment: process.env.NODE_ENV,

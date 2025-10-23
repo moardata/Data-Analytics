@@ -24,6 +24,12 @@ export async function POST(request: NextRequest) {
     console.log('🔍 [Insights Generate] Starting POST request');
     console.log('🔍 [Insights Generate] Request URL:', request.url);
     
+    // Log what API key we're seeing
+    const currentKey = process.env.OPENAI_API_KEY;
+    console.log('🔑 [Insights Generate] OPENAI_API_KEY exists:', !!currentKey);
+    console.log('🔑 [Insights Generate] OPENAI_API_KEY length:', currentKey?.length || 0);
+    console.log('🔑 [Insights Generate] OPENAI_API_KEY ending:', currentKey ? '...' + currentKey.substring(currentKey.length - 10) : 'NO KEY');
+    
     // Debug URL parsing directly
     const url = new URL(request.url);
     console.log('🔍 [Insights Generate] URL search params:', url.searchParams.toString());
