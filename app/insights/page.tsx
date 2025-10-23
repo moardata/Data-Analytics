@@ -384,8 +384,14 @@ function InsightsContent() {
           <TabsContent value="analytics" className="mt-6">
             <div className="space-y-6">
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                <StructuredAIInsights companyId={clientId || ''} />
-                <EngagementMetrics companyId={clientId || ''} />
+                <div>
+                  <h3 className="text-lg font-medium text-[#F8FAFC] mb-4">Structured AI Analysis</h3>
+                  <StructuredAIInsights companyId={clientId || ''} />
+                </div>
+                <div>
+                  <h3 className="text-lg font-medium text-[#F8FAFC] mb-4">Engagement Analytics</h3>
+                  <EngagementMetrics companyId={clientId || ''} />
+                </div>
               </div>
             </div>
           </TabsContent>
@@ -393,7 +399,10 @@ function InsightsContent() {
           {/* Actions Tab */}
           <TabsContent value="actions" className="mt-6">
             <div className="space-y-6">
-              <ActionFeedbackLoop companyId={clientId || ''} />
+              <div>
+                <h3 className="text-lg font-medium text-[#F8FAFC] mb-4">Action & Feedback Loop</h3>
+                <ActionFeedbackLoop companyId={clientId || ''} />
+              </div>
             </div>
           </TabsContent>
 
@@ -401,8 +410,14 @@ function InsightsContent() {
           <TabsContent value="data" className="mt-6">
             <div className="space-y-6">
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                <DataCollectionDashboard companyId={clientId || ''} />
-                <SystemHealthDashboard companyId={clientId || ''} />
+                <div>
+                  <h3 className="text-lg font-medium text-[#F8FAFC] mb-4">Data Collection Status</h3>
+                  <DataCollectionDashboard companyId={clientId || ''} />
+                </div>
+                <div>
+                  <h3 className="text-lg font-medium text-[#F8FAFC] mb-4">System Health & Meta Data</h3>
+                  <SystemHealthDashboard companyId={clientId || ''} />
+                </div>
               </div>
             </div>
           </TabsContent>
@@ -410,7 +425,10 @@ function InsightsContent() {
           {/* Reports Tab */}
           <TabsContent value="reports" className="mt-6">
             <div className="space-y-6">
-              <ExportsReportsDashboard companyId={clientId || ''} />
+              <div>
+                <h3 className="text-lg font-medium text-[#F8FAFC] mb-4">Export Options & Reports</h3>
+                <ExportsReportsDashboard companyId={clientId || ''} />
+              </div>
             </div>
           </TabsContent>
         </Tabs>
