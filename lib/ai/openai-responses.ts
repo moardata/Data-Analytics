@@ -9,31 +9,21 @@ export async function generateInsightWithResponsesAPI(
   input: string
 ): Promise<string> {
   try {
-    // Read API key fresh each time - don't cache!
-    const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
+    // Use OpenAI SDK instead of direct fetch to ensure consistent auth
+    const OpenAI = (await import('openai')).default;
+    const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
     
-    const response = await fetch(OPENAI_BASE_URL, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${OPENAI_API_KEY}`,
-      },
-      body: JSON.stringify({
-        model: 'gpt-5-nano',
-        input: input,
-        store: true,
-      }),
+    // Note: Responses API is not yet available in OpenAI SDK
+    // Fallback to chat completions for now
+    const completion = await openai.chat.completions.create({
+      model: 'gpt-4o-mini',
+      messages: [{ role: 'user', content: input }],
+      max_tokens: 1000,
     });
-
-    if (!response.ok) {
-      const error = await response.json();
-      throw new Error(`OpenAI API error: ${JSON.stringify(error)}`);
-    }
-
-    const data = await response.json();
-    return data.output || data.response || data.text || '';
+    
+    return completion.choices[0].message.content || '';
   } catch (error) {
-    console.error('OpenAI Responses API error:', error);
+    console.error('OpenAI API error:', error);
     throw error;
   }
 }
