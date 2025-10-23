@@ -59,6 +59,13 @@ function InsightsContent() {
     }
   }, [companyId]);
 
+  // Load existing insights when client ID is available
+  useEffect(() => {
+    if (clientId && companyId) {
+      loadExistingInsights();
+    }
+  }, [clientId, companyId]);
+
   const fetchClientId = async (companyId: string) => {
     try {
       const response = await fetch(`/api/analytics/metrics?companyId=${companyId}`);
@@ -69,6 +76,29 @@ function InsightsContent() {
       }
     } catch (error) {
       console.error('Error fetching client ID:', error);
+    }
+  };
+
+  const loadExistingInsights = async () => {
+    try {
+      console.log('📡 Loading existing insights...');
+      const response = await fetch(`/api/insights/generate?companyId=${companyId}`, {
+        method: 'GET',
+        headers: { 'Content-Type': 'application/json' }
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        console.log('✅ Loaded existing insights:', data);
+        setInsights(data.insights || []);
+        console.log('📈 Loaded insights count:', data.insights?.length || 0);
+      } else {
+        console.log('ℹ️ No existing insights found');
+        setInsights([]);
+      }
+    } catch (error) {
+      console.error('❌ Error loading existing insights:', error);
+      setInsights([]);
     }
   };
 
