@@ -43,7 +43,7 @@ export async function simpleAuth(request: Request): Promise<SimpleAuthResult> {
     
     const companyId = url.searchParams.get('companyId') || 
                      url.searchParams.get('company_id') ||
-                     'biz_Jkhjc11f6HHRxh'; // Fallback for testing
+                     process.env.NEXT_PUBLIC_WHOP_COMPANY_ID;
     
     if (!companyId) {
       console.log('❌ [SimpleAuth] No company ID found in any source');

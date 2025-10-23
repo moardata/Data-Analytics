@@ -24,11 +24,21 @@ export async function POST(request: NextRequest) {
     console.log('🔍 [Insights Generate] Starting POST request');
     console.log('🔍 [Insights Generate] Request URL:', request.url);
     
+    // Debug URL parsing directly
+    const url = new URL(request.url);
+    console.log('🔍 [Insights Generate] URL search params:', url.searchParams.toString());
+    console.log('🔍 [Insights Generate] companyId param:', url.searchParams.get('companyId'));
+    
+    // Get company ID directly from URL first
+    const directCompanyId = url.searchParams.get('companyId');
+    console.log('🔍 [Insights Generate] Direct companyId from URL:', directCompanyId);
+    
     // Use simple auth (never hangs)
     const auth = await simpleAuth(request);
     const companyId = auth.companyId;
     
     console.log('✅ [Insights Generate] Auth successful, companyId:', companyId);
+    console.log('🔍 [Insights Generate] Using companyId:', companyId || directCompanyId);
 
     // First, get the client record for this company
     const { data: clientData, error: clientError } = await supabase
