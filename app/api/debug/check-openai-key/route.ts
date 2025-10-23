@@ -5,6 +5,10 @@
 
 import { NextResponse } from 'next/server';
 
+// Force Node.js runtime to ensure env vars work properly
+export const runtime = 'nodejs';
+export const dynamic = 'force-dynamic';
+
 export async function GET() {
   const key = process.env.OPENAI_API_KEY;
   

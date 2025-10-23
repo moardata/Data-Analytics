@@ -8,6 +8,10 @@ import { generateInsightsForClient, detectAnomalies } from '@/lib/utils/aiInsigh
 import { supabaseServer as supabase } from '@/lib/supabase-server';
 import { simpleAuth } from '@/lib/auth/simple-auth';
 
+// Force Node.js runtime (not Edge) to ensure env vars work properly
+export const runtime = 'nodejs';
+export const dynamic = 'force-dynamic';
+
 // CORS headers
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
