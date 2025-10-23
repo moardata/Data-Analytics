@@ -60,13 +60,17 @@ export async function generateInsightsForClient(
     console.log('📊 Fetching all data sources for AI analysis...');
     
     // 1. Form submissions (feedback, surveys)
-    const { data: formSubmissions } = await supabase
+    const { data: formSubmissions, error: formError } = await supabase
       .from('form_submissions')
-      .select('responses, submitted_at, form_template_id')
+      .select('responses, submitted_at, form_id')
       .eq('client_id', clientId)
       .gte('submitted_at', startDate)
       .order('submitted_at', { ascending: false })
       .limit(100);
+    
+    if (formError) {
+      console.error('Form submissions query error:', formError);
+    }
 
     // 2. Get ALL events for comprehensive analysis
     const { data: allEvents } = await supabase
@@ -96,7 +100,9 @@ export async function generateInsightsForClient(
       formSubmissions: formSubmissions?.length || 0,
       events: allEvents?.length || 0,
       subscriptions: subscriptions?.length || 0,
-      entities: entities?.length || 0
+      entities: entities?.length || 0,
+      startDate,
+      clientId
     });
 
     // Check if we have ANY data at all
@@ -106,6 +112,13 @@ export async function generateInsightsForClient(
 
     if (!hasAnyData) {
       console.error('❌ No data available in any table');
+      console.error('Debug info:', {
+        formSubmissionsNull: formSubmissions === null,
+        eventsNull: allEvents === null,
+        subsNull: subscriptions === null,
+        startDate,
+        clientId
+      });
       throw new Error('No data available for analysis. Database appears empty. Run the mock data generator script.');
     }
 

@@ -173,4 +173,7 @@ next-env.d.ts
 
 # Vite logs files
 vite.config.js.timestamp-*
-vite.config.ts.timestamp-*
+vite.config.ts.timestamp-*SECRETS.txt
+OPENAI_KEY_DIAGNOSIS.md
+DEBUG_WHOP_DEPLOYMENT.md
+test-openai-key.js

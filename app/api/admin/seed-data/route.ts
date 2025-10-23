@@ -8,34 +8,77 @@ import { supabaseServer as supabase } from '@/lib/supabase-server';
 
 export async function POST(request: NextRequest) {
   try {
-    const clientId = 'biz_3GYHNPbGkZCEky'; // Your company ID
+    // Support both company IDs
+    const body = await request.json().catch(() => ({}));
+    const companyId = body.companyId || 'biz_3GYHNPbGkZCEky';
     
-    console.log('🌱 Starting database seed...');
+    console.log('🌱 Starting database seed for company:', companyId);
+    
+    // Get or create client record
+    let { data: client } = await supabase
+      .from('clients')
+      .select('id')
+      .eq('company_id', companyId)
+      .single();
+    
+    if (!client) {
+      const { data: newClient, error: clientError } = await supabase
+        .from('clients')
+        .insert({ company_id: companyId })
+        .select()
+        .single();
+      if (clientError) throw clientError;
+      client = newClient;
+    }
+    
+    const clientId = client.id;
+    console.log('📋 Using client ID:', clientId);
 
     // 1. Create events data (payments, engagement)
     const events = [];
     const now = Date.now();
     const daysAgo = 30;
     
+    // Valid event types: 'order', 'subscription', 'activity', 'form_submission', 'custom'
     for (let i = 0; i < 200; i++) {
       const randomDate = new Date(now - Math.random() * daysAgo * 86400000);
-      const eventTypes = [
-        'payment.succeeded',
-        'payment.refunded', 
-        'membership.went_valid',
-        'membership.went_invalid',
-        'user.created',
-        'course_completion',
-        'engagement'
-      ];
+      const eventTypes = ['order', 'subscription', 'activity', 'form_submission', 'custom'];
+      const selectedType = eventTypes[Math.floor(Math.random() * eventTypes.length)];
+      
+      let eventData: any = {};
+      
+      if (selectedType === 'order') {
+        eventData = {
+          amount: Math.floor(Math.random() * 10000) + 1000,
+          status: Math.random() > 0.1 ? 'succeeded' : 'failed',
+          product_id: `prod_${Math.floor(Math.random() * 5)}`
+        };
+      } else if (selectedType === 'subscription') {
+        eventData = {
+          action: Math.random() > 0.7 ? 'cancelled' : Math.random() > 0.5 ? 'renewed' : 'created',
+          plan_id: `plan_${['basic', 'pro', 'premium'][Math.floor(Math.random() * 3)]}`
+        };
+      } else if (selectedType === 'activity') {
+        eventData = {
+          action: ['login', 'video_watch', 'quiz_complete', 'lesson_view', 'download'][Math.floor(Math.random() * 5)],
+          duration: Math.floor(Math.random() * 3600),
+          engagement_score: Math.floor(Math.random() * 100)
+        };
+      } else if (selectedType === 'form_submission') {
+        eventData = {
+          form_id: `form_${Math.floor(Math.random() * 3)}`,
+          response_count: Math.floor(Math.random() * 10) + 1
+        };
+      } else {
+        eventData = {
+          custom_action: ['course_completion', 'achievement_unlocked', 'milestone_reached'][Math.floor(Math.random() * 3)]
+        };
+      }
       
       events.push({
         client_id: clientId,
-        event_type: eventTypes[Math.floor(Math.random() * eventTypes.length)],
-        event_data: {
-          amount: Math.floor(Math.random() * 10000),
-          action: ['login', 'video_watch', 'quiz_complete', 'lesson_view'][Math.floor(Math.random() * 4)]
-        },
+        event_type: selectedType,
+        event_data: eventData,
         created_at: randomDate.toISOString()
       });
     }
