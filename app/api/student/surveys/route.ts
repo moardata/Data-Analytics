@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getStudentAllowedSurveys } from '@/lib/auth/student-access';
 import { supabaseServer as supabase } from '@/lib/supabase-server';
+import { ensureUniqueFieldIds } from '@/lib/utils/formHelpers';
 
 /**
  * Student Surveys API
@@ -80,7 +81,7 @@ export async function GET(request: NextRequest) {
       id: form.id,
       name: form.name,
       description: form.description || 'Complete this survey to help improve our community',
-      fields: form.fields || [],
+      fields: ensureUniqueFieldIds(form.fields || []), // Fix duplicate IDs
       estimatedTime: '5', // Default estimate
       deadline: null, // No deadline for now
       completed: false, // TODO: Check if student completed this survey

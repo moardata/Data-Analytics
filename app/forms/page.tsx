@@ -19,6 +19,7 @@ import { DataForm, FormField } from '@/components/DataForm';
 import EmbedCodeGenerator from '@/components/EmbedCodeGenerator';
 import { supabase } from '@/lib/supabase';
 import { WhopClientAuth } from '@/components/WhopClientAuth';
+import { fixFormFieldIds } from '@/lib/utils/formHelpers';
 
 function FormsContent() {
   const searchParams = useSearchParams();
@@ -98,7 +99,9 @@ function FormsContent() {
         .eq('client_id', clientData.id)
         .order('created_at', { ascending: false });
       
-      setForms(data || []);
+      // Fix duplicate field IDs in all forms
+      const formsWithFixedIds = (data || []).map(fixFormFieldIds);
+      setForms(formsWithFixedIds);
     } catch (error) {
       console.error('Error fetching forms:', error);
       setForms([]);
