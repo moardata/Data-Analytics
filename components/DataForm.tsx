@@ -10,7 +10,7 @@ import { useState } from 'react';
 export interface FormField {
   id: string;
   label: string;
-  type: 'text' | 'short_text' | 'long_text' | 'textarea' | 'rating' | 'multiple_choice' | 'number' | 'email' | 'radio' | 'checkbox' | 'select' | 'multiselect' | 'date';
+  type: 'text' | 'short_text' | 'long_text' | 'textarea' | 'rating' | 'multiple_choice' | 'number' | 'email' | 'radio' | 'checkbox' | 'select' | 'multiselect' | 'date' | 'boolean';
   required: boolean;
   options?: string[];
   placeholder?: string;
@@ -239,8 +239,37 @@ export function DataForm({ formId, fields, onSubmit, title, description }: DataF
               />
             )}
 
+            {field.type === 'boolean' && (
+              <div className="flex gap-4">
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <input
+                    type="radio"
+                    name={field.id}
+                    value="true"
+                    checked={responses[field.id] === true || responses[field.id] === 'true'}
+                    onChange={() => handleFieldChange(field.id, true)}
+                    className="w-4 h-4 text-[#10B981] focus:ring-[#10B981]"
+                    required={field.required}
+                  />
+                  <span className="text-[#E1E4EA] font-bold">Yes</span>
+                </label>
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <input
+                    type="radio"
+                    name={field.id}
+                    value="false"
+                    checked={responses[field.id] === false || responses[field.id] === 'false'}
+                    onChange={() => handleFieldChange(field.id, false)}
+                    className="w-4 h-4 text-[#10B981] focus:ring-[#10B981]"
+                    required={field.required}
+                  />
+                  <span className="text-[#E1E4EA] font-bold">No</span>
+                </label>
+              </div>
+            )}
+
             {/* Fallback for unknown field types */}
-            {!['text', 'short_text', 'long_text', 'email', 'number', 'rating', 'radio', 'checkbox', 'select', 'multiselect', 'date', 'textarea', 'multiple_choice'].includes(field.type) && (
+            {!['text', 'short_text', 'long_text', 'email', 'number', 'rating', 'radio', 'checkbox', 'select', 'multiselect', 'date', 'textarea', 'multiple_choice', 'boolean'].includes(field.type) && (
               <div className="p-4 bg-[#0B2C24] border border-[#17493A] rounded-lg">
                 <p className="text-[#E1E4EA]">
                   <strong>Unknown field type:</strong> {field.type}
@@ -248,25 +277,6 @@ export function DataForm({ formId, fields, onSubmit, title, description }: DataF
                 <p className="text-sm text-[#9AA4B2] mt-1">
                   This field type is not supported yet. Please contact support.
                 </p>
-              </div>
-            )}
-
-            {field.type === 'rating' && (
-              <div className="flex gap-2">
-                {[1, 2, 3, 4, 5].map(rating => (
-                  <button
-                    key={rating}
-                    type="button"
-                    onClick={() => handleFieldChange(field.id, rating)}
-                    className={`w-12 h-12 rounded-full border-2 transition-all ${
-                      responses[field.id] === rating
-                        ? 'bg-[#10B981] text-white border-[#10B981] font-black'
-                        : 'bg-[#0d0f12] text-[#E1E4EA] font-black border-[#2A2F36] hover:border-[#10B981]'
-                    }`}
-                  >
-                    {rating}
-                  </button>
-                ))}
               </div>
             )}
 
