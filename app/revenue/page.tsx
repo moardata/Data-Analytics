@@ -24,19 +24,26 @@ function RevenueContent() {
 
   const fetchRevenue = async () => {
     try {
+      console.log('💰 Fetching revenue for companyId:', clientId);
       const response = await fetch(`/api/revenue?companyId=${clientId}`);
       
       if (!response.ok) {
-        console.error('Failed to fetch revenue:', response.statusText);
+        const errorData = await response.json().catch(() => ({ error: response.statusText }));
+        console.error('❌ Failed to fetch revenue:', errorData);
+        alert(`Revenue API Error: ${errorData.error || response.statusText}`);
         setRevenue([]);
         setLoading(false);
         return;
       }
 
       const data = await response.json();
+      console.log('✅ Revenue data received:', data);
+      console.log('📊 Revenue events count:', data.count);
+      console.log('💵 Total revenue:', data.total);
       setRevenue(data.revenue || []);
     } catch (error) {
-      console.error('Error fetching revenue:', error);
+      console.error('❌ Error fetching revenue:', error);
+      alert(`Error loading revenue: ${error}`);
       setRevenue([]);
     } finally {
       setLoading(false);
