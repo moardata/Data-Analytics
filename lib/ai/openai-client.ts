@@ -6,16 +6,16 @@
 
 import OpenAI from 'openai';
 
-// Lazy-initialize OpenAI client to avoid caching env vars at build time
-let _openai: OpenAI | null = null;
-
+// ALWAYS create fresh OpenAI client to avoid caching old API keys
 function getOpenAI(): OpenAI {
-  if (!_openai) {
-    _openai = new OpenAI({
-      apiKey: process.env.OPENAI_API_KEY,
-    });
-  }
-  return _openai;
+  const key = process.env.OPENAI_API_KEY;
+  
+  console.log('🔑 [openai-client] Creating fresh OpenAI with key ending:', key ? '...' + key.substring(key.length - 10) : 'NO KEY');
+  
+  // Always create new instance - no caching!
+  return new OpenAI({
+    apiKey: key,
+  });
 }
 
 export const openai = new Proxy({} as OpenAI, {

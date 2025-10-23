@@ -3,13 +3,15 @@
  * Using the new Responses API endpoint with gpt-5-nano
  */
 
-const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
 const OPENAI_BASE_URL = 'https://api.openai.com/v1/responses';
 
 export async function generateInsightWithResponsesAPI(
   input: string
 ): Promise<string> {
   try {
+    // Read API key fresh each time - don't cache!
+    const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
+    
     const response = await fetch(OPENAI_BASE_URL, {
       method: 'POST',
       headers: {
