@@ -56,120 +56,138 @@ export async function generateInsightsForClient(
     const daysAgo = range === 'week' ? 7 : range === 'month' ? 30 : 90;
     const startDate = new Date(Date.now() - daysAgo * 86400000).toISOString();
 
-    // Get survey responses with enhanced data
+    // Get ALL available data sources - form submissions, events, subscriptions
+    console.log('📊 Fetching all data sources for AI analysis...');
+    
+    // 1. Form submissions (feedback, surveys)
     const { data: formSubmissions } = await supabase
       .from('form_submissions')
-      .select(`
-        responses, 
-        submitted_at,
-        form_templates(name, description),
-        entities(name, email)
-      `)
+      .select('responses, submitted_at, form_template_id')
       .eq('client_id', clientId)
       .gte('submitted_at', startDate)
       .order('submitted_at', { ascending: false })
       .limit(100);
 
-    // Get engagement data for context
-    const { data: engagementEvents } = await supabase
+    // 2. Get ALL events for comprehensive analysis
+    const { data: allEvents } = await supabase
       .from('events')
-      .select('event_type, event_data, created_at')
+      .select('event_type, event_data, created_at, metadata')
       .eq('client_id', clientId)
-      .eq('event_type', 'engagement')
+      .gte('created_at', startDate)
+      .order('created_at', { ascending: false })
+      .limit(500);
+
+    // 3. Get subscription data for churn/revenue insights
+    const { data: subscriptions } = await supabase
+      .from('subscriptions')
+      .select('status, created_at, cancelled_at, metadata, plan_id')
+      .eq('client_id', clientId)
       .gte('created_at', startDate)
       .order('created_at', { ascending: false });
 
-    // Get course completion data
-    const { data: completionEvents } = await supabase
-      .from('events')
-      .select('event_type, event_data, created_at')
+    // 4. Get entity (student) data for engagement patterns
+    const { data: entities } = await supabase
+      .from('entities')
+      .select('metadata, created_at')
       .eq('client_id', clientId)
-      .in('event_type', ['course_enrollment', 'course_completion'])
-      .gte('created_at', startDate)
-      .order('created_at', { ascending: false });
+      .gte('created_at', startDate);
 
-    if (!formSubmissions || formSubmissions.length === 0) {
-      // No data - generate demo insights to show what's possible
-      console.log('⚠️ No form submissions found, generating demo insights');
-      
-      if (aiRunId) {
-        await supabase
-          .from('ai_runs')
-          .update({ 
-            status: 'completed', 
-            finished_at: new Date().toISOString(),
-            meta: { range, demo_mode: true }
-          })
-          .eq('id', aiRunId);
-      }
-
-      // Return demo insights showing what AI can do
-      const demoInsights = [
-        {
-          client_id: clientId,
-          title: 'Getting Started: AI Insights Ready',
-          content: 'Your AI insights system is configured and ready! Start collecting student feedback through forms to get real AI-powered insights about engagement, satisfaction, and areas for improvement.',
-          insight_type: 'recommendation',
-          metadata: {
-            ai_generated: false,
-            model: 'demo',
-            demo_mode: true,
-            next_steps: [
-              'Create feedback forms in the Forms section',
-              'Send forms to your students',
-              'Come back here to generate real AI insights'
-            ]
-          }
-        }
-      ];
-
-      const { data, error } = await supabase
-        .from('insights')
-        .insert(demoInsights)
-        .select();
-
-      return data || demoInsights;
-    }
-
-    // Extract text from form responses with enhanced context
-    const textPool = formSubmissions.flatMap(submission => {
-      const texts: any[] = [];
-      const formName = (submission.form_templates as any)?.name || 'Unknown Form';
-      const studentName = (submission.entities as any)?.name || 'Anonymous';
-      
-      Object.values(submission.responses || {}).forEach(value => {
-        if (typeof value === 'string' && value.length > 10) {
-          texts.push({
-            id: Math.random().toString(),
-            text: value,
-            source: 'form_submission',
-            formName: formName,
-            studentName: studentName,
-            created_at: submission.submitted_at
-          });
-        }
-      });
-      return texts;
+    console.log('📊 Data fetched:', {
+      formSubmissions: formSubmissions?.length || 0,
+      events: allEvents?.length || 0,
+      subscriptions: subscriptions?.length || 0,
+      entities: entities?.length || 0
     });
 
-    // Add engagement context
-    const engagementContext = engagementEvents?.map(event => ({
-      id: Math.random().toString(),
-      text: `Engagement: ${event.event_data?.action || 'activity'} at ${new Date(event.created_at).toLocaleDateString()}`,
-      source: 'engagement_log',
-      created_at: event.created_at
-    })) || [];
+    // Check if we have ANY data at all
+    const hasAnyData = (formSubmissions && formSubmissions.length > 0) ||
+                       (allEvents && allEvents.length > 0) ||
+                       (subscriptions && subscriptions.length > 0);
 
-    // Add completion context
-    const completionContext = completionEvents?.map(event => ({
-      id: Math.random().toString(),
-      text: `Course Progress: ${event.event_type} - ${event.event_data?.action || 'activity'}`,
-      source: 'completion_log',
-      created_at: event.created_at
-    })) || [];
+    if (!hasAnyData) {
+      console.error('❌ No data available in any table');
+      throw new Error('No data available for analysis. Database appears empty. Run the mock data generator script.');
+    }
 
-    // Combine all text sources
-    const allTexts = [...textPool, ...engagementContext, ...completionContext];
+    // Build comprehensive text data from ALL sources
+    const textPool: any[] = [];
+
+    // Extract from form submissions
+    if (formSubmissions && formSubmissions.length > 0) {
+      formSubmissions.forEach(submission => {
+        Object.values(submission.responses || {}).forEach(value => {
+          if (typeof value === 'string' && value.length > 10) {
+            textPool.push({
+              text: value,
+              source: 'survey_response',
+              date: submission.submitted_at
+            });
+          }
+        });
+      });
+    }
+
+    // Extract insights from events
+    if (allEvents && allEvents.length > 0) {
+      // Group events by type for analysis
+      const eventsByType: Record<string, number> = {};
+      allEvents.forEach(event => {
+        eventsByType[event.event_type] = (eventsByType[event.event_type] || 0) + 1;
+      });
+
+      // Add event summaries as text for AI
+      Object.entries(eventsByType).forEach(([type, count]) => {
+        textPool.push({
+          text: `Event Pattern: ${type} occurred ${count} times in the last ${range}`,
+          source: 'event_analytics',
+          date: new Date().toISOString()
+        });
+      });
+
+      // Add specific notable events
+      const payments = allEvents.filter(e => e.event_type === 'payment.succeeded');
+      const refunds = allEvents.filter(e => e.event_type === 'payment.refunded');
+      const cancellations = allEvents.filter(e => e.event_type === 'membership.went_invalid');
+      
+      if (payments.length > 0) {
+        textPool.push({
+          text: `Revenue: ${payments.length} successful payments recorded`,
+          source: 'payment_analytics',
+          date: new Date().toISOString()
+        });
+      }
+      
+      if (refunds.length > 0) {
+        textPool.push({
+          text: `Refunds: ${refunds.length} refunds issued - potential dissatisfaction signal`,
+          source: 'refund_analytics',
+          date: new Date().toISOString()
+        });
+      }
+      
+      if (cancellations.length > 0) {
+        textPool.push({
+          text: `Churn Alert: ${cancellations.length} memberships cancelled or expired`,
+          source: 'churn_analytics',
+          date: new Date().toISOString()
+        });
+      }
+    }
+
+    // Extract subscription insights
+    if (subscriptions && subscriptions.length > 0) {
+      const activeCount = subscriptions.filter(s => s.status === 'active').length;
+      const cancelledCount = subscriptions.filter(s => s.status === 'cancelled').length;
+      const churnRate = subscriptions.length > 0 ? (cancelledCount / subscriptions.length * 100).toFixed(1) : '0';
+      
+      textPool.push({
+        text: `Subscription Health: ${activeCount} active, ${cancelledCount} cancelled (${churnRate}% churn rate)`,
+        source: 'subscription_analytics',
+        date: new Date().toISOString()
+      });
+    }
+
+    const allTexts = textPool;
 
     // Scrub PII from all texts
     const scrubbedTexts = allTexts.map(item => ({
@@ -177,7 +195,7 @@ export async function generateInsightsForClient(
       text: scrubText(item.text)
     }));
 
-    // Generate insights using AI ONLY - no fallbacks
+    // MUST have OpenAI configured - no bullshit fallbacks
     console.log('🔍 AI Generation Check:', {
       hasOpenAI: !!openai,
       hasAPIKey: !!process.env.OPENAI_API_KEY,
@@ -185,45 +203,9 @@ export async function generateInsightsForClient(
       textCount: scrubbedTexts.length
     });
     
-    // Handle missing OpenAI configuration gracefully
     if (!openai || !process.env.OPENAI_API_KEY) {
-      console.error('❌ OpenAI not configured - returning setup instructions');
-      
-      if (aiRunId) {
-        await supabase
-          .from('ai_runs')
-          .update({ 
-            status: 'completed', 
-            finished_at: new Date().toISOString(),
-            meta: { range, needs_api_key: true }
-          })
-          .eq('id', aiRunId);
-      }
-
-      const setupInsight = [{
-        client_id: clientId,
-        title: 'Setup Required: OpenAI API Key Missing',
-        content: 'To use AI-powered insights, add your OpenAI API key to Vercel environment variables. Go to Project Settings → Environment Variables → Add OPENAI_API_KEY',
-        insight_type: 'alert',
-        metadata: {
-          ai_generated: false,
-          model: 'none',
-          requires_setup: true,
-          instructions: [
-            '1. Get API key from https://platform.openai.com/api-keys',
-            '2. Add OPENAI_API_KEY to Vercel environment variables',
-            '3. Redeploy your app',
-            '4. Come back and generate insights again'
-          ]
-        }
-      }];
-
-      const { data } = await supabase
-        .from('insights')
-        .insert(setupInsight)
-        .select();
-
-      return data || setupInsight;
+      console.error('❌ FATAL: OpenAI not configured');
+      throw new Error('OpenAI API key not found. Check Vercel environment variables.');
     }
     
     console.log('🤖 Attempting OpenAI API call...');
@@ -278,12 +260,15 @@ export async function generateInsightsForClient(
 export async function generateWithOpenAI(texts: any[]): Promise<AIAnalysisResult> {
   const textSample = texts.slice(0, 30).map(t => t.text).join('\n---\n');
 
-  const prompt = `You are an expert AI analyst for online course creators. Analyze ${texts.length} student feedback responses and provide actionable insights focused on:
+  const prompt = `You are an expert AI analyst for online course/membership businesses. Analyze ${texts.length} data points including survey responses, event patterns, subscription metrics, and behavioral analytics.
 
-1. ENGAGEMENT METRICS: Course completion rates, drop-off points, student activity patterns
-2. SENTIMENT ANALYSIS: Overall student satisfaction, pain points, positive feedback
-3. TREND IDENTIFICATION: Emerging patterns, recurring issues, success factors
-4. PERFORMANCE OPTIMIZATION: Specific areas for improvement with clear metrics
+Provide actionable insights focused on:
+
+1. REVENUE & CHURN: Payment patterns, cancellations, refund trends, retention issues
+2. ENGAGEMENT METRICS: Activity patterns, drop-off points, student participation
+3. SENTIMENT ANALYSIS: Customer satisfaction, pain points, positive feedback
+4. TREND IDENTIFICATION: Emerging patterns, recurring issues, growth opportunities
+5. PERFORMANCE OPTIMIZATION: Specific areas for improvement with clear metrics
 
 For EACH insight, provide:
 - title: Specific, descriptive name (include module/lesson if mentioned)
