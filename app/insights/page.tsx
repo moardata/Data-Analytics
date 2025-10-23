@@ -197,7 +197,7 @@ function InsightsContent() {
                 <Lightbulb className="h-4 w-4 text-[#8B5CF6]" />
               </div>
               <div>
-                <p className="text-2xl font-bold text-[#F8FAFC]">{insights.filter(i => i.category === 'recommendation').length}</p>
+                <p className="text-2xl font-bold text-[#F8FAFC]">{insights.filter(i => i.insight_type === 'recommendation').length}</p>
                 <p className="text-xs text-[#A1A1AA]">Recommendations</p>
               </div>
             </div>
@@ -209,7 +209,7 @@ function InsightsContent() {
                 <AlertCircle className="h-4 w-4 text-[#EF4444]" />
               </div>
               <div>
-                <p className="text-2xl font-bold text-[#F8FAFC]">{insights.filter(i => i.priority === 'high').length}</p>
+                <p className="text-2xl font-bold text-[#F8FAFC]">{insights.filter(i => i.metadata?.urgency === 'high').length}</p>
                 <p className="text-xs text-[#A1A1AA]">High Priority</p>
               </div>
             </div>
