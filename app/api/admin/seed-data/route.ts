@@ -31,6 +31,10 @@ export async function POST(request: NextRequest) {
       client = newClient;
     }
     
+    if (!client) {
+      throw new Error('Failed to get or create client record');
+    }
+    
     const clientId = client.id;
     console.log('📋 Using client ID:', clientId);
 
