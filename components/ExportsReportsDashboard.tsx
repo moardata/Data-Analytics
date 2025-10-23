@@ -101,9 +101,9 @@ export default function ExportsReportsDashboard({ companyId }: ExportsReportsDas
       
       let url = '';
       if (option.type === 'pdf') {
-        url = '/api/export/pdf';
+        url = `/api/export/pdf?companyId=${companyId}`;
       } else {
-        url = `/api/export/csv?type=${option.id.replace('_csv', '')}`;
+        url = `/api/export/csv?type=${option.id.replace('_csv', '')}&companyId=${companyId}`;
       }
 
       // Open download in new tab
