@@ -369,7 +369,7 @@ function AnalyticsContent() {
         )}
         
         <DashboardCreatorAnalytics
-          data={dashboardData}
+          clientId={companyId}
           onExportEventsCsv={handleExportEventsCsv}
           onExportSubscriptionsCsv={handleExportSubscriptionsCsv}
           onExportPdf={handleExportPdf}

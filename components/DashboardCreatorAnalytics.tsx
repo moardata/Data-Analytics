@@ -1,37 +1,30 @@
 'use client';
 
 import * as React from 'react';
-import { Suspense } from 'react';
+import { Suspense, useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils/cn';
-import {
-  LineChart,
-  Line,
-  XAxis,
-  YAxis,
-  Tooltip,
-  ResponsiveContainer,
-  CartesianGrid,
-  BarChart,
-  Bar,
-  PieChart,
-  Pie,
-  Cell,
-} from 'recharts';
-import { Calendar, Download } from 'lucide-react';
+import { Calendar, Download, RefreshCw } from 'lucide-react';
+
+// New metric components
+import ConsistencyScoreGauge from '@/components/metrics/ConsistencyScoreGauge';
+import AhaMomentChart from '@/components/metrics/AhaMomentChart';
+import PathwayTable from '@/components/metrics/PathwayTable';
+import PopularContentList from '@/components/metrics/PopularContentList';
+import FeedbackThemesList from '@/components/metrics/FeedbackThemesList';
+import CommitmentDistribution from '@/components/metrics/CommitmentDistribution';
 
 /**
- * CREATOR ANALYTICS – DASHBOARD (Mapped Metrics)
+ * ADVANCED DASHBOARD METRICS
  * ---------------------------------------------------------
- * Matches the "Dashboard Layout Mapping" doc:
- * Row 1: Active Students, Engagement Rate, Form Responses, Avg Feedback Rating
- * Row 2: Positive Sentiment Ratio, Top Themes, New Insights, Gross Revenue
- * Footer: System Health (Survey Completion, Data Freshness, AI Processing Speed) + Exports
- *
- * Uses your dark metallic + emerald theme from globals/card/button.
+ * New comprehensive dashboard with 6 advanced metrics:
+ * Row 1: Engagement Consistency, Aha Moment Tracker, Commitment Probability
+ * Row 2: Content Heat Map, Popular Content Today, Top Feedback Themes
+ * 
+ * All metrics are cached and auto-refreshed via cron jobs
  */
 
 // Colors
@@ -125,30 +118,24 @@ function Panel({ children, className }: React.PropsWithChildren<{ className?: st
 // Props
 // ----------------------------------------
 interface DashboardCreatorAnalyticsProps {
-  data: {
-    activeStudentsSeries: { day: string; v: number }[];
-    engagementRateSeries: { day: string; v: number }[];
-    formResponsesSeries: { day: string; v: number }[];
-    avgFeedbackSeries: { day: string; v: number }[];
-    grossRevenueSeries: { day: string; v: number }[];
-    sentiment: { name: string; value: number }[];
-    themes: { label: string; count: number }[];
-    newInsights: string[];
-    activeStudents: { current: string; sub: string; delta: string };
-    engagementRate: { current: string; sub: string; delta: string };
-    formResponses: { current: string; sub: string; delta: string };
-    avgFeedback: { current: string; sub: string };
-    positiveSentiment: { current: string; sub: string };
-    grossRevenue: { current: string; sub: string; delta: string };
-    systemHealth: {
-      surveyCompletionRate: number;
-      dataFreshnessMinutes: number;
-      aiLatencySeconds: number;
-    };
-  };
+  clientId: string;
   onExportEventsCsv?: () => void;
   onExportSubscriptionsCsv?: () => void;
   onExportPdf?: () => void;
+}
+
+interface DashboardMetrics {
+  engagementConsistency: any;
+  ahaMoments: any;
+  contentPathways: any;
+  popularContent: any;
+  feedbackThemes: any;
+  commitmentScores: any;
+  metadata: {
+    clientId: string;
+    generatedAt: string;
+    cacheStatus: Record<string, boolean>;
+  };
 }
 
 // ----------------------------------------
@@ -199,7 +186,127 @@ function DashboardToolbar({ onExportPdf }: { onExportPdf?: () => void }) {
 // ----------------------------------------
 // Main component
 // ----------------------------------------
-export default function DashboardCreatorAnalytics({ data, onExportEventsCsv, onExportSubscriptionsCsv, onExportPdf }: DashboardCreatorAnalyticsProps) {
+export default function DashboardCreatorAnalytics({ clientId, onExportEventsCsv, onExportSubscriptionsCsv, onExportPdf }: DashboardCreatorAnalyticsProps) {
+  const [metrics, setMetrics] = useState<DashboardMetrics | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  // Fetch metrics data
+  useEffect(() => {
+    const fetchMetrics = async () => {
+      try {
+        setLoading(true);
+        const response = await fetch(`/api/dashboard/metrics?clientId=${clientId}`);
+        
+        if (!response.ok) {
+          throw new Error(`Failed to fetch metrics: ${response.statusText}`);
+        }
+        
+        const data = await response.json();
+        setMetrics(data);
+        setError(null);
+      } catch (err) {
+        console.error('Error fetching dashboard metrics:', err);
+        setError(err instanceof Error ? err.message : 'Failed to load metrics');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (clientId) {
+      fetchMetrics();
+    }
+  }, [clientId]);
+
+  const handleRefresh = () => {
+    if (clientId) {
+      setLoading(true);
+      fetch(`/api/dashboard/metrics?clientId=${clientId}`)
+        .then(res => res.json())
+        .then(data => {
+          setMetrics(data);
+          setError(null);
+        })
+        .catch(err => {
+          console.error('Error refreshing metrics:', err);
+          setError(err.message);
+        })
+        .finally(() => setLoading(false));
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="space-y-4">
+        <Suspense fallback={
+          <div className="flex flex-wrap items-center gap-2">
+            <div className="text-lg font-semibold text-white">Dashboard</div>
+          </div>
+        }>
+          <DashboardToolbar onExportPdf={onExportPdf} />
+        </Suspense>
+        
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
+          {[...Array(6)].map((_, i) => (
+            <Panel key={i}>
+              <div className="animate-pulse">
+                <div className="h-4 bg-zinc-700 rounded w-3/4 mb-2"></div>
+                <div className="h-3 bg-zinc-700 rounded w-1/2 mb-4"></div>
+                <div className="h-20 bg-zinc-700 rounded"></div>
+              </div>
+            </Panel>
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="space-y-4">
+        <Suspense fallback={
+          <div className="flex flex-wrap items-center gap-2">
+            <div className="text-lg font-semibold text-white">Dashboard</div>
+          </div>
+        }>
+          <DashboardToolbar onExportPdf={onExportPdf} />
+        </Suspense>
+        
+        <Panel>
+          <div className="text-center py-8">
+            <div className="text-red-400 mb-2">Error loading dashboard</div>
+            <div className="text-sm text-zinc-400 mb-4">{error}</div>
+            <Button onClick={handleRefresh} className="bg-emerald-600 hover:bg-emerald-700">
+              <RefreshCw className="w-4 h-4 mr-2" />
+              Retry
+            </Button>
+          </div>
+        </Panel>
+      </div>
+    );
+  }
+
+  if (!metrics) {
+    return (
+      <div className="space-y-4">
+        <Suspense fallback={
+          <div className="flex flex-wrap items-center gap-2">
+            <div className="text-lg font-semibold text-white">Dashboard</div>
+          </div>
+        }>
+          <DashboardToolbar onExportPdf={onExportPdf} />
+        </Suspense>
+        
+        <Panel>
+          <div className="text-center py-8">
+            <div className="text-zinc-400 mb-2">No metrics data available</div>
+            <div className="text-sm text-zinc-500">Start collecting data to see your dashboard</div>
+          </div>
+        </Panel>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-4">
       {/* Toolbar */}
@@ -211,94 +318,17 @@ export default function DashboardCreatorAnalytics({ data, onExportEventsCsv, onE
         <DashboardToolbar onExportPdf={onExportPdf} />
       </Suspense>
 
-      {/* Grid: 2 rows × 4 cards */}
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4">
-        {/* Row 1 */}
-        <Panel>
-          <StatHeader 
-            title="Active Students" 
-            value={data.activeStudents.current} 
-            sub={data.activeStudents.sub} 
-            delta={data.activeStudents.delta} 
-          />
-          <div className="mt-3"><Sparkline data={data.activeStudentsSeries} /></div>
-        </Panel>
+      {/* Advanced Metrics Grid */}
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
+        {/* Row 1: Engagement Intelligence */}
+        <ConsistencyScoreGauge data={metrics.engagementConsistency} />
+        <AhaMomentChart data={metrics.ahaMoments} />
+        <CommitmentDistribution data={metrics.commitmentScores} />
 
-        <Panel>
-          <StatHeader 
-            title="Engagement Rate" 
-            value={data.engagementRate.current} 
-            sub={data.engagementRate.sub} 
-            delta={data.engagementRate.delta} 
-          />
-          <div className="mt-3"><Sparkline data={data.engagementRateSeries} /></div>
-        </Panel>
-
-        <Panel>
-          <StatHeader 
-            title="Form Responses" 
-            value={data.formResponses.current} 
-            sub={data.formResponses.sub} 
-            delta={data.formResponses.delta} 
-          />
-          <div className="mt-3"><Sparkline data={data.formResponsesSeries} /></div>
-        </Panel>
-
-        <Panel>
-          <StatHeader 
-            title="Avg Feedback Rating" 
-            value={data.avgFeedback.current} 
-            sub={data.avgFeedback.sub} 
-          />
-          <div className="mt-3"><Sparkline data={data.avgFeedbackSeries} /></div>
-        </Panel>
-
-        {/* Row 2 */}
-        <Panel>
-          <StatHeader 
-            title="Positive Sentiment" 
-            value={data.positiveSentiment.current} 
-            sub={data.positiveSentiment.sub} 
-          />
-          <div className="mt-3"><Donut data={data.sentiment} /></div>
-        </Panel>
-
-        <Panel>
-          <div className="mb-3">
-            <div className="text-[13px] text-zinc-400">Top Feedback Themes</div>
-            <div className="text-sm text-zinc-500">Last 7 days</div>
-          </div>
-          <ul className="space-y-2">
-            {data.themes.map((t) => (
-              <li key={t.label} className="flex items-center justify-between rounded-lg border border-[#2A2F36] bg-[#0F1319] px-3 py-2 text-sm">
-                <span className="text-zinc-300">{t.label}</span>
-                <span className="rounded bg-emerald-900/20 px-2 py-0.5 text-emerald-300 border border-emerald-700/40 text-[12px]">{t.count}</span>
-              </li>
-            ))}
-          </ul>
-        </Panel>
-
-        <Panel>
-          <div className="mb-3">
-            <div className="text-[13px] text-zinc-400">New Actionable Insights</div>
-            <div className="text-sm text-zinc-500">AI suggestions</div>
-          </div>
-          <ul className="list-disc pl-5 text-sm text-zinc-300 space-y-1">
-            {data.newInsights.map((i, idx) => (
-              <li key={idx}>{i}</li>
-            ))}
-          </ul>
-        </Panel>
-
-        <Panel>
-          <StatHeader 
-            title="Gross Revenue" 
-            value={data.grossRevenue.current} 
-            sub={data.grossRevenue.sub} 
-            delta={data.grossRevenue.delta} 
-          />
-          <div className="mt-3"><Sparkline data={data.grossRevenueSeries} /></div>
-        </Panel>
+        {/* Row 2: Content Intelligence */}
+        <PathwayTable data={metrics.contentPathways} />
+        <PopularContentList data={metrics.popularContent} />
+        <FeedbackThemesList data={metrics.feedbackThemes} />
       </div>
 
       {/* Footer: System Health + Exports */}
@@ -307,9 +337,9 @@ export default function DashboardCreatorAnalytics({ data, onExportEventsCsv, onE
           <div className="space-y-2">
             <div className="text-[13px] text-zinc-400">System Health</div>
             <div className="flex flex-wrap gap-2 text-sm">
-              <BadgeComponent label={`Survey Completion: ${(data.systemHealth.surveyCompletionRate * 100).toFixed(0)}%`} />
-              <BadgeComponent label={`Data Freshness: ${data.systemHealth.dataFreshnessMinutes}m`} />
-              <BadgeComponent label={`AI Processing: ${data.systemHealth.aiLatencySeconds}s`} />
+              <BadgeComponent label={`Cache Status: ${Object.values(metrics.metadata.cacheStatus).filter(Boolean).length}/6`} />
+              <BadgeComponent label={`Last Updated: ${new Date(metrics.metadata.generatedAt).toLocaleTimeString()}`} />
+              <BadgeComponent label={`Client: ${metrics.metadata.clientId.slice(0, 8)}...`} />
             </div>
           </div>
           <div className="flex gap-2">
@@ -330,6 +360,13 @@ export default function DashboardCreatorAnalytics({ data, onExportEventsCsv, onE
               className="border border-emerald-700/60 bg-emerald-900/40 hover:bg-emerald-900/60"
             >
               PDF Report
+            </Button>
+            <Button 
+              onClick={handleRefresh}
+              className="border border-zinc-700/60 bg-zinc-900/40 hover:bg-zinc-900/60"
+            >
+              <RefreshCw className="w-4 h-4 mr-2" />
+              Refresh
             </Button>
           </div>
         </div>
