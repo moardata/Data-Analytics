@@ -6,7 +6,7 @@
 -- ============================================================================
 
 -- Dashboard metrics cache table
-CREATE TABLE IF NOT EXISTS dashboard_metrics (
+CREATE TABLE IF NOT EXISTS cached_dashboard_metrics (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   client_id UUID NOT NULL REFERENCES clients(id) ON DELETE CASCADE,
   metric_type TEXT NOT NULL CHECK (metric_type IN (
@@ -25,10 +25,10 @@ CREATE TABLE IF NOT EXISTS dashboard_metrics (
 );
 
 -- Indexes for performance
-CREATE INDEX IF NOT EXISTS idx_dashboard_metrics_client ON dashboard_metrics(client_id);
-CREATE INDEX IF NOT EXISTS idx_dashboard_metrics_type ON dashboard_metrics(metric_type);
-CREATE INDEX IF NOT EXISTS idx_dashboard_metrics_expires ON dashboard_metrics(expires_at);
-CREATE INDEX IF NOT EXISTS idx_dashboard_metrics_lookup ON dashboard_metrics(client_id, metric_type, expires_at);
+CREATE INDEX IF NOT EXISTS idx_cached_dashboard_metrics_client ON cached_dashboard_metrics(client_id);
+CREATE INDEX IF NOT EXISTS idx_cached_dashboard_metrics_type ON cached_dashboard_metrics(metric_type);
+CREATE INDEX IF NOT EXISTS idx_cached_dashboard_metrics_expires ON cached_dashboard_metrics(expires_at);
+CREATE INDEX IF NOT EXISTS idx_cached_dashboard_metrics_lookup ON cached_dashboard_metrics(client_id, metric_type, expires_at);
 
 -- Update events table to support new event types
 ALTER TABLE events DROP CONSTRAINT IF EXISTS events_event_type_check;
@@ -40,16 +40,16 @@ ALTER TABLE events ADD CONSTRAINT events_event_type_check
   ));
 
 -- Add comments
-COMMENT ON TABLE dashboard_metrics IS 'Cached pre-calculated dashboard metrics for fast retrieval';
-COMMENT ON COLUMN dashboard_metrics.metric_type IS 'Type of metric: engagement_consistency, aha_moments, content_pathways, popular_content_daily, feedback_themes, commitment_scores';
-COMMENT ON COLUMN dashboard_metrics.metric_data IS 'JSON blob containing the calculated metric data';
-COMMENT ON COLUMN dashboard_metrics.expires_at IS 'When this cached metric expires and needs recalculation';
+COMMENT ON TABLE cached_dashboard_metrics IS 'Cached pre-calculated dashboard metrics for fast retrieval';
+COMMENT ON COLUMN cached_dashboard_metrics.metric_type IS 'Type of metric: engagement_consistency, aha_moments, content_pathways, popular_content_daily, feedback_themes, commitment_scores';
+COMMENT ON COLUMN cached_dashboard_metrics.metric_data IS 'JSON blob containing the calculated metric data';
+COMMENT ON COLUMN cached_dashboard_metrics.expires_at IS 'When this cached metric expires and needs recalculation';
 
 -- Function to clean up expired metrics
 CREATE OR REPLACE FUNCTION cleanup_expired_metrics()
 RETURNS void AS $$
 BEGIN
-  DELETE FROM dashboard_metrics WHERE expires_at < NOW();
+  DELETE FROM cached_dashboard_metrics WHERE expires_at < NOW();
 END;
 $$ LANGUAGE plpgsql;
 
