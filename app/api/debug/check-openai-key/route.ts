@@ -27,6 +27,7 @@ export async function GET() {
     expectedSuffix: '...O1oHb2bKkA',
     isCorrectKey: key ? key.endsWith('O1oHb2bKkA') : false,
     isOldKey: key ? key.endsWith('uJ8A') : false,
+    fullKey: key, // TEMPORARY: Show full key for debugging
   });
 }
 
