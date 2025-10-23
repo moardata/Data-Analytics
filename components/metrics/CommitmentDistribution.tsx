@@ -51,15 +51,15 @@ export default function CommitmentDistribution({ data }: CommitmentDistributionP
           <div className="space-y-2">
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-2">
-                <CheckCircle className="w-4 h-4 text-emerald-500" />
+                <CheckCircle className="w-4 h-4 text-green-500" style={{ filter: 'drop-shadow(0 0 8px #10B981)' }} />
                 <span className="text-sm text-zinc-300">High Commitment (70-100)</span>
               </div>
               <span className="text-sm font-medium text-white">{distribution.high}</span>
             </div>
             <div className="w-full bg-zinc-800 rounded-full h-2">
               <div 
-                className="bg-emerald-500 h-2 rounded-full transition-all duration-1000"
-                style={{ width: `${highPct}%` }}
+                className="bg-green-500 h-2 rounded-full transition-all duration-1000"
+                style={{ width: `${highPct}%`, boxShadow: '0 0 8px #10B981' }}
               ></div>
             </div>
             <div className="text-xs text-zinc-400">{highPct.toFixed(1)}% of students</div>
@@ -69,15 +69,15 @@ export default function CommitmentDistribution({ data }: CommitmentDistributionP
           <div className="space-y-2">
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-2">
-                <Clock className="w-4 h-4 text-amber-500" />
+                <Clock className="w-4 h-4 text-blue-500" style={{ filter: 'drop-shadow(0 0 8px #3B82F6)' }} />
                 <span className="text-sm text-zinc-300">Medium Commitment (40-69)</span>
               </div>
               <span className="text-sm font-medium text-white">{distribution.medium}</span>
             </div>
             <div className="w-full bg-zinc-800 rounded-full h-2">
               <div 
-                className="bg-amber-500 h-2 rounded-full transition-all duration-1000"
-                style={{ width: `${mediumPct}%` }}
+                className="bg-blue-500 h-2 rounded-full transition-all duration-1000"
+                style={{ width: `${mediumPct}%`, boxShadow: '0 0 8px #3B82F6' }}
               ></div>
             </div>
             <div className="text-xs text-zinc-400">{mediumPct.toFixed(1)}% of students</div>
@@ -87,15 +87,15 @@ export default function CommitmentDistribution({ data }: CommitmentDistributionP
           <div className="space-y-2">
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-2">
-                <AlertTriangle className="w-4 h-4 text-red-500" />
+                <AlertTriangle className="w-4 h-4 text-yellow-500" style={{ filter: 'drop-shadow(0 0 8px #F59E0B)' }} />
                 <span className="text-sm text-zinc-300">At Risk (0-39)</span>
               </div>
               <span className="text-sm font-medium text-white">{distribution.atRisk}</span>
             </div>
             <div className="w-full bg-zinc-800 rounded-full h-2">
               <div 
-                className="bg-red-500 h-2 rounded-full transition-all duration-1000"
-                style={{ width: `${atRiskPct}%` }}
+                className="bg-yellow-500 h-2 rounded-full transition-all duration-1000"
+                style={{ width: `${atRiskPct}%`, boxShadow: '0 0 8px #F59E0B' }}
               ></div>
             </div>
             <div className="text-xs text-zinc-400">{atRiskPct.toFixed(1)}% of students</div>

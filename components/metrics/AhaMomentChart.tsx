@@ -28,7 +28,7 @@ export default function AhaMomentChart({ data }: AhaMomentChartProps) {
             <h3 className="text-sm font-medium text-zinc-400">Aha Moment Tracker</h3>
             <p className="text-xs text-zinc-500">Breakthrough experiences</p>
           </div>
-          <TrendingUp className="w-5 h-5 text-emerald-500" />
+          <TrendingUp className="w-5 h-5 text-green-500" style={{ filter: 'drop-shadow(0 0 8px #10B981)' }} />
         </div>
 
         {/* Top Experiences */}
@@ -41,7 +41,7 @@ export default function AhaMomentChart({ data }: AhaMomentChartProps) {
                   <div className="text-xs text-zinc-400">{exp.studentCount} students</div>
                 </div>
                 <div className="text-right">
-                  <div className="text-sm font-bold text-emerald-400">+{exp.spikePercent.toFixed(0)}%</div>
+                  <div className="text-sm font-bold text-green-400" style={{ textShadow: '0 0 8px #10B981' }}>+{exp.spikePercent.toFixed(0)}%</div>
                   <div className="text-xs text-zinc-400">spike</div>
                 </div>
               </div>
@@ -58,7 +58,7 @@ export default function AhaMomentChart({ data }: AhaMomentChartProps) {
         <div className="grid grid-cols-2 gap-4">
           <div className="p-3 rounded-lg bg-zinc-900/30 border border-zinc-800">
             <div className="flex items-center space-x-2 mb-2">
-              <Clock className="w-4 h-4 text-blue-400" />
+              <Clock className="w-4 h-4 text-blue-400" style={{ filter: 'drop-shadow(0 0 8px #3B82F6)' }} />
               <span className="text-xs text-zinc-400">Avg. Time to Breakthrough</span>
             </div>
             <div className="text-lg font-bold text-white">{avgTimeToFirstBreakthrough}</div>
@@ -66,7 +66,7 @@ export default function AhaMomentChart({ data }: AhaMomentChartProps) {
           
           <div className="p-3 rounded-lg bg-zinc-900/30 border border-zinc-800">
             <div className="flex items-center space-x-2 mb-2">
-              <AlertTriangle className="w-4 h-4 text-amber-400" />
+              <AlertTriangle className="w-4 h-4 text-yellow-400" style={{ filter: 'drop-shadow(0 0 8px #F59E0B)' }} />
               <span className="text-xs text-zinc-400">Stagnant Students</span>
             </div>
             <div className="text-lg font-bold text-white">{stagnantStudents}</div>

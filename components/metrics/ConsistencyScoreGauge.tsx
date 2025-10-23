@@ -20,9 +20,9 @@ export default function ConsistencyScoreGauge({ data }: ConsistencyScoreGaugePro
   
   // Calculate gauge color based on score
   const getGaugeColor = (score: number) => {
-    if (score >= 70) return '#10B981'; // emerald-500
-    if (score >= 40) return '#F59E0B'; // amber-500
-    return '#EF4444'; // red-500
+    if (score >= 70) return '#A855F7'; // neon purple
+    if (score >= 40) return '#3B82F6'; // bright blue
+    return '#F59E0B'; // bright yellow
   };
 
   const gaugeColor = getGaugeColor(averageScore);
@@ -69,6 +69,9 @@ export default function ConsistencyScoreGauge({ data }: ConsistencyScoreGaugePro
                 strokeDasharray={strokeDasharray}
                 strokeDashoffset={strokeDashoffset}
                 className="transition-all duration-1000 ease-out"
+                style={{
+                  filter: `drop-shadow(0 0 8px ${gaugeColor})`,
+                }}
               />
             </svg>
             <div className="absolute inset-0 flex items-center justify-center">
@@ -84,7 +87,7 @@ export default function ConsistencyScoreGauge({ data }: ConsistencyScoreGaugePro
         <div className="space-y-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-2">
-              <div className="w-3 h-3 rounded-full bg-emerald-500"></div>
+              <div className="w-3 h-3 rounded-full bg-purple-500" style={{ boxShadow: '0 0 8px #A855F7' }}></div>
               <span className="text-sm text-zinc-300">High (70-100)</span>
             </div>
             <span className="text-sm font-medium text-white">{distribution.high}</span>
@@ -92,7 +95,7 @@ export default function ConsistencyScoreGauge({ data }: ConsistencyScoreGaugePro
           
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-2">
-              <div className="w-3 h-3 rounded-full bg-amber-500"></div>
+              <div className="w-3 h-3 rounded-full bg-blue-500" style={{ boxShadow: '0 0 8px #3B82F6' }}></div>
               <span className="text-sm text-zinc-300">Medium (40-69)</span>
             </div>
             <span className="text-sm font-medium text-white">{distribution.medium}</span>
@@ -100,7 +103,7 @@ export default function ConsistencyScoreGauge({ data }: ConsistencyScoreGaugePro
           
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-2">
-              <div className="w-3 h-3 rounded-full bg-red-500"></div>
+              <div className="w-3 h-3 rounded-full bg-yellow-500" style={{ boxShadow: '0 0 8px #F59E0B' }}></div>
               <span className="text-sm text-zinc-300">Low (0-39)</span>
             </div>
             <span className="text-sm font-medium text-white">{distribution.low}</span>
