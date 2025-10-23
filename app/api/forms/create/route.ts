@@ -34,6 +34,12 @@ export async function POST(request: NextRequest) {
 
     const clientId = clientData.id; // This is the actual UUID
 
+    // Ensure all field IDs are unique by regenerating them
+    const fieldsWithUniqueIds = formData.fields.map((field: any, index: number) => ({
+      ...field,
+      id: `field_${Date.now()}_${index}_${Math.random().toString(36).slice(2, 9)}`
+    }));
+
     // Create form template
     const { data: formTemplate, error } = await supabase
       .from('form_templates')
@@ -41,7 +47,7 @@ export async function POST(request: NextRequest) {
         client_id: clientId,
         name: formData.name,
         description: formData.description,
-        fields: formData.fields,
+        fields: fieldsWithUniqueIds,
         is_active: true,
       })
       .select()

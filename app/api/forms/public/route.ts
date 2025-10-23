@@ -58,13 +58,24 @@ export async function GET(request: NextRequest) {
       );
     }
 
+    // Ensure all field IDs are unique (fix for existing forms with duplicate IDs)
+    const seenIds = new Set();
+    const fieldsWithUniqueIds = form.fields.map((field: any, index: number) => {
+      // If ID is duplicate or missing, regenerate it
+      if (!field.id || seenIds.has(field.id)) {
+        field.id = `field_${Date.now()}_${index}_${Math.random().toString(36).slice(2, 9)}`;
+      }
+      seenIds.add(field.id);
+      return field;
+    });
+
     return NextResponse.json({
       success: true,
       form: {
         id: form.id,
         name: form.name,
         description: form.description,
-        fields: form.fields,
+        fields: fieldsWithUniqueIds,
         is_active: form.is_active,
       },
     });
