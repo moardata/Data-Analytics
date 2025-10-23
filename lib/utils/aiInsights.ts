@@ -7,24 +7,22 @@ import OpenAI from 'openai';
 import { supabaseServer as supabase } from '@/lib/supabase-server';
 import { scrubText } from './piiScrubber';
 
-// Lazy-initialize OpenAI client to avoid caching env vars at build time
-let _openai: OpenAI | null = null;
-
+// ALWAYS create fresh OpenAI client to avoid caching old API keys
 function getOpenAI(): OpenAI | null {
-  if (!process.env.OPENAI_API_KEY) {
+  const key = process.env.OPENAI_API_KEY;
+  
+  if (!key) {
     console.error('❌ OPENAI_API_KEY not found in environment');
     return null;
   }
-  if (!_openai) {
-    const key = process.env.OPENAI_API_KEY;
-    console.log('🔑 Initializing OpenAI with key ending in:', key.substring(key.length - 10));
-    _openai = new OpenAI({ apiKey: key });
-  }
-  return _openai;
+  
+  console.log('🔑 Creating fresh OpenAI client with key ending in:', key.substring(key.length - 10));
+  
+  // Always create new instance - don't cache!
+  return new OpenAI({ apiKey: key });
 }
 
-// Force re-initialization every time to avoid stale cache
-const openai = null; // Will be lazily initialized in generateWithOpenAI
+const openai = null; // Never used - we always call getOpenAI() fresh
 
 export interface InsightTheme {
   title: string;
