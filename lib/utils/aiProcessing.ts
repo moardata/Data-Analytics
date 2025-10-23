@@ -237,38 +237,29 @@ Return structured JSON with specific insights:
 Be specific, data-driven, and actionable. Focus on patterns that can be improved.`;
 
   try {
-    const response = await fetch('https://api.openai.com/v1/chat/completions', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`,
-      },
-      body: JSON.stringify({
-        model: 'gpt-4o-mini',
-        messages: [
-          { 
-            role: 'system', 
-            content: 'You are an expert AI analyst specializing in online education optimization. You excel at identifying drop-off points, sentiment trends, engagement patterns, and course issues. Provide specific, actionable insights with confidence levels.' 
-          },
-          { role: 'user', content: prompt }
-        ],
-        response_format: { type: 'json_object' },
-        temperature: 0.6, // Balanced for analysis
-        max_tokens: 2000,
-        top_p: 0.9,
-        frequency_penalty: 0.1,
-        presence_penalty: 0.1
-      }),
+    const openai = getOpenAI();
+    if (!openai) {
+      throw new Error('OpenAI client not available');
+    }
+    
+    const completion = await openai.chat.completions.create({
+      model: 'gpt-4o-mini',
+      messages: [
+        { 
+          role: 'system', 
+          content: 'You are an expert AI analyst specializing in online education optimization. You excel at identifying drop-off points, sentiment trends, engagement patterns, and course issues. Provide specific, actionable insights with confidence levels.' 
+        },
+        { role: 'user', content: prompt }
+      ],
+      response_format: { type: 'json_object' },
+      temperature: 0.6, // Balanced for analysis
+      max_tokens: 2000,
+      top_p: 0.9,
+      frequency_penalty: 0.1,
+      presence_penalty: 0.1
     });
 
-    if (!response.ok) {
-      const error = await response.json();
-      console.error('OpenAI API error:', error);
-      throw new Error(`OpenAI API error: ${JSON.stringify(error)}`);
-    }
-
-    const result = await response.json();
-    const analysisText = result.choices[0].message.content;
+    const analysisText = completion.choices[0].message.content;
     const analysis = JSON.parse(analysisText);
     
     console.log('✅ [AI Processing] Generated structured insights:', analysis.insights.length);

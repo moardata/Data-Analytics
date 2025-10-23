@@ -18,11 +18,8 @@ function getOpenAI(): OpenAI {
   });
 }
 
-export const openai = new Proxy({} as OpenAI, {
-  get(target, prop) {
-    return (getOpenAI() as any)[prop];
-  }
-});
+// Don't use proxy - always call getOpenAI() directly
+export { getOpenAI as openai };
 
 /**
  * Generate insights from course feedback
@@ -55,7 +52,7 @@ Focus on:
 - Strengths to amplify
 - Specific action items`;
 
-    const completion = await openai.chat.completions.create({
+    const completion = await openai().chat.completions.create({
       model: 'gpt-3.5-turbo', // or gpt-4 for better quality
       messages: [
         {
@@ -88,7 +85,7 @@ export async function analyzeSentiment(texts: string[]): Promise<{
   themes: string[];
 }> {
   try {
-    const completion = await openai.chat.completions.create({
+    const completion = await openai().chat.completions.create({
       model: 'gpt-3.5-turbo',
       messages: [
         {
