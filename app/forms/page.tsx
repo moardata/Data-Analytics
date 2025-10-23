@@ -595,7 +595,7 @@ function FormsContent() {
                       className="gap-2 bg-[#0a0a0a] hover:bg-[#1a1a1a] text-white border border-[#1a1a1a] h-12"
                       onClick={() => {
                         // Export survey templates as CSV
-                        window.open('/api/export/csv?type=surveys', '_blank');
+                        window.open(`/api/export/csv?type=surveys&companyId=${clientId}`, '_blank');
                       }}
                     >
                       <Download className="h-4 w-4" />
@@ -605,7 +605,7 @@ function FormsContent() {
                       className="gap-2 bg-[#0a0a0a] hover:bg-[#1a1a1a] text-white border border-[#1a1a1a] h-12"
                       onClick={() => {
                         // Export survey responses as CSV
-                        window.open('/api/export/csv?type=survey_responses', '_blank');
+                        window.open(`/api/export/csv?type=survey_responses&companyId=${clientId}`, '_blank');
                       }}
                     >
                       <Download className="h-4 w-4" />
@@ -615,7 +615,7 @@ function FormsContent() {
                       className="gap-2 bg-[#0a0a0a] hover:bg-[#1a1a1a] text-white border border-[#1a1a1a] h-12"
                       onClick={() => {
                         // Export analytics report as PDF
-                        window.open('/api/export/pdf', '_blank');
+                        window.open(`/api/export/pdf?companyId=${clientId}`, '_blank');
                       }}
                     >
                       <Download className="h-4 w-4" />
