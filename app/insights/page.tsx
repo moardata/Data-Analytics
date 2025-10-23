@@ -313,23 +313,23 @@ function InsightsContent() {
         {/* Tabbed Interface */}
         <Tabs value={activeTab} onValueChange={setActiveTab}>
           <TabsList className="grid w-full grid-cols-5 bg-[#0f0f0f] border border-[#1a1a1a]">
-            <TabsTrigger value="insights" className="data-[state=active]:bg-[#FF0080] data-[state=active]:text-white data-[state=active]:shadow-[0_0_20px_rgba(255,0,128,0.5)] data-[state=active]:border data-[state=active]:border-[#FF0080]/50">
+            <TabsTrigger value="insights" className="data-[state=active]:bg-[#10B981] data-[state=active]:text-white data-[state=active]:shadow-[0_0_20px_rgba(16,185,129,0.6)] data-[state=active]:border data-[state=active]:border-[#10B981]/50">
               <Sparkles className="h-4 w-4 mr-2" />
               My Insights
             </TabsTrigger>
-            <TabsTrigger value="analytics" className="data-[state=active]:bg-[#9370DB] data-[state=active]:text-white data-[state=active]:shadow-[0_0_20px_rgba(147,112,219,0.5)] data-[state=active]:border data-[state=active]:border-[#9370DB]/50">
+            <TabsTrigger value="analytics" className="data-[state=active]:bg-[#8B5CF6] data-[state=active]:text-white data-[state=active]:shadow-[0_0_20px_rgba(139,92,246,0.6)] data-[state=active]:border data-[state=active]:border-[#8B5CF6]/50">
               <Brain className="h-4 w-4 mr-2" />
               Analytics
             </TabsTrigger>
-            <TabsTrigger value="actions" className="data-[state=active]:bg-[#FFD700] data-[state=active]:text-white data-[state=active]:shadow-[0_0_20px_rgba(255,215,0,0.5)] data-[state=active]:border data-[state=active]:border-[#FFD700]/50">
+            <TabsTrigger value="actions" className="data-[state=active]:bg-[#F59E0B] data-[state=active]:text-white data-[state=active]:shadow-[0_0_20px_rgba(245,158,11,0.6)] data-[state=active]:border data-[state=active]:border-[#F59E0B]/50">
               <Target className="h-4 w-4 mr-2" />
               Actions
             </TabsTrigger>
-            <TabsTrigger value="data" className="data-[state=active]:bg-[#00FFFF] data-[state=active]:text-white data-[state=active]:shadow-[0_0_20px_rgba(0,255,255,0.5)] data-[state=active]:border data-[state=active]:border-[#00FFFF]/50">
+            <TabsTrigger value="data" className="data-[state=active]:bg-[#3B82F6] data-[state=active]:text-white data-[state=active]:shadow-[0_0_20px_rgba(59,130,246,0.6)] data-[state=active]:border data-[state=active]:border-[#3B82F6]/50">
               <Activity className="h-4 w-4 mr-2" />
               Data
             </TabsTrigger>
-            <TabsTrigger value="reports" className="data-[state=active]:bg-[#32CD32] data-[state=active]:text-white data-[state=active]:shadow-[0_0_20px_rgba(50,205,50,0.5)] data-[state=active]:border data-[state=active]:border-[#32CD32]/50">
+            <TabsTrigger value="reports" className="data-[state=active]:bg-[#10B981] data-[state=active]:text-white data-[state=active]:shadow-[0_0_20px_rgba(16,185,129,0.6)] data-[state=active]:border data-[state=active]:border-[#10B981]/50">
               <Download className="h-4 w-4 mr-2" />
               Reports
             </TabsTrigger>
