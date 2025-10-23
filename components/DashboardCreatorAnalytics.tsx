@@ -76,7 +76,15 @@ interface DashboardMetrics {
 // ----------------------------------------
 // Toolbar with navigation (uses searchParams)
 // ----------------------------------------
-function DashboardToolbar({ onExportPdf, onSync }: { onExportPdf?: () => void; onSync?: () => void }) {
+function DashboardToolbar({ 
+  onExportPdf, 
+  onSync, 
+  syncing 
+}: { 
+  onExportPdf?: () => void; 
+  onSync?: () => void;
+  syncing?: boolean;
+}) {
   const searchParams = useSearchParams();
   
   // Preserve companyId and experienceId in navigation
@@ -95,9 +103,11 @@ function DashboardToolbar({ onExportPdf, onSync }: { onExportPdf?: () => void; o
       <div className="ml-auto flex items-center gap-2">
         <Button 
           onClick={onSync}
-          className="border border-[#1a1a1a] bg-[#0a0a0a] hover:bg-[#1a1a1a] text-[#F8FAFC]"
+          disabled={syncing}
+          className="border border-[#1a1a1a] bg-[#0a0a0a] hover:bg-[#1a1a1a] text-[#F8FAFC] disabled:opacity-50"
         >
-          <RefreshCw className="mr-2 h-4 w-4" /> Sync Data
+          <RefreshCw className={cn("mr-2 h-4 w-4", syncing && "animate-spin")} /> 
+          {syncing ? 'Syncing...' : 'Sync Data'}
         </Button>
         <Link href={`/insights${queryString}`}>
           <Button className="border border-[#1a1a1a] bg-[#0a0a0a] hover:bg-[#1a1a1a] text-[#F8FAFC]">AI Insights</Button>
@@ -172,6 +182,33 @@ export default function DashboardCreatorAnalytics({ clientId, onExportEventsCsv,
     }
   };
 
+  const handleSync = async () => {
+    if (!clientId) return;
+    
+    try {
+      setSyncing(true);
+      console.log('🔄 Starting metrics sync...');
+      
+      const response = await fetch(`/api/dashboard/metrics?clientId=${clientId}`, {
+        method: 'POST',
+      });
+
+      if (!response.ok) {
+        throw new Error(`Sync failed: ${response.statusText}`);
+      }
+
+      const data = await response.json();
+      setMetrics(data);
+      setError(null);
+      console.log('✅ Metrics sync completed successfully');
+    } catch (err) {
+      console.error('❌ Error syncing metrics:', err);
+      setError(err instanceof Error ? err.message : 'Failed to sync metrics');
+    } finally {
+      setSyncing(false);
+    }
+  };
+
   if (loading) {
     return (
       <div className="space-y-4">
@@ -180,7 +217,7 @@ export default function DashboardCreatorAnalytics({ clientId, onExportEventsCsv,
             <div className="text-lg font-semibold text-white">Dashboard</div>
           </div>
         }>
-          <DashboardToolbar onExportPdf={onExportPdf} />
+          <DashboardToolbar onExportPdf={onExportPdf} onSync={handleSync} syncing={syncing} />
         </Suspense>
         
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
@@ -206,7 +243,7 @@ export default function DashboardCreatorAnalytics({ clientId, onExportEventsCsv,
             <div className="text-lg font-semibold text-white">Dashboard</div>
           </div>
         }>
-          <DashboardToolbar onExportPdf={onExportPdf} />
+          <DashboardToolbar onExportPdf={onExportPdf} onSync={handleSync} syncing={syncing} />
         </Suspense>
         
         <Panel>
@@ -231,7 +268,7 @@ export default function DashboardCreatorAnalytics({ clientId, onExportEventsCsv,
             <div className="text-lg font-semibold text-white">Dashboard</div>
           </div>
         }>
-          <DashboardToolbar onExportPdf={onExportPdf} />
+          <DashboardToolbar onExportPdf={onExportPdf} onSync={handleSync} syncing={syncing} />
         </Suspense>
         
         <Panel>
@@ -252,7 +289,7 @@ export default function DashboardCreatorAnalytics({ clientId, onExportEventsCsv,
           <div className="text-lg font-semibold text-white">Dashboard</div>
         </div>
       }>
-        <DashboardToolbar onExportPdf={onExportPdf} />
+        <DashboardToolbar onExportPdf={onExportPdf} onSync={handleSync} syncing={syncing} />
       </Suspense>
 
       {/* Advanced Metrics Grid */}
