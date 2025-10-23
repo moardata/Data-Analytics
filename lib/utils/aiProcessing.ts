@@ -260,6 +260,9 @@ Be specific, data-driven, and actionable. Focus on patterns that can be improved
     });
 
     const analysisText = completion.choices[0].message.content;
+    if (!analysisText) {
+      throw new Error('No content received from OpenAI');
+    }
     const analysis = JSON.parse(analysisText);
     
     console.log('✅ [AI Processing] Generated structured insights:', analysis.insights.length);
