@@ -102,12 +102,15 @@ export async function simpleAuth(request: Request): Promise<SimpleAuthResult> {
       console.log('🔍 [SimpleAuth] DEBUG - NODE_ENV:', process.env.NODE_ENV);
       console.log('🔍 [SimpleAuth] DEBUG - ENABLE_TEST_MODE:', process.env.ENABLE_TEST_MODE);
       
-      // SECURITY: Only allow test mode in development with explicit flag
+      // SECURITY: Allow test mode in development OR when explicitly enabled
       const isDevelopment = process.env.NODE_ENV === 'development';
       const isTestModeEnabled = process.env.ENABLE_TEST_MODE === 'true';
       
-      if (isDevelopment && isTestModeEnabled) {
-        console.log('🧪 [SimpleAuth] TESTING MODE - No Whop headers detected (development only)');
+      if (isTestModeEnabled) {
+        console.log('🧪 [SimpleAuth] TESTING MODE - ENABLE_TEST_MODE is true, allowing access');
+        userId = `test_${companyId.substring(4, 12)}`; // Consistent test user ID
+      } else if (isDevelopment) {
+        console.log('🧪 [SimpleAuth] TESTING MODE - Development environment, allowing access');
         userId = `test_${companyId.substring(4, 12)}`; // Consistent test user ID
       } else {
         // PRODUCTION: No Whop auth = deny access (SECURITY)
@@ -167,8 +170,8 @@ export async function simpleAuth(request: Request): Promise<SimpleAuthResult> {
         isAdmin = false;
       }
     } else {
-      // Test mode - grant owner access (development only)
-      console.log('🧪 [SimpleAuth] TEST MODE (development only) - Granting owner access');
+      // Test mode - grant owner access when ENABLE_TEST_MODE is true
+      console.log('🧪 [SimpleAuth] TEST MODE - Granting owner access');
       accessLevel = 'owner';
       isOwner = true;
       isAdmin = true;
