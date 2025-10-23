@@ -6,6 +6,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabaseServer as supabase } from '@/lib/supabase-server';
 import { simpleAuth } from '@/lib/auth/simple-auth';
+import OpenAI from 'openai';
 
 export async function POST(request: NextRequest) {
   try {
@@ -97,35 +98,23 @@ Return JSON in this format:
 }`;
 
   try {
-    const response = await fetch('https://api.openai.com/v1/chat/completions', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`,
-      },
-      body: JSON.stringify({
-        model: 'gpt-4o-mini',
-        messages: [
-          { 
-            role: 'system', 
-            content: 'You are an expert sentiment analysis AI. You excel at detecting emotional nuances, sentiment patterns, and underlying themes in student feedback. Be precise and provide confidence levels based on the clarity of the sentiment indicators.' 
-          },
-          { role: 'user', content: prompt }
-        ],
-        response_format: { type: 'json_object' },
-        temperature: 0.3, // Lower temperature for more consistent sentiment analysis
-        max_tokens: 500
-      }),
+    const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+    
+    const completion = await openai.chat.completions.create({
+      model: 'gpt-4o-mini',
+      messages: [
+        { 
+          role: 'system', 
+          content: 'You are an expert sentiment analysis AI. You excel at detecting emotional nuances, sentiment patterns, and underlying themes in student feedback. Be precise and provide confidence levels based on the clarity of the sentiment indicators.' 
+        },
+        { role: 'user', content: prompt }
+      ],
+      response_format: { type: 'json_object' },
+      temperature: 0.3, // Lower temperature for more consistent sentiment analysis
+      max_tokens: 500
     });
 
-    if (!response.ok) {
-      const error = await response.json();
-      console.error('OpenAI API error:', error);
-      throw new Error(`OpenAI API error: ${JSON.stringify(error)}`);
-    }
-
-    const data = await response.json();
-    const resultText = data.choices[0].message.content;
+    const resultText = completion.choices[0].message.content;
     const result = JSON.parse(resultText);
     
     return result;
