@@ -207,17 +207,20 @@ async function getDataQualityMetrics(clientId: string) {
     (eventsQuality.overall + submissionsQuality.overall + entitiesQuality.overall + subscriptionsQuality.overall) / 4
   );
 
+  // Build quality scores object
+  const qualityScores = {
+    events: eventsQuality,
+    submissions: submissionsQuality,
+    entities: entitiesQuality,
+    subscriptions: subscriptionsQuality
+  };
+
   return {
     overallHealth: {
       score: overallHealthScore,
       status: overallHealthScore >= 90 ? 'excellent' : overallHealthScore >= 70 ? 'good' : overallHealthScore >= 50 ? 'warning' : 'critical'
     },
-    qualityScores: {
-      events: eventsQuality,
-      submissions: submissionsQuality,
-      entities: entitiesQuality,
-      subscriptions: subscriptionsQuality
-    },
+    qualityScores,
     validationErrorRates,
     freshnessAnalysis,
     alerts,
