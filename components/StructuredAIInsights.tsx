@@ -96,29 +96,29 @@ export default function StructuredAIInsights({ companyId }: StructuredAIInsights
 
   const getCategoryColor = (category: string) => {
     switch (category) {
-      case 'drop_off': return 'text-red-400 bg-red-500/20 border-red-500/30';
-      case 'sentiment': return 'text-pink-400 bg-pink-500/20 border-pink-500/30';
-      case 'engagement': return 'text-blue-400 bg-blue-500/20 border-blue-500/30';
-      case 'pacing': return 'text-orange-400 bg-orange-500/20 border-orange-500/30';
-      case 'clarity': return 'text-yellow-400 bg-yellow-500/20 border-yellow-500/30';
-      default: return 'text-purple-400 bg-purple-500/20 border-purple-500/30';
+      case 'drop_off': return 'text-[#FF0080] bg-[#FF0080]/15 border-[#FF0080]/40 shadow-[0_0_10px_rgba(255,0,128,0.3)]';
+      case 'sentiment': return 'text-[#FF1493] bg-[#FF1493]/15 border-[#FF1493]/40 shadow-[0_0_10px_rgba(255,20,147,0.3)]';
+      case 'engagement': return 'text-[#00FFFF] bg-[#00FFFF]/15 border-[#00FFFF]/40 shadow-[0_0_10px_rgba(0,255,255,0.3)]';
+      case 'pacing': return 'text-[#FFD700] bg-[#FFD700]/15 border-[#FFD700]/40 shadow-[0_0_10px_rgba(255,215,0,0.3)]';
+      case 'clarity': return 'text-[#32CD32] bg-[#32CD32]/15 border-[#32CD32]/40 shadow-[0_0_10px_rgba(50,205,50,0.3)]';
+      default: return 'text-[#9370DB] bg-[#9370DB]/15 border-[#9370DB]/40 shadow-[0_0_10px_rgba(147,112,219,0.3)]';
     }
   };
 
   const getSeverityColor = (severity: string) => {
     switch (severity) {
-      case 'critical': return 'text-red-400 bg-red-500/20 border-red-500/30';
-      case 'high': return 'text-orange-400 bg-orange-500/20 border-orange-500/30';
-      case 'medium': return 'text-yellow-400 bg-yellow-500/20 border-yellow-500/30';
-      case 'low': return 'text-green-400 bg-green-500/20 border-green-500/30';
-      default: return 'text-gray-400 bg-gray-500/20 border-gray-500/30';
+      case 'critical': return 'text-[#FF0040] bg-[#FF0040]/15 border-[#FF0040]/40 shadow-[0_0_15px_rgba(255,0,64,0.4)]';
+      case 'high': return 'text-[#FF6600] bg-[#FF6600]/15 border-[#FF6600]/40 shadow-[0_0_12px_rgba(255,102,0,0.4)]';
+      case 'medium': return 'text-[#FFEB3B] bg-[#FFEB3B]/15 border-[#FFEB3B]/40 shadow-[0_0_10px_rgba(255,235,59,0.4)]';
+      case 'low': return 'text-[#00FF88] bg-[#00FF88]/15 border-[#00FF88]/40 shadow-[0_0_8px_rgba(0,255,136,0.4)]';
+      default: return 'text-[#8A2BE2] bg-[#8A2BE2]/15 border-[#8A2BE2]/40 shadow-[0_0_10px_rgba(138,43,226,0.4)]';
     }
   };
 
   const getConfidenceColor = (confidence: number) => {
-    if (confidence >= 80) return 'text-green-400';
-    if (confidence >= 60) return 'text-yellow-400';
-    return 'text-red-400';
+    if (confidence >= 80) return 'text-[#00FF88] bg-[#00FF88]/15 border-[#00FF88]/40 shadow-[0_0_8px_rgba(0,255,136,0.4)]';
+    if (confidence >= 60) return 'text-[#FFEB3B] bg-[#FFEB3B]/15 border-[#FFEB3B]/40 shadow-[0_0_10px_rgba(255,235,59,0.4)]';
+    return 'text-[#FF0040] bg-[#FF0040]/15 border-[#FF0040]/40 shadow-[0_0_15px_rgba(255,0,64,0.4)]';
   };
 
   if (loading) {
@@ -149,7 +149,7 @@ export default function StructuredAIInsights({ companyId }: StructuredAIInsights
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-xl font-semibold text-[#F8FAFC] flex items-center gap-2">
-            <Brain className="h-5 w-5 text-[#10B981]" />
+            <Brain className="h-5 w-5 text-[#00FFFF] drop-shadow-[0_0_8px_rgba(0,255,255,0.6)]" />
             AI Analysis Results
           </h2>
           <p className="text-sm text-[#A1A1AA] mt-1">
@@ -170,7 +170,7 @@ export default function StructuredAIInsights({ companyId }: StructuredAIInsights
       <Card className="border border-[#1a1a1a] bg-[#0f0f0f]">
         <CardHeader>
           <CardTitle className="text-[#F8FAFC] flex items-center gap-2">
-            <Target className="h-5 w-5 text-[#10B981]" />
+            <Target className="h-5 w-5 text-[#FFD700] drop-shadow-[0_0_8px_rgba(255,215,0,0.6)]" />
             Analysis Summary
           </CardTitle>
         </CardHeader>
@@ -192,7 +192,7 @@ export default function StructuredAIInsights({ companyId }: StructuredAIInsights
             </div>
             <div className="flex items-center gap-2">
               <span className="text-sm text-[#A1A1AA]">Insights:</span>
-              <Badge className="bg-[#10B981]/20 text-[#10B981] border-[#10B981]/30">
+              <Badge className="bg-[#00FFFF]/20 text-[#00FFFF] border-[#00FFFF]/40 shadow-[0_0_10px_rgba(0,255,255,0.3)]">
                 {analysis.insights.length}
               </Badge>
             </div>
@@ -204,7 +204,7 @@ export default function StructuredAIInsights({ companyId }: StructuredAIInsights
               <ul className="space-y-1">
                 {analysis.keyFindings.map((finding, index) => (
                   <li key={index} className="text-sm text-[#A1A1AA] flex items-start gap-2">
-                    <CheckCircle className="h-3 w-3 text-[#10B981] mt-0.5 flex-shrink-0" />
+                    <CheckCircle className="h-3 w-3 text-[#32CD32] mt-0.5 flex-shrink-0 drop-shadow-[0_0_6px_rgba(50,205,50,0.6)]" />
                     {finding}
                   </li>
                 ))}
@@ -223,7 +223,7 @@ export default function StructuredAIInsights({ companyId }: StructuredAIInsights
             <CardHeader>
               <div className="flex items-start justify-between">
                 <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-lg bg-[#10B981]/20 flex items-center justify-center">
+                  <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#00FFFF]/20 to-[#00FFFF]/10 flex items-center justify-center shadow-[0_0_15px_rgba(0,255,255,0.3)] border border-[#00FFFF]/30">
                     {getCategoryIcon(insight.category)}
                   </div>
                   <div>

@@ -55,10 +55,10 @@ export function InsightCard({
   const toggle = () => setOpen((v) => !v);
   const pillColor = (s?: InsightSeverity) =>
     ({
-      info: '#7DD3FC',
-      success: accent,
-      warning: '#F59E0B',
-      critical: '#EF4444',
+      info: '#00FFFF',
+      success: '#32CD32',
+      warning: '#FFD700',
+      critical: '#FF0040',
     }[s || 'info']);
 
   return (
@@ -85,6 +85,7 @@ export function InsightCard({
               background: `${pillColor(item.severity)}15`,
               color: pillColor(item.severity),
               border: `1px solid ${pillColor(item.severity)}40`,
+              boxShadow: `0 0 10px ${pillColor(item.severity)}40`,
             }}
           >
             {item.severity ?? "info"}
@@ -101,9 +102,10 @@ export function InsightCard({
             <div
               className="ml-auto text-xs rounded-md px-2 py-1"
               style={{
-                color: item.metricDeltaPct >= 0 ? accent : "#EF4444",
-                background: "rgba(16,185,129,0.06)",
-                border: "1px solid rgba(46,52,60,0.7)",
+                color: item.metricDeltaPct >= 0 ? "#32CD32" : "#FF0040",
+                background: item.metricDeltaPct >= 0 ? "rgba(50,205,50,0.15)" : "rgba(255,0,64,0.15)",
+                border: `1px solid ${item.metricDeltaPct >= 0 ? "rgba(50,205,50,0.4)" : "rgba(255,0,64,0.4)"}`,
+                boxShadow: `0 0 8px ${item.metricDeltaPct >= 0 ? "rgba(50,205,50,0.3)" : "rgba(255,0,64,0.3)"}`,
               }}
             >
               {item.metricDeltaPct >= 0
