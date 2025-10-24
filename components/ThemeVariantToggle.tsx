@@ -61,24 +61,26 @@ export function ThemeVariantToggle() {
             className={`
               relative p-4 rounded-lg border-2 transition-all
               ${variant === 'variant-b' 
-                ? 'border-[#6366F1] bg-[#6366F1]/10' 
+                ? 'border-[#11C2D3] bg-[#11C2D3]/10' 
                 : 'border-[#1a1a1a] bg-[#0a0a0a] hover:border-[#2a2a2a]'
               }
             `}
           >
             <div className="flex flex-col items-center gap-2">
-              <div className="w-full h-16 rounded-md bg-gradient-to-br from-[#0B0F1A] via-[#1F2937] to-[#111827] border border-[#374151]" />
-              <div className="flex gap-1">
-                <div className="w-4 h-4 rounded bg-[#6366F1]" />
-                <div className="w-4 h-4 rounded bg-[#EC4899]" />
-                <div className="w-4 h-4 rounded bg-[#14B8A6]" />
+              <div className="w-full h-16 rounded-md bg-gradient-to-br from-[#4A84D4] via-[#1E3B70] to-[#0B1C33] border border-white/10 relative overflow-hidden">
+                <div className="absolute inset-0 bg-white/5 mix-blend-overlay"></div>
               </div>
-              <div className="text-sm font-medium text-[#F8FAFC]">Variant B</div>
-              <div className="text-xs text-[#A1A1AA]">Modern Blue</div>
+              <div className="flex gap-1">
+                <div className="w-4 h-4 rounded bg-[#11C2D3]" />
+                <div className="w-4 h-4 rounded bg-[#4A84D4]" />
+                <div className="w-4 h-4 rounded bg-[#6BA3E8]" />
+              </div>
+              <div className="text-sm font-medium text-[#F8FAFC]">Calm Metallic</div>
+              <div className="text-xs text-[#A1A1AA]">QUITTR Style</div>
             </div>
             {variant === 'variant-b' && (
               <div className="absolute top-2 right-2">
-                <Sparkles className="h-4 w-4 text-[#6366F1]" />
+                <Sparkles className="h-4 w-4 text-[#11C2D3]" />
               </div>
             )}
           </button>

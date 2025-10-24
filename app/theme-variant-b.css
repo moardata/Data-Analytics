@@ -1,0 +1,168 @@
+/**
+ * Calm Metallic Gradient Theme (Variant B)
+ * QUITTR-inspired moving gradient aesthetic
+ */
+
+/* Moving Gradient Background Animation */
+@keyframes gradientShift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+@keyframes panelFloat {
+  0% { background-position: 0% 0%; }
+  50% { background-position: 100% 100%; }
+  100% { background-position: 0% 0%; }
+}
+
+/* Apply to body when Variant B is active */
+[data-theme-variant="variant-b"] body {
+  background: linear-gradient(120deg, #4A84D4, #1E3B70, #0B1C33);
+  background-size: 400% 400%;
+  animation: gradientShift 20s ease infinite;
+}
+
+/* Calm metallic panels */
+[data-theme-variant="variant-b"] .card,
+[data-theme-variant="variant-b"] [class*="Card"] {
+  background: linear-gradient(145deg, rgba(46, 75, 127, 0.9), rgba(30, 59, 112, 0.8));
+  background-size: 300% 300%;
+  animation: panelFloat 25s ease-in-out infinite;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(12px);
+  position: relative;
+}
+
+/* Frosted metal overlay effect */
+[data-theme-variant="variant-b"] .card::before,
+[data-theme-variant="variant-b"] [class*="Card"]::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(255, 255, 255, 0.05);
+  mix-blend-mode: overlay;
+  pointer-events: none;
+  border-radius: inherit;
+  z-index: 1;
+}
+
+/* Ensure content appears above overlay */
+[data-theme-variant="variant-b"] .card > *,
+[data-theme-variant="variant-b"] [class*="Card"] > * {
+  position: relative;
+  z-index: 2;
+}
+
+/* Sidebar styling */
+[data-theme-variant="variant-b"] aside {
+  background: linear-gradient(180deg, #0B1C33 0%, #1E3B70 100%);
+  border-right: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Top bar styling */
+[data-theme-variant="variant-b"] .fixed.top-0 {
+  background: linear-gradient(90deg, #0B1C33 0%, #1E3B70 50%, #0B1C33 100%);
+  background-size: 200% 100%;
+  animation: gradientShift 30s ease infinite;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Text colors */
+[data-theme-variant="variant-b"] h1,
+[data-theme-variant="variant-b"] h2,
+[data-theme-variant="variant-b"] h3,
+[data-theme-variant="variant-b"] h4 {
+  color: #EAF2F8;
+}
+
+[data-theme-variant="variant-b"] p,
+[data-theme-variant="variant-b"] span {
+  color: #B4C5D0;
+}
+
+/* Accent colors - icy aqua */
+[data-theme-variant="variant-b"] .text-\[\#10B981\],
+[data-theme-variant="variant-b"] .bg-\[\#10B981\] {
+  color: #11C2D3 !important;
+  background-color: #11C2D3 !important;
+}
+
+/* Button styling */
+[data-theme-variant="variant-b"] button {
+  background: linear-gradient(135deg, rgba(17, 194, 211, 0.2), rgba(74, 132, 212, 0.2));
+  border-color: rgba(255, 255, 255, 0.15);
+  color: #EAF2F8;
+  transition: all 0.3s ease;
+}
+
+[data-theme-variant="variant-b"] button:hover {
+  background: linear-gradient(135deg, rgba(17, 194, 211, 0.3), rgba(74, 132, 212, 0.3));
+  border-color: rgba(255, 255, 255, 0.25);
+  box-shadow: 0 0 20px rgba(17, 194, 211, 0.4);
+}
+
+/* Tab styling */
+[data-theme-variant="variant-b"] [data-state="active"] {
+  background: linear-gradient(135deg, #11C2D3, #4A84D4) !important;
+  box-shadow: 0 0 25px rgba(17, 194, 211, 0.6);
+  color: white !important;
+}
+
+/* Metric cards */
+[data-theme-variant="variant-b"] .rounded-2xl {
+  background: linear-gradient(145deg, rgba(46, 75, 127, 0.85), rgba(30, 59, 112, 0.75));
+  background-size: 300% 300%;
+  animation: panelFloat 20s ease-in-out infinite;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.4), 
+              0 0 0 1px rgba(255, 255, 255, 0.05);
+}
+
+/* Glow effects */
+[data-theme-variant="variant-b"] .shadow-\[0_0_20px {
+  box-shadow: 0 0 25px rgba(17, 194, 211, 0.6) !important;
+}
+
+/* Input fields */
+[data-theme-variant="variant-b"] input,
+[data-theme-variant="variant-b"] textarea {
+  background: rgba(11, 28, 51, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: #EAF2F8;
+  backdrop-filter: blur(8px);
+}
+
+[data-theme-variant="variant-b"] input:focus,
+[data-theme-variant="variant-b"] textarea:focus {
+  border-color: #11C2D3;
+  box-shadow: 0 0 15px rgba(17, 194, 211, 0.3);
+}
+
+/* Badges */
+[data-theme-variant="variant-b"] .badge {
+  background: linear-gradient(135deg, rgba(17, 194, 211, 0.3), rgba(74, 132, 212, 0.3));
+  border: 1px solid rgba(17, 194, 211, 0.5);
+  color: #EAF2F8;
+}
+
+/* Charts and visualizations */
+[data-theme-variant="variant-b"] svg {
+  filter: drop-shadow(0 0 8px rgba(17, 194, 211, 0.3));
+}
+
+/* Scrollbar styling */
+[data-theme-variant="variant-b"] ::-webkit-scrollbar {
+  width: 8px;
+  background: rgba(11, 28, 51, 0.5);
+}
+
+[data-theme-variant="variant-b"] ::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #11C2D3, #4A84D4);
+  border-radius: 4px;
+}
+
+[data-theme-variant="variant-b"] ::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, #4A84D4, #11C2D3);
+}
+

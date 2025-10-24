@@ -63,30 +63,30 @@ export const themes: Record<ThemeVariant, ThemeColors> = {
     glowSecondary: 'rgba(139, 92, 246, 0.6)',
   },
   
-  // Variant B (Modern Blue/Purple)
+  // Variant B (Calm Metallic Gradient - QUITTR inspired)
   'variant-b': {
-    bgPrimary: '#0B0F1A',
-    bgSecondary: '#111827',
-    bgTertiary: '#1F2937',
+    bgPrimary: '#0B1C33',
+    bgSecondary: '#1E3B70',
+    bgTertiary: '#2E4B7F',
     
-    border: '#374151',
-    borderHover: '#4B5563',
+    border: 'rgba(255, 255, 255, 0.1)',
+    borderHover: 'rgba(255, 255, 255, 0.2)',
     
-    textPrimary: '#F9FAFB',
-    textSecondary: '#E5E7EB',
-    textMuted: '#9CA3AF',
+    textPrimary: '#EAF2F8',
+    textSecondary: '#D4E0E8',
+    textMuted: '#B4C5D0',
     
-    accentPrimary: '#6366F1',
-    accentSecondary: '#EC4899',
-    accentTertiary: '#14B8A6',
+    accentPrimary: '#11C2D3',
+    accentSecondary: '#4A84D4',
+    accentTertiary: '#6BA3E8',
     
-    success: '#10B981',
+    success: '#11C2D3',
     warning: '#F59E0B',
-    error: '#F43F5E',
-    info: '#06B6D4',
+    error: '#EF6B7B',
+    info: '#4A84D4',
     
-    glowPrimary: 'rgba(99, 102, 241, 0.6)',
-    glowSecondary: 'rgba(236, 72, 153, 0.6)',
+    glowPrimary: 'rgba(17, 194, 211, 0.6)',
+    glowSecondary: 'rgba(74, 132, 212, 0.6)',
   },
 };
 

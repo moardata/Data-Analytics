@@ -9,7 +9,9 @@ import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { SidebarProvider } from "@/contexts/sidebar-context";
 import { ThemeVariantProvider } from "@/contexts/theme-variant-context";
 import { MainContent } from "@/components/main-content";
+import { ThemeDataAttribute } from "@/components/ThemeDataAttribute";
 import "./globals.css";
+import "./theme-variant-b.css";
 
 const inter = Inter({
 	subsets: ["latin"],
@@ -34,6 +36,7 @@ export default function RootLayout({
 					<WhopApp>
 						<WhopClientAuth>
 							<ThemeVariantProvider>
+								<ThemeDataAttribute />
 								<SidebarProvider>
 									<div className="flex min-h-screen bg-gradient-to-b from-[#0a0a0a] to-[#0f0f0f]">
 										<Suspense fallback={<div className="w-16" />}>
