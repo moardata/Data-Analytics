@@ -163,7 +163,7 @@ export default function DashboardCreatorAnalytics({ clientId: companyIdOrClientI
   const [syncing, setSyncing] = useState(false);
   const [actualClientId, setActualClientId] = useState<string | null>(null);
   const [timeRange, setTimeRange] = useState<string>('7D');
-  const [activeTab, setActiveTab] = useState<string>('overview');
+  const [activeTab, setActiveTab] = useState<string>('engagement');
 
   // Convert companyId to UUID clientId if needed
   useEffect(() => {
@@ -448,31 +448,19 @@ export default function DashboardCreatorAnalytics({ clientId: companyIdOrClientI
       {/* Tabbed Interface */}
       <Tabs value={activeTab} onValueChange={setActiveTab}>
         <TabsList className="grid w-full grid-cols-3 bg-[#0f0f0f] border border-[#1a1a1a]">
-          <TabsTrigger value="overview" className="data-[state=active]:bg-[#10B981] data-[state=active]:text-white data-[state=active]:shadow-[0_0_20px_rgba(16,185,129,0.6)]">
-            <TrendingUp className="h-4 w-4 mr-2" />
-            Overview
-          </TabsTrigger>
           <TabsTrigger value="engagement" className="data-[state=active]:bg-[#8B5CF6] data-[state=active]:text-white data-[state=active]:shadow-[0_0_20px_rgba(139,92,246,0.6)]">
             <Users className="h-4 w-4 mr-2" />
             Student Engagement
           </TabsTrigger>
-          <TabsTrigger value="content" className="data-[state=active]:bg-[#3B82F6] data-[state=active]:text-white data-[state=active]:shadow-[0_0_20px_rgba(59,130,246,0.6)]">
+          <TabsTrigger value="commitment" className="data-[state=active]:bg-[#F59E0B] data-[state=active]:text-white data-[state=active]:shadow-[0_0_20px_rgba(245,158,11,0.6)]">
             <Target className="h-4 w-4 mr-2" />
+            Student Success
+          </TabsTrigger>
+          <TabsTrigger value="content" className="data-[state=active]:bg-[#3B82F6] data-[state=active]:text-white data-[state=active]:shadow-[0_0_20px_rgba(59,130,246,0.6)]">
+            <TrendingUp className="h-4 w-4 mr-2" />
             Content Performance
           </TabsTrigger>
         </TabsList>
-
-        {/* Overview Tab */}
-        <TabsContent value="overview" className="mt-6 space-y-6">
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
-            <ConsistencyScoreGauge data={metrics.engagementConsistency} />
-            <AhaMomentChart data={metrics.ahaMoments} />
-            <CommitmentDistribution data={metrics.commitmentScores} />
-            <PathwayTable data={metrics.contentPathways} />
-            <PopularContentList data={metrics.popularContent} />
-            <FeedbackThemesList data={metrics.feedbackThemes} />
-          </div>
-        </TabsContent>
 
         {/* Student Engagement Tab */}
         <TabsContent value="engagement" className="mt-6 space-y-6">
@@ -482,23 +470,35 @@ export default function DashboardCreatorAnalytics({ clientId: companyIdOrClientI
               See how consistently your students show up, when they have breakthrough moments, and who's likely to complete your course. Use these insights to provide timely support and celebrate wins.
             </p>
           </div>
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
             <ConsistencyScoreGauge data={metrics.engagementConsistency} />
             <AhaMomentChart data={metrics.ahaMoments} />
+          </div>
+        </TabsContent>
+
+        {/* Student Commitment Tab */}
+        <TabsContent value="commitment" className="mt-6 space-y-6">
+          <div className="rounded-2xl border border-[#1a1a1a]/70 bg-gradient-to-br from-[#0f0f0f] via-[#1a1a1a] to-[#0f0f0f] p-6">
+            <h3 className="text-xl font-bold text-[#F8FAFC] mb-2">🎯 Student Success & Content Paths</h3>
+            <p className="text-[#A1A1AA] text-sm">
+              Track which students are likely to complete your course and discover the learning paths that lead to success. Use this to identify at-risk students and optimize your content flow.
+            </p>
+          </div>
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
             <CommitmentDistribution data={metrics.commitmentScores} />
+            <PathwayTable data={metrics.contentPathways} />
           </div>
         </TabsContent>
 
         {/* Content Performance Tab */}
         <TabsContent value="content" className="mt-6 space-y-6">
           <div className="rounded-2xl border border-[#1a1a1a]/70 bg-gradient-to-br from-[#0f0f0f] via-[#1a1a1a] to-[#0f0f0f] p-6">
-            <h3 className="text-xl font-bold text-[#F8FAFC] mb-2">🎯 What's Working in Your Content</h3>
+            <h3 className="text-xl font-bold text-[#F8FAFC] mb-2">🔥 What's Working Right Now</h3>
             <p className="text-[#A1A1AA] text-sm">
-              Discover which content gets the most attention, what learning paths lead to success, and what your students are saying. Use this to double down on what works and improve what doesn't.
+              See which content is getting the most attention today and what your students are saying. Use this to double down on what works and improve what doesn't.
             </p>
           </div>
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
-            <PathwayTable data={metrics.contentPathways} />
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
             <PopularContentList data={metrics.popularContent} />
             <FeedbackThemesList data={metrics.feedbackThemes} />
           </div>
