@@ -9,7 +9,7 @@ import { Button } from '@/components/ui/button';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils/cn';
-import { Info, Users, Target, TrendingUp } from 'lucide-react';
+import { Info, Users, Target, TrendingUp, RefreshCw } from 'lucide-react';
 
 // New metric components
 import ConsistencyScoreGauge from '@/components/metrics/ConsistencyScoreGauge';
