@@ -254,13 +254,7 @@ export default function DashboardCreatorAnalytics({ clientId: companyIdOrClientI
             <div className="text-lg font-semibold text-white">Dashboard</div>
           </div>
         }>
-          <DashboardToolbar 
-            onExportPdf={onExportPdf} 
-            onSync={handleSync} 
-            syncing={syncing}
-            timeRange={timeRange}
-            onTimeRangeChange={setTimeRange}
-          />
+          <DashboardToolbar />
         </Suspense>
         
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
@@ -344,13 +338,7 @@ export default function DashboardCreatorAnalytics({ clientId: companyIdOrClientI
           <div className="text-lg font-semibold text-white">Dashboard</div>
         </div>
       }>
-        <DashboardToolbar 
-          onExportPdf={onExportPdf} 
-          onSync={handleSync} 
-          syncing={syncing}
-          timeRange={timeRange}
-          onTimeRangeChange={setTimeRange}
-        />
+        <DashboardToolbar />
       </Suspense>
 
       {/* Welcome Section */}
