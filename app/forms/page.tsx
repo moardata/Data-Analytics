@@ -191,55 +191,100 @@ function FormsContent() {
       };
     });
 
-    // Calculate timeline data (responses per day for last 7 days)
-    const last7Days = Array.from({ length: 7 }, (_, i) => {
+    // Calculate timeline data (responses over last 30 days for better visibility)
+    const last30Days = Array.from({ length: 30 }, (_, i) => {
       const date = new Date();
-      date.setDate(date.getDate() - (6 - i));
+      date.setDate(date.getDate() - (29 - i));
       return date.toISOString().split('T')[0];
     });
 
-    const timelineData = last7Days.map(day => ({
-      date: new Date(day).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
-      responses: submissions.filter(sub => 
-        sub.submitted_at?.startsWith(day)
-      ).length
-    }));
+    const timelineData = last30Days.map(day => {
+      const dayStart = new Date(day);
+      const dayEnd = new Date(day);
+      dayEnd.setDate(dayEnd.getDate() + 1);
+      
+      const count = submissions.filter(sub => {
+        if (!sub.submitted_at) return false;
+        const subDate = new Date(sub.submitted_at);
+        return subDate >= dayStart && subDate < dayEnd;
+      }).length;
+      
+      return {
+        date: dayStart.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
+        responses: count
+      };
+    }).filter(d => d.responses > 0); // Only show days with responses for cleaner chart
 
     // Calculate question analytics
     const questionAnalytics: any[] = [];
     forms.forEach(form => {
       const formSubs = submissions.filter(sub => sub.form_id === form.id);
       
+      if (formSubs.length === 0) return;
+      
       form.fields?.forEach((field: any) => {
+        // Try to match field by label or id
         const fieldResponses = formSubs
-          .map(sub => sub.responses?.[field.label])
+          .map(sub => {
+            // Try multiple keys: field.label, field.id, or clean label
+            const response = sub.responses?.[field.label] 
+              || sub.responses?.[field.id]
+              || sub.responses?.[field.label?.toLowerCase()];
+            return response;
+          })
           .filter(val => val !== undefined && val !== null && val !== '');
 
         if (fieldResponses.length === 0) return;
 
         if (field.type === 'rating' || field.type === 'number') {
           // Calculate average for numeric fields
-          const avg = fieldResponses.reduce((sum, val) => sum + Number(val), 0) / fieldResponses.length;
+          const numericResponses = fieldResponses.filter(val => !isNaN(Number(val)));
+          if (numericResponses.length === 0) return;
+          
+          const avg = numericResponses.reduce((sum, val) => sum + Number(val), 0) / numericResponses.length;
+          const min = Math.min(...numericResponses.map(v => Number(v)));
+          const max = Math.max(...numericResponses.map(v => Number(v)));
+          
           questionAnalytics.push({
             formName: form.name,
             question: field.label,
             type: field.type,
             average: avg.toFixed(2),
-            responseCount: fieldResponses.length
+            min,
+            max,
+            responseCount: numericResponses.length
           });
-        } else if (field.type === 'radio' || field.type === 'select') {
+        } else if (field.type === 'radio' || field.type === 'select' || field.type === 'checkbox') {
           // Calculate distribution for choice fields
           const distribution: Record<string, number> = {};
           fieldResponses.forEach(val => {
-            const key = String(val);
-            distribution[key] = (distribution[key] || 0) + 1;
+            // Handle both single values and arrays (for checkbox)
+            const values = Array.isArray(val) ? val : [val];
+            values.forEach(v => {
+              const key = String(v);
+              distribution[key] = (distribution[key] || 0) + 1;
+            });
           });
+          
           questionAnalytics.push({
             formName: form.name,
             question: field.label,
             type: field.type,
-            distribution: Object.entries(distribution).map(([name, value]) => ({ name, value })),
+            distribution: Object.entries(distribution)
+              .map(([name, value]) => ({ name, value }))
+              .sort((a, b) => b.value - a.value), // Sort by count descending
             responseCount: fieldResponses.length
+          });
+        } else if (field.type === 'long_text' || field.type === 'short_text') {
+          // Show sample responses for text fields
+          const sampleResponses = fieldResponses.slice(0, 5).map(r => String(r));
+          questionAnalytics.push({
+            formName: form.name,
+            question: field.label,
+            type: field.type,
+            sampleResponses,
+            responseCount: fieldResponses.length,
+            avgLength: Math.round(fieldResponses.reduce((sum, val) => sum + String(val).length, 0) / fieldResponses.length)
           });
         }
       });
@@ -743,7 +788,10 @@ function FormsContent() {
                 {/* Response Timeline */}
                 <Card className="border border-[#1a1a1a] bg-[#0f0f0f] shadow-lg">
                   <CardHeader>
-                    <CardTitle className="text-[#F8FAFC]">Response Timeline (Last 7 Days)</CardTitle>
+                    <CardTitle className="text-[#F8FAFC]">Response Timeline (Last 30 Days)</CardTitle>
+                    <CardDescription className="text-[#A1A1AA]">
+                      Showing only days with submissions
+                    </CardDescription>
                   </CardHeader>
                   <CardContent>
                     <ResponsiveContainer width="100%" height={300}>
@@ -813,37 +861,90 @@ function FormsContent() {
                           </div>
 
                           {qa.type === 'rating' || qa.type === 'number' ? (
-                            <div className="bg-[#0B2C24] rounded-lg p-4">
-                              <div className="text-3xl font-black text-[#10B981]">
-                                {qa.average}
+                            <div className="space-y-4">
+                              <div className="grid grid-cols-3 gap-4">
+                                <div className="bg-[#0B2C24] rounded-lg p-4 text-center">
+                                  <div className="text-2xl font-black text-[#10B981]">{qa.average}</div>
+                                  <div className="text-xs text-[#A1A1AA] mt-1">Average</div>
+                                </div>
+                                <div className="bg-[#1a1a1a] rounded-lg p-4 text-center">
+                                  <div className="text-2xl font-black text-[#3B82F6]">{qa.min}</div>
+                                  <div className="text-xs text-[#A1A1AA] mt-1">Minimum</div>
+                                </div>
+                                <div className="bg-[#1a1a1a] rounded-lg p-4 text-center">
+                                  <div className="text-2xl font-black text-[#F59E0B]">{qa.max}</div>
+                                  <div className="text-xs text-[#A1A1AA] mt-1">Maximum</div>
+                                </div>
                               </div>
-                              <div className="text-sm text-[#A1A1AA] mt-1">Average Rating</div>
+                            </div>
+                          ) : qa.type === 'long_text' || qa.type === 'short_text' ? (
+                            <div className="space-y-3">
+                              <div className="bg-[#1a1a1a] rounded-lg p-3 text-sm">
+                                <span className="text-[#10B981] font-medium">Average length:</span> 
+                                <span className="text-[#F8FAFC] ml-2">{qa.avgLength} characters</span>
+                              </div>
+                              <div className="space-y-2">
+                                <div className="text-sm font-medium text-[#A1A1AA]">Sample responses:</div>
+                                {qa.sampleResponses?.map((response: string, i: number) => (
+                                  <div key={i} className="bg-[#0B2C24]/30 border border-[#10B981]/20 rounded-lg p-3 text-sm text-[#F8FAFC]">
+                                    "{response}"
+                                  </div>
+                                ))}
+                                {qa.responseCount > 5 && (
+                                  <div className="text-xs text-[#A1A1AA] italic">
+                                    + {qa.responseCount - 5} more responses
+                                  </div>
+                                )}
+                              </div>
                             </div>
                           ) : qa.distribution ? (
-                            <ResponsiveContainer width="100%" height={250}>
-                              <PieChart>
-                                <Pie
-                                  data={qa.distribution}
-                                  dataKey="value"
-                                  nameKey="name"
-                                  cx="50%"
-                                  cy="50%"
-                                  outerRadius={80}
-                                  label={(entry) => `${entry.name}: ${entry.value}`}
-                                >
-                                  {qa.distribution.map((_: any, index: number) => (
-                                    <Cell key={`cell-${index}`} fill={['#10B981', '#3B82F6', '#F59E0B', '#EF4444', '#8B5CF6'][index % 5]} />
-                                  ))}
-                                </Pie>
-                                <Tooltip 
-                                  contentStyle={{ 
-                                    backgroundColor: '#0f0f0f', 
-                                    border: '1px solid #1a1a1a',
-                                    borderRadius: '8px'
-                                  }}
-                                />
-                              </PieChart>
-                            </ResponsiveContainer>
+                            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                              <ResponsiveContainer width="100%" height={250}>
+                                <PieChart>
+                                  <Pie
+                                    data={qa.distribution}
+                                    dataKey="value"
+                                    nameKey="name"
+                                    cx="50%"
+                                    cy="50%"
+                                    outerRadius={80}
+                                    label={(entry) => `${entry.name}: ${entry.value}`}
+                                  >
+                                    {qa.distribution.map((_: any, index: number) => (
+                                      <Cell key={`cell-${index}`} fill={['#10B981', '#3B82F6', '#F59E0B', '#EF4444', '#8B5CF6'][index % 5]} />
+                                    ))}
+                                  </Pie>
+                                  <Tooltip 
+                                    contentStyle={{ 
+                                      backgroundColor: '#0f0f0f', 
+                                      border: '1px solid #1a1a1a',
+                                      borderRadius: '8px'
+                                    }}
+                                  />
+                                </PieChart>
+                              </ResponsiveContainer>
+                              <div className="space-y-2">
+                                {qa.distribution.map((item: any, i: number) => (
+                                  <div key={i} className="flex items-center justify-between bg-[#1a1a1a] rounded-lg p-3">
+                                    <span className="text-[#F8FAFC] font-medium">{item.name}</span>
+                                    <div className="flex items-center gap-3">
+                                      <div className="h-2 bg-[#0a0a0a] rounded-full w-24">
+                                        <div 
+                                          className="h-2 bg-[#10B981] rounded-full"
+                                          style={{ width: `${(item.value / qa.responseCount) * 100}%` }}
+                                        />
+                                      </div>
+                                      <span className="text-[#10B981] font-bold text-lg min-w-[3ch] text-right">
+                                        {item.value}
+                                      </span>
+                                      <span className="text-[#A1A1AA] text-sm min-w-[4ch] text-right">
+                                        {Math.round((item.value / qa.responseCount) * 100)}%
+                                      </span>
+                                    </div>
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
                           ) : null}
                         </div>
                       ))}
