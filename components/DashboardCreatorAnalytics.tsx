@@ -9,7 +9,7 @@ import { Button } from '@/components/ui/button';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils/cn';
-import { Calendar, Download, RefreshCw, Users, Target, TrendingUp } from 'lucide-react';
+import { Info, Users, Target, TrendingUp } from 'lucide-react';
 
 // New metric components
 import ConsistencyScoreGauge from '@/components/metrics/ConsistencyScoreGauge';
@@ -76,79 +76,32 @@ interface DashboardMetrics {
 }
 
 // ----------------------------------------
-// Toolbar with calendar filter and export
+// Toolbar with info button only
 // ----------------------------------------
-function DashboardToolbar({ 
-  onExportPdf, 
-  onSync, 
-  syncing,
-  timeRange,
-  onTimeRangeChange
-}: { 
-  onExportPdf?: () => void; 
-  onSync?: () => void;
-  syncing?: boolean;
-  timeRange?: string;
-  onTimeRangeChange?: (range: string) => void;
-}) {
+function DashboardToolbar() {
+  const [showInfo, setShowInfo] = React.useState(false);
+  
   return (
     <div className="flex flex-wrap items-center gap-2">
       <div className="text-lg font-semibold text-[#F8FAFC]">Dashboard</div>
       <div className="ml-auto flex items-center gap-2">
         <Button 
-          onClick={onSync}
-          disabled={syncing}
-          className="border border-[#1a1a1a] bg-[#0a0a0a] hover:bg-[#1a1a1a] text-[#F8FAFC] disabled:opacity-50"
+          onClick={() => setShowInfo(!showInfo)}
+          className="border border-[#1a1a1a] bg-[#0a0a0a] hover:bg-[#1a1a1a] text-[#F8FAFC]"
         >
-          <RefreshCw className={cn("mr-2 h-4 w-4", syncing && "animate-spin")} /> 
-          {syncing ? 'Syncing...' : 'Sync Data'}
-        </Button>
-        
-        {/* Calendar Filter */}
-        <div className="flex items-center gap-1 border border-[#1a1a1a] bg-[#0a0a0a] rounded-lg p-1">
-          <Calendar className="h-4 w-4 text-zinc-400 ml-2" />
-          <Button
-            onClick={() => onTimeRangeChange?.('1D')}
-            className={cn(
-              "px-3 py-1 text-sm rounded-md transition-colors",
-              timeRange === '1D' 
-                ? "bg-[#1a1a1a] text-white" 
-                : "bg-transparent text-zinc-400 hover:text-white hover:bg-[#151515]"
-            )}
-          >
-            1D
-          </Button>
-          <Button
-            onClick={() => onTimeRangeChange?.('7D')}
-            className={cn(
-              "px-3 py-1 text-sm rounded-md transition-colors",
-              timeRange === '7D' 
-                ? "bg-[#1a1a1a] text-white" 
-                : "bg-transparent text-zinc-400 hover:text-white hover:bg-[#151515]"
-            )}
-          >
-            7D
-          </Button>
-          <Button
-            onClick={() => onTimeRangeChange?.('1M')}
-            className={cn(
-              "px-3 py-1 text-sm rounded-md transition-colors",
-              timeRange === '1M' 
-                ? "bg-[#1a1a1a] text-white" 
-                : "bg-transparent text-zinc-400 hover:text-white hover:bg-[#151515]"
-            )}
-          >
-            1M
-          </Button>
-        </div>
-        
-        <Button 
-          onClick={onExportPdf}
-          className="border border-[#1a1a1a] bg-[#18181b] hover:bg-[#27272a] text-white"
-        >
-          <Download className="mr-2 h-4 w-4" /> Export
+          <Info className="h-4 w-4" />
         </Button>
       </div>
+      
+      {showInfo && (
+        <div className="w-full mt-2 p-4 rounded-lg border border-[#1a1a1a] bg-[#0a0a0a]">
+          <h4 className="text-sm font-semibold text-[#F8FAFC] mb-2">Dashboard Information</h4>
+          <p className="text-xs text-[#A1A1AA]">
+            Track your student engagement, success metrics, and content performance. 
+            Use the tabs to explore different aspects of your student data and discover actionable insights.
+          </p>
+        </div>
+      )}
     </div>
   );
 }

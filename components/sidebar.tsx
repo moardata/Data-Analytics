@@ -12,7 +12,6 @@ import {
   LayoutDashboard, 
   FileText, 
   Settings,
-  TrendingUp,
   Users,
   Zap,
   Sparkles
@@ -25,12 +24,11 @@ const navItems = [
   { href: '/forms', label: 'Forms', icon: FileText },
   { href: '/insights', label: 'AI Insights', icon: Sparkles },
   { href: '/students', label: 'Students', icon: Users },
-  { href: '/revenue', label: 'Revenue', icon: TrendingUp },
+  { href: '/settings', label: 'Settings', icon: Settings },
 ]
 
 const bottomItems = [
   { href: '/upgrade', label: 'Upgrade', icon: Zap },
-  { href: '/settings', label: 'Settings', icon: Settings },
 ]
 
 export function Sidebar() {
