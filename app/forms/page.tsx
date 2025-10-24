@@ -433,6 +433,10 @@ function FormsContent() {
 
   // Student Interface
   if (userRole === 'student') {
+    const totalSurveys = forms.length;
+    const completedCount = completedForms.length;
+    const completionPercentage = totalSurveys > 0 ? Math.round((completedCount / totalSurveys) * 100) : 0;
+
     return (
       <div className="min-h-screen bg-gradient-to-b from-[#0a0a0a] to-[#0f0f0f] p-8">
         <div className="max-w-6xl mx-auto">
@@ -444,6 +448,65 @@ function FormsContent() {
               Complete surveys to share your feedback and help improve the experience.
             </p>
           </div>
+
+          {/* Completion Progress Bar */}
+          {totalSurveys > 0 && (
+            <Card className="border border-[#1a1a1a] bg-[#0f0f0f] shadow-lg mb-8">
+              <CardContent className="p-6">
+                <div className="flex items-center justify-between mb-3">
+                  <div className="flex items-center gap-3">
+                    <div className={`w-12 h-12 rounded-full flex items-center justify-center ${
+                      completedCount === totalSurveys 
+                        ? 'bg-[#10B981] shadow-[0_0_20px_rgba(16,185,129,0.4)]' 
+                        : 'bg-[#10B981]/20'
+                    }`}>
+                      {completedCount === totalSurveys ? (
+                        <CheckCircle className="h-6 w-6 text-white" />
+                      ) : (
+                        <FileText className="h-6 w-6 text-[#10B981]" />
+                      )}
+                    </div>
+                    <div>
+                      <h3 className="text-lg font-bold text-[#F8FAFC]">Your Progress</h3>
+                      <p className="text-sm text-[#A1A1AA]">
+                        {completedCount === totalSurveys 
+                          ? '🎉 All surveys completed!' 
+                          : `${completedCount} of ${totalSurveys} surveys completed`}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="text-right">
+                    <div className="text-3xl font-black text-[#10B981]">
+                      {completionPercentage}%
+                    </div>
+                    <div className="text-xs text-[#A1A1AA]">Complete</div>
+                  </div>
+                </div>
+                
+                {/* Progress Bar */}
+                <div className="relative w-full h-3 bg-[#1a1a1a] rounded-full overflow-hidden">
+                  <div 
+                    className="absolute top-0 left-0 h-full bg-gradient-to-r from-[#10B981] to-[#0E9F71] rounded-full transition-all duration-1000 ease-out"
+                    style={{ width: `${completionPercentage}%` }}
+                  >
+                    <div className="absolute inset-0 bg-white/20 animate-pulse"></div>
+                  </div>
+                </div>
+
+                {/* Completion Message */}
+                {completedCount === totalSurveys && totalSurveys > 0 && (
+                  <div className="mt-4 bg-[#10B981]/10 border border-[#10B981]/30 rounded-lg p-4 text-center">
+                    <p className="text-[#10B981] font-bold text-lg">
+                      🎊 Amazing! You've completed all available surveys! 🎊
+                    </p>
+                    <p className="text-[#A1A1AA] text-sm mt-1">
+                      Thank you for your valuable feedback!
+                    </p>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          )}
 
           {forms.length === 0 ? (
             <div className="bg-[#0f0f0f] border border-[#1a1a1a] rounded-2xl p-8 text-center">

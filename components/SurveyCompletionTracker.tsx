@@ -8,14 +8,22 @@ interface SurveyCompletionTrackerProps {
 }
 
 export function triggerConfetti() {
-  const duration = 3000;
+  const duration = 4000;
   const animationEnd = Date.now() + duration;
-  const defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 10000 };
-
+  
   function randomInRange(min: number, max: number) {
     return Math.random() * (max - min) + min;
   }
 
+  // Initial big burst
+  confetti({
+    particleCount: 150,
+    spread: 120,
+    origin: { y: 0.6 },
+    colors: ['#10B981', '#0E9F71', '#34D399', '#6EE7B7', '#A7F3D0']
+  });
+
+  // Continuous confetti
   const interval: any = setInterval(function() {
     const timeLeft = animationEnd - Date.now();
 
@@ -27,16 +35,34 @@ export function triggerConfetti() {
 
     // Launch confetti from different positions
     confetti({
-      ...defaults,
       particleCount,
-      origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 }
+      startVelocity: 35,
+      spread: 360,
+      ticks: 80,
+      zIndex: 10000,
+      origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 },
+      colors: ['#10B981', '#0E9F71', '#34D399', '#6EE7B7', '#A7F3D0', '#FFD700', '#FFA500']
     });
     confetti({
-      ...defaults,
       particleCount,
-      origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 }
+      startVelocity: 35,
+      spread: 360,
+      ticks: 80,
+      zIndex: 10000,
+      origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 },
+      colors: ['#10B981', '#0E9F71', '#34D399', '#6EE7B7', '#A7F3D0', '#FFD700', '#FFA500']
     });
   }, 250);
+
+  // Firework effect
+  setTimeout(() => {
+    confetti({
+      particleCount: 100,
+      spread: 70,
+      origin: { x: 0.5, y: 0.5 },
+      colors: ['#10B981', '#FFD700', '#FFA500']
+    });
+  }, 500);
 }
 
 export default function SurveyCompletionTracker({ onComplete }: SurveyCompletionTrackerProps) {
