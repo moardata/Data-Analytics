@@ -132,24 +132,66 @@ function DashboardToolbar({
 // ----------------------------------------
 // Main component
 // ----------------------------------------
-export default function DashboardCreatorAnalytics({ clientId, onExportEventsCsv, onExportSubscriptionsCsv, onExportPdf }: DashboardCreatorAnalyticsProps) {
+export default function DashboardCreatorAnalytics({ clientId: companyIdOrClientId, onExportEventsCsv, onExportSubscriptionsCsv, onExportPdf }: DashboardCreatorAnalyticsProps) {
   const [metrics, setMetrics] = useState<DashboardMetrics | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [syncing, setSyncing] = useState(false);
+  const [actualClientId, setActualClientId] = useState<string | null>(null);
+
+  // Convert companyId to UUID clientId if needed
+  useEffect(() => {
+    const fetchClientId = async () => {
+      if (!companyIdOrClientId) return;
+      
+      // If it's already a UUID (contains dashes), use it directly
+      if (companyIdOrClientId.includes('-')) {
+        setActualClientId(companyIdOrClientId);
+        return;
+      }
+      
+      // Otherwise, it's a companyId (like biz_xxx), look up the UUID
+      try {
+        console.log('🔍 Looking up client UUID for company:', companyIdOrClientId);
+        const response = await fetch(`/api/client/lookup?companyId=${companyIdOrClientId}`);
+        
+        if (response.ok) {
+          const data = await response.json();
+          console.log('✅ Found client UUID:', data.clientId);
+          setActualClientId(data.clientId);
+        } else {
+          console.error('❌ Failed to lookup client ID');
+          // Fallback: try using the companyId directly
+          setActualClientId(companyIdOrClientId);
+        }
+      } catch (err) {
+        console.error('Error looking up client ID:', err);
+        // Fallback: try using the companyId directly
+        setActualClientId(companyIdOrClientId);
+      }
+    };
+    
+    fetchClientId();
+  }, [companyIdOrClientId]);
 
   // Fetch metrics data
   useEffect(() => {
     const fetchMetrics = async () => {
+      if (!actualClientId) return;
+      
       try {
         setLoading(true);
-        const response = await fetch(`/api/dashboard/metrics?clientId=${clientId}`);
+        console.log('📊 Fetching metrics for client:', actualClientId);
+        const response = await fetch(`/api/dashboard/metrics?clientId=${actualClientId}`);
         
         if (!response.ok) {
+          const errorText = await response.text();
+          console.error('❌ API Error:', response.status, errorText);
           throw new Error(`Failed to fetch metrics: ${response.statusText}`);
         }
         
         const data = await response.json();
+        console.log('✅ Metrics loaded successfully');
         setMetrics(data);
         setError(null);
       } catch (err) {
@@ -160,15 +202,15 @@ export default function DashboardCreatorAnalytics({ clientId, onExportEventsCsv,
       }
     };
 
-    if (clientId) {
+    if (actualClientId) {
       fetchMetrics();
     }
-  }, [clientId]);
+  }, [actualClientId]);
 
   const handleRefresh = () => {
-    if (clientId) {
+    if (actualClientId) {
       setLoading(true);
-      fetch(`/api/dashboard/metrics?clientId=${clientId}`)
+      fetch(`/api/dashboard/metrics?clientId=${actualClientId}`)
         .then(res => res.json())
         .then(data => {
           setMetrics(data);
@@ -183,7 +225,7 @@ export default function DashboardCreatorAnalytics({ clientId, onExportEventsCsv,
   };
 
   const handleSync = async () => {
-    if (!clientId) {
+    if (!actualClientId) {
       console.error('❌ No clientId provided for sync');
       return;
     }
@@ -191,9 +233,9 @@ export default function DashboardCreatorAnalytics({ clientId, onExportEventsCsv,
     try {
       setSyncing(true);
       setError(null);
-      console.log('🔄 Starting metrics sync for client:', clientId);
+      console.log('🔄 Starting metrics sync for client:', actualClientId);
       
-      const response = await fetch(`/api/dashboard/metrics?clientId=${clientId}`, {
+      const response = await fetch(`/api/dashboard/metrics?clientId=${actualClientId}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
