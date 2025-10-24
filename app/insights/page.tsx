@@ -38,6 +38,7 @@ function InsightsContent() {
   const [clientId, setClientId] = useState<string | null>(null);
   const [insights, setInsights] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
   const [activeTab, setActiveTab] = useState('insights');
   const [showSuccess, setShowSuccess] = useState(false);
 
@@ -167,6 +168,50 @@ function InsightsContent() {
     }
   };
 
+  const handleRefresh = async () => {
+    if (!companyId) {
+      console.error('❌ No companyId provided for refresh');
+      return;
+    }
+    
+    try {
+      setRefreshing(true);
+      console.log('🔄 Refreshing insights for company:', companyId);
+      
+      // Re-generate insights (force fresh calculation)
+      const response = await fetch(`/api/insights/generate?companyId=${companyId}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          timeRange: 'week',
+          includeAnomalies: true
+        })
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('❌ Refresh response error:', response.status, errorText);
+        throw new Error(`Refresh failed: ${response.statusText}`);
+      }
+
+      const data = await response.json();
+      console.log('✅ Insights refreshed successfully:', data);
+      setInsights(data.insights || []);
+      
+      // Show success notification
+      setShowSuccess(true);
+      setTimeout(() => setShowSuccess(false), 3000);
+      
+      console.log('📊 Insights refreshed at:', new Date().toISOString());
+    } catch (error) {
+      console.error('❌ Error refreshing insights:', error);
+      const errorMessage = error instanceof Error ? error.message : 'Failed to refresh insights';
+      alert(errorMessage);
+    } finally {
+      setRefreshing(false);
+    }
+  };
+
   // Show loading state while getting company ID
   if (!companyId) {
     return (
@@ -223,14 +268,12 @@ function InsightsContent() {
             </Button>
             <Button 
               variant="outline"
-              onClick={() => {
-                loadExistingInsights();
-                window.location.reload();
-              }}
-              className="border-[#1a1a1a] text-[#A1A1AA] hover:bg-[#1a1a1a] rounded-xl px-4 py-3"
+              onClick={handleRefresh}
+              disabled={refreshing || loading || !companyId}
+              className="border-[#1a1a1a] text-[#A1A1AA] hover:bg-[#1a1a1a] rounded-xl px-4 py-3 disabled:opacity-50"
               title="Refresh insights"
             >
-              <RefreshCw className="h-4 w-4" />
+              <RefreshCw className={`h-4 w-4 ${refreshing ? 'animate-spin' : ''}`} />
             </Button>
           </div>
         </div>

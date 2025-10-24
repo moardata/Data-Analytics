@@ -9,7 +9,7 @@ import React, { Suspense, useState, useEffect } from 'react';
 import { useSearchParams } from 'next/navigation';
 
 export const dynamic = 'force-dynamic';
-import { Plus, FileText, Eye, CheckCircle, Share2, Copy, BookOpen, Code, Download, Settings, BarChart3, Clock, Users, X } from 'lucide-react';
+import { Plus, FileText, Eye, CheckCircle, Share2, Copy, BookOpen, Code, Download, Settings, BarChart3, Clock, Users, X, RefreshCw } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -48,6 +48,7 @@ function FormsContent() {
   const [submissions, setSubmissions] = useState<any[]>([]);
   const [selectedSubmission, setSelectedSubmission] = useState<any | null>(null);
   const [analytics, setAnalytics] = useState<any>(null);
+  const [refreshing, setRefreshing] = useState(false);
 
   useEffect(() => {
     fetchForms();
@@ -326,6 +327,31 @@ function FormsContent() {
     }
   };
 
+  const handleRefresh = async () => {
+    if (!clientId) {
+      console.error('❌ No clientId provided for refresh');
+      return;
+    }
+    
+    try {
+      setRefreshing(true);
+      console.log('🔄 Refreshing forms data for client:', clientId);
+      
+      // Refresh forms and submissions based on active tab
+      if (activeTab === 'submissions') {
+        await fetchSubmissions();
+      } else {
+        await fetchForms();
+      }
+      
+      console.log('✅ Forms data refreshed successfully');
+    } catch (error) {
+      console.error('❌ Error refreshing forms:', error);
+    } finally {
+      setRefreshing(false);
+    }
+  };
+
   if (selectedForm) {
     return (
       <div className="min-h-screen bg-gradient-to-b from-[#0d0f12] to-[#14171c] p-8">
@@ -455,6 +481,13 @@ function FormsContent() {
               <Users className="h-3 w-3 mr-1" />
               {forms.length} Active Surveys
             </Badge>
+            <Button 
+              onClick={handleRefresh}
+              disabled={refreshing}
+              className="border border-[#1a1a1a] bg-[#0a0a0a] hover:bg-[#1a1a1a] text-[#F8FAFC] disabled:opacity-50"
+            >
+              <RefreshCw className={`h-4 w-4 ${refreshing ? 'animate-spin' : ''}`} />
+            </Button>
           </div>
         </div>
 

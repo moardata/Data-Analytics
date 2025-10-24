@@ -17,6 +17,7 @@ function RevenueContent() {
   
   const [revenue, setRevenue] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
 
   useEffect(() => {
     fetchRevenue();
@@ -54,6 +55,26 @@ function RevenueContent() {
     window.open(`/api/export/csv?companyId=${clientId}&type=revenue`, '_blank');
   };
 
+  const handleRefresh = async () => {
+    if (!clientId) {
+      console.error('❌ No clientId provided for refresh');
+      return;
+    }
+    
+    try {
+      setRefreshing(true);
+      console.log('🔄 Refreshing revenue data for client:', clientId);
+      
+      await fetchRevenue();
+      
+      console.log('✅ Revenue data refreshed successfully');
+    } catch (error) {
+      console.error('❌ Error refreshing revenue:', error);
+    } finally {
+      setRefreshing(false);
+    }
+  };
+
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen bg-gradient-to-b from-[#0a0a0a] to-[#0f0f0f]">
@@ -65,7 +86,7 @@ function RevenueContent() {
   return (
     <div className="min-h-screen bg-gradient-to-b from-[#0a0a0a] to-[#0f0f0f] p-8">
       <div className="max-w-7xl mx-auto">
-        <RevenueDashboard revenueData={revenue} onExport={handleExport} />
+        <RevenueDashboard revenueData={revenue} onExport={handleExport} onRefresh={handleRefresh} refreshing={refreshing} />
       </div>
     </div>
   );
