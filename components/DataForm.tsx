@@ -36,9 +36,9 @@ export function DataForm({ formId, fields, onSubmit, title, description }: DataF
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    // Validate required fields
+    // Validate required fields - properly handle boolean false values
     const missingFields = fields
-      .filter(field => field.required && !responses[field.id])
+      .filter(field => field.required && !(field.id in responses))
       .map(field => field.label);
 
     if (missingFields.length > 0) {
