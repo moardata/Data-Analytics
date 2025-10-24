@@ -183,27 +183,43 @@ export default function DashboardCreatorAnalytics({ clientId, onExportEventsCsv,
   };
 
   const handleSync = async () => {
-    if (!clientId) return;
+    if (!clientId) {
+      console.error('❌ No clientId provided for sync');
+      return;
+    }
     
     try {
       setSyncing(true);
-      console.log('🔄 Starting metrics sync...');
+      setError(null);
+      console.log('🔄 Starting metrics sync for client:', clientId);
       
       const response = await fetch(`/api/dashboard/metrics?clientId=${clientId}`, {
         method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
       });
 
       if (!response.ok) {
+        const errorText = await response.text();
+        console.error('❌ Sync response error:', response.status, errorText);
         throw new Error(`Sync failed: ${response.statusText}`);
       }
 
       const data = await response.json();
+      console.log('✅ Metrics sync completed successfully:', data.metadata);
       setMetrics(data);
       setError(null);
-      console.log('✅ Metrics sync completed successfully');
+      
+      // Optional: Show success toast/notification
+      console.log('📊 Dashboard metrics refreshed at:', data.metadata.generatedAt);
     } catch (err) {
       console.error('❌ Error syncing metrics:', err);
-      setError(err instanceof Error ? err.message : 'Failed to sync metrics');
+      const errorMessage = err instanceof Error ? err.message : 'Failed to sync metrics';
+      setError(errorMessage);
+      
+      // Keep existing metrics if sync fails
+      console.warn('⚠️  Keeping existing metrics after sync failure');
     } finally {
       setSyncing(false);
     }
