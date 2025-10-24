@@ -82,8 +82,22 @@ export default function EngagementMetrics({ companyId }: EngagementMetricsProps)
   if (!data) {
     return (
       <Card className="border border-[#1a1a1a] bg-[#0f0f0f]">
-        <CardContent className="p-6 text-center">
-          <p className="text-[#A1A1AA]">Unable to load engagement metrics</p>
+        <CardContent className="p-6 text-center space-y-4">
+          <div className="flex justify-center">
+            <div className="h-12 w-12 border-4 border-[#10B981]/20 border-t-[#10B981] rounded-full animate-spin" />
+          </div>
+          <div>
+            <p className="text-[#F8FAFC] font-medium mb-2">No Engagement Data Yet</p>
+            <p className="text-[#A1A1AA] text-sm">
+              Engagement metrics will appear once you have form submissions or student activity.
+            </p>
+          </div>
+          <button
+            onClick={fetchEngagementData}
+            className="px-4 py-2 bg-[#10B981] hover:bg-[#0E9F71] text-white rounded-lg transition-colors"
+          >
+            Refresh Data
+          </button>
         </CardContent>
       </Card>
     );

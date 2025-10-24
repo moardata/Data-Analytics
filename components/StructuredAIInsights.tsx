@@ -136,8 +136,21 @@ export default function StructuredAIInsights({ companyId }: StructuredAIInsights
   if (!analysis) {
     return (
       <Card className="border border-[#1a1a1a] bg-[#0f0f0f]">
-        <CardContent className="p-6 text-center">
-          <p className="text-[#A1A1AA]">Unable to load AI analysis</p>
+        <CardContent className="p-6 text-center space-y-4">
+          <Brain className="h-12 w-12 mx-auto text-[#2A2F36]" />
+          <div>
+            <p className="text-[#F8FAFC] font-medium mb-2">No AI Analysis Available</p>
+            <p className="text-[#A1A1AA] text-sm">
+              There isn't enough data yet to generate insights. Submit some surveys or collect more data first.
+            </p>
+          </div>
+          <button
+            onClick={handleAnalyze}
+            disabled={analyzing}
+            className="px-4 py-2 bg-[#10B981] hover:bg-[#0E9F71] text-white rounded-lg transition-colors disabled:opacity-50"
+          >
+            {analyzing ? 'Analyzing...' : 'Try to Generate Analysis'}
+          </button>
         </CardContent>
       </Card>
     );
