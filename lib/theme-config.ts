@@ -72,21 +72,21 @@ export const themes: Record<ThemeVariant, ThemeColors> = {
     border: 'rgba(255, 255, 255, 0.1)',
     borderHover: 'rgba(255, 255, 255, 0.2)',
     
-    textPrimary: '#EAF2F8',
-    textSecondary: '#D4E0E8',
-    textMuted: '#B4C5D0',
+    textPrimary: '#FFFFFF',
+    textSecondary: '#E5E7EB',
+    textMuted: '#9CA3AF',
     
-    accentPrimary: '#11C2D3',
-    accentSecondary: '#4A84D4',
-    accentTertiary: '#6BA3E8',
+    accentPrimary: '#000000',
+    accentSecondary: '#1a1a1a',
+    accentTertiary: '#2a2a2a',
     
-    success: '#11C2D3',
+    success: '#000000',
     warning: '#F59E0B',
     error: '#EF6B7B',
     info: '#4A84D4',
     
-    glowPrimary: 'rgba(17, 194, 211, 0.6)',
-    glowSecondary: 'rgba(74, 132, 212, 0.6)',
+    glowPrimary: 'rgba(0, 0, 0, 0.6)',
+    glowSecondary: 'rgba(255, 255, 255, 0.3)',
   },
 };
 

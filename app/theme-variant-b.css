@@ -65,7 +65,7 @@ html[data-theme-variant="variant-b"] .card::before {
   content: "";
   position: absolute;
   inset: 0;
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, transparent 50%, rgba(17, 194, 211, 0.05) 100%);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, transparent 50%, rgba(0, 0, 0, 0.05) 100%);
   mix-blend-mode: overlay;
   pointer-events: none;
   border-radius: inherit;
@@ -95,16 +95,24 @@ html[data-theme-variant="variant-b"] [class*="bg-\\[\\#0f0f0f\\]"] {
 ======================================== */
 
 html[data-theme-variant="variant-b"] aside {
-  background: linear-gradient(180deg, #0B1C33 0%, #1E3B70 50%, #0B1C33 100%) !important;
-  background-size: 100% 400% !important;
-  animation: gradientShift 25s ease infinite !important;
-  border-right: 1px solid rgba(255, 255, 255, 0.12) !important;
+  background: #000000 !important;
+  border-right: 1px solid rgba(255, 255, 255, 0.15) !important;
+}
+
+/* Sidebar icons - white */
+html[data-theme-variant="variant-b"] aside svg,
+html[data-theme-variant="variant-b"] aside [class*="icon"] {
+  color: #FFFFFF !important;
 }
 
 /* Sidebar active items */
 html[data-theme-variant="variant-b"] aside a[class*="bg-\\[\\#1a1a1a\\]"] {
-  background: linear-gradient(135deg, rgba(17, 194, 211, 0.2), rgba(74, 132, 212, 0.2)) !important;
-  box-shadow: 0 0 20px rgba(17, 194, 211, 0.3) !important;
+  background: rgba(255, 255, 255, 0.1) !important;
+  box-shadow: 0 0 15px rgba(255, 255, 255, 0.2) !important;
+}
+
+html[data-theme-variant="variant-b"] aside a:hover {
+  background: rgba(255, 255, 255, 0.15) !important;
 }
 
 /* ========================================
@@ -112,10 +120,18 @@ html[data-theme-variant="variant-b"] aside a[class*="bg-\\[\\#1a1a1a\\]"] {
 ======================================== */
 
 html[data-theme-variant="variant-b"] .fixed.top-0 {
-  background: linear-gradient(90deg, #0B1C33 0%, #1E3B70 50%, #0B1C33 100%) !important;
-  background-size: 200% 100% !important;
-  animation: gradientShift 30s ease infinite !important;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.12) !important;
+  background: #000000 !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.15) !important;
+}
+
+/* Top bar icons - white */
+html[data-theme-variant="variant-b"] .fixed.top-0 svg,
+html[data-theme-variant="variant-b"] .fixed.top-0 button {
+  color: #FFFFFF !important;
+}
+
+html[data-theme-variant="variant-b"] .fixed.top-0 button:hover svg {
+  color: #FFFFFF !important;
 }
 
 /* ========================================
@@ -152,31 +168,34 @@ html[data-theme-variant="variant-b"] [class*="text-gray-400"] {
 ======================================== */
 
 html[data-theme-variant="variant-b"] button {
-  background: linear-gradient(135deg, rgba(17, 194, 211, 0.15), rgba(74, 132, 212, 0.15)) !important;
+  background: linear-gradient(135deg, rgba(0, 0, 0, 0.3), rgba(26, 26, 26, 0.3)) !important;
   border-color: rgba(255, 255, 255, 0.2) !important;
-  color: #EAF2F8 !important;
+  color: #FFFFFF !important;
   transition: all 0.3s ease;
   backdrop-filter: blur(8px);
 }
 
 html[data-theme-variant="variant-b"] button:hover:not(:disabled) {
-  background: linear-gradient(135deg, rgba(17, 194, 211, 0.3), rgba(74, 132, 212, 0.3)) !important;
-  border-color: rgba(17, 194, 211, 0.4) !important;
-  box-shadow: 0 0 20px rgba(17, 194, 211, 0.5) !important;
+  background: linear-gradient(135deg, rgba(0, 0, 0, 0.5), rgba(26, 26, 26, 0.5)) !important;
+  border-color: rgba(255, 255, 255, 0.3) !important;
+  box-shadow: 0 0 20px rgba(255, 255, 255, 0.2) !important;
   transform: translateY(-1px);
 }
 
 /* Primary buttons */
 html[data-theme-variant="variant-b"] button[class*="bg-\\[\\#10B981\\]"],
-html[data-theme-variant="variant-b"] button[class*="bg-emerald"] {
-  background: linear-gradient(135deg, #11C2D3, #4A84D4) !important;
-  border-color: rgba(17, 194, 211, 0.5) !important;
-  box-shadow: 0 0 20px rgba(17, 194, 211, 0.4) !important;
+html[data-theme-variant="variant-b"] button[class*="bg-emerald"],
+html[data-theme-variant="variant-b"] button[class*="bg-green"] {
+  background: #000000 !important;
+  border-color: rgba(255, 255, 255, 0.3) !important;
+  box-shadow: 0 0 20px rgba(255, 255, 255, 0.2) !important;
+  color: #FFFFFF !important;
 }
 
 html[data-theme-variant="variant-b"] button[class*="bg-\\[\\#10B981\\]"]:hover,
-html[data-theme-variant="variant-b"] button[class*="bg-emerald"]:hover {
-  box-shadow: 0 0 30px rgba(17, 194, 211, 0.6) !important;
+html[data-theme-variant="variant-b"] button[class*="bg-emerald"]:hover,
+html[data-theme-variant="variant-b"] button[class*="bg-green"]:hover {
+  box-shadow: 0 0 30px rgba(255, 255, 255, 0.3) !important;
 }
 
 /* ========================================
@@ -184,11 +203,11 @@ html[data-theme-variant="variant-b"] button[class*="bg-emerald"]:hover {
 ======================================== */
 
 html[data-theme-variant="variant-b"] [data-state="active"] {
-  background: linear-gradient(135deg, #11C2D3, #4A84D4) !important;
-  box-shadow: 0 0 25px rgba(17, 194, 211, 0.6),
-              0 4px 12px rgba(0, 0, 0, 0.3) !important;
+  background: #000000 !important;
+  box-shadow: 0 0 25px rgba(255, 255, 255, 0.3),
+              0 4px 12px rgba(0, 0, 0, 0.5) !important;
   color: white !important;
-  border-color: transparent !important;
+  border-color: rgba(255, 255, 255, 0.2) !important;
 }
 
 /* Tab list background */
@@ -213,8 +232,8 @@ html[data-theme-variant="variant-b"] select {
 html[data-theme-variant="variant-b"] input:focus,
 html[data-theme-variant="variant-b"] textarea:focus,
 html[data-theme-variant="variant-b"] select:focus {
-  border-color: #11C2D3 !important;
-  box-shadow: 0 0 15px rgba(17, 194, 211, 0.4) !important;
+  border-color: #000000 !important;
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.4) !important;
   outline: none;
 }
 
@@ -230,17 +249,18 @@ html[data-theme-variant="variant-b"] textarea::placeholder {
 
 html[data-theme-variant="variant-b"] [class*="Badge"],
 html[data-theme-variant="variant-b"] .badge {
-  background: linear-gradient(135deg, rgba(17, 194, 211, 0.3), rgba(74, 132, 212, 0.3)) !important;
-  border: 1px solid rgba(17, 194, 211, 0.5) !important;
-  color: #EAF2F8 !important;
+  background: rgba(0, 0, 0, 0.5) !important;
+  border: 1px solid rgba(255, 255, 255, 0.3) !important;
+  color: #FFFFFF !important;
   backdrop-filter: blur(8px);
 }
 
 /* Success badges */
 html[data-theme-variant="variant-b"] [class*="bg-\\[\\#10B981\\]"][class*="Badge"],
-html[data-theme-variant="variant-b"] [class*="bg-green"] {
-  background: linear-gradient(135deg, #11C2D3, #4A84D4) !important;
-  border-color: rgba(17, 194, 211, 0.6) !important;
+html[data-theme-variant="variant-b"] [class*="bg-green"],
+html[data-theme-variant="variant-b"] [class*="bg-emerald"] {
+  background: #000000 !important;
+  border-color: rgba(255, 255, 255, 0.4) !important;
   color: white !important;
 }
 
@@ -248,25 +268,28 @@ html[data-theme-variant="variant-b"] [class*="bg-green"] {
    ACCENT COLORS
 ======================================== */
 
-/* Replace all green accents with aqua */
+/* Replace all green/aqua accents with black/white */
 html[data-theme-variant="variant-b"] [class*="text-\\[\\#10B981\\]"],
 html[data-theme-variant="variant-b"] [class*="text-green"],
-html[data-theme-variant="variant-b"] [class*="text-emerald"] {
-  color: #11C2D3 !important;
+html[data-theme-variant="variant-b"] [class*="text-emerald"],
+html[data-theme-variant="variant-b"] [class*="text-\\[\\#11C2D3\\]"] {
+  color: #FFFFFF !important;
 }
 
 html[data-theme-variant="variant-b"] [class*="bg-\\[\\#10B981\\]"]:not(button),
 html[data-theme-variant="variant-b"] [class*="bg-green"]:not(button),
-html[data-theme-variant="variant-b"] [class*="bg-emerald"]:not(button) {
-  background-color: #11C2D3 !important;
+html[data-theme-variant="variant-b"] [class*="bg-emerald"]:not(button),
+html[data-theme-variant="variant-b"] [class*="bg-\\[\\#11C2D3\\]"]:not(button) {
+  background-color: #000000 !important;
 }
 
 /* Icons */
 html[data-theme-variant="variant-b"] svg[class*="text-\\[\\#10B981\\]"],
 html[data-theme-variant="variant-b"] svg[class*="text-green"],
-html[data-theme-variant="variant-b"] svg[class*="text-emerald"] {
-  color: #11C2D3 !important;
-  filter: drop-shadow(0 0 6px rgba(17, 194, 211, 0.4));
+html[data-theme-variant="variant-b"] svg[class*="text-emerald"],
+html[data-theme-variant="variant-b"] svg[class*="text-\\[\\#11C2D3\\]"] {
+  color: #FFFFFF !important;
+  filter: drop-shadow(0 0 6px rgba(255, 255, 255, 0.3));
 }
 
 /* ========================================
@@ -284,14 +307,14 @@ html[data-theme-variant="variant-b"] ::-webkit-scrollbar-track {
 }
 
 html[data-theme-variant="variant-b"] ::-webkit-scrollbar-thumb {
-  background: linear-gradient(180deg, #11C2D3, #4A84D4);
+  background: linear-gradient(180deg, #000000, #1a1a1a);
   border-radius: 5px;
   border: 2px solid rgba(11, 28, 51, 0.5);
 }
 
 html[data-theme-variant="variant-b"] ::-webkit-scrollbar-thumb:hover {
-  background: linear-gradient(180deg, #4A84D4, #11C2D3);
-  box-shadow: 0 0 10px rgba(17, 194, 211, 0.5);
+  background: linear-gradient(180deg, #1a1a1a, #000000);
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
 }
 
 /* ========================================
@@ -300,7 +323,7 @@ html[data-theme-variant="variant-b"] ::-webkit-scrollbar-thumb:hover {
 
 html[data-theme-variant="variant-b"] svg path,
 html[data-theme-variant="variant-b"] svg circle {
-  filter: drop-shadow(0 0 4px rgba(17, 194, 211, 0.3));
+  filter: drop-shadow(0 0 4px rgba(255, 255, 255, 0.2));
 }
 
 /* ========================================
@@ -335,5 +358,5 @@ html[data-theme-variant="variant-b"] [class*="shadow-"] {
 
 /* Glow on important elements */
 html[data-theme-variant="variant-b"] [class*="shadow-\\[0_0_20px"] {
-  box-shadow: 0 0 25px rgba(17, 194, 211, 0.6) !important;
+  box-shadow: 0 0 25px rgba(255, 255, 255, 0.3) !important;
 }
