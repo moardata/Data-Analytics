@@ -9,7 +9,7 @@ import React, { Suspense, useState, useEffect } from 'react';
 import { useSearchParams } from 'next/navigation';
 
 export const dynamic = 'force-dynamic';
-import { Plus, FileText, Eye, CheckCircle, Share2, Copy, BookOpen, Code, Download, Settings, BarChart3, Clock, Users, X } from 'lucide-react';
+import { Plus, FileText, Eye, CheckCircle, Share2, Copy, BookOpen, Code, Download, Settings, BarChart3, Clock, Users, X, Trash2 } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -82,6 +82,28 @@ function FormsContent() {
     } catch (error) {
       console.error('Error checking user role:', error);
       setUserRole('student'); // Default to student on error
+    }
+  };
+
+  const deleteForm = async (formId: string) => {
+    if (!confirm('Are you sure you want to delete this survey? This action cannot be undone.')) {
+      return;
+    }
+
+    try {
+      const response = await fetch(`/api/forms/delete?formId=${formId}&companyId=${clientId}`, {
+        method: 'DELETE',
+      });
+
+      if (response.ok) {
+        setForms(forms.filter(f => f.id !== formId));
+        alert('Survey deleted successfully!');
+      } else {
+        alert('Failed to delete survey. Please try again.');
+      }
+    } catch (error) {
+      console.error('Error deleting form:', error);
+      alert('Failed to delete survey. Please try again.');
     }
   };
 
@@ -453,7 +475,7 @@ function FormsContent() {
           <div className="flex items-center gap-4">
             <Badge className="bg-[#0B2C24] text-[#10B981] border-[#17493A] px-3 py-1">
               <Users className="h-3 w-3 mr-1" />
-              {forms.length} Active Surveys
+              {forms.filter(f => f.is_active).length} Active Surveys
             </Badge>
           </div>
         </div>
@@ -558,6 +580,13 @@ function FormsContent() {
                           >
                             <Settings className="h-4 w-4" />
                             Manage
+                          </Button>
+                          <Button 
+                            onClick={() => deleteForm(form.id)}
+                            className="gap-2 bg-[#7f1d1d] hover:bg-[#991b1b] text-white border border-[#991b1b]"
+                            title="Delete Survey"
+                          >
+                            <Trash2 className="h-4 w-4" />
                           </Button>
                         </div>
                         
