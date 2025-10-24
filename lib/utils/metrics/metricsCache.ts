@@ -32,7 +32,7 @@ export async function getCachedMetric(
 ): Promise<any | null> {
   try {
     const { data, error } = await supabase
-      .from('dashboard_metrics')
+      .from('cached_dashboard_metrics')
       .select('*')
       .eq('client_id', clientId)
       .eq('metric_type', metricType)
@@ -66,7 +66,7 @@ export async function setCachedMetric(
     expiresAt.setMinutes(expiresAt.getMinutes() + ttlMinutes);
 
     const { error } = await supabase
-      .from('dashboard_metrics')
+      .from('cached_dashboard_metrics')
       .upsert({
         client_id: clientId,
         metric_type: metricType,
@@ -130,7 +130,7 @@ export async function invalidateMetric(
 ): Promise<boolean> {
   try {
     const { error } = await supabase
-      .from('dashboard_metrics')
+      .from('cached_dashboard_metrics')
       .delete()
       .eq('client_id', clientId)
       .eq('metric_type', metricType);
@@ -154,7 +154,7 @@ export async function invalidateMetric(
 export async function cleanupExpiredMetrics(): Promise<number> {
   try {
     const { data, error } = await supabase
-      .from('dashboard_metrics')
+      .from('cached_dashboard_metrics')
       .delete()
       .lt('expires_at', new Date().toISOString())
       .select('id');
