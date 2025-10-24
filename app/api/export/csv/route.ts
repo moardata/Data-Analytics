@@ -189,17 +189,34 @@ async function exportSurveys(clientId: string): Promise<string> {
     .order('created_at', { ascending: false });
 
   if (!surveys || surveys.length === 0) {
-    return 'No data available';
+    return '\uFEFFNo data available'; // UTF-8 BOM
   }
 
-  // CSV Header
-  let csv = 'ID,Name,Description,Fields,Active,Created At,Updated At\n';
+  // CSV Header with UTF-8 BOM
+  let csv = '\uFEFF';
+  csv += 'Survey ID,Survey Name,Description,Number of Questions,Active Status,Created Date,Last Updated,Question List\n';
 
   // CSV Rows
   surveys.forEach(survey => {
-    const fields = JSON.stringify(survey.fields).replace(/"/g, '""');
     const description = (survey.description || '').replace(/"/g, '""');
-    csv += `"${survey.id}","${survey.name}","${description}","${fields}","${survey.is_active}","${survey.created_at}","${survey.updated_at}"\n`;
+    const name = survey.name.replace(/"/g, '""');
+    const numQuestions = Array.isArray(survey.fields) ? survey.fields.length : 0;
+    const activeStatus = survey.is_active ? 'Active' : 'Inactive';
+    
+    // Format dates
+    const createdDate = survey.created_at ? new Date(survey.created_at).toLocaleDateString('en-US') : '';
+    const updatedDate = survey.updated_at ? new Date(survey.updated_at).toLocaleDateString('en-US') : '';
+    
+    // Create readable question list
+    let questionList = '';
+    if (Array.isArray(survey.fields)) {
+      questionList = survey.fields
+        .map((field: any, index: number) => `${index + 1}. ${field.label} (${field.type})${field.required ? ' *' : ''}`)
+        .join('; ');
+    }
+    questionList = questionList.replace(/"/g, '""');
+    
+    csv += `"${survey.id}","${name}","${description}","${numQuestions}","${activeStatus}","${createdDate}","${updatedDate}","${questionList}"\n`;
   });
 
   return csv;
@@ -210,27 +227,68 @@ async function exportSurveyResponses(clientId: string): Promise<string> {
     .from('form_submissions')
     .select(`
       *,
-      form_templates(name),
+      form_templates(name, fields),
       entities(name, email)
     `)
     .eq('client_id', clientId)
     .order('submitted_at', { ascending: false });
 
   if (!responses || responses.length === 0) {
-    return 'No data available';
+    return '\uFEFFNo data available'; // UTF-8 BOM
   }
 
-  // CSV Header
-  let csv = 'ID,Form Name,Student Name,Student Email,Responses,Submitted At\n';
+  // Collect all unique question labels across all forms
+  const allQuestions = new Set<string>();
+  responses.forEach(response => {
+    if (response.responses && typeof response.responses === 'object') {
+      Object.keys(response.responses).forEach(key => allQuestions.add(key));
+    }
+  });
+
+  const questionColumns = Array.from(allQuestions).sort();
+
+  // CSV Header with UTF-8 BOM for Excel compatibility
+  let csv = '\uFEFF'; // UTF-8 BOM
+  csv += 'Submission ID,Form Name,Student Name,Student Email,Submitted Date,Submitted Time';
+  
+  // Add question columns
+  questionColumns.forEach(question => {
+    csv += `,"${question.replace(/"/g, '""')}"`;
+  });
+  csv += '\n';
 
   // CSV Rows
   responses.forEach(response => {
-    const formName = response.form_templates?.name || 'Unknown Form';
-    const studentName = response.entities?.name || 'Unknown Student';
-    const studentEmail = response.entities?.email || '';
-    const responsesData = JSON.stringify(response.responses).replace(/"/g, '""');
+    const formName = (response.form_templates?.name || 'Unknown Form').replace(/"/g, '""');
+    const studentName = (response.entities?.name || 'Unknown Student').replace(/"/g, '""');
+    const studentEmail = (response.entities?.email || '').replace(/"/g, '""');
     
-    csv += `"${response.id}","${formName}","${studentName}","${studentEmail}","${responsesData}","${response.submitted_at}"\n`;
+    // Format date and time separately
+    const submittedDate = response.submitted_at ? new Date(response.submitted_at) : null;
+    const dateStr = submittedDate ? submittedDate.toLocaleDateString('en-US') : '';
+    const timeStr = submittedDate ? submittedDate.toLocaleTimeString('en-US') : '';
+    
+    csv += `"${response.id}","${formName}","${studentName}","${studentEmail}","${dateStr}","${timeStr}"`;
+    
+    // Add response values for each question
+    questionColumns.forEach(question => {
+      const value = response.responses?.[question];
+      let formattedValue = '';
+      
+      if (value !== null && value !== undefined) {
+        if (typeof value === 'object') {
+          formattedValue = JSON.stringify(value);
+        } else {
+          formattedValue = String(value);
+        }
+      }
+      
+      // Escape quotes and wrap in quotes
+      formattedValue = formattedValue.replace(/"/g, '""');
+      csv += `,"${formattedValue}"`;
+    });
+    
+    csv += '\n';
   });
 
   return csv;
