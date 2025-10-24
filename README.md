@@ -2,6 +2,8 @@
 
 Modern analytics dashboard for Whop course creators to track students, revenue, engagement, and get AI-driven insights.
 
+**Last Updated:** October 24, 2025
+
 ## ✅ What's Working
 
 - **Dashboard** - Real-time metrics and charts
