@@ -59,17 +59,21 @@ export default function SystemHealthDashboard({ companyId }: SystemHealthDashboa
   const fetchHealthData = async () => {
     try {
       setLoading(true);
+      setError(null);
       const response = await fetch(`/api/system-health?companyId=${companyId}`);
       
       if (!response.ok) {
-        throw new Error('Failed to fetch health data');
+        console.warn('Health API returned error status');
+        setHealthData(null);
+        return;
       }
       
       const data = await response.json();
       setHealthData(data.health);
     } catch (err) {
       console.error('Error fetching health data:', err);
-      setError('Failed to load system health data');
+      // Don't set error - just show empty state
+      setHealthData(null);
     } finally {
       setLoading(false);
     }
