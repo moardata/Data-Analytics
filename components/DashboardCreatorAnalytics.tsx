@@ -6,8 +6,10 @@ import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
+import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils/cn';
-import { Calendar, Download, RefreshCw } from 'lucide-react';
+import { Calendar, Download, RefreshCw, Users, Target, TrendingUp } from 'lucide-react';
 
 // New metric components
 import ConsistencyScoreGauge from '@/components/metrics/ConsistencyScoreGauge';
@@ -161,6 +163,7 @@ export default function DashboardCreatorAnalytics({ clientId: companyIdOrClientI
   const [syncing, setSyncing] = useState(false);
   const [actualClientId, setActualClientId] = useState<string | null>(null);
   const [timeRange, setTimeRange] = useState<string>('7D');
+  const [activeTab, setActiveTab] = useState<string>('overview');
 
   // Convert companyId to UUID clientId if needed
   useEffect(() => {
@@ -405,25 +408,102 @@ export default function DashboardCreatorAnalytics({ clientId: companyIdOrClientI
         </p>
       </div>
 
-      {/* Student Engagement Section */}
-      <div className="space-y-3">
-        <h3 className="text-lg font-semibold text-[#F8FAFC] px-1">📊 Student Engagement</h3>
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
-          <ConsistencyScoreGauge data={metrics.engagementConsistency} />
-          <AhaMomentChart data={metrics.ahaMoments} />
-          <CommitmentDistribution data={metrics.commitmentScores} />
-        </div>
+      {/* Stats Cards */}
+      <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+        <Card className="border border-[#1a1a1a]/70 bg-gradient-to-br from-[#0f0f0f] via-[#1a1a1a] to-[#0f0f0f] p-4">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-lg bg-purple-500/20 flex items-center justify-center">
+              <Users className="h-5 w-5 text-purple-500" />
+            </div>
+            <div>
+              <p className="text-2xl font-bold text-[#F8FAFC]">{metrics.commitmentScores.totalStudents}</p>
+              <p className="text-xs text-[#A1A1AA]">Total Students</p>
+            </div>
+          </div>
+        </Card>
+        <Card className="border border-[#1a1a1a]/70 bg-gradient-to-br from-[#0f0f0f] via-[#1a1a1a] to-[#0f0f0f] p-4">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-lg bg-green-500/20 flex items-center justify-center">
+              <TrendingUp className="h-5 w-5 text-green-500" />
+            </div>
+            <div>
+              <p className="text-2xl font-bold text-[#F8FAFC]">{metrics.engagementConsistency.averageScore.toFixed(1)}</p>
+              <p className="text-xs text-[#A1A1AA]">Avg Consistency</p>
+            </div>
+          </div>
+        </Card>
+        <Card className="border border-[#1a1a1a]/70 bg-gradient-to-br from-[#0f0f0f] via-[#1a1a1a] to-[#0f0f0f] p-4">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-lg bg-blue-500/20 flex items-center justify-center">
+              <Target className="h-5 w-5 text-blue-500" />
+            </div>
+            <div>
+              <p className="text-2xl font-bold text-[#F8FAFC]">{metrics.popularContent.totalEngagements}</p>
+              <p className="text-xs text-[#A1A1AA]">Engagements Today</p>
+            </div>
+          </div>
+        </Card>
       </div>
 
-      {/* Content Performance Section */}
-      <div className="space-y-3">
-        <h3 className="text-lg font-semibold text-[#F8FAFC] px-1">🎯 Content Performance</h3>
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
-          <PathwayTable data={metrics.contentPathways} />
-          <PopularContentList data={metrics.popularContent} />
-          <FeedbackThemesList data={metrics.feedbackThemes} />
-        </div>
-      </div>
+      {/* Tabbed Interface */}
+      <Tabs value={activeTab} onValueChange={setActiveTab}>
+        <TabsList className="grid w-full grid-cols-3 bg-[#0f0f0f] border border-[#1a1a1a]">
+          <TabsTrigger value="overview" className="data-[state=active]:bg-[#10B981] data-[state=active]:text-white data-[state=active]:shadow-[0_0_20px_rgba(16,185,129,0.6)]">
+            <TrendingUp className="h-4 w-4 mr-2" />
+            Overview
+          </TabsTrigger>
+          <TabsTrigger value="engagement" className="data-[state=active]:bg-[#8B5CF6] data-[state=active]:text-white data-[state=active]:shadow-[0_0_20px_rgba(139,92,246,0.6)]">
+            <Users className="h-4 w-4 mr-2" />
+            Student Engagement
+          </TabsTrigger>
+          <TabsTrigger value="content" className="data-[state=active]:bg-[#3B82F6] data-[state=active]:text-white data-[state=active]:shadow-[0_0_20px_rgba(59,130,246,0.6)]">
+            <Target className="h-4 w-4 mr-2" />
+            Content Performance
+          </TabsTrigger>
+        </TabsList>
+
+        {/* Overview Tab */}
+        <TabsContent value="overview" className="mt-6 space-y-6">
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
+            <ConsistencyScoreGauge data={metrics.engagementConsistency} />
+            <AhaMomentChart data={metrics.ahaMoments} />
+            <CommitmentDistribution data={metrics.commitmentScores} />
+            <PathwayTable data={metrics.contentPathways} />
+            <PopularContentList data={metrics.popularContent} />
+            <FeedbackThemesList data={metrics.feedbackThemes} />
+          </div>
+        </TabsContent>
+
+        {/* Student Engagement Tab */}
+        <TabsContent value="engagement" className="mt-6 space-y-6">
+          <div className="rounded-2xl border border-[#1a1a1a]/70 bg-gradient-to-br from-[#0f0f0f] via-[#1a1a1a] to-[#0f0f0f] p-6">
+            <h3 className="text-xl font-bold text-[#F8FAFC] mb-2">📊 Understanding Your Students</h3>
+            <p className="text-[#A1A1AA] text-sm">
+              See how consistently your students show up, when they have breakthrough moments, and who's likely to complete your course. Use these insights to provide timely support and celebrate wins.
+            </p>
+          </div>
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
+            <ConsistencyScoreGauge data={metrics.engagementConsistency} />
+            <AhaMomentChart data={metrics.ahaMoments} />
+            <CommitmentDistribution data={metrics.commitmentScores} />
+          </div>
+        </TabsContent>
+
+        {/* Content Performance Tab */}
+        <TabsContent value="content" className="mt-6 space-y-6">
+          <div className="rounded-2xl border border-[#1a1a1a]/70 bg-gradient-to-br from-[#0f0f0f] via-[#1a1a1a] to-[#0f0f0f] p-6">
+            <h3 className="text-xl font-bold text-[#F8FAFC] mb-2">🎯 What's Working in Your Content</h3>
+            <p className="text-[#A1A1AA] text-sm">
+              Discover which content gets the most attention, what learning paths lead to success, and what your students are saying. Use this to double down on what works and improve what doesn't.
+            </p>
+          </div>
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
+            <PathwayTable data={metrics.contentPathways} />
+            <PopularContentList data={metrics.popularContent} />
+            <FeedbackThemesList data={metrics.feedbackThemes} />
+          </div>
+        </TabsContent>
+      </Tabs>
 
       {/* Footer: System Health + Exports */}
       <Panel>
