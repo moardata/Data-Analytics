@@ -165,14 +165,26 @@ function FormsContent() {
   };
 
   const calculateAnalytics = () => {
+    console.log('📊 [Analytics] Calculate called:', {
+      submissionsCount: submissions.length,
+      formsCount: forms.length,
+      firstSubmission: submissions[0],
+      firstForm: forms[0]
+    });
+
     if (submissions.length === 0 || forms.length === 0) {
+      console.log('📊 [Analytics] No data - setting analytics to null');
       setAnalytics(null);
       return;
     }
 
     // Calculate stats per form
     const formStats = forms.map(form => {
-      const formSubs = submissions.filter(sub => sub.form_template_id === form.id);
+      const formSubs = submissions.filter(sub => sub.form_id === form.id);
+      console.log(`📊 [Analytics] Form "${form.name}" (${form.id}):`, {
+        matchingSubmissions: formSubs.length,
+        totalSubmissions: submissions.length
+      });
       return {
         formName: form.name,
         responseCount: formSubs.length
@@ -196,7 +208,7 @@ function FormsContent() {
     // Calculate question analytics
     const questionAnalytics: any[] = [];
     forms.forEach(form => {
-      const formSubs = submissions.filter(sub => sub.form_template_id === form.id);
+      const formSubs = submissions.filter(sub => sub.form_id === form.id);
       
       form.fields?.forEach((field: any) => {
         const fieldResponses = formSubs
