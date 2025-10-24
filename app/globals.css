@@ -12,3 +12,26 @@ body {
 	color: var(--foreground);
 	font-family: Arial, Helvetica, sans-serif;
 }
+
+/* ========================================
+   DEFAULT THEME ENHANCEMENTS
+======================================== */
+
+/* Subtle green glow on sidebar icons hover */
+html:not([data-theme-variant]) aside a:hover svg,
+html[data-theme-variant="default"] aside a:hover svg {
+	filter: drop-shadow(0 0 8px rgba(16, 185, 129, 0.6)) drop-shadow(0 0 4px rgba(16, 185, 129, 0.4));
+	transition: filter 0.3s ease;
+}
+
+/* Smooth transition for all sidebar icons */
+html:not([data-theme-variant]) aside a svg,
+html[data-theme-variant="default"] aside a svg {
+	transition: filter 0.3s ease, color 0.3s ease;
+}
+
+/* Enhanced active state with glow */
+html:not([data-theme-variant]) aside a[class*="bg-[#1a1a1a]"] svg,
+html[data-theme-variant="default"] aside a[class*="bg-[#1a1a1a]"] svg {
+	filter: drop-shadow(0 0 6px rgba(16, 185, 129, 0.4));
+}
