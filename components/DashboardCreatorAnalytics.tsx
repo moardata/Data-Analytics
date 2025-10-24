@@ -204,8 +204,8 @@ export default function DashboardCreatorAnalytics({ clientId: companyIdOrClientI
       
       try {
         setLoading(true);
-        console.log('📊 Fetching metrics for client:', actualClientId);
-        const response = await fetch(`/api/dashboard/metrics?clientId=${actualClientId}`);
+        console.log('📊 Fetching metrics for client:', actualClientId, 'with time range:', timeRange);
+        const response = await fetch(`/api/dashboard/metrics?clientId=${actualClientId}&timeRange=${timeRange}`);
         
         if (!response.ok) {
           const errorText = await response.text();
@@ -214,7 +214,7 @@ export default function DashboardCreatorAnalytics({ clientId: companyIdOrClientI
         }
         
         const data = await response.json();
-        console.log('✅ Metrics loaded successfully');
+        console.log('✅ Metrics loaded successfully for time range:', timeRange);
         setMetrics(data);
         setError(null);
       } catch (err) {
@@ -228,12 +228,12 @@ export default function DashboardCreatorAnalytics({ clientId: companyIdOrClientI
     if (actualClientId) {
       fetchMetrics();
     }
-  }, [actualClientId]);
+  }, [actualClientId, timeRange]);
 
   const handleRefresh = () => {
     if (actualClientId) {
       setLoading(true);
-      fetch(`/api/dashboard/metrics?clientId=${actualClientId}`)
+      fetch(`/api/dashboard/metrics?clientId=${actualClientId}&timeRange=${timeRange}`)
         .then(res => res.json())
         .then(data => {
           setMetrics(data);

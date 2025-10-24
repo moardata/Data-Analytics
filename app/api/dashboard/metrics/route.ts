@@ -13,10 +13,23 @@ import { calculatePopularContent } from '@/lib/utils/metrics/popularContent';
 import { calculateFeedbackThemes } from '@/lib/utils/metrics/feedbackThemes';
 import { calculateCommitmentScore } from '@/lib/utils/metrics/commitmentScore';
 
+/**
+ * Convert time range string to days
+ */
+function getTimeRangeDays(timeRange: string): number {
+  switch (timeRange) {
+    case '1D': return 1;
+    case '7D': return 7;
+    case '1M': return 30;
+    default: return 7;
+  }
+}
+
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
     const clientId = searchParams.get('clientId');
+    const timeRange = searchParams.get('timeRange') || '7D'; // Default to 7 days
 
     if (!clientId) {
       return NextResponse.json(
@@ -25,9 +38,13 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    console.log(`📊 [Dashboard API] Fetching metrics for client ${clientId}...`);
+    console.log(`📊 [Dashboard API] Fetching metrics for client ${clientId} with time range ${timeRange}...`);
+
+    const days = getTimeRangeDays(timeRange);
 
     // Get all metrics with cache-first strategy
+    // Note: For now, we calculate all metrics fresh since the calculation functions
+    // don't yet support time range filtering. Future enhancement: pass timeRange to each function.
     const [
       engagementConsistency,
       ahaMoments,
@@ -36,42 +53,12 @@ export async function GET(request: NextRequest) {
       feedbackThemes,
       commitmentScores
     ] = await Promise.all([
-      getOrCalculateMetric(
-        clientId,
-        'engagement_consistency',
-        calculateConsistencyScore,
-        60 // 1 hour TTL
-      ),
-      getOrCalculateMetric(
-        clientId,
-        'aha_moments',
-        calculateAhaMomentScore,
-        360 // 6 hours TTL
-      ),
-      getOrCalculateMetric(
-        clientId,
-        'content_pathways',
-        calculateContentPathways,
-        360 // 6 hours TTL
-      ),
-      getOrCalculateMetric(
-        clientId,
-        'popular_content_daily',
-        calculatePopularContent,
-        20 // 20 minutes TTL
-      ),
-      getOrCalculateMetric(
-        clientId,
-        'feedback_themes',
-        calculateFeedbackThemes,
-        360 // 6 hours TTL
-      ),
-      getOrCalculateMetric(
-        clientId,
-        'commitment_scores',
-        calculateCommitmentScore,
-        60 // 1 hour TTL
-      )
+      calculateConsistencyScore(clientId),
+      calculateAhaMomentScore(clientId),
+      calculateContentPathways(clientId),
+      calculatePopularContent(clientId),
+      calculateFeedbackThemes(clientId),
+      calculateCommitmentScore(clientId)
     ]);
 
     // Build response
@@ -114,6 +101,7 @@ export async function GET(request: NextRequest) {
       },
       metadata: {
         clientId,
+        timeRange,
         generatedAt: new Date().toISOString(),
         cacheStatus: {
           engagementConsistency: !!engagementConsistency,
