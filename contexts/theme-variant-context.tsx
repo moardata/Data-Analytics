@@ -24,7 +24,8 @@ export function ThemeVariantProvider({ children }: { children: React.ReactNode }
   // Load saved preference from localStorage
   useEffect(() => {
     const saved = localStorage.getItem('theme-variant') as ThemeVariant;
-    if (saved && (saved === 'default' || saved === 'variant-b')) {
+    const validThemes: ThemeVariant[] = ['default', 'variant-b', 'frosted-light', 'spectrum-glow', 'pro-graphite'];
+    if (saved && validThemes.includes(saved)) {
       setVariantState(saved);
       setTheme(getTheme(saved));
     }
