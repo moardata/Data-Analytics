@@ -3,8 +3,10 @@
 import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
 import { FileText, Eye, CheckCircle, BookOpen, X } from 'lucide-react';
 import { DataForm } from '@/components/DataForm';
+import { triggerConfetti } from '@/components/SurveyCompletionTracker';
 
 interface StudentSurveysInterfaceProps {
   companyId: string;
@@ -16,10 +18,33 @@ export default function StudentSurveysInterface({ companyId }: StudentSurveysInt
   const [error, setError] = useState<string | null>(null);
   const [selectedSurvey, setSelectedSurvey] = useState<any | null>(null);
   const [submitted, setSubmitted] = useState(false);
+  const [completedSurveys, setCompletedSurveys] = useState<string[]>([]);
 
   useEffect(() => {
     fetchSurveys();
+    fetchCompletedSurveys();
   }, [companyId]);
+
+  const fetchCompletedSurveys = async () => {
+    try {
+      // Get whopUserId from localStorage (set during form submission)
+      const whopUserId = localStorage.getItem('whop_user_id');
+      
+      if (!whopUserId) {
+        console.log('No whopUserId found - student hasn\'t submitted any surveys yet');
+        return;
+      }
+
+      const response = await fetch(`/api/forms/completion?companyId=${companyId}&whopUserId=${whopUserId}`);
+      if (response.ok) {
+        const data = await response.json();
+        setCompletedSurveys(data.completedFormIds || []);
+        console.log('Completed surveys:', data.completedFormIds);
+      }
+    } catch (error) {
+      console.error('Error fetching completed surveys:', error);
+    }
+  };
 
   const fetchSurveys = async () => {
     try {
@@ -59,9 +84,16 @@ export default function StudentSurveysInterface({ companyId }: StudentSurveysInt
 
   const handleFormSubmit = async (responses: Record<string, any>) => {
     try {
+      // Get or create persistent user ID
+      let whopUserId = localStorage.getItem('whop_user_id');
+      if (!whopUserId) {
+        whopUserId = 'student_' + Math.random().toString(36).substring(2, 15);
+        localStorage.setItem('whop_user_id', whopUserId);
+      }
+
       const submissionData = {
         formId: selectedSurvey.id,
-        entityId: `student_${Date.now()}`,
+        entityId: whopUserId,
         companyId: companyId,
         responses,
       };
@@ -89,9 +121,19 @@ export default function StudentSurveysInterface({ companyId }: StudentSurveysInt
       if (response.ok) {
         const result = await response.json();
         console.log('✅ [StudentSurveysInterface] Submission successful:', result);
+        
+        // 🎉 TRIGGER CONFETTI!
+        triggerConfetti();
+        
+        // Mark survey as completed
+        setCompletedSurveys([...completedSurveys, selectedSurvey.id]);
+        
+        // Show submitted state
         setSubmitted(true);
-        // Refresh surveys list
+        
+        // Refresh surveys and completions list
         fetchSurveys();
+        setTimeout(() => fetchCompletedSurveys(), 500);
       } else {
         const errorData = await response.json();
         console.error('❌ [StudentSurveysInterface] Submission failed:', errorData);
@@ -189,6 +231,10 @@ export default function StudentSurveysInterface({ companyId }: StudentSurveysInt
     );
   }
 
+  const totalSurveys = surveys.length;
+  const completedCount = completedSurveys.length;
+  const completionPercentage = totalSurveys > 0 ? Math.round((completedCount / totalSurveys) * 100) : 0;
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-[#0a0a0a] to-[#0f0f0f]">
       <div className="bg-[#111111] border-b border-[#1a1a1a] px-6 py-4">
@@ -207,6 +253,65 @@ export default function StudentSurveysInterface({ companyId }: StudentSurveysInt
       <div className="p-6">
         <div className="max-w-4xl mx-auto">
           <div className="grid gap-6">
+            {/* Completion Progress Bar */}
+            {totalSurveys > 0 && (
+              <Card className="border border-[#1a1a1a] bg-[#0f0f0f] shadow-lg">
+                <CardContent className="p-6">
+                  <div className="flex items-center justify-between mb-3">
+                    <div className="flex items-center gap-3">
+                      <div className={`w-12 h-12 rounded-full flex items-center justify-center ${
+                        completedCount === totalSurveys 
+                          ? 'bg-[#10B981] shadow-[0_0_20px_rgba(16,185,129,0.4)]' 
+                          : 'bg-[#10B981]/20'
+                      }`}>
+                        {completedCount === totalSurveys ? (
+                          <CheckCircle className="h-6 w-6 text-white" />
+                        ) : (
+                          <FileText className="h-6 w-6 text-[#10B981]" />
+                        )}
+                      </div>
+                      <div>
+                        <h3 className="text-lg font-bold text-[#F8FAFC]">Your Progress</h3>
+                        <p className="text-sm text-[#A1A1AA]">
+                          {completedCount === totalSurveys 
+                            ? '🎉 All surveys completed!' 
+                            : `${completedCount} of ${totalSurveys} surveys completed`}
+                        </p>
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <div className="text-3xl font-black text-[#10B981]">
+                        {completionPercentage}%
+                      </div>
+                      <div className="text-xs text-[#A1A1AA]">Complete</div>
+                    </div>
+                  </div>
+                  
+                  {/* Progress Bar */}
+                  <div className="relative w-full h-3 bg-[#1a1a1a] rounded-full overflow-hidden">
+                    <div 
+                      className="absolute top-0 left-0 h-full bg-gradient-to-r from-[#10B981] to-[#0E9F71] rounded-full transition-all duration-1000 ease-out"
+                      style={{ width: `${completionPercentage}%` }}
+                    >
+                      <div className="absolute inset-0 bg-white/20 animate-pulse"></div>
+                    </div>
+                  </div>
+
+                  {/* Completion Message */}
+                  {completedCount === totalSurveys && totalSurveys > 0 && (
+                    <div className="mt-4 bg-[#10B981]/10 border border-[#10B981]/30 rounded-lg p-4 text-center">
+                      <p className="text-[#10B981] font-bold text-lg">
+                        🎊 Amazing! You've completed all available surveys! 🎊
+                      </p>
+                      <p className="text-[#A1A1AA] text-sm mt-1">
+                        Thank you for your valuable feedback!
+                      </p>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            )}
+
             {/* Welcome Message */}
             <div className="bg-gradient-to-r from-[#1a1a1a] to-[#2a2a2a] border border-[#1a1a1a] rounded-lg p-6">
               <h2 className="text-xl font-semibold text-[#F8FAFC] mb-2">
@@ -250,41 +355,76 @@ export default function StudentSurveysInterface({ companyId }: StudentSurveysInt
 
               {!error && surveys.length > 0 && (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {surveys.map((survey) => (
-                    <Card key={survey.id} className="border border-[#1a1a1a] bg-[#0f0f0f] shadow-lg hover:shadow-xl hover:shadow-[#10B981]/10 transition-all duration-300 hover:border-[#10B981]/30 group">
+                  {surveys.map((survey) => {
+                    const isCompleted = completedSurveys.includes(survey.id);
+                    return (
+                    <Card key={survey.id} className={`border shadow-lg hover:shadow-xl transition-all duration-300 group ${
+                      isCompleted 
+                        ? 'border-[#10B981] bg-[#10B981]/5' 
+                        : 'border-[#1a1a1a] bg-[#0f0f0f] hover:border-[#10B981]/30'
+                    }`}>
                       <CardHeader>
-                        <div className="flex items-center gap-3 mb-2">
-                          <div className="w-10 h-10 rounded-full bg-[#0B2C24] flex items-center justify-center text-[#10B981] text-lg font-bold border border-[#17493A]">
-                            <FileText className="h-5 w-5" />
+                        <div className="flex items-center justify-between mb-2">
+                          <div className="flex items-center gap-3">
+                            <div className={`w-10 h-10 rounded-full flex items-center justify-center text-lg font-bold ${
+                              isCompleted 
+                                ? 'bg-[#10B981] text-white' 
+                                : 'bg-[#0B2C24] text-[#10B981] border border-[#17493A]'
+                            }`}>
+                              {isCompleted ? (
+                                <CheckCircle className="h-5 w-5" />
+                              ) : (
+                                <FileText className="h-5 w-5" />
+                              )}
+                            </div>
+                            <div className="flex-1">
+                              <CardTitle className="text-lg text-[#F8FAFC] group-hover:text-[#10B981] transition-colors">
+                                {survey.name}
+                              </CardTitle>
+                              <p className="text-sm text-[#A1A1AA] group-hover:text-[#F8FAFC] transition-colors">
+                                {survey.description}
+                              </p>
+                            </div>
                           </div>
-                          <div className="flex-1">
-                            <CardTitle className="text-lg text-[#F8FAFC] group-hover:text-[#10B981] transition-colors">
-                              {survey.name}
-                            </CardTitle>
-                            <p className="text-sm text-[#A1A1AA] group-hover:text-[#F8FAFC] transition-colors">
-                              {survey.description}
-                            </p>
-                          </div>
+                          {isCompleted && (
+                            <Badge className="bg-[#10B981] text-white border-0 gap-1 px-2 py-1">
+                              <CheckCircle className="h-3 w-3" />
+                              ✨
+                            </Badge>
+                          )}
                         </div>
                       </CardHeader>
                       <CardContent className="space-y-4">
-                        <div className="flex items-center gap-2 text-sm text-[#A1A1AA] group-hover:text-[#F8FAFC] transition-colors">
-                          <CheckCircle className="h-4 w-4 text-[#10B981]" />
-                          <span>Ready to complete</span>
-                        </div>
+                        {isCompleted ? (
+                          <div className="bg-[#10B981]/10 border border-[#10B981]/30 rounded-lg p-3">
+                            <p className="text-sm text-[#10B981] font-medium">
+                              🎉 Thank you for completing this survey!
+                            </p>
+                          </div>
+                        ) : (
+                          <div className="flex items-center gap-2 text-sm text-[#A1A1AA] group-hover:text-[#F8FAFC] transition-colors">
+                            <CheckCircle className="h-4 w-4 text-[#10B981]" />
+                            <span>Ready to complete</span>
+                          </div>
+                        )}
                         
                         <div className="flex gap-2">
                           <Button 
                             onClick={() => handleTakeSurvey(survey)}
-                            className="flex-1 gap-2 bg-[#10B981] hover:bg-[#0E9F71] text-white font-medium py-3 px-6 rounded-lg transition-all duration-200 hover:shadow-lg hover:shadow-[#10B981]/25"
+                            disabled={isCompleted}
+                            className={`flex-1 gap-2 font-medium py-3 px-6 rounded-lg transition-all duration-200 ${
+                              isCompleted
+                                ? 'bg-[#6B7280] hover:bg-[#6B7280] text-white opacity-60 cursor-not-allowed'
+                                : 'bg-[#10B981] hover:bg-[#0E9F71] text-white hover:shadow-lg hover:shadow-[#10B981]/25'
+                            }`}
                           >
                             <FileText className="h-5 w-5" />
-                            Take Survey
+                            {isCompleted ? 'Already Completed' : 'Take Survey'}
                           </Button>
                         </div>
                       </CardContent>
                     </Card>
-                  ))}
+                  )})}
                 </div>
               )}
             </div>
