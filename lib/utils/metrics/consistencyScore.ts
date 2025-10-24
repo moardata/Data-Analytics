@@ -213,14 +213,9 @@ function calculateDecayRate(weeks: WeeklyActivity[]): number {
  * Calculate trend comparing recent vs previous period
  */
 function calculateTrend(studentScores: any[]): string {
-  // Simple trend based on distribution
-  // In real implementation, you'd compare to previous calculation
-  const avgScore = studentScores.reduce((sum, s) => sum + s.score, 0) / studentScores.length;
-  
-  // Mock trend for now - in production, compare to previous cached value
-  const trendValue = Math.random() * 10 - 5; // -5 to +5
-  const sign = trendValue >= 0 ? '+' : '';
-  return `${sign}${trendValue.toFixed(1)}%`;
+  // No historical data to compare against yet
+  // Return "N/A" instead of fake random numbers
+  return 'N/A';
 }
 
 /**

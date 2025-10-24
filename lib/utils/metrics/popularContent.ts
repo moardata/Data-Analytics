@@ -119,16 +119,24 @@ function analyzeContentEngagement(events: any[]): Map<string, {
 }
 
 /**
- * Calculate trend percentage
+ * Calculate trend percentage (capped at reasonable values)
  */
 function calculateTrend(todayValue: number, yesterdayValue: number): string {
+  if (yesterdayValue === 0 && todayValue === 0) {
+    return '0%';
+  }
+  
   if (yesterdayValue === 0) {
-    return todayValue > 0 ? '+100%' : '0%';
+    return 'New';
   }
 
   const change = ((todayValue - yesterdayValue) / yesterdayValue) * 100;
-  const sign = change >= 0 ? '+' : '';
-  return `${sign}${Math.round(change * 10) / 10}%`;
+  
+  // Cap at +/-999% for display sanity
+  const cappedChange = Math.max(-999, Math.min(999, change));
+  
+  const sign = cappedChange >= 0 ? '+' : '';
+  return `${sign}${Math.round(cappedChange * 10) / 10}%`;
 }
 
 /**
