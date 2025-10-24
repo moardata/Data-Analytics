@@ -305,13 +305,7 @@ export default function DashboardCreatorAnalytics({ clientId: companyIdOrClientI
             <div className="text-lg font-semibold text-white">Dashboard</div>
           </div>
         }>
-          <DashboardToolbar 
-            onExportPdf={onExportPdf} 
-            onSync={handleSync} 
-            syncing={syncing}
-            timeRange={timeRange}
-            onTimeRangeChange={setTimeRange}
-          />
+          <DashboardToolbar />
         </Suspense>
         
         <Panel>
