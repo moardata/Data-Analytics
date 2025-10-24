@@ -12,16 +12,17 @@ interface PathwayTableProps {
       studentCount: number;
       avgTimeToComplete?: string;
     }>;
-    deadEnds: Array<{
-      experienceId: string;
-      experienceName: string;
-      dropOffRate: number;
-      studentCount: number;
+    deadEnds?: Array<{
+      experienceId?: string;
+      experienceName?: string;
+      dropOffRate?: number;
+      completionRate?: number;
+      studentCount?: number;
     }>;
-    powerCombinations: Array<{
+    powerCombinations?: Array<{
       combination: string[] | string;
       successRate: number;
-      frequency: number;
+      frequency?: number;
     }>;
   };
 }
@@ -91,7 +92,7 @@ export default function PathwayTable({ data }: PathwayTableProps) {
         </div>
 
         {/* Dead Ends */}
-        {deadEnds.length > 0 && (
+        {deadEnds && deadEnds.length > 0 && (
           <div className="mb-6">
             <div className="flex items-center space-x-2 mb-4">
               <div className="w-2 h-2 rounded-full bg-red-500"></div>
@@ -103,10 +104,10 @@ export default function PathwayTable({ data }: PathwayTableProps) {
                 <div key={index} className="flex items-center justify-between p-2 rounded bg-red-900/20 border border-red-800/40">
                   <div className="flex items-center space-x-2">
                     <AlertCircle className="w-4 h-4 text-red-400" />
-                    <span className="text-sm text-white">{deadEnd.experienceName}</span>
+                    <span className="text-sm text-white">{deadEnd.experienceName || deadEnd.experienceId || 'Unknown'}</span>
                   </div>
                   <div className="text-sm font-bold text-red-400">
-                    {deadEnd.dropOffRate.toFixed(0)}% drop-off
+                    {deadEnd.dropOffRate ? (deadEnd.dropOffRate * 100).toFixed(0) : deadEnd.completionRate ? ((1 - deadEnd.completionRate) * 100).toFixed(0) : 0}% drop-off
                   </div>
                 </div>
               ))}
@@ -115,7 +116,7 @@ export default function PathwayTable({ data }: PathwayTableProps) {
         )}
 
         {/* Power Combinations */}
-        {powerCombinations.length > 0 && (
+        {powerCombinations && powerCombinations.length > 0 && (
           <div>
             <div className="flex items-center space-x-2 mb-4">
               <div className="w-2 h-2 rounded-full bg-blue-500"></div>
