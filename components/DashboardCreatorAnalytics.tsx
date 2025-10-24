@@ -74,29 +74,21 @@ interface DashboardMetrics {
 }
 
 // ----------------------------------------
-// Toolbar with navigation (uses searchParams)
+// Toolbar with calendar filter and export
 // ----------------------------------------
 function DashboardToolbar({ 
   onExportPdf, 
   onSync, 
-  syncing 
+  syncing,
+  timeRange,
+  onTimeRangeChange
 }: { 
   onExportPdf?: () => void; 
   onSync?: () => void;
   syncing?: boolean;
+  timeRange?: string;
+  onTimeRangeChange?: (range: string) => void;
 }) {
-  const searchParams = useSearchParams();
-  
-  // Preserve companyId and experienceId in navigation
-  const companyId = searchParams.get('companyId') || searchParams.get('company_id');
-  const experienceId = searchParams.get('experienceId') || searchParams.get('experience_id');
-  
-  // Build query string to preserve in navigation
-  const queryParams = new URLSearchParams();
-  if (companyId) queryParams.set('companyId', companyId);
-  if (experienceId) queryParams.set('experienceId', experienceId);
-  const queryString = queryParams.toString() ? `?${queryParams.toString()}` : '';
-
   return (
     <div className="flex flex-wrap items-center gap-2">
       <div className="text-lg font-semibold text-[#F8FAFC]">Dashboard</div>
@@ -109,18 +101,48 @@ function DashboardToolbar({
           <RefreshCw className={cn("mr-2 h-4 w-4", syncing && "animate-spin")} /> 
           {syncing ? 'Syncing...' : 'Sync Data'}
         </Button>
-        <Link href={`/insights${queryString}`}>
-          <Button className="border border-[#1a1a1a] bg-[#0a0a0a] hover:bg-[#1a1a1a] text-[#F8FAFC]">AI Insights</Button>
-        </Link>
-        <Link href={`/forms${queryString}`}>
-          <Button className="border border-[#1a1a1a] bg-[#0a0a0a] hover:bg-[#1a1a1a] text-[#F8FAFC]">Forms</Button>
-        </Link>
-        <Link href={`/students${queryString}`}>
-          <Button className="border border-[#1a1a1a] bg-[#0a0a0a] hover:bg-[#1a1a1a] text-[#F8FAFC]">Students</Button>
-        </Link>
+        
+        {/* Calendar Filter */}
+        <div className="flex items-center gap-1 border border-[#1a1a1a] bg-[#0a0a0a] rounded-lg p-1">
+          <Calendar className="h-4 w-4 text-zinc-400 ml-2" />
+          <Button
+            onClick={() => onTimeRangeChange?.('1D')}
+            className={cn(
+              "px-3 py-1 text-sm rounded-md transition-colors",
+              timeRange === '1D' 
+                ? "bg-[#1a1a1a] text-white" 
+                : "bg-transparent text-zinc-400 hover:text-white hover:bg-[#151515]"
+            )}
+          >
+            1D
+          </Button>
+          <Button
+            onClick={() => onTimeRangeChange?.('7D')}
+            className={cn(
+              "px-3 py-1 text-sm rounded-md transition-colors",
+              timeRange === '7D' 
+                ? "bg-[#1a1a1a] text-white" 
+                : "bg-transparent text-zinc-400 hover:text-white hover:bg-[#151515]"
+            )}
+          >
+            7D
+          </Button>
+          <Button
+            onClick={() => onTimeRangeChange?.('1M')}
+            className={cn(
+              "px-3 py-1 text-sm rounded-md transition-colors",
+              timeRange === '1M' 
+                ? "bg-[#1a1a1a] text-white" 
+                : "bg-transparent text-zinc-400 hover:text-white hover:bg-[#151515]"
+            )}
+          >
+            1M
+          </Button>
+        </div>
+        
         <Button 
           onClick={onExportPdf}
-          className="border border-[#10B981] bg-[#10B981] hover:bg-[#0E3A2F] text-white"
+          className="border border-[#1a1a1a] bg-[#18181b] hover:bg-[#27272a] text-white"
         >
           <Download className="mr-2 h-4 w-4" /> Export
         </Button>
@@ -138,6 +160,7 @@ export default function DashboardCreatorAnalytics({ clientId: companyIdOrClientI
   const [error, setError] = useState<string | null>(null);
   const [syncing, setSyncing] = useState(false);
   const [actualClientId, setActualClientId] = useState<string | null>(null);
+  const [timeRange, setTimeRange] = useState<string>('7D');
 
   // Convert companyId to UUID clientId if needed
   useEffect(() => {
@@ -275,7 +298,13 @@ export default function DashboardCreatorAnalytics({ clientId: companyIdOrClientI
             <div className="text-lg font-semibold text-white">Dashboard</div>
           </div>
         }>
-          <DashboardToolbar onExportPdf={onExportPdf} onSync={handleSync} syncing={syncing} />
+          <DashboardToolbar 
+            onExportPdf={onExportPdf} 
+            onSync={handleSync} 
+            syncing={syncing}
+            timeRange={timeRange}
+            onTimeRangeChange={setTimeRange}
+          />
         </Suspense>
         
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
@@ -301,7 +330,13 @@ export default function DashboardCreatorAnalytics({ clientId: companyIdOrClientI
             <div className="text-lg font-semibold text-white">Dashboard</div>
           </div>
         }>
-          <DashboardToolbar onExportPdf={onExportPdf} onSync={handleSync} syncing={syncing} />
+          <DashboardToolbar 
+            onExportPdf={onExportPdf} 
+            onSync={handleSync} 
+            syncing={syncing}
+            timeRange={timeRange}
+            onTimeRangeChange={setTimeRange}
+          />
         </Suspense>
         
         <Panel>
@@ -326,7 +361,13 @@ export default function DashboardCreatorAnalytics({ clientId: companyIdOrClientI
             <div className="text-lg font-semibold text-white">Dashboard</div>
           </div>
         }>
-          <DashboardToolbar onExportPdf={onExportPdf} onSync={handleSync} syncing={syncing} />
+          <DashboardToolbar 
+            onExportPdf={onExportPdf} 
+            onSync={handleSync} 
+            syncing={syncing}
+            timeRange={timeRange}
+            onTimeRangeChange={setTimeRange}
+          />
         </Suspense>
         
         <Panel>
@@ -347,7 +388,13 @@ export default function DashboardCreatorAnalytics({ clientId: companyIdOrClientI
           <div className="text-lg font-semibold text-white">Dashboard</div>
         </div>
       }>
-        <DashboardToolbar onExportPdf={onExportPdf} onSync={handleSync} syncing={syncing} />
+        <DashboardToolbar 
+          onExportPdf={onExportPdf} 
+          onSync={handleSync} 
+          syncing={syncing}
+          timeRange={timeRange}
+          onTimeRangeChange={setTimeRange}
+        />
       </Suspense>
 
       {/* Advanced Metrics Grid */}
