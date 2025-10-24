@@ -25,11 +25,10 @@ const navItems = [
   { href: '/insights', label: 'AI Insights', icon: Sparkles },
   { href: '/students', label: 'Students', icon: Users },
   { href: '/settings', label: 'Settings', icon: Settings },
-]
-
-const bottomItems = [
   { href: '/upgrade', label: 'Upgrade', icon: Zap },
 ]
+
+const bottomItems: any[] = []
 
 export function Sidebar() {
   const pathname = usePathname()

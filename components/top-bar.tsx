@@ -41,33 +41,6 @@ export function TopBar() {
           >
             <Info className="h-4 w-4 text-[#A1A1AA] hover:text-[#10B981]" />
           </button>
-          
-          <button 
-            onClick={() => setShowUsers(!showUsers)}
-            className="p-2 rounded-lg hover:bg-[#1a1a1a] transition-colors" 
-            title="Team Members"
-          >
-            <Users className="h-4 w-4 text-[#A1A1AA] hover:text-[#10B981]" />
-          </button>
-          
-          <button 
-            onClick={() => setShowNotifications(!showNotifications)}
-            className="p-2 rounded-lg hover:bg-[#1a1a1a] transition-colors relative" 
-            title="Notifications"
-          >
-            <Bell className="h-4 w-4 text-[#A1A1AA] hover:text-[#10B981]" />
-            {unreadCount > 0 && (
-              <span className="absolute top-1 right-1 w-2 h-2 bg-[#EF4444] rounded-full"></span>
-            )}
-          </button>
-          
-          <button 
-            onClick={() => setShowSettings(!showSettings)}
-            className="p-2 rounded-lg hover:bg-[#1a1a1a] transition-colors" 
-            title="Settings"
-          >
-            <Settings className="h-4 w-4 text-[#A1A1AA] hover:text-[#10B981]" />
-          </button>
         </div>
       </div>
 
