@@ -32,23 +32,40 @@ export async function GET(request: NextRequest) {
     const thirtyDaysAgo = new Date(Date.now() - 30 * 86400000).toISOString();
 
     // Get form submissions for engagement analysis
-    const { data: submissions } = await supabase
+    const { data: submissions, error: submissionsError } = await supabase
       .from('form_submissions')
       .select('submitted_at, responses')
       .eq('client_id', clientId)
       .gte('submitted_at', thirtyDaysAgo)
       .order('submitted_at', { ascending: false });
 
+    console.log(`📊 [Engagement API] Submissions for company ${companyId}:`, {
+      count: submissions?.length || 0,
+      clientId,
+      error: submissionsError?.message
+    });
+
     // Get events for activity tracking
-    const { data: events } = await supabase
+    const { data: events, error: eventsError } = await supabase
       .from('events')
       .select('event_type, created_at, event_data')
       .eq('client_id', clientId)
       .gte('created_at', thirtyDaysAgo)
       .order('created_at', { ascending: false });
 
+    console.log(`📊 [Engagement API] Events for company ${companyId}:`, {
+      count: events?.length || 0,
+      clientId,
+      error: eventsError?.message
+    });
+
     // Calculate engagement metrics
     const engagementMetrics = calculateEngagementMetrics(submissions || [], events || []);
+    
+    console.log(`📊 [Engagement API] Metrics calculated:`, {
+      hasMetrics: !!engagementMetrics,
+      companyId
+    });
 
     return NextResponse.json({
       success: true,
