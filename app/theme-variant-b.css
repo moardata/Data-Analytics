@@ -3,7 +3,10 @@
  * QUITTR-inspired moving gradient aesthetic
  */
 
-/* Moving Gradient Background Animation */
+/* ========================================
+   ANIMATIONS
+======================================== */
+
 @keyframes gradientShift {
   0% { background-position: 0% 50%; }
   50% { background-position: 100% 50%; }
@@ -16,153 +19,321 @@
   100% { background-position: 0% 0%; }
 }
 
-/* Apply to body when Variant B is active */
-[data-theme-variant="variant-b"] body {
-  background: linear-gradient(120deg, #4A84D4, #1E3B70, #0B1C33);
-  background-size: 400% 400%;
-  animation: gradientShift 20s ease infinite;
+/* ========================================
+   BACKGROUNDS
+======================================== */
+
+/* Main app background */
+html[data-theme-variant="variant-b"] body {
+  background: linear-gradient(120deg, #4A84D4, #1E3B70, #0B1C33) !important;
+  background-size: 400% 400% !important;
+  animation: gradientShift 20s ease infinite !important;
 }
 
-/* Calm metallic panels */
-[data-theme-variant="variant-b"] .card,
-[data-theme-variant="variant-b"] [class*="Card"] {
-  background: linear-gradient(145deg, rgba(46, 75, 127, 0.9), rgba(30, 59, 112, 0.8));
-  background-size: 300% 300%;
-  animation: panelFloat 25s ease-in-out infinite;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(12px);
+/* Main content area */
+html[data-theme-variant="variant-b"] .flex.min-h-screen {
+  background: linear-gradient(120deg, #4A84D4, #1E3B70, #0B1C33) !important;
+  background-size: 400% 400% !important;
+  animation: gradientShift 20s ease infinite !important;
+}
+
+/* ========================================
+   PANELS & CARDS
+======================================== */
+
+/* All card-like elements */
+html[data-theme-variant="variant-b"] [class*="rounded-2xl"],
+html[data-theme-variant="variant-b"] [class*="rounded-xl"],
+html[data-theme-variant="variant-b"] [class*="Card"],
+html[data-theme-variant="variant-b"] .card {
+  background: linear-gradient(145deg, rgba(46, 75, 127, 0.9), rgba(30, 59, 112, 0.85), rgba(11, 28, 51, 0.9)) !important;
+  background-size: 300% 300% !important;
+  animation: panelFloat 25s ease-in-out infinite !important;
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+  backdrop-filter: blur(12px) !important;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.4), 
+              0 0 0 1px rgba(255, 255, 255, 0.08),
+              inset 0 1px 0 rgba(255, 255, 255, 0.1) !important;
   position: relative;
 }
 
-/* Frosted metal overlay effect */
-[data-theme-variant="variant-b"] .card::before,
-[data-theme-variant="variant-b"] [class*="Card"]::before {
+/* Frosted metal overlay */
+html[data-theme-variant="variant-b"] [class*="rounded-2xl"]::before,
+html[data-theme-variant="variant-b"] [class*="rounded-xl"]::before,
+html[data-theme-variant="variant-b"] [class*="Card"]::before,
+html[data-theme-variant="variant-b"] .card::before {
   content: "";
   position: absolute;
   inset: 0;
-  background: rgba(255, 255, 255, 0.05);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, transparent 50%, rgba(17, 194, 211, 0.05) 100%);
   mix-blend-mode: overlay;
   pointer-events: none;
   border-radius: inherit;
   z-index: 1;
 }
 
-/* Ensure content appears above overlay */
-[data-theme-variant="variant-b"] .card > *,
-[data-theme-variant="variant-b"] [class*="Card"] > * {
+/* Ensure content is above overlay */
+html[data-theme-variant="variant-b"] [class*="rounded-2xl"] > *,
+html[data-theme-variant="variant-b"] [class*="rounded-xl"] > *,
+html[data-theme-variant="variant-b"] [class*="Card"] > *,
+html[data-theme-variant="variant-b"] .card > * {
   position: relative;
   z-index: 2;
 }
 
-/* Sidebar styling */
-[data-theme-variant="variant-b"] aside {
-  background: linear-gradient(180deg, #0B1C33 0%, #1E3B70 100%);
-  border-right: 1px solid rgba(255, 255, 255, 0.1);
+/* Secondary panels (darker for contrast) */
+html[data-theme-variant="variant-b"] [class*="bg-\\[\\#0a0a0a\\]"],
+html[data-theme-variant="variant-b"] [class*="bg-\\[\\#0f0f0f\\]"] {
+  background: linear-gradient(135deg, rgba(11, 28, 51, 0.95), rgba(20, 40, 70, 0.9)) !important;
+  background-size: 200% 200% !important;
+  animation: panelFloat 30s ease-in-out infinite !important;
+  border-color: rgba(255, 255, 255, 0.1) !important;
 }
 
-/* Top bar styling */
-[data-theme-variant="variant-b"] .fixed.top-0 {
-  background: linear-gradient(90deg, #0B1C33 0%, #1E3B70 50%, #0B1C33 100%);
-  background-size: 200% 100%;
-  animation: gradientShift 30s ease infinite;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+/* ========================================
+   SIDEBAR
+======================================== */
+
+html[data-theme-variant="variant-b"] aside {
+  background: linear-gradient(180deg, #0B1C33 0%, #1E3B70 50%, #0B1C33 100%) !important;
+  background-size: 100% 400% !important;
+  animation: gradientShift 25s ease infinite !important;
+  border-right: 1px solid rgba(255, 255, 255, 0.12) !important;
 }
 
-/* Text colors */
-[data-theme-variant="variant-b"] h1,
-[data-theme-variant="variant-b"] h2,
-[data-theme-variant="variant-b"] h3,
-[data-theme-variant="variant-b"] h4 {
-  color: #EAF2F8;
+/* Sidebar active items */
+html[data-theme-variant="variant-b"] aside a[class*="bg-\\[\\#1a1a1a\\]"] {
+  background: linear-gradient(135deg, rgba(17, 194, 211, 0.2), rgba(74, 132, 212, 0.2)) !important;
+  box-shadow: 0 0 20px rgba(17, 194, 211, 0.3) !important;
 }
 
-[data-theme-variant="variant-b"] p,
-[data-theme-variant="variant-b"] span {
-  color: #B4C5D0;
+/* ========================================
+   TOP BAR
+======================================== */
+
+html[data-theme-variant="variant-b"] .fixed.top-0 {
+  background: linear-gradient(90deg, #0B1C33 0%, #1E3B70 50%, #0B1C33 100%) !important;
+  background-size: 200% 100% !important;
+  animation: gradientShift 30s ease infinite !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12) !important;
 }
 
-/* Accent colors - icy aqua */
-[data-theme-variant="variant-b"] .text-\[\#10B981\],
-[data-theme-variant="variant-b"] .bg-\[\#10B981\] {
-  color: #11C2D3 !important;
-  background-color: #11C2D3 !important;
+/* ========================================
+   TYPOGRAPHY
+======================================== */
+
+/* Headings - bright and clear */
+html[data-theme-variant="variant-b"] h1,
+html[data-theme-variant="variant-b"] h2,
+html[data-theme-variant="variant-b"] h3,
+html[data-theme-variant="variant-b"] h4,
+html[data-theme-variant="variant-b"] h5,
+html[data-theme-variant="variant-b"] h6 {
+  color: #EAF2F8 !important;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
 }
 
-/* Button styling */
-[data-theme-variant="variant-b"] button {
-  background: linear-gradient(135deg, rgba(17, 194, 211, 0.2), rgba(74, 132, 212, 0.2));
-  border-color: rgba(255, 255, 255, 0.15);
-  color: #EAF2F8;
+/* Body text - good contrast */
+html[data-theme-variant="variant-b"] p,
+html[data-theme-variant="variant-b"] span,
+html[data-theme-variant="variant-b"] div {
+  color: #D4E0E8;
+}
+
+/* Muted text */
+html[data-theme-variant="variant-b"] [class*="text-\\[\\#A1A1AA\\]"],
+html[data-theme-variant="variant-b"] [class*="text-zinc-400"],
+html[data-theme-variant="variant-b"] [class*="text-gray-400"] {
+  color: #B4C5D0 !important;
+}
+
+/* ========================================
+   BUTTONS
+======================================== */
+
+html[data-theme-variant="variant-b"] button {
+  background: linear-gradient(135deg, rgba(17, 194, 211, 0.15), rgba(74, 132, 212, 0.15)) !important;
+  border-color: rgba(255, 255, 255, 0.2) !important;
+  color: #EAF2F8 !important;
   transition: all 0.3s ease;
-}
-
-[data-theme-variant="variant-b"] button:hover {
-  background: linear-gradient(135deg, rgba(17, 194, 211, 0.3), rgba(74, 132, 212, 0.3));
-  border-color: rgba(255, 255, 255, 0.25);
-  box-shadow: 0 0 20px rgba(17, 194, 211, 0.4);
-}
-
-/* Tab styling */
-[data-theme-variant="variant-b"] [data-state="active"] {
-  background: linear-gradient(135deg, #11C2D3, #4A84D4) !important;
-  box-shadow: 0 0 25px rgba(17, 194, 211, 0.6);
-  color: white !important;
-}
-
-/* Metric cards */
-[data-theme-variant="variant-b"] .rounded-2xl {
-  background: linear-gradient(145deg, rgba(46, 75, 127, 0.85), rgba(30, 59, 112, 0.75));
-  background-size: 300% 300%;
-  animation: panelFloat 20s ease-in-out infinite;
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.4), 
-              0 0 0 1px rgba(255, 255, 255, 0.05);
-}
-
-/* Glow effects */
-[data-theme-variant="variant-b"] .shadow-\[0_0_20px {
-  box-shadow: 0 0 25px rgba(17, 194, 211, 0.6) !important;
-}
-
-/* Input fields */
-[data-theme-variant="variant-b"] input,
-[data-theme-variant="variant-b"] textarea {
-  background: rgba(11, 28, 51, 0.6);
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  color: #EAF2F8;
   backdrop-filter: blur(8px);
 }
 
-[data-theme-variant="variant-b"] input:focus,
-[data-theme-variant="variant-b"] textarea:focus {
-  border-color: #11C2D3;
-  box-shadow: 0 0 15px rgba(17, 194, 211, 0.3);
+html[data-theme-variant="variant-b"] button:hover:not(:disabled) {
+  background: linear-gradient(135deg, rgba(17, 194, 211, 0.3), rgba(74, 132, 212, 0.3)) !important;
+  border-color: rgba(17, 194, 211, 0.4) !important;
+  box-shadow: 0 0 20px rgba(17, 194, 211, 0.5) !important;
+  transform: translateY(-1px);
 }
 
-/* Badges */
-[data-theme-variant="variant-b"] .badge {
-  background: linear-gradient(135deg, rgba(17, 194, 211, 0.3), rgba(74, 132, 212, 0.3));
-  border: 1px solid rgba(17, 194, 211, 0.5);
-  color: #EAF2F8;
+/* Primary buttons */
+html[data-theme-variant="variant-b"] button[class*="bg-\\[\\#10B981\\]"],
+html[data-theme-variant="variant-b"] button[class*="bg-emerald"] {
+  background: linear-gradient(135deg, #11C2D3, #4A84D4) !important;
+  border-color: rgba(17, 194, 211, 0.5) !important;
+  box-shadow: 0 0 20px rgba(17, 194, 211, 0.4) !important;
 }
 
-/* Charts and visualizations */
-[data-theme-variant="variant-b"] svg {
-  filter: drop-shadow(0 0 8px rgba(17, 194, 211, 0.3));
+html[data-theme-variant="variant-b"] button[class*="bg-\\[\\#10B981\\]"]:hover,
+html[data-theme-variant="variant-b"] button[class*="bg-emerald"]:hover {
+  box-shadow: 0 0 30px rgba(17, 194, 211, 0.6) !important;
 }
 
-/* Scrollbar styling */
-[data-theme-variant="variant-b"] ::-webkit-scrollbar {
-  width: 8px;
+/* ========================================
+   TABS
+======================================== */
+
+html[data-theme-variant="variant-b"] [data-state="active"] {
+  background: linear-gradient(135deg, #11C2D3, #4A84D4) !important;
+  box-shadow: 0 0 25px rgba(17, 194, 211, 0.6),
+              0 4px 12px rgba(0, 0, 0, 0.3) !important;
+  color: white !important;
+  border-color: transparent !important;
+}
+
+/* Tab list background */
+html[data-theme-variant="variant-b"] [role="tablist"] {
+  background: linear-gradient(135deg, rgba(11, 28, 51, 0.8), rgba(30, 59, 112, 0.6)) !important;
+  border-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+/* ========================================
+   INPUTS
+======================================== */
+
+html[data-theme-variant="variant-b"] input,
+html[data-theme-variant="variant-b"] textarea,
+html[data-theme-variant="variant-b"] select {
+  background: rgba(11, 28, 51, 0.7) !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  color: #EAF2F8 !important;
+  backdrop-filter: blur(8px);
+}
+
+html[data-theme-variant="variant-b"] input:focus,
+html[data-theme-variant="variant-b"] textarea:focus,
+html[data-theme-variant="variant-b"] select:focus {
+  border-color: #11C2D3 !important;
+  box-shadow: 0 0 15px rgba(17, 194, 211, 0.4) !important;
+  outline: none;
+}
+
+html[data-theme-variant="variant-b"] input::placeholder,
+html[data-theme-variant="variant-b"] textarea::placeholder {
+  color: #B4C5D0 !important;
+  opacity: 0.6;
+}
+
+/* ========================================
+   BADGES
+======================================== */
+
+html[data-theme-variant="variant-b"] [class*="Badge"],
+html[data-theme-variant="variant-b"] .badge {
+  background: linear-gradient(135deg, rgba(17, 194, 211, 0.3), rgba(74, 132, 212, 0.3)) !important;
+  border: 1px solid rgba(17, 194, 211, 0.5) !important;
+  color: #EAF2F8 !important;
+  backdrop-filter: blur(8px);
+}
+
+/* Success badges */
+html[data-theme-variant="variant-b"] [class*="bg-\\[\\#10B981\\]"][class*="Badge"],
+html[data-theme-variant="variant-b"] [class*="bg-green"] {
+  background: linear-gradient(135deg, #11C2D3, #4A84D4) !important;
+  border-color: rgba(17, 194, 211, 0.6) !important;
+  color: white !important;
+}
+
+/* ========================================
+   ACCENT COLORS
+======================================== */
+
+/* Replace all green accents with aqua */
+html[data-theme-variant="variant-b"] [class*="text-\\[\\#10B981\\]"],
+html[data-theme-variant="variant-b"] [class*="text-green"],
+html[data-theme-variant="variant-b"] [class*="text-emerald"] {
+  color: #11C2D3 !important;
+}
+
+html[data-theme-variant="variant-b"] [class*="bg-\\[\\#10B981\\]"]:not(button),
+html[data-theme-variant="variant-b"] [class*="bg-green"]:not(button),
+html[data-theme-variant="variant-b"] [class*="bg-emerald"]:not(button) {
+  background-color: #11C2D3 !important;
+}
+
+/* Icons */
+html[data-theme-variant="variant-b"] svg[class*="text-\\[\\#10B981\\]"],
+html[data-theme-variant="variant-b"] svg[class*="text-green"],
+html[data-theme-variant="variant-b"] svg[class*="text-emerald"] {
+  color: #11C2D3 !important;
+  filter: drop-shadow(0 0 6px rgba(17, 194, 211, 0.4));
+}
+
+/* ========================================
+   SCROLLBAR
+======================================== */
+
+html[data-theme-variant="variant-b"] ::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
   background: rgba(11, 28, 51, 0.5);
 }
 
-[data-theme-variant="variant-b"] ::-webkit-scrollbar-thumb {
+html[data-theme-variant="variant-b"] ::-webkit-scrollbar-track {
+  background: linear-gradient(180deg, rgba(11, 28, 51, 0.6), rgba(30, 59, 112, 0.4));
+}
+
+html[data-theme-variant="variant-b"] ::-webkit-scrollbar-thumb {
   background: linear-gradient(180deg, #11C2D3, #4A84D4);
-  border-radius: 4px;
+  border-radius: 5px;
+  border: 2px solid rgba(11, 28, 51, 0.5);
 }
 
-[data-theme-variant="variant-b"] ::-webkit-scrollbar-thumb:hover {
+html[data-theme-variant="variant-b"] ::-webkit-scrollbar-thumb:hover {
   background: linear-gradient(180deg, #4A84D4, #11C2D3);
+  box-shadow: 0 0 10px rgba(17, 194, 211, 0.5);
 }
 
+/* ========================================
+   CHARTS & VISUALIZATIONS
+======================================== */
+
+html[data-theme-variant="variant-b"] svg path,
+html[data-theme-variant="variant-b"] svg circle {
+  filter: drop-shadow(0 0 4px rgba(17, 194, 211, 0.3));
+}
+
+/* ========================================
+   BORDERS
+======================================== */
+
+html[data-theme-variant="variant-b"] [class*="border-\\[\\#1a1a1a\\]"] {
+  border-color: rgba(255, 255, 255, 0.12) !important;
+}
+
+html[data-theme-variant="variant-b"] [class*="border-zinc-700"],
+html[data-theme-variant="variant-b"] [class*="border-gray-700"] {
+  border-color: rgba(255, 255, 255, 0.15) !important;
+}
+
+/* ========================================
+   HOVER EFFECTS
+======================================== */
+
+html[data-theme-variant="variant-b"] [class*="hover\\:bg-\\[\\#1a1a1a\\]"]:hover {
+  background: linear-gradient(135deg, rgba(17, 194, 211, 0.15), rgba(74, 132, 212, 0.15)) !important;
+}
+
+/* ========================================
+   SHADOWS & GLOWS
+======================================== */
+
+html[data-theme-variant="variant-b"] [class*="shadow-"] {
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4),
+              0 0 0 1px rgba(255, 255, 255, 0.08) !important;
+}
+
+/* Glow on important elements */
+html[data-theme-variant="variant-b"] [class*="shadow-\\[0_0_20px"] {
+  box-shadow: 0 0 25px rgba(17, 194, 211, 0.6) !important;
+}
