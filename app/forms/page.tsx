@@ -415,8 +415,9 @@ function FormsContent() {
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {forms.map((form) => (
-                <Card key={form.id} className="border border-[#1a1a1a] bg-[#0f0f0f] shadow-lg hover:shadow-xl hover:shadow-[#10B981]/10 transition-all duration-300 hover:border-[#10B981]/30 group">
-                  <CardHeader className="pb-3">
+                <Card key={form.id} className="relative border border-[#1a1a1a]/70 bg-gradient-to-br from-[#0f0f0f] via-[#1a1a1a] to-[#0f0f0f] shadow-[inset_0_1px_0_rgba(255,255,255,0.05),0_2px_12px_rgba(0,0,0,0.6)] hover:shadow-[inset_0_1px_0_rgba(255,255,255,0.05),0_8px_30px_rgba(16,185,129,0.15)] transition-all duration-300 hover:border-[#10B981]/40 group overflow-hidden backdrop-blur-md">
+                  <div className="pointer-events-none absolute inset-x-0 top-0 h-8 bg-gradient-to-b from-white/4 to-transparent" />
+                  <CardHeader className="pb-3 relative">
                     <CardTitle className="text-[#F8FAFC] flex items-center gap-2 group-hover:text-[#10B981] transition-colors">
                       <FileText className="h-5 w-5 text-[#10B981]" />
                       {form.name}
@@ -425,7 +426,7 @@ function FormsContent() {
                       {form.description || 'No description'}
                     </CardDescription>
                   </CardHeader>
-                  <CardContent className="space-y-4">
+                  <CardContent className="space-y-4 relative">
                     <div className="flex items-center gap-2 text-sm text-[#A1A1AA] group-hover:text-[#F8FAFC] transition-colors">
                       <CheckCircle className="h-4 w-4 text-[#10B981]" />
                       {form.fields?.length || 0} fields
@@ -552,8 +553,9 @@ function FormsContent() {
                 {forms
                   .filter(form => userRole === 'owner' || form.is_active)
                   .map((form) => (
-                  <Card key={form.id} className="border border-[#1a1a1a] bg-[#0f0f0f] shadow-lg hover:shadow-xl hover:shadow-[#10B981]/10 transition-all duration-300 hover:border-[#10B981]/30 group">
-                    <CardHeader className="pb-3">
+                  <Card key={form.id} className="relative border border-[#1a1a1a]/70 bg-gradient-to-br from-[#0f0f0f] via-[#1a1a1a] to-[#0f0f0f] shadow-[inset_0_1px_0_rgba(255,255,255,0.05),0_2px_12px_rgba(0,0,0,0.6)] hover:shadow-[inset_0_1px_0_rgba(255,255,255,0.05),0_8px_30px_rgba(16,185,129,0.15)] transition-all duration-300 hover:border-[#10B981]/40 group overflow-hidden backdrop-blur-md">
+                    <div className="pointer-events-none absolute inset-x-0 top-0 h-8 bg-gradient-to-b from-white/4 to-transparent" />
+                    <CardHeader className="pb-3 relative">
                       <CardTitle className="text-[#F8FAFC] flex items-center gap-2 group-hover:text-[#10B981] transition-colors">
                         <FileText className="h-5 w-5 text-[#10B981]" />
                         {form.name}
@@ -562,7 +564,7 @@ function FormsContent() {
                         {form.description || 'No description'}
                       </CardDescription>
                     </CardHeader>
-                    <CardContent className="space-y-4">
+                    <CardContent className="space-y-4 relative">
                       <div className="flex items-center gap-2 text-sm text-[#A1A1AA] group-hover:text-[#F8FAFC] transition-colors">
                         <CheckCircle className="h-4 w-4 text-[#10B981]" />
                         {form.fields?.length || 0} fields
