@@ -267,86 +267,57 @@ function FormsContent() {
       };
     }).filter(d => d.responses > 0); // Only show days with responses for cleaner chart
 
-    // Calculate question analytics
-    const questionAnalytics: any[] = [];
-    forms.forEach(form => {
-      const formSubs = submissions.filter(sub => sub.form_id === form.id);
-      
-      if (formSubs.length === 0) return;
-      
-      form.fields?.forEach((field: any) => {
-        // Try to match field by label or id
-        const fieldResponses = formSubs
-          .map(sub => {
-            // Try multiple keys: field.label, field.id, or clean label
-            const response = sub.responses?.[field.label] 
-              || sub.responses?.[field.id]
-              || sub.responses?.[field.label?.toLowerCase()];
-            return response;
-          })
-          .filter(val => val !== undefined && val !== null && val !== '');
-
-        if (fieldResponses.length === 0) return;
-
-        if (field.type === 'rating' || field.type === 'number') {
-          // Calculate average for numeric fields
-          const numericResponses = fieldResponses.filter(val => !isNaN(Number(val)));
-          if (numericResponses.length === 0) return;
-          
-          const avg = numericResponses.reduce((sum, val) => sum + Number(val), 0) / numericResponses.length;
-          const min = Math.min(...numericResponses.map(v => Number(v)));
-          const max = Math.max(...numericResponses.map(v => Number(v)));
-          
-          questionAnalytics.push({
-            formName: form.name,
-            question: field.label,
-            type: field.type,
-            average: avg.toFixed(2),
-            min,
-            max,
-            responseCount: numericResponses.length
-          });
-        } else if (field.type === 'radio' || field.type === 'select' || field.type === 'checkbox') {
-          // Calculate distribution for choice fields
-          const distribution: Record<string, number> = {};
-          fieldResponses.forEach(val => {
-            // Handle both single values and arrays (for checkbox)
-            const values = Array.isArray(val) ? val : [val];
-            values.forEach(v => {
-              const key = String(v);
-              distribution[key] = (distribution[key] || 0) + 1;
-            });
-          });
-          
-          questionAnalytics.push({
-            formName: form.name,
-            question: field.label,
-            type: field.type,
-            distribution: Object.entries(distribution)
-              .map(([name, value]) => ({ name, value }))
-              .sort((a, b) => b.value - a.value), // Sort by count descending
-            responseCount: fieldResponses.length
-          });
-        } else if (field.type === 'long_text' || field.type === 'short_text') {
-          // Show sample responses for text fields
-          const sampleResponses = fieldResponses.slice(0, 5).map(r => String(r));
-          questionAnalytics.push({
-            formName: form.name,
-            question: field.label,
-            type: field.type,
-            sampleResponses,
-            responseCount: fieldResponses.length,
-            avgLength: Math.round(fieldResponses.reduce((sum, val) => sum + String(val).length, 0) / fieldResponses.length)
-          });
+    // HIGH-LEVEL GENERALIZED METRICS (not every question)
+    const allRatings: number[] = [];
+    const allTextResponses: string[] = [];
+    
+    // Collect all ratings and text responses across ALL surveys
+    submissions.forEach(sub => {
+      Object.values(sub.responses || {}).forEach(val => {
+        if (typeof val === 'number' || !isNaN(Number(val))) {
+          const num = Number(val);
+          if (num >= 1 && num <= 10) { // Valid rating range
+            allRatings.push(num);
+          }
+        } else if (typeof val === 'string' && val.length > 3) {
+          allTextResponses.push(val);
         }
       });
     });
+
+    // Calculate overall satisfaction score from all ratings
+    const overallSatisfaction = allRatings.length > 0
+      ? (allRatings.reduce((sum, r) => sum + r, 0) / allRatings.length).toFixed(1)
+      : null;
+
+    // Simple sentiment analysis across all text
+    const positiveWords = ['great', 'excellent', 'amazing', 'love', 'perfect', 'helpful', 'good', 'awesome'];
+    const negativeWords = ['bad', 'terrible', 'awful', 'hate', 'confusing', 'difficult', 'boring', 'poor'];
+    
+    let positiveCount = 0;
+    let negativeCount = 0;
+    
+    allTextResponses.forEach(text => {
+      const lower = text.toLowerCase();
+      if (positiveWords.some(word => lower.includes(word))) positiveCount++;
+      if (negativeWords.some(word => lower.includes(word))) negativeCount++;
+    });
+
+    const totalSentiment = positiveCount + negativeCount;
+    const sentimentScore = totalSentiment > 0 
+      ? Math.round((positiveCount / totalSentiment) * 100) 
+      : 50;
 
     setAnalytics({
       totalResponses: submissions.length,
       formStats,
       timelineData,
-      questionAnalytics
+      overallSatisfaction,
+      totalRatings: allRatings.length,
+      sentimentScore,
+      positiveResponses: positiveCount,
+      negativeResponses: negativeCount,
+      totalTextResponses: allTextResponses.length
     });
   };
 
@@ -1009,117 +980,79 @@ function FormsContent() {
                   </CardContent>
                 </Card>
 
-                {/* Question-level Analytics */}
-                {analytics.questionAnalytics.length > 0 && (
+                {/* HIGH-LEVEL METRICS */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {/* Overall Satisfaction */}
+                  {analytics.overallSatisfaction && (
+                    <Card className="border border-[#1a1a1a] bg-[#0f0f0f] shadow-lg">
+                      <CardHeader>
+                        <CardTitle className="text-[#F8FAFC] flex items-center gap-2">
+                          <CheckCircle className="h-5 w-5 text-[#10B981]" />
+                          Overall Satisfaction
+                        </CardTitle>
+                        <CardDescription className="text-[#A1A1AA]">
+                          Average rating across all surveys
+                        </CardDescription>
+                      </CardHeader>
+                      <CardContent>
+                        <div className="flex items-center gap-6">
+                          <div className="text-center">
+                            <div className="text-5xl font-black text-[#10B981]">{analytics.overallSatisfaction}</div>
+                            <div className="text-sm text-[#A1A1AA] mt-1">out of 5</div>
+                          </div>
+                          <div className="flex-1">
+                            <div className="bg-[#1a1a1a] rounded-full h-4 overflow-hidden">
+                              <div 
+                                className="h-full bg-gradient-to-r from-[#10B981] to-[#0E9F71]"
+                                style={{ width: `${(parseFloat(analytics.overallSatisfaction) / 5) * 100}%` }}
+                              />
+                            </div>
+                            <p className="text-xs text-[#A1A1AA] mt-2">{analytics.totalRatings} total ratings</p>
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  )}
+
+                  {/* Sentiment Analysis */}
                   <Card className="border border-[#1a1a1a] bg-[#0f0f0f] shadow-lg">
                     <CardHeader>
-                      <CardTitle className="text-[#F8FAFC]">Question Analytics</CardTitle>
+                      <CardTitle className="text-[#F8FAFC] flex items-center gap-2">
+                        <Sparkles className="h-5 w-5 text-[#10B981]" />
+                        Feedback Sentiment
+                      </CardTitle>
                       <CardDescription className="text-[#A1A1AA]">
-                        Detailed breakdown of responses by question
+                        Sentiment from {analytics.totalTextResponses} text responses
                       </CardDescription>
                     </CardHeader>
-                    <CardContent className="space-y-6">
-                      {analytics.questionAnalytics.map((qa: any, idx: number) => (
-                        <div key={idx} className="border-b border-[#1a1a1a] pb-6 last:border-0">
-                          <div className="mb-4">
-                            <div className="text-sm font-medium text-[#10B981] mb-1">{qa.formName}</div>
-                            <div className="text-lg font-semibold text-[#F8FAFC]">{qa.question}</div>
-                            <div className="text-sm text-[#A1A1AA]">
-                              {qa.responseCount} responses
+                    <CardContent>
+                      <div className="space-y-4">
+                        <div className="flex items-center gap-4">
+                          <div className="text-4xl font-black text-[#10B981]">{analytics.sentimentScore}%</div>
+                          <div className="flex-1">
+                            <div className="text-sm text-[#A1A1AA] mb-1">Positive Sentiment</div>
+                            <div className="bg-[#1a1a1a] rounded-full h-3 overflow-hidden">
+                              <div 
+                                className="h-full bg-[#10B981]"
+                                style={{ width: `${analytics.sentimentScore}%` }}
+                              />
                             </div>
                           </div>
-
-                          {qa.type === 'rating' || qa.type === 'number' ? (
-                            <div className="space-y-4">
-                              <div className="grid grid-cols-3 gap-4">
-                                <div className="bg-[#0B2C24] rounded-lg p-4 text-center">
-                                  <div className="text-2xl font-black text-[#10B981]">{qa.average}</div>
-                                  <div className="text-xs text-[#A1A1AA] mt-1">Average</div>
-                                </div>
-                                <div className="bg-[#1a1a1a] rounded-lg p-4 text-center">
-                                  <div className="text-2xl font-black text-[#3B82F6]">{qa.min}</div>
-                                  <div className="text-xs text-[#A1A1AA] mt-1">Minimum</div>
-                                </div>
-                                <div className="bg-[#1a1a1a] rounded-lg p-4 text-center">
-                                  <div className="text-2xl font-black text-[#F59E0B]">{qa.max}</div>
-                                  <div className="text-xs text-[#A1A1AA] mt-1">Maximum</div>
-                                </div>
-                              </div>
-                            </div>
-                          ) : qa.type === 'long_text' || qa.type === 'short_text' ? (
-                            <div className="space-y-3">
-                              <div className="bg-[#1a1a1a] rounded-lg p-3 text-sm">
-                                <span className="text-[#10B981] font-medium">Average length:</span> 
-                                <span className="text-[#F8FAFC] ml-2">{qa.avgLength} characters</span>
-                              </div>
-                              <div className="space-y-2">
-                                <div className="text-sm font-medium text-[#A1A1AA]">Sample responses:</div>
-                                {qa.sampleResponses?.map((response: string, i: number) => (
-                                  <div key={i} className="bg-[#0B2C24]/30 border border-[#10B981]/20 rounded-lg p-3 text-sm text-[#F8FAFC]">
-                                    "{response}"
-                                  </div>
-                                ))}
-                                {qa.responseCount > 5 && (
-                                  <div className="text-xs text-[#A1A1AA] italic">
-                                    + {qa.responseCount - 5} more responses
-                                  </div>
-                                )}
-                              </div>
-                            </div>
-                          ) : qa.distribution ? (
-                            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                              <ResponsiveContainer width="100%" height={250}>
-                                <PieChart>
-                                  <Pie
-                                    data={qa.distribution}
-                                    dataKey="value"
-                                    nameKey="name"
-                                    cx="50%"
-                                    cy="50%"
-                                    outerRadius={80}
-                                    label={(entry) => `${entry.name}: ${entry.value}`}
-                                  >
-                                    {qa.distribution.map((_: any, index: number) => (
-                                      <Cell key={`cell-${index}`} fill={['#10B981', '#3B82F6', '#F59E0B', '#EF4444', '#8B5CF6'][index % 5]} />
-                                    ))}
-                                  </Pie>
-                                  <Tooltip 
-                                    contentStyle={{ 
-                                      backgroundColor: '#0f0f0f', 
-                                      border: '1px solid #1a1a1a',
-                                      borderRadius: '8px'
-                                    }}
-                                  />
-                                </PieChart>
-                              </ResponsiveContainer>
-                              <div className="space-y-2">
-                                {qa.distribution.map((item: any, i: number) => (
-                                  <div key={i} className="flex items-center justify-between bg-[#1a1a1a] rounded-lg p-3">
-                                    <span className="text-[#F8FAFC] font-medium">{item.name}</span>
-                                    <div className="flex items-center gap-3">
-                                      <div className="h-2 bg-[#0a0a0a] rounded-full w-24">
-                                        <div 
-                                          className="h-2 bg-[#10B981] rounded-full"
-                                          style={{ width: `${(item.value / qa.responseCount) * 100}%` }}
-                                        />
-                                      </div>
-                                      <span className="text-[#10B981] font-bold text-lg min-w-[3ch] text-right">
-                                        {item.value}
-                                      </span>
-                                      <span className="text-[#A1A1AA] text-sm min-w-[4ch] text-right">
-                                        {Math.round((item.value / qa.responseCount) * 100)}%
-                                      </span>
-                                    </div>
-                                  </div>
-                                ))}
-                              </div>
-                            </div>
-                          ) : null}
                         </div>
-                      ))}
+                        <div className="grid grid-cols-2 gap-4 text-sm">
+                          <div className="bg-[#10B981]/10 border border-[#10B981]/30 rounded-lg p-3 text-center">
+                            <div className="text-2xl font-bold text-[#10B981]">{analytics.positiveResponses}</div>
+                            <div className="text-xs text-[#A1A1AA]">Positive</div>
+                          </div>
+                          <div className="bg-[#EF4444]/10 border border-[#EF4444]/30 rounded-lg p-3 text-center">
+                            <div className="text-2xl font-bold text-[#EF4444]">{analytics.negativeResponses}</div>
+                            <div className="text-xs text-[#A1A1AA]">Negative</div>
+                          </div>
+                        </div>
+                      </div>
                     </CardContent>
                   </Card>
-                )}
+                </div>
               </>
             )}
           </div>
