@@ -20,7 +20,7 @@ import {
   RadialBarChart,
   RadialBar,
 } from 'recharts';
-import { Calendar, Download } from 'lucide-react';
+import { Calendar, Download, RefreshCw } from 'lucide-react';
 
 const days = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
 const mkSeries = (base: number, swing = 1000) => days.map((d,i)=>({day:d, actual: Math.max(0, base + Math.round(Math.sin(i*0.8)*swing)), forecast: base + Math.round(Math.sin((i+0.4)*0.8)*swing*0.9)}));
@@ -52,9 +52,11 @@ function Stat({ label, value, sub }: { label: string; value: string; sub?: strin
 interface RevenueDashboardProps {
   revenueData?: any[];
   onExport?: () => void;
+  onRefresh?: () => void;
+  refreshing?: boolean;
 }
 
-export default function RevenueDashboard({ revenueData, onExport }: RevenueDashboardProps) {
+export default function RevenueDashboard({ revenueData, onExport, onRefresh, refreshing }: RevenueDashboardProps) {
   const [range, setRange] = React.useState<'1D' | '7D' | '30D'>('7D');
 
   // Calculate KPIs from real data or show empty state
@@ -143,6 +145,14 @@ export default function RevenueDashboard({ revenueData, onExport }: RevenueDashb
               {r}
             </Button>
           ))}
+          <Button 
+            onClick={onRefresh}
+            disabled={refreshing}
+            className="border border-[#1a1a1a] bg-[#0a0a0a] hover:bg-[#1a1a1a] text-[#F8FAFC] disabled:opacity-50"
+          >
+            <RefreshCw className={`mr-2 h-4 w-4 ${refreshing ? 'animate-spin' : ''}`} />
+            {refreshing ? 'Refreshing...' : 'Refresh'}
+          </Button>
           <Button 
             onClick={onExport}
             className="border border-emerald-700/60 bg-emerald-900/40 hover:bg-emerald-900/60"

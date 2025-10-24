@@ -64,9 +64,9 @@ export function InsightCard({
   return (
     <div
       role="group"
-      className={`relative rounded-2xl border border-[#2E343C]/70 bg-gradient-to-br from-[#1A1E25] via-[#20242B] to-[#1A1E25] shadow-[inset_0_1px_0_rgba(255,255,255,0.05),0_2px_12px_rgba(0,0,0,0.6)] backdrop-blur-md overflow-hidden`}
+      className={`relative rounded-2xl border border-[#1a1a1a]/70 bg-gradient-to-br from-[#0f0f0f] via-[#1a1a1a] to-[#0f0f0f] shadow-[inset_0_1px_0_rgba(255,255,255,0.05),0_2px_12px_rgba(0,0,0,0.6)] backdrop-blur-md overflow-hidden`}
     >
-      <div className="pointer-events-none absolute inset-x-0 top-0 h-8 bg-gradient-to-b from-white/6 to-transparent" />
+      <div className="pointer-events-none absolute inset-x-0 top-0 h-8 bg-gradient-to-b from-white/4 to-transparent" />
 
       <button
         type="button"
@@ -91,10 +91,10 @@ export function InsightCard({
             {item.severity ?? "info"}
           </span>
           <div className="flex-1">
-            <div className="font-medium leading-snug text-[#E1E4EA]">
+            <div className="font-medium leading-snug text-[#F8FAFC]">
               {item.headline}
             </div>
-            <div className="mt-1 text-xs text-[#9AA4B2]">
+            <div className="mt-1 text-xs text-[#A1A1AA]">
               {new Date(item.createdAt).toLocaleDateString()}
             </div>
           </div>
@@ -122,7 +122,7 @@ export function InsightCard({
         } overflow-hidden`}
       >
         <div className="px-4 pb-4">
-          <div className="text-sm text-[#C9D2DC] leading-relaxed">
+          <div className="text-sm text-[#A1A1AA] leading-relaxed">
             {item.detail}
           </div>
           {item.tags && item.tags.length > 0 && (
@@ -130,7 +130,7 @@ export function InsightCard({
               {item.tags.map((t) => (
                 <span
                   key={t}
-                  className="text-[11px] rounded-full px-2 py-0.5 border border-[#2E343C] text-[#9AA4B2] bg-[#151920]"
+                  className="text-[11px] rounded-full px-2 py-0.5 border border-[#1a1a1a] text-[#A1A1AA] bg-[#0a0a0a]"
                 >
                   #{t}
                 </span>
