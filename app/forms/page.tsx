@@ -71,6 +71,12 @@ function FormsContent() {
 
   const fetchCompletedForms = async () => {
     try {
+      // Check if Supabase is configured
+      if (!supabase) {
+        console.warn('⚠️ Supabase not configured. Completion tracking disabled.');
+        return;
+      }
+
       // Get entity ID from supabase (current user)
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
