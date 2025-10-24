@@ -356,6 +356,44 @@ async function getOrCreateEntity(whopUserId: string, eventData: any) {
 		.single();
 
 	if (existing) {
+		// Update entity with any new data from webhook
+		const userName = eventData.name || 
+		                 eventData.username || 
+		                 eventData.user_name ||
+		                 eventData.display_name ||
+		                 eventData.full_name;
+		
+		const userEmail = eventData.email || 
+		                  eventData.user_email;
+		
+		// Only update if we got new data
+		const updates: any = {};
+		if (userName && !existing.name) updates.name = userName;
+		if (userEmail && !existing.email) updates.email = userEmail;
+		
+		// Merge new metadata
+		if (eventData.avatar || eventData.avatar_url || eventData.discord_id || eventData.telegram_id) {
+			const newMetadata = {
+				...existing.metadata,
+				...(eventData.avatar && { avatar: eventData.avatar }),
+				...(eventData.avatar_url && { avatar_url: eventData.avatar_url }),
+				...(eventData.discord_id && { discord_id: eventData.discord_id }),
+				...(eventData.telegram_id && { telegram_id: eventData.telegram_id }),
+				...(eventData.country && { country: eventData.country }),
+			};
+			updates.metadata = newMetadata;
+		}
+		
+		// Update if we have new data
+		if (Object.keys(updates).length > 0) {
+			await supabase
+				.from('entities')
+				.update(updates)
+				.eq('id', existing.id);
+			
+			console.log(`👤 [Webhook] Updated entity ${whopUserId} with new data:`, updates);
+		}
+		
 		return existing;
 	}
 
@@ -375,15 +413,43 @@ async function getOrCreateEntity(whopUserId: string, eventData: any) {
 		return null;
 	}
 
+	// Extract user data from webhook (Whop sends different fields in different events)
+	const userName = eventData.name || 
+	                 eventData.username || 
+	                 eventData.user_name ||
+	                 eventData.display_name ||
+	                 eventData.full_name ||
+	                 null;
+	
+	const userEmail = eventData.email || 
+	                  eventData.user_email ||
+	                  null;
+	
+	// Create metadata with any additional user info
+	const metadata: any = {};
+	if (eventData.avatar) metadata.avatar = eventData.avatar;
+	if (eventData.avatar_url) metadata.avatar_url = eventData.avatar_url;
+	if (eventData.discord_id) metadata.discord_id = eventData.discord_id;
+	if (eventData.telegram_id) metadata.telegram_id = eventData.telegram_id;
+	if (eventData.country) metadata.country = eventData.country;
+	if (eventData.social) metadata.social = eventData.social;
+	
+	console.log(`👤 [Webhook] Creating entity with data:`, {
+		whopUserId,
+		name: userName,
+		email: userEmail,
+		hasMetadata: Object.keys(metadata).length > 0
+	});
+
 	// Create new entity (student/member)
 	const { data: newEntity, error } = await supabase
 		.from('entities')
 		.insert({
 			client_id: clientId,
 			whop_user_id: whopUserId,
-			email: eventData.email || null,
-			name: eventData.name || eventData.username || null,
-			metadata: {},
+			email: userEmail,
+			name: userName,
+			metadata,
 		})
 		.select()
 		.single();
