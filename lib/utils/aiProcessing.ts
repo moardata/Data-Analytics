@@ -64,7 +64,7 @@ export async function processDataWithAI(
     const analysisData = prepareDataForAnalysis(dataCollection);
     
     // Fail fast if OpenAI is not configured
-    if (!openai || !process.env.OPENAI_API_KEY) {
+    if (!process.env.OPENAI_API_KEY) {
       console.error('❌ [AI Processing] OpenAI not configured');
       throw new Error('OpenAI API key is required for AI insights generation. Please configure OPENAI_API_KEY in your environment variables.');
     }
