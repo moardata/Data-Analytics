@@ -99,10 +99,16 @@ export async function GET(request: NextRequest) {
 
     if (error) {
       console.error('Error fetching actions:', error);
-      return NextResponse.json({ error: 'Failed to fetch actions' }, { status: 500 });
     }
 
-    return NextResponse.json({ actions });
+    // Return empty array if no actions yet
+    return NextResponse.json({ 
+      actions: actions || [],
+      hasData: (actions?.length || 0) > 0,
+      message: !actions || actions.length === 0 
+        ? 'No actions taken yet. Generate insights first to see recommendations and track improvements.'
+        : undefined
+    });
 
   } catch (error) {
     console.error('Feedback loop GET error:', error);

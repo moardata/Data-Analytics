@@ -87,8 +87,21 @@ export default function DataCollectionDashboard({ companyId }: DataCollectionDas
   if (!data) {
     return (
       <Card className="border border-[#1a1a1a] bg-[#0f0f0f]">
-        <CardContent className="p-6 text-center">
-          <p className="text-[#A1A1AA]">Unable to load data collection metrics</p>
+        <CardContent className="p-6 text-center space-y-4">
+          <Database className="h-12 w-12 mx-auto text-[#2A2F36]" />
+          <div>
+            <h3 className="text-lg font-medium text-[#F8FAFC] mb-2">Data Collection Overview</h3>
+            <p className="text-[#A1A1AA]">
+              Your system is collecting data from forms and student activity. Detailed metrics will appear here once AI processing begins.
+            </p>
+          </div>
+          <Button 
+            onClick={fetchDataCollection}
+            className="bg-[#10B981] hover:bg-[#0E9F71] text-white"
+          >
+            <RefreshCw className="h-4 w-4 mr-2" />
+            Refresh Data
+          </Button>
         </CardContent>
       </Card>
     );

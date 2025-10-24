@@ -156,6 +156,31 @@ export default function ActionFeedbackLoop({ companyId }: ActionFeedbackLoopProp
     );
   }
 
+  // Show empty state if no data
+  if (actions.length === 0 && improvements.length === 0) {
+    return (
+      <div className="space-y-4">
+        <Card className="p-6 bg-[#0f0f0f] border-[#1a1a1a] text-center">
+          <Target className="h-12 w-12 mx-auto mb-4 text-[#2A2F36]" />
+          <h3 className="text-lg font-medium text-[#F8FAFC] mb-2">No Actions Tracked Yet</h3>
+          <p className="text-[#A1A1AA] mb-4 max-w-md mx-auto">
+            Actions and improvements will appear here once you:
+            <br/>1. Generate AI insights from your data
+            <br/>2. Mark insights as "Acted Upon"
+            <br/>3. Track the improvements over time
+          </p>
+          <Button 
+            onClick={fetchFeedbackData}
+            className="bg-[#10B981] hover:bg-[#0E9F71] text-white"
+          >
+            <RefreshCw className="h-4 w-4 mr-2" />
+            Check Again
+          </Button>
+        </Card>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6">
       {/* Header */}
