@@ -42,12 +42,12 @@ export async function GET(request: NextRequest) {
     const clientId = clientData.id;
 
     // Fetch revenue from multiple sources
-    // 1. Get payment/order events
+    // 1. Get payment/order events AND subscription events
     const { data: events, error: eventsError } = await supabase
       .from('events')
       .select('*')
       .eq('client_id', clientId)
-      .in('event_type', ['payment.succeeded', 'order', 'payment_intent.succeeded', 'payment_succeeded'])
+      .in('event_type', ['payment.succeeded', 'order', 'payment_intent.succeeded', 'payment_succeeded', 'subscription'])
       .order('created_at', { ascending: false })
       .limit(1000);
 
@@ -75,11 +75,28 @@ export async function GET(request: NextRequest) {
 
     // Process payment events
     (events || []).forEach(event => {
-      const amount = event.event_data?.amount || 
-                     event.event_data?.total || 
-                     event.event_data?.value ||
-                     event.metadata?.amount ||
-                     0;
+      // Try multiple fields to extract amount
+      let amount = event.event_data?.amount || 
+                   event.event_data?.total || 
+                   event.event_data?.value ||
+                   event.event_data?.final_amount ||
+                   event.event_data?.price ||
+                   event.metadata?.amount ||
+                   0;
+      
+      // For subscription events, check for renewal_price or initial_price
+      if (event.event_type === 'subscription') {
+        amount = amount || 
+                 event.event_data?.renewal_price ||
+                 event.event_data?.initial_price ||
+                 event.event_data?.plan_price ||
+                 0;
+      }
+      
+      // Convert cents to dollars if amount looks like cents (> 100)
+      if (amount > 100) {
+        amount = amount / 100;
+      }
       
       if (amount > 0) {
         totalRevenue += amount;
@@ -89,7 +106,9 @@ export async function GET(request: NextRequest) {
           type: event.event_type,
           amount,
           date: event.created_at,
-          description: `${event.event_type} event`,
+          description: event.event_type === 'subscription' 
+            ? `Subscription - ${event.event_data?.plan_name || event.event_data?.plan_id || 'Plan'}`
+            : `${event.event_type} event`,
           metadata: event.event_data
         });
       }

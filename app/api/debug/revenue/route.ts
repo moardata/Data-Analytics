@@ -35,6 +35,9 @@ export async function GET(request: NextRequest) {
       supabase.from('entities').select('*').eq('client_id', clientId),
     ]);
 
+    // Filter subscription events specifically
+    const subscriptionEvents = events.data?.filter(e => e.event_type === 'subscription') || [];
+
     return NextResponse.json({
       companyId,
       clientId: clientData.id,
@@ -44,13 +47,25 @@ export async function GET(request: NextRequest) {
         types: events.data?.map(e => e.event_type) || [],
         sample: events.data?.slice(0, 3) || []
       },
-      subscriptions: {
+      subscriptionEvents: {
+        count: subscriptionEvents.length,
+        data: subscriptionEvents,
+        eventDataSample: subscriptionEvents.length > 0 ? subscriptionEvents[0].event_data : null
+      },
+      subscriptionsTable: {
         count: subscriptions.data?.length || 0,
         data: subscriptions.data || []
       },
       entities: {
         count: entities.data?.length || 0,
         sample: entities.data?.slice(0, 3) || []
+      },
+      analysis: {
+        hasSubscriptionEvents: subscriptionEvents.length > 0,
+        hasSubscriptionRecords: (subscriptions.data?.length || 0) > 0,
+        recommendation: subscriptionEvents.length > 0 && !subscriptions.data?.length 
+          ? 'Subscription events exist but not in subscriptions table - need to process them'
+          : 'No subscription data found'
       }
     });
 
