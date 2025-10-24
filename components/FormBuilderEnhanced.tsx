@@ -4,8 +4,9 @@ import * as React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils/cn";
-import { Eye, Save, FileText, Copy, Download, Settings, Star, Plus } from "lucide-react";
+import { Eye, Save, FileText, Copy, Download, Settings, Star, Plus, Sparkles } from "lucide-react";
 import { DataForm } from "./DataForm";
+import NicheTemplateSelector from "./NicheTemplateSelector";
 
 // -----------------------------
 // Types
@@ -121,9 +122,10 @@ interface FormBuilderEnhancedProps {
     fields: FormField[];
   } | null;
   onSaveComplete?: () => void;
+  companyId?: string;
 }
 
-export default function FormBuilderEnhanced({ existingForm, onSaveComplete }: FormBuilderEnhancedProps = {}) {
+export default function FormBuilderEnhanced({ existingForm, onSaveComplete, companyId }: FormBuilderEnhancedProps = {}) {
   const [draft, setDraft] = React.useState<FormDraft>({
     name: "",
     description: "",
@@ -156,6 +158,7 @@ export default function FormBuilderEnhanced({ existingForm, onSaveComplete }: Fo
   // Preview and preset state
   const [showPreview, setShowPreview] = React.useState(false);
   const [showPresets, setShowPresets] = React.useState(false);
+  const [showNicheTemplates, setShowNicheTemplates] = React.useState(false);
   const [savedPresets, setSavedPresets] = React.useState<SurveyPreset[]>([]);
 
   // Derived UI flags
@@ -336,12 +339,26 @@ export default function FormBuilderEnhanced({ existingForm, onSaveComplete }: Fo
             </div>
             <div className="flex gap-2">
               <Button
-                onClick={() => setShowPresets(!showPresets)}
+                onClick={() => {
+                  setShowNicheTemplates(!showNicheTemplates);
+                  setShowPresets(false);
+                }}
+                className="gap-2 bg-[#10B981] hover:bg-[#0E9F71] text-white"
+                size="sm"
+              >
+                <Sparkles className="h-4 w-4" />
+                Niche Templates
+              </Button>
+              <Button
+                onClick={() => {
+                  setShowPresets(!showPresets);
+                  setShowNicheTemplates(false);
+                }}
                 className="gap-2 bg-[#0B2C24] hover:bg-[#0E3A2F] text-white border border-[#17493A]"
                 size="sm"
               >
                 <Star className="h-4 w-4" />
-                Templates
+                Generic Templates
               </Button>
               <Button
                 onClick={() => setShowPreview(!showPreview)}
@@ -490,6 +507,49 @@ export default function FormBuilderEnhanced({ existingForm, onSaveComplete }: Fo
               </ul>
             )}
           </section>
+
+          {/* Niche Templates */}
+          {showNicheTemplates && (
+            <section className="space-y-4">
+              <div className="flex items-center justify-between">
+                <h3 className="text-lg font-semibold text-white">Niche-Specific Templates</h3>
+                <Button
+                  onClick={() => setShowNicheTemplates(false)}
+                  className="text-zinc-400 hover:text-white"
+                  variant="ghost"
+                  size="sm"
+                >
+                  Close
+                </Button>
+              </div>
+              
+              <div className="bg-[#11161C] border border-[#2A2F36] rounded-xl p-6">
+                <NicheTemplateSelector 
+                  companyId={companyId || ''} 
+                  onSelectTemplate={(template: any) => {
+                    // Convert niche template to form draft
+                    setDraft({
+                      name: template.name,
+                      description: template.description,
+                      fields: template.fields.map((field: any) => ({
+                        id: newId(),
+                        label: field.label,
+                        type: field.type === 'multiple_choice' ? 'radio' : 
+                              field.type === 'long_text' ? 'long_text' :
+                              field.type === 'short_text' ? 'short_text' :
+                              field.type,
+                        required: field.required,
+                        placeholder: field.placeholder || '',
+                        options: field.options || [],
+                        max: field.type === 'rating' ? 5 : undefined
+                      }))
+                    });
+                    setShowNicheTemplates(false);
+                  }}
+                />
+              </div>
+            </section>
+          )}
 
           {/* Preset Templates */}
           {showPresets && (

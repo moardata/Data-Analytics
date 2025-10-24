@@ -613,6 +613,7 @@ function FormsContent() {
           <div>
             <FormBuilderEnhanced 
               existingForm={editingForm}
+              companyId={clientId || undefined}
               onSaveComplete={() => {
                 // Refresh forms list and go back to surveys tab
                 fetchForms();
