@@ -429,11 +429,11 @@ function InsightsContent() {
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 <div>
                   <h3 className="text-lg font-medium text-[#F8FAFC] mb-4">Structured AI Analysis</h3>
-                  <StructuredAIInsights companyId={clientId || ''} />
+                  <StructuredAIInsights companyId={companyId || ''} />
                 </div>
                 <div>
                   <h3 className="text-lg font-medium text-[#F8FAFC] mb-4">Engagement Analytics</h3>
-                  <EngagementMetrics companyId={clientId || ''} />
+                  <EngagementMetrics companyId={companyId || ''} />
                 </div>
               </div>
             </div>
@@ -442,7 +442,7 @@ function InsightsContent() {
           {/* Actions Tab */}
           <TabsContent value="actions" className="mt-6">
             <div className="space-y-6">
-              <ActionFeedbackLoop companyId={clientId || ''} />
+              <ActionFeedbackLoop companyId={companyId || ''} />
             </div>
           </TabsContent>
 
@@ -452,9 +452,9 @@ function InsightsContent() {
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 <div>
                   <h3 className="text-lg font-medium text-[#F8FAFC] mb-4">Data Collection Status</h3>
-                  <DataCollectionDashboard companyId={clientId || ''} />
+                  <DataCollectionDashboard companyId={companyId || ''} />
                 </div>
-                <SystemHealthDashboard companyId={clientId || ''} />
+                <SystemHealthDashboard companyId={companyId || ''} />
               </div>
             </div>
           </TabsContent>
@@ -462,7 +462,7 @@ function InsightsContent() {
           {/* Reports Tab */}
           <TabsContent value="reports" className="mt-6">
             <div className="space-y-6">
-              <ExportsReportsDashboard companyId={clientId || ''} />
+              <ExportsReportsDashboard companyId={companyId || ''} />
             </div>
           </TabsContent>
         </Tabs>
