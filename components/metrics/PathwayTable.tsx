@@ -49,29 +49,38 @@ export default function PathwayTable({ data }: PathwayTableProps) {
           
           {topPathways.length > 0 ? (
             <div className="space-y-3">
-              {topPathways.slice(0, 3).map((pathway, index) => (
-                <div key={index} className="p-3 rounded-lg bg-zinc-900/50 border border-zinc-800">
-                  <div className="flex items-center justify-between mb-2">
-                    <div className="flex items-center space-x-2">
-                      {pathway.sequence.map((step, i) => (
-                        <React.Fragment key={i}>
-                          <span className="text-sm text-white font-medium">{step}</span>
-                          {i < pathway.sequence.length - 1 && (
-                            <ArrowRight className="w-3 h-3 text-zinc-400" />
-                          )}
-                        </React.Fragment>
-                      ))}
+              {topPathways.slice(0, 3).map((pathway, index) => {
+                // Handle both string and array formats
+                const sequence = typeof pathway.sequence === 'string' 
+                  ? pathway.sequence.split(' → ')
+                  : pathway.sequence;
+                
+                return (
+                  <div key={index} className="p-3 rounded-lg bg-zinc-900/50 border border-zinc-800">
+                    <div className="flex items-center justify-between mb-2">
+                      <div className="flex items-center space-x-2">
+                        {sequence && sequence.map ? sequence.map((step, i) => (
+                          <React.Fragment key={i}>
+                            <span className="text-sm text-white font-medium">{step}</span>
+                            {i < sequence.length - 1 && (
+                              <ArrowRight className="w-3 h-3 text-zinc-400" />
+                            )}
+                          </React.Fragment>
+                        )) : (
+                          <span className="text-sm text-white font-medium">{pathway.sequence}</span>
+                        )}
+                      </div>
+                      <div className="text-sm font-bold text-emerald-400">
+                        {(pathway.completionRate * 100).toFixed(0)}%
+                      </div>
                     </div>
-                    <div className="text-sm font-bold text-emerald-400">
-                      {pathway.completionRate.toFixed(0)}%
+                    <div className="flex items-center justify-between text-xs text-zinc-400">
+                      <span>{pathway.studentCount} students</span>
+                      <span>{pathway.avgTimeToComplete || 'N/A'} avg.</span>
                     </div>
                   </div>
-                  <div className="flex items-center justify-between text-xs text-zinc-400">
-                    <span>{pathway.studentCount} students</span>
-                    <span>{pathway.avgTimeToComplete} avg.</span>
-                  </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           ) : (
             <div className="text-center py-4">
@@ -114,25 +123,34 @@ export default function PathwayTable({ data }: PathwayTableProps) {
             </div>
             
             <div className="space-y-2">
-              {powerCombinations.slice(0, 2).map((combo, index) => (
-                <div key={index} className="p-2 rounded bg-blue-900/20 border border-blue-800/40">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center space-x-1">
-                      {combo.combination.map((item, i) => (
-                        <React.Fragment key={i}>
-                          <span className="text-xs text-blue-200">{item}</span>
-                          {i < combo.combination.length - 1 && (
-                            <span className="text-xs text-blue-400">+</span>
-                          )}
-                        </React.Fragment>
-                      ))}
-                    </div>
-                    <div className="text-xs font-bold text-blue-400">
-                      {combo.successRate.toFixed(0)}% success
+              {powerCombinations.slice(0, 2).map((combo, index) => {
+                // Handle both string and array formats
+                const combination = typeof combo.combination === 'string'
+                  ? combo.combination.split(' + ')
+                  : combo.combination;
+                
+                return (
+                  <div key={index} className="p-2 rounded bg-blue-900/20 border border-blue-800/40">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center space-x-1">
+                        {combination && combination.map ? combination.map((item, i) => (
+                          <React.Fragment key={i}>
+                            <span className="text-xs text-blue-200">{item}</span>
+                            {i < combination.length - 1 && (
+                              <span className="text-xs text-blue-400">+</span>
+                            )}
+                          </React.Fragment>
+                        )) : (
+                          <span className="text-xs text-blue-200">{combo.combination}</span>
+                        )}
+                      </div>
+                      <div className="text-xs font-bold text-blue-400">
+                        {(combo.successRate * 100).toFixed(0)}% success
+                      </div>
                     </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </div>
         )}
@@ -142,7 +160,10 @@ export default function PathwayTable({ data }: PathwayTableProps) {
           <div className="mt-4 p-3 rounded-lg bg-emerald-900/20 border border-emerald-700/40">
             <div className="text-xs text-emerald-300 font-medium mb-1">AI Insight</div>
             <div className="text-sm text-emerald-200">
-              Students who take {topPathways[0].sequence.join(' → ')} have {topPathways[0].completionRate.toFixed(0)}% success rates
+              Students who take {typeof topPathways[0].sequence === 'string' 
+                ? topPathways[0].sequence 
+                : topPathways[0].sequence.join(' → ')
+              } have {(topPathways[0].completionRate * 100).toFixed(0)}% success rates
             </div>
           </div>
         )}
