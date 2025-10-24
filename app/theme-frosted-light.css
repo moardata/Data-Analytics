@@ -1,0 +1,205 @@
+/**
+ * Frosted Light Theme
+ * Glassy, OS-inspired with layered depth
+ */
+
+/* ---------- FROSTED LIGHT ---------- */
+html[data-theme-variant="frosted-light"] {
+  /* palette */
+  --bg: #0e1217;              /* deep neutral */
+  --bg-elev: #121821;
+  --pane: color-mix(in srgb, #ffffff 6%, transparent); /* translucent */
+  --pane-edge: rgba(255,255,255,.10);
+
+  --fg: #e8eef5;
+  --fg-quiet: #a9b4c2;
+
+  --brand: #10b981; /* emerald used for primary CTA */
+  --accent: #22d3ee; /* cool aqua for highlights */
+  --ok: #22c55e; --warn: #f59e0b; --bad: #ef4444;
+
+  --shadow-md: 0 10px 30px rgba(4, 6, 10, .5);
+  --shadow-lg: 0 24px 70px rgba(4, 6, 10, .6);
+}
+
+/* frosted panes with backdrop glass */
+html[data-theme-variant="frosted-light"] .glass,
+html[data-theme-variant="frosted-light"] .card,
+html[data-theme-variant="frosted-light"] [class*="Card"],
+html[data-theme-variant="frosted-light"] [class*="rounded-2xl"],
+html[data-theme-variant="frosted-light"] [class*="rounded-xl"] {
+  background:
+    linear-gradient(145deg, rgba(255,255,255,.06), rgba(255,255,255,.03)) !important;
+  backdrop-filter: blur(12px) saturate(110%) !important;
+  -webkit-backdrop-filter: blur(12px) saturate(110%) !important;
+  border: 1px solid var(--pane-edge) !important;
+  box-shadow: var(--shadow-md) !important;
+}
+
+/* light sweep on hover */
+html[data-theme-variant="frosted-light"] .card:hover,
+html[data-theme-variant="frosted-light"] [class*="Card"]:hover,
+html[data-theme-variant="frosted-light"] [class*="rounded-2xl"]:hover,
+html[data-theme-variant="frosted-light"] [class*="rounded-xl"]:hover {
+  box-shadow: 0 0 0 1px var(--pane-edge), 0 12px 32px rgba(0,0,0,.35) !important;
+}
+
+/* ambient background with gentle animation */
+@keyframes aurora {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+html[data-theme-variant="frosted-light"] body {
+  background-image:
+    radial-gradient(60% 80% at 20% 20%, #1c2940 0%, transparent 60%),
+    radial-gradient(70% 80% at 80% 70%, #0f1a2a 0%, transparent 65%),
+    linear-gradient(120deg, #0e1217, #111726, #0e1217) !important;
+  background-blend-mode: screen, normal, normal;
+  background-size: auto, auto, 300% 300%;
+  animation: aurora 24s ease-in-out infinite;
+}
+
+html[data-theme-variant="frosted-light"] .flex.min-h-screen {
+  background: transparent !important;
+}
+
+/* Typography */
+html[data-theme-variant="frosted-light"] h1,
+html[data-theme-variant="frosted-light"] h2,
+html[data-theme-variant="frosted-light"] h3,
+html[data-theme-variant="frosted-light"] h4,
+html[data-theme-variant="frosted-light"] h5,
+html[data-theme-variant="frosted-light"] h6 {
+  color: var(--fg) !important;
+}
+
+html[data-theme-variant="frosted-light"] p,
+html[data-theme-variant="frosted-light"] span,
+html[data-theme-variant="frosted-light"] div {
+  color: var(--fg) !important;
+}
+
+html[data-theme-variant="frosted-light"] [class*="text-\\[\\#A1A1AA\\]"],
+html[data-theme-variant="frosted-light"] [class*="text-zinc-400"],
+html[data-theme-variant="frosted-light"] [class*="text-gray-400"] {
+  color: var(--fg-quiet) !important;
+}
+
+/* Buttons */
+html[data-theme-variant="frosted-light"] button {
+  background: linear-gradient(145deg, rgba(255,255,255,.08), rgba(255,255,255,.04)) !important;
+  border: 1px solid var(--pane-edge) !important;
+  color: var(--fg) !important;
+  backdrop-filter: blur(8px);
+}
+
+html[data-theme-variant="frosted-light"] button:hover:not(:disabled) {
+  background: linear-gradient(145deg, rgba(255,255,255,.12), rgba(255,255,255,.06)) !important;
+  box-shadow: 0 8px 20px rgba(0,0,0,.3) !important;
+}
+
+/* Primary buttons */
+html[data-theme-variant="frosted-light"] button[class*="bg-\\[\\#10B981\\]"],
+html[data-theme-variant="frosted-light"] button[class*="bg-emerald"],
+html[data-theme-variant="frosted-light"] button[class*="bg-green"] {
+  background: linear-gradient(135deg, var(--brand), color-mix(in srgb, var(--brand) 80%, #000)) !important;
+  border-color: var(--brand) !important;
+  box-shadow: 0 0 25px color-mix(in srgb, var(--brand) 40%, transparent) !important;
+}
+
+/* Tabs */
+html[data-theme-variant="frosted-light"] [data-state="active"] {
+  background: linear-gradient(135deg, var(--accent), color-mix(in srgb, var(--accent) 80%, #000)) !important;
+  box-shadow: 0 0 25px color-mix(in srgb, var(--accent) 40%, transparent),
+              0 4px 12px rgba(0,0,0,.3) !important;
+  color: white !important;
+  border: 1px solid var(--accent) !important;
+}
+
+/* Sidebar */
+html[data-theme-variant="frosted-light"] aside {
+  background: linear-gradient(180deg, rgba(18, 24, 33, 0.95), rgba(14, 18, 23, 0.95)) !important;
+  backdrop-filter: blur(20px) !important;
+  border-right: 1px solid var(--pane-edge) !important;
+}
+
+html[data-theme-variant="frosted-light"] aside svg {
+  color: var(--fg) !important;
+}
+
+html[data-theme-variant="frosted-light"] aside a[class*="bg-\\[\\#1a1a1a\\]"] {
+  background: rgba(255, 255, 255, 0.08) !important;
+  box-shadow: 0 0 20px color-mix(in srgb, var(--accent) 30%, transparent) !important;
+}
+
+/* Top bar */
+html[data-theme-variant="frosted-light"] .fixed.top-0 {
+  background: linear-gradient(90deg, rgba(18, 24, 33, 0.95), rgba(14, 18, 23, 0.95)) !important;
+  backdrop-filter: blur(20px) saturate(120%) !important;
+  border-bottom: 1px solid var(--pane-edge) !important;
+}
+
+html[data-theme-variant="frosted-light"] .fixed.top-0 svg,
+html[data-theme-variant="frosted-light"] .fixed.top-0 button {
+  color: var(--fg) !important;
+}
+
+/* Inputs */
+html[data-theme-variant="frosted-light"] input,
+html[data-theme-variant="frosted-light"] textarea,
+html[data-theme-variant="frosted-light"] select {
+  background: rgba(255, 255, 255, 0.04) !important;
+  border: 1px solid var(--pane-edge) !important;
+  color: var(--fg) !important;
+  backdrop-filter: blur(8px);
+}
+
+html[data-theme-variant="frosted-light"] input:focus,
+html[data-theme-variant="frosted-light"] textarea:focus,
+html[data-theme-variant="frosted-light"] select:focus {
+  border-color: var(--accent) !important;
+  box-shadow: 0 0 15px color-mix(in srgb, var(--accent) 30%, transparent) !important;
+}
+
+/* Badges */
+html[data-theme-variant="frosted-light"] [class*="Badge"],
+html[data-theme-variant="frosted-light"] .badge {
+  background: rgba(255, 255, 255, 0.1) !important;
+  border: 1px solid var(--pane-edge) !important;
+  color: var(--fg) !important;
+  backdrop-filter: blur(8px);
+}
+
+/* Accent colors */
+html[data-theme-variant="frosted-light"] [class*="text-\\[\\#10B981\\]"],
+html[data-theme-variant="frosted-light"] [class*="text-green"],
+html[data-theme-variant="frosted-light"] [class*="text-emerald"] {
+  color: var(--brand) !important;
+}
+
+html[data-theme-variant="frosted-light"] svg[class*="text-\\[\\#10B981\\]"],
+html[data-theme-variant="frosted-light"] svg[class*="text-green"],
+html[data-theme-variant="frosted-light"] svg[class*="text-emerald"] {
+  color: var(--brand) !important;
+  filter: drop-shadow(0 0 8px color-mix(in srgb, var(--brand) 40%, transparent));
+}
+
+/* Scrollbar */
+html[data-theme-variant="frosted-light"] ::-webkit-scrollbar {
+  width: 10px;
+  background: rgba(18, 24, 33, 0.5);
+}
+
+html[data-theme-variant="frosted-light"] ::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, rgba(255,255,255,.12), rgba(255,255,255,.08));
+  border-radius: 5px;
+  border: 2px solid rgba(18, 24, 33, 0.5);
+}
+
+html[data-theme-variant="frosted-light"] ::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, rgba(255,255,255,.16), rgba(255,255,255,.12));
+  box-shadow: 0 0 10px color-mix(in srgb, var(--accent) 30%, transparent);
+}
+

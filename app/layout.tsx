@@ -12,6 +12,9 @@ import { MainContent } from "@/components/main-content";
 import { ThemeDataAttribute } from "@/components/ThemeDataAttribute";
 import "./globals.css";
 import "./theme-variant-b.css";
+import "./theme-frosted-light.css";
+import "./theme-spectrum-glow.css";
+import "./theme-pro-graphite.css";
 
 const inter = Inter({
 	subsets: ["latin"],

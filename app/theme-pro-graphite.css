@@ -1,0 +1,254 @@
+/**
+ * Pro Graphite Theme
+ * Minimal grayscale with soft contrast
+ */
+
+/* ---------- PRO GRAPHITE ---------- */
+html[data-theme-variant="pro-graphite"] {
+  --bg: #0c0c0e;
+  --bg-elev: #101012;
+
+  /* nearly flat surfaces with subtle separation */
+  --pane: #121214;
+  --pane-edge: #1a1a1d;
+
+  --fg: #e6e6e7;
+  --fg-quiet: #9b9ba1;
+
+  --brand: #e6e6e7; /* monochrome CTAs; use outline + soft hover */
+  --accent: #d0d0d4; /* only for focus rings / selected states */
+
+  --ok: #b7f3c9; --warn: #f9e2b8; --bad: #f1b6b6; /* muted status chips */
+
+  /* chart colors */
+  --chart-line: #cfcfd4;
+  --chart-grid: #2a2a2e;
+  --chart-dot: #e6e6e7;
+}
+
+/* Background */
+html[data-theme-variant="pro-graphite"] body {
+  background: var(--bg) !important;
+}
+
+html[data-theme-variant="pro-graphite"] .flex.min-h-screen {
+  background: var(--bg) !important;
+}
+
+/* Card surfaces with minimal texture */
+html[data-theme-variant="pro-graphite"] .card,
+html[data-theme-variant="pro-graphite"] [class*="Card"],
+html[data-theme-variant="pro-graphite"] [class*="rounded-2xl"],
+html[data-theme-variant="pro-graphite"] [class*="rounded-xl"] {
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.02), rgba(255,255,255,.00)) !important;
+  box-shadow: 0 1px 0 rgba(255,255,255,.04), 0 12px 24px rgba(0,0,0,.35) !important;
+  border: 1px solid var(--pane-edge) !important;
+}
+
+html[data-theme-variant="pro-graphite"] .card:hover,
+html[data-theme-variant="pro-graphite"] [class*="Card"]:hover,
+html[data-theme-variant="pro-graphite"] [class*="rounded-2xl"]:hover,
+html[data-theme-variant="pro-graphite"] [class*="rounded-xl"]:hover {
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.01)) !important;
+}
+
+/* Typography */
+html[data-theme-variant="pro-graphite"] h1,
+html[data-theme-variant="pro-graphite"] h2,
+html[data-theme-variant="pro-graphite"] h3,
+html[data-theme-variant="pro-graphite"] h4,
+html[data-theme-variant="pro-graphite"] h5,
+html[data-theme-variant="pro-graphite"] h6 {
+  color: var(--fg) !important;
+}
+
+html[data-theme-variant="pro-graphite"] p,
+html[data-theme-variant="pro-graphite"] span,
+html[data-theme-variant="pro-graphite"] div {
+  color: var(--fg) !important;
+}
+
+html[data-theme-variant="pro-graphite"] [class*="text-\\[\\#A1A1AA\\]"],
+html[data-theme-variant="pro-graphite"] [class*="text-zinc-400"],
+html[data-theme-variant="pro-graphite"] [class*="text-gray-400"] {
+  color: var(--fg-quiet) !important;
+}
+
+/* Monochrome buttons */
+html[data-theme-variant="pro-graphite"] button,
+html[data-theme-variant="pro-graphite"] .btn {
+  border: 1px solid var(--pane-edge) !important;
+  color: var(--fg) !important;
+  background: linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.01)) !important;
+  padding: .6rem 1rem;
+  border-radius: 12px;
+}
+
+html[data-theme-variant="pro-graphite"] button:hover:not(:disabled),
+html[data-theme-variant="pro-graphite"] .btn:hover {
+  background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.02)) !important;
+  box-shadow: 0 4px 12px rgba(0,0,0,.3) !important;
+}
+
+/* Primary buttons - still monochrome but slightly brighter */
+html[data-theme-variant="pro-graphite"] button[class*="bg-\\[\\#10B981\\]"],
+html[data-theme-variant="pro-graphite"] button[class*="bg-emerald"],
+html[data-theme-variant="pro-graphite"] button[class*="bg-green"] {
+  background: linear-gradient(135deg, rgba(255,255,255,.08), rgba(255,255,255,.04)) !important;
+  border: 1px solid var(--accent) !important;
+  color: var(--fg) !important;
+  box-shadow: 0 0 20px rgba(255,255,255,.1) !important;
+}
+
+/* Tabs - minimal style */
+html[data-theme-variant="pro-graphite"] [role="tablist"] {
+  background: var(--pane) !important;
+  border: 1px solid var(--pane-edge) !important;
+}
+
+html[data-theme-variant="pro-graphite"] [role="tab"] {
+  border-bottom: 1px solid var(--pane-edge);
+  color: var(--fg-quiet) !important;
+}
+
+html[data-theme-variant="pro-graphite"] [data-state="active"] {
+  color: var(--fg) !important;
+  background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.02)) !important;
+  border: 1px solid var(--accent) !important;
+  box-shadow: 0 2px 8px rgba(0,0,0,.25) !important;
+}
+
+/* Sidebar - minimal */
+html[data-theme-variant="pro-graphite"] aside {
+  background: var(--bg) !important;
+  border-right: 1px solid var(--pane-edge) !important;
+}
+
+html[data-theme-variant="pro-graphite"] aside svg {
+  color: var(--fg) !important;
+}
+
+html[data-theme-variant="pro-graphite"] aside a[class*="bg-\\[\\#1a1a1a\\]"] {
+  background: var(--pane) !important;
+  box-shadow: 0 1px 0 rgba(255,255,255,.04) !important;
+}
+
+html[data-theme-variant="pro-graphite"] aside a:hover {
+  background: var(--bg-elev) !important;
+}
+
+/* Top bar */
+html[data-theme-variant="pro-graphite"] .fixed.top-0 {
+  background: var(--bg) !important;
+  border-bottom: 1px solid var(--pane-edge) !important;
+}
+
+html[data-theme-variant="pro-graphite"] .fixed.top-0 svg,
+html[data-theme-variant="pro-graphite"] .fixed.top-0 button {
+  color: var(--fg) !important;
+}
+
+/* Inputs */
+html[data-theme-variant="pro-graphite"] input,
+html[data-theme-variant="pro-graphite"] textarea,
+html[data-theme-variant="pro-graphite"] select {
+  background: var(--pane) !important;
+  border: 1px solid var(--pane-edge) !important;
+  color: var(--fg) !important;
+}
+
+/* Focus rings are subtle but clear */
+html[data-theme-variant="pro-graphite"] input:focus,
+html[data-theme-variant="pro-graphite"] textarea:focus,
+html[data-theme-variant="pro-graphite"] select:focus,
+html[data-theme-variant="pro-graphite"] :focus-visible {
+  outline: 2px solid var(--accent) !important;
+  outline-offset: 2px;
+  border-color: var(--accent) !important;
+}
+
+/* Badges - monochrome */
+html[data-theme-variant="pro-graphite"] [class*="Badge"],
+html[data-theme-variant="pro-graphite"] .badge {
+  background: var(--pane) !important;
+  border: 1px solid var(--pane-edge) !important;
+  color: var(--fg) !important;
+}
+
+/* Status badges with muted colors */
+html[data-theme-variant="pro-graphite"] [class*="bg-\\[\\#10B981\\]"][class*="Badge"],
+html[data-theme-variant="pro-graphite"] [class*="bg-green"] {
+  background: color-mix(in srgb, var(--ok) 20%, var(--pane)) !important;
+  border-color: var(--ok) !important;
+  color: var(--ok) !important;
+}
+
+html[data-theme-variant="pro-graphite"] [class*="bg-yellow"][class*="Badge"],
+html[data-theme-variant="pro-graphite"] [class*="bg-amber"] {
+  background: color-mix(in srgb, var(--warn) 20%, var(--pane)) !important;
+  border-color: var(--warn) !important;
+  color: var(--warn) !important;
+}
+
+html[data-theme-variant="pro-graphite"] [class*="bg-red"][class*="Badge"] {
+  background: color-mix(in srgb, var(--bad) 20%, var(--pane)) !important;
+  border-color: var(--bad) !important;
+  color: var(--bad) !important;
+}
+
+/* Accent colors - all become monochrome */
+html[data-theme-variant="pro-graphite"] [class*="text-\\[\\#10B981\\]"],
+html[data-theme-variant="pro-graphite"] [class*="text-green"],
+html[data-theme-variant="pro-graphite"] [class*="text-emerald"],
+html[data-theme-variant="pro-graphite"] [class*="text-purple"],
+html[data-theme-variant="pro-graphite"] [class*="text-blue"],
+html[data-theme-variant="pro-graphite"] [class*="text-cyan"] {
+  color: var(--fg) !important;
+}
+
+html[data-theme-variant="pro-graphite"] svg[class*="text-\\[\\#10B981\\]"],
+html[data-theme-variant="pro-graphite"] svg[class*="text-green"],
+html[data-theme-variant="pro-graphite"] svg[class*="text-emerald"],
+html[data-theme-variant="pro-graphite"] svg[class*="text-purple"],
+html[data-theme-variant="pro-graphite"] svg[class*="text-blue"],
+html[data-theme-variant="pro-graphite"] svg[class*="text-cyan"] {
+  color: var(--fg) !important;
+  filter: none;
+}
+
+/* Charts - minimal styling */
+html[data-theme-variant="pro-graphite"] svg path {
+  stroke: var(--chart-line);
+}
+
+html[data-theme-variant="pro-graphite"] svg circle {
+  fill: var(--chart-dot);
+}
+
+html[data-theme-variant="pro-graphite"] svg line[class*="grid"] {
+  stroke: var(--chart-grid);
+}
+
+/* Scrollbar - monochrome */
+html[data-theme-variant="pro-graphite"] ::-webkit-scrollbar {
+  width: 10px;
+  background: var(--bg);
+}
+
+html[data-theme-variant="pro-graphite"] ::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, var(--accent), var(--pane-edge));
+  border-radius: 5px;
+  border: 2px solid var(--bg);
+}
+
+html[data-theme-variant="pro-graphite"] ::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, var(--fg-quiet), var(--accent));
+}
+
+/* Remove all animations for minimal aesthetic */
+html[data-theme-variant="pro-graphite"] * {
+  animation: none !important;
+}
+

@@ -1,0 +1,245 @@
+/**
+ * Spectrum Glow Theme
+ * Color-intent visual coding with soft glows
+ */
+
+/* ---------- SPECTRUM GLOW ---------- */
+html[data-theme-variant="spectrum-glow"] {
+  --bg: #0b0e13;
+  --bg-elev: #10141b;
+  --pane: #141a22;
+  --pane-edge: rgba(255,255,255,.08);
+
+  --fg: #eef3fb;
+  --fg-quiet: #a7b1bf;
+
+  --brand: #22d3ee; /* default CTA */
+  --accent: #93c5fd; /* neutral accent for generic highlights */
+
+  /* semantic accents by feature */
+  --accent-engagement: #8b5cf6; /* violet */
+  --accent-success:    #f59e0b; /* amber */
+  --accent-perf:       #3b82f6; /* blue */
+  --accent-surveys:    #10b981; /* emerald */
+  --accent-ai:         #22d3ee; /* cyan */
+}
+
+/* Background */
+html[data-theme-variant="spectrum-glow"] body {
+  background: var(--bg) !important;
+}
+
+html[data-theme-variant="spectrum-glow"] .flex.min-h-screen {
+  background: var(--bg) !important;
+}
+
+/* Card surfaces */
+html[data-theme-variant="spectrum-glow"] .card,
+html[data-theme-variant="spectrum-glow"] [class*="Card"],
+html[data-theme-variant="spectrum-glow"] [class*="rounded-2xl"],
+html[data-theme-variant="spectrum-glow"] [class*="rounded-xl"] {
+  background: var(--pane) !important;
+  border: 1px solid var(--pane-edge) !important;
+  position: relative;
+}
+
+/* Glowing effect for sections */
+html[data-theme-variant="spectrum-glow"] .card::before,
+html[data-theme-variant="spectrum-glow"] [class*="Card"]::before,
+html[data-theme-variant="spectrum-glow"] [class*="rounded-2xl"]::before,
+html[data-theme-variant="spectrum-glow"] [class*="rounded-xl"]::before {
+  content: "";
+  position: absolute;
+  inset: -2px;
+  border-radius: inherit;
+  background: radial-gradient(60% 60% at 50% 100%, var(--accent-engagement) 0%, transparent 70%);
+  filter: blur(18px);
+  opacity: .18;
+  pointer-events: none;
+  z-index: 0;
+}
+
+html[data-theme-variant="spectrum-glow"] .card > *,
+html[data-theme-variant="spectrum-glow"] [class*="Card"] > *,
+html[data-theme-variant="spectrum-glow"] [class*="rounded-2xl"] > *,
+html[data-theme-variant="spectrum-glow"] [class*="rounded-xl"] > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* Convenience classes for colored glows */
+html[data-theme-variant="spectrum-glow"] .engagement::before { 
+  background: radial-gradient(60% 60% at 50% 100%, var(--accent-engagement) 0%, transparent 70%) !important;
+}
+html[data-theme-variant="spectrum-glow"] .success::before { 
+  background: radial-gradient(60% 60% at 50% 100%, var(--accent-success) 0%, transparent 70%) !important;
+}
+html[data-theme-variant="spectrum-glow"] .performance::before { 
+  background: radial-gradient(60% 60% at 50% 100%, var(--accent-perf) 0%, transparent 70%) !important;
+}
+html[data-theme-variant="spectrum-glow"] .surveys::before { 
+  background: radial-gradient(60% 60% at 50% 100%, var(--accent-surveys) 0%, transparent 70%) !important;
+}
+html[data-theme-variant="spectrum-glow"] .ai::before { 
+  background: radial-gradient(60% 60% at 50% 100%, var(--accent-ai) 0%, transparent 70%) !important;
+}
+
+/* Typography */
+html[data-theme-variant="spectrum-glow"] h1,
+html[data-theme-variant="spectrum-glow"] h2,
+html[data-theme-variant="spectrum-glow"] h3,
+html[data-theme-variant="spectrum-glow"] h4,
+html[data-theme-variant="spectrum-glow"] h5,
+html[data-theme-variant="spectrum-glow"] h6 {
+  color: var(--fg) !important;
+}
+
+html[data-theme-variant="spectrum-glow"] p,
+html[data-theme-variant="spectrum-glow"] span,
+html[data-theme-variant="spectrum-glow"] div {
+  color: var(--fg) !important;
+}
+
+html[data-theme-variant="spectrum-glow"] [class*="text-\\[\\#A1A1AA\\]"],
+html[data-theme-variant="spectrum-glow"] [class*="text-zinc-400"],
+html[data-theme-variant="spectrum-glow"] [class*="text-gray-400"] {
+  color: var(--fg-quiet) !important;
+}
+
+/* Tabs with glow */
+html[data-theme-variant="spectrum-glow"] [role="tablist"] {
+  background: var(--pane) !important;
+  border: 1px solid var(--pane-edge) !important;
+}
+
+html[data-theme-variant="spectrum-glow"] [role="tab"] {
+  border-bottom: 1px solid var(--pane-edge);
+  color: var(--fg-quiet) !important;
+  transition: all 0.3s ease;
+}
+
+html[data-theme-variant="spectrum-glow"] [data-state="active"] {
+  color: var(--fg) !important;
+  background: linear-gradient(135deg, var(--accent-engagement), color-mix(in srgb, var(--accent-engagement) 80%, #000)) !important;
+  border: 1px solid var(--accent-engagement) !important;
+  box-shadow: 0 6px 20px color-mix(in srgb, var(--accent-engagement) 35%, transparent),
+              0 4px 12px rgba(0,0,0,.3) !important;
+}
+
+/* Buttons */
+html[data-theme-variant="spectrum-glow"] button {
+  background: var(--pane) !important;
+  border: 1px solid var(--pane-edge) !important;
+  color: var(--fg) !important;
+}
+
+html[data-theme-variant="spectrum-glow"] button:hover:not(:disabled) {
+  background: var(--bg-elev) !important;
+  border-color: var(--accent) !important;
+  box-shadow: 0 0 20px color-mix(in srgb, var(--accent) 30%, transparent) !important;
+}
+
+/* Primary buttons */
+html[data-theme-variant="spectrum-glow"] button[class*="bg-\\[\\#10B981\\]"],
+html[data-theme-variant="spectrum-glow"] button[class*="bg-emerald"],
+html[data-theme-variant="spectrum-glow"] button[class*="bg-green"] {
+  background: linear-gradient(135deg, var(--accent-surveys), color-mix(in srgb, var(--accent-surveys) 80%, #000)) !important;
+  border-color: var(--accent-surveys) !important;
+  box-shadow: 0 0 25px color-mix(in srgb, var(--accent-surveys) 40%, transparent) !important;
+}
+
+/* Sidebar */
+html[data-theme-variant="spectrum-glow"] aside {
+  background: var(--bg) !important;
+  border-right: 1px solid var(--pane-edge) !important;
+}
+
+html[data-theme-variant="spectrum-glow"] aside svg {
+  color: var(--fg) !important;
+}
+
+html[data-theme-variant="spectrum-glow"] aside a[class*="bg-\\[\\#1a1a1a\\]"] {
+  background: var(--pane) !important;
+  box-shadow: 0 0 20px color-mix(in srgb, var(--accent-engagement) 30%, transparent) !important;
+}
+
+html[data-theme-variant="spectrum-glow"] aside a:hover {
+  background: var(--bg-elev) !important;
+  box-shadow: 0 0 25px color-mix(in srgb, var(--accent-engagement) 40%, transparent) !important;
+}
+
+/* Top bar */
+html[data-theme-variant="spectrum-glow"] .fixed.top-0 {
+  background: var(--bg) !important;
+  border-bottom: 1px solid var(--pane-edge) !important;
+}
+
+html[data-theme-variant="spectrum-glow"] .fixed.top-0 svg,
+html[data-theme-variant="spectrum-glow"] .fixed.top-0 button {
+  color: var(--fg) !important;
+}
+
+/* Inputs */
+html[data-theme-variant="spectrum-glow"] input,
+html[data-theme-variant="spectrum-glow"] textarea,
+html[data-theme-variant="spectrum-glow"] select {
+  background: var(--pane) !important;
+  border: 1px solid var(--pane-edge) !important;
+  color: var(--fg) !important;
+}
+
+html[data-theme-variant="spectrum-glow"] input:focus,
+html[data-theme-variant="spectrum-glow"] textarea:focus,
+html[data-theme-variant="spectrum-glow"] select:focus {
+  border-color: var(--accent) !important;
+  box-shadow: 0 0 15px color-mix(in srgb, var(--accent) 35%, transparent) !important;
+}
+
+/* Badges */
+html[data-theme-variant="spectrum-glow"] [class*="Badge"],
+html[data-theme-variant="spectrum-glow"] .badge {
+  background: var(--pane) !important;
+  border: 1px solid var(--pane-edge) !important;
+  color: var(--fg) !important;
+}
+
+/* Accent colors with glows */
+html[data-theme-variant="spectrum-glow"] [class*="text-\\[\\#10B981\\]"],
+html[data-theme-variant="spectrum-glow"] [class*="text-green"],
+html[data-theme-variant="spectrum-glow"] [class*="text-emerald"] {
+  color: var(--accent-surveys) !important;
+}
+
+html[data-theme-variant="spectrum-glow"] svg[class*="text-\\[\\#10B981\\]"],
+html[data-theme-variant="spectrum-glow"] svg[class*="text-green"],
+html[data-theme-variant="spectrum-glow"] svg[class*="text-emerald"] {
+  color: var(--accent-surveys) !important;
+  filter: drop-shadow(0 0 8px color-mix(in srgb, var(--accent-surveys) 50%, transparent));
+}
+
+html[data-theme-variant="spectrum-glow"] svg[class*="text-purple"] {
+  color: var(--accent-engagement) !important;
+  filter: drop-shadow(0 0 8px color-mix(in srgb, var(--accent-engagement) 50%, transparent));
+}
+
+html[data-theme-variant="spectrum-glow"] svg[class*="text-blue"] {
+  color: var(--accent-perf) !important;
+  filter: drop-shadow(0 0 8px color-mix(in srgb, var(--accent-perf) 50%, transparent));
+}
+
+/* Scrollbar */
+html[data-theme-variant="spectrum-glow"] ::-webkit-scrollbar {
+  width: 10px;
+  background: var(--bg);
+}
+
+html[data-theme-variant="spectrum-glow"] ::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, var(--accent-engagement), var(--accent-ai));
+  border-radius: 5px;
+  border: 2px solid var(--bg);
+}
+
+html[data-theme-variant="spectrum-glow"] ::-webkit-scrollbar-thumb:hover {
+  box-shadow: 0 0 10px color-mix(in srgb, var(--accent-engagement) 50%, transparent);
+}
+
