@@ -450,7 +450,10 @@ function InsightsContent() {
           <TabsContent value="data" className="mt-6">
             <div className="space-y-6">
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                <DataCollectionDashboard companyId={clientId || ''} />
+                <div>
+                  <h3 className="text-lg font-medium text-[#F8FAFC] mb-4">Data Collection Status</h3>
+                  <DataCollectionDashboard companyId={clientId || ''} />
+                </div>
                 <SystemHealthDashboard companyId={clientId || ''} />
               </div>
             </div>
