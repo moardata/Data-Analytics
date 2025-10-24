@@ -7,6 +7,7 @@ import { TopBar } from "@/components/top-bar";
 import { WhopClientAuth } from "@/components/WhopClientAuth";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { SidebarProvider } from "@/contexts/sidebar-context";
+import { ThemeVariantProvider } from "@/contexts/theme-variant-context";
 import { MainContent } from "@/components/main-content";
 import "./globals.css";
 
@@ -32,19 +33,21 @@ export default function RootLayout({
 				<ErrorBoundary>
 					<WhopApp>
 						<WhopClientAuth>
-							<SidebarProvider>
-								<div className="flex min-h-screen bg-gradient-to-b from-[#0a0a0a] to-[#0f0f0f]">
-									<Suspense fallback={<div className="w-16" />}>
-										<Sidebar />
-									</Suspense>
-									<div className="flex-1 flex flex-col">
-										<TopBar />
-										<MainContent>
-											{children}
-										</MainContent>
+							<ThemeVariantProvider>
+								<SidebarProvider>
+									<div className="flex min-h-screen bg-gradient-to-b from-[#0a0a0a] to-[#0f0f0f]">
+										<Suspense fallback={<div className="w-16" />}>
+											<Sidebar />
+										</Suspense>
+										<div className="flex-1 flex flex-col">
+											<TopBar />
+											<MainContent>
+												{children}
+											</MainContent>
+										</div>
 									</div>
-								</div>
-							</SidebarProvider>
+								</SidebarProvider>
+							</ThemeVariantProvider>
 						</WhopClientAuth>
 					</WhopApp>
 				</ErrorBoundary>
