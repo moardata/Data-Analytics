@@ -71,28 +71,19 @@ function FormsContent() {
 
   const fetchCompletedForms = async () => {
     try {
-      // Check if Supabase is configured
-      if (!supabase) {
-        console.warn('⚠️ Supabase not configured. Completion tracking disabled.');
+      // Get whopUserId from localStorage (set during form submission)
+      const whopUserId = localStorage.getItem('whop_user_id');
+      
+      if (!whopUserId) {
+        console.log('No whopUserId found - student hasn\'t submitted any forms yet');
         return;
       }
 
-      // Get entity ID from supabase (current user)
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
-
-      const { data: entityData } = await supabase
-        .from('entities')
-        .select('id')
-        .eq('email', user.email)
-        .single();
-
-      if (!entityData) return;
-
-      const response = await fetch(`/api/forms/completion?companyId=${clientId}&entityId=${entityData.id}`);
+      const response = await fetch(`/api/forms/completion?companyId=${clientId}&whopUserId=${whopUserId}`);
       if (response.ok) {
         const data = await response.json();
         setCompletedForms(data.completedFormIds || []);
+        console.log('Completed forms:', data.completedFormIds);
       }
     } catch (error) {
       console.error('Error fetching completed forms:', error);
@@ -366,14 +357,19 @@ function FormsContent() {
   }, [activeTab, submissions, forms]);
 
   const handleFormSubmit = async (responses: Record<string, any>) => {
-    const demoEntityId = 'student_' + Date.now();
+    // Get or create persistent user ID
+    let whopUserId = localStorage.getItem('whop_user_id');
+    if (!whopUserId) {
+      whopUserId = 'student_' + Math.random().toString(36).substring(2, 15);
+      localStorage.setItem('whop_user_id', whopUserId);
+    }
 
     const response = await fetch('/api/forms/submit', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         formId: selectedForm.id,
-        entityId: demoEntityId,
+        entityId: whopUserId,
         companyId: clientId,
         responses,
       }),
@@ -383,7 +379,7 @@ function FormsContent() {
       // 🎉 Trigger confetti celebration!
       triggerConfetti();
       
-      // Add to completed forms
+      // Add to completed forms immediately
       setCompletedForms([...completedForms, selectedForm.id]);
       
       // Show success message with a delay to let confetti start
@@ -394,7 +390,7 @@ function FormsContent() {
       
       // Refresh completed forms list
       if (userRole === 'student') {
-        fetchCompletedForms();
+        setTimeout(() => fetchCompletedForms(), 1000);
       }
     } else {
       alert('Failed to submit survey. Please try again.');
