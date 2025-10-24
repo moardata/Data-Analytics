@@ -35,8 +35,8 @@ export default function PathwayTable({ data }: PathwayTableProps) {
       <CardContent className="p-6">
         <div className="flex items-center justify-between mb-6">
           <div>
-            <h3 className="text-sm font-medium text-zinc-400">Content Heat Map</h3>
-            <p className="text-xs text-zinc-500">Successful pathways & dead ends</p>
+            <h3 className="text-base font-semibold text-[#F8FAFC]">Best Learning Paths</h3>
+            <p className="text-sm text-[#A1A1AA]">What content order works best</p>
           </div>
           <TrendingUp className="w-5 h-5 text-emerald-500" />
         </div>

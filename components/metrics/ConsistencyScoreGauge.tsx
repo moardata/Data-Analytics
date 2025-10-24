@@ -34,10 +34,10 @@ export default function ConsistencyScoreGauge({ data }: ConsistencyScoreGaugePro
     <Card className="relative rounded-2xl border border-[#1a1a1a] bg-[#0f0f0f] overflow-hidden shadow-[0_0_0_1px_rgba(26,26,26,0.6),0_24px_60px_-20px_rgba(0,0,0,0.65),inset_0_1px_0_rgba(255,255,255,0.04)]">
       <CardContent className="p-6">
         <div className="flex items-center justify-between mb-4">
-          <div>
-            <h3 className="text-sm font-medium text-zinc-400">Engagement Consistency</h3>
-            <p className="text-xs text-zinc-500">Week-over-week patterns</p>
-          </div>
+            <div>
+              <h3 className="text-base font-semibold text-[#F8FAFC]">Student Consistency</h3>
+              <p className="text-sm text-[#A1A1AA]">How regularly your students show up</p>
+            </div>
           <div className="text-right">
             <div className="text-2xl font-bold text-white">{averageScore.toFixed(1)}</div>
             <div className="text-xs text-zinc-400">out of 100</div>

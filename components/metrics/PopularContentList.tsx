@@ -27,8 +27,8 @@ export default function PopularContentList({ data }: PopularContentListProps) {
       <CardContent className="p-6">
         <div className="flex items-center justify-between mb-6">
           <div>
-            <h3 className="text-sm font-medium text-zinc-400">Most Popular Today</h3>
-            <p className="text-xs text-zinc-500">Real-time engagement</p>
+            <h3 className="text-base font-semibold text-[#F8FAFC]">What's Hot Right Now</h3>
+            <p className="text-sm text-[#A1A1AA]">Today's most-viewed content</p>
           </div>
           <Activity className="w-5 h-5 text-emerald-500" />
         </div>

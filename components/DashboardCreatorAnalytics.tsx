@@ -381,7 +381,7 @@ export default function DashboardCreatorAnalytics({ clientId: companyIdOrClientI
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-6">
       {/* Toolbar */}
       <Suspense fallback={
         <div className="flex flex-wrap items-center gap-2">
@@ -397,17 +397,32 @@ export default function DashboardCreatorAnalytics({ clientId: companyIdOrClientI
         />
       </Suspense>
 
-      {/* Advanced Metrics Grid */}
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
-        {/* Row 1: Engagement Intelligence */}
-        <ConsistencyScoreGauge data={metrics.engagementConsistency} />
-        <AhaMomentChart data={metrics.ahaMoments} />
-        <CommitmentDistribution data={metrics.commitmentScores} />
+      {/* Welcome Section */}
+      <div className="rounded-2xl border border-[#1a1a1a]/70 bg-gradient-to-br from-[#0f0f0f] via-[#1a1a1a] to-[#0f0f0f] p-6">
+        <h2 className="text-2xl font-bold text-[#F8FAFC] mb-2">Your Student Insights at a Glance</h2>
+        <p className="text-[#A1A1AA] text-sm">
+          Track how your students engage, discover what content works best, and identify who needs support
+        </p>
+      </div>
 
-        {/* Row 2: Content Intelligence */}
-        <PathwayTable data={metrics.contentPathways} />
-        <PopularContentList data={metrics.popularContent} />
-        <FeedbackThemesList data={metrics.feedbackThemes} />
+      {/* Student Engagement Section */}
+      <div className="space-y-3">
+        <h3 className="text-lg font-semibold text-[#F8FAFC] px-1">📊 Student Engagement</h3>
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
+          <ConsistencyScoreGauge data={metrics.engagementConsistency} />
+          <AhaMomentChart data={metrics.ahaMoments} />
+          <CommitmentDistribution data={metrics.commitmentScores} />
+        </div>
+      </div>
+
+      {/* Content Performance Section */}
+      <div className="space-y-3">
+        <h3 className="text-lg font-semibold text-[#F8FAFC] px-1">🎯 Content Performance</h3>
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
+          <PathwayTable data={metrics.contentPathways} />
+          <PopularContentList data={metrics.popularContent} />
+          <FeedbackThemesList data={metrics.feedbackThemes} />
+        </div>
       </div>
 
       {/* Footer: System Health + Exports */}

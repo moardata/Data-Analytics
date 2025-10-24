@@ -54,8 +54,8 @@ export default function FeedbackThemesList({ data }: FeedbackThemesListProps) {
         <CardContent className="p-6">
           <div className="flex items-center justify-between mb-6">
             <div>
-              <h3 className="text-sm font-medium text-zinc-400">Top Feedback Themes</h3>
-              <p className="text-xs text-zinc-500">AI-analyzed student feedback</p>
+              <h3 className="text-base font-semibold text-[#F8FAFC]">What Students Say</h3>
+              <p className="text-sm text-[#A1A1AA]">No feedback yet</p>
             </div>
             <MessageSquare className="w-5 h-5 text-zinc-500" />
           </div>
@@ -83,8 +83,8 @@ export default function FeedbackThemesList({ data }: FeedbackThemesListProps) {
       <CardContent className="p-6">
         <div className="flex items-center justify-between mb-6">
           <div>
-            <h3 className="text-sm font-medium text-zinc-400">Top Feedback Themes</h3>
-            <p className="text-xs text-zinc-500">{totalSubmissions} submissions analyzed</p>
+            <h3 className="text-base font-semibold text-[#F8FAFC]">What Students Say</h3>
+            <p className="text-sm text-[#A1A1AA]">{totalSubmissions} responses analyzed</p>
           </div>
           <MessageSquare className="w-5 h-5 text-emerald-500" />
         </div>
