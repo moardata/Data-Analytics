@@ -70,26 +70,36 @@ export default function ActionFeedbackLoop({ companyId }: ActionFeedbackLoopProp
   const fetchFeedbackData = async () => {
     try {
       setLoading(true);
+      setError(null);
       
       // Fetch actions and improvements in parallel
       const [actionsResponse, improvementsResponse] = await Promise.all([
-        fetch(`/api/insights/feedback-loop?companyId=${companyId}`),
-        fetch(`/api/insights/improvement-tracking?companyId=${companyId}`)
+        fetch(`/api/insights/feedback-loop?companyId=${companyId}`).catch(() => ({ ok: false })),
+        fetch(`/api/insights/improvement-tracking?companyId=${companyId}`).catch(() => ({ ok: false }))
       ]);
 
-      if (!actionsResponse.ok || !improvementsResponse.ok) {
-        throw new Error('Failed to fetch feedback data');
+      // Handle responses gracefully
+      let actionsData = { actions: [] };
+      let improvementsData = { improvements: [], summary: null };
+
+      if (actionsResponse && actionsResponse.ok) {
+        actionsData = await actionsResponse.json();
       }
 
-      const actionsData = await actionsResponse.json();
-      const improvementsData = await improvementsResponse.json();
+      if (improvementsResponse && improvementsResponse.ok) {
+        improvementsData = await improvementsResponse.json();
+      }
 
       setActions(actionsData.actions || []);
       setImprovements(improvementsData.improvements || []);
       setSummary(improvementsData.summary || null);
+      
     } catch (err) {
       console.error('Error fetching feedback data:', err);
-      setError('Failed to load feedback data');
+      // Don't set error - just show empty state
+      setActions([]);
+      setImprovements([]);
+      setSummary(null);
     } finally {
       setLoading(false);
     }
