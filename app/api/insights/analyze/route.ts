@@ -6,6 +6,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { processDataWithAI } from '@/lib/utils/aiProcessing';
 import { simpleAuth } from '@/lib/auth/simple-auth';
+import { supabaseServer } from '@/lib/supabase-server';
 
 export async function POST(request: NextRequest) {
   try {
@@ -24,8 +25,25 @@ export async function POST(request: NextRequest) {
 
     console.log(`🤖 [AI Analysis] Starting analysis for company ${companyId} (${timeRange})`);
 
+    // Convert companyId to clientId UUID
+    const { data: clientData, error: clientError } = await supabaseServer
+      .from('clients')
+      .select('id')
+      .eq('company_id', companyId)
+      .single();
+
+    if (clientError || !clientData) {
+      return NextResponse.json(
+        { error: 'Client not found for this company' },
+        { status: 404 }
+      );
+    }
+
+    const clientId = clientData.id;
+    console.log(`🤖 [AI Analysis] Found client UUID: ${clientId}`);
+
     // Perform enhanced AI analysis
-    const analysisResult = await processDataWithAI(companyId, timeRange);
+    const analysisResult = await processDataWithAI(clientId, timeRange);
 
     return NextResponse.json({
       success: true,
@@ -64,8 +82,25 @@ export async function GET(request: NextRequest) {
 
     console.log(`🤖 [AI Analysis] Getting analysis for company ${companyId} (${timeRange})`);
 
+    // Convert companyId to clientId UUID
+    const { data: clientData, error: clientError } = await supabaseServer
+      .from('clients')
+      .select('id')
+      .eq('company_id', companyId)
+      .single();
+
+    if (clientError || !clientData) {
+      return NextResponse.json(
+        { error: 'Client not found for this company' },
+        { status: 404 }
+      );
+    }
+
+    const clientId = clientData.id;
+    console.log(`🤖 [AI Analysis] Found client UUID: ${clientId}`);
+
     // Perform enhanced AI analysis
-    const analysisResult = await processDataWithAI(companyId, timeRange);
+    const analysisResult = await processDataWithAI(clientId, timeRange);
 
     return NextResponse.json({
       success: true,
