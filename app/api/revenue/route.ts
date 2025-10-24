@@ -7,6 +7,18 @@ import { NextRequest, NextResponse } from 'next/server';
 import { supabaseServer as supabase } from '@/lib/supabase-server';
 import { simpleAuth } from '@/lib/auth/simple-auth';
 
+// Plan pricing lookup (for mock data and fallbacks)
+const PLAN_PRICING: Record<string, number> = {
+  'plan_1': 10,
+  'plan_2': 15,
+  'plan_3': 20,
+  'plan_gDIQ1ypIFaZoQ': 0,  // Atom (Free)
+  'plan_hnYnLn6egXRis': 20, // Core
+  'plan_OvGPVPXu6sarv': 100, // Pulse
+  'plan_YWwjHKXiWT6vq': 200, // Surge
+  'plan_BcSpDXIeGcklw': 400, // Quantum
+};
+
 // CORS headers
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -91,6 +103,15 @@ export async function GET(request: NextRequest) {
                  event.event_data?.initial_price ||
                  event.event_data?.plan_price ||
                  0;
+        
+        // If still no amount, look up plan pricing
+        if (amount === 0 && event.event_data?.plan_id) {
+          const planPrice = PLAN_PRICING[event.event_data.plan_id];
+          if (planPrice !== undefined) {
+            amount = planPrice;
+            console.log(`💰 [Revenue API] Using plan pricing for ${event.event_data.plan_id}: $${planPrice}`);
+          }
+        }
       }
       
       // Convert cents to dollars if amount looks like cents (> 100)
