@@ -442,10 +442,7 @@ function InsightsContent() {
           {/* Actions Tab */}
           <TabsContent value="actions" className="mt-6">
             <div className="space-y-6">
-              <div>
-                <h3 className="text-lg font-medium text-[#F8FAFC] mb-4">Action & Feedback Loop</h3>
-                <ActionFeedbackLoop companyId={clientId || ''} />
-              </div>
+              <ActionFeedbackLoop companyId={clientId || ''} />
             </div>
           </TabsContent>
 
