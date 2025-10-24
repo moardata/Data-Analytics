@@ -72,22 +72,28 @@ export default function ActionFeedbackLoop({ companyId }: ActionFeedbackLoopProp
       setLoading(true);
       setError(null);
       
-      // Fetch actions and improvements in parallel
-      const [actionsResponse, improvementsResponse] = await Promise.all([
-        fetch(`/api/insights/feedback-loop?companyId=${companyId}`).catch(() => ({ ok: false })),
-        fetch(`/api/insights/improvement-tracking?companyId=${companyId}`).catch(() => ({ ok: false }))
-      ]);
-
-      // Handle responses gracefully
+      // Default to empty data
       let actionsData = { actions: [] };
       let improvementsData = { improvements: [], summary: null };
-
-      if (actionsResponse && actionsResponse.ok) {
-        actionsData = await actionsResponse.json();
+      
+      // Fetch actions
+      try {
+        const actionsResponse = await fetch(`/api/insights/feedback-loop?companyId=${companyId}`);
+        if (actionsResponse.ok) {
+          actionsData = await actionsResponse.json();
+        }
+      } catch (actionsError) {
+        console.warn('Actions API failed, using empty data');
       }
-
-      if (improvementsResponse && improvementsResponse.ok) {
-        improvementsData = await improvementsResponse.json();
+      
+      // Fetch improvements
+      try {
+        const improvementsResponse = await fetch(`/api/insights/improvement-tracking?companyId=${companyId}`);
+        if (improvementsResponse.ok) {
+          improvementsData = await improvementsResponse.json();
+        }
+      } catch (improvementsError) {
+        console.warn('Improvements API failed, using empty data');
       }
 
       setActions(actionsData.actions || []);
