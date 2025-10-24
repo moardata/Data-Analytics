@@ -116,20 +116,20 @@ async function generatePDF(clientId: string, clientName: string): Promise<ArrayB
 
   // Metrics grid
   const metrics = [
-    ['Total Students', entities.length],
-    ['Active Subscriptions', activeSubscriptions],
+    ['Total Students', String(entities.length)],
+    ['Active Subscriptions', String(activeSubscriptions)],
     ['Total Revenue', `$${totalRevenue.toFixed(2)}`],
-    ['Recent Activity (7 days)', recentEvents],
+    ['Recent Activity (7 days)', String(recentEvents)],
     ['Engagement Score', `${engagementScore}%`],
     ['Completion Rate', `${completionRate}%`],
-    ['Total Forms', forms.length],
-    ['Total Responses', submissions.length],
+    ['Total Forms', String(forms.length)],
+    ['Total Responses', String(submissions.length)],
   ];
 
   autoTable(doc, {
     startY: yPosition,
     head: [['Metric', 'Value']],
-    body: metrics,
+    body: metrics as any,
     theme: 'grid',
     headStyles: { fillColor: [79, 70, 229] },
     margin: { left: 20, right: 20 },
@@ -150,14 +150,14 @@ async function generatePDF(clientId: string, clientName: string): Promise<ArrayB
 
   const activityData = Object.entries(eventTypes).map(([type, count]) => [
     type.replace('_', ' ').toUpperCase(),
-    count,
+    String(count),
     `${Math.round((count as number / events.length) * 100)}%`
   ]);
 
   autoTable(doc, {
     startY: yPosition,
     head: [['Event Type', 'Count', 'Percentage']],
-    body: activityData,
+    body: activityData as any,
     theme: 'striped',
     headStyles: { fillColor: [79, 70, 229] },
     margin: { left: 20, right: 20 },
@@ -178,7 +178,7 @@ async function generatePDF(clientId: string, clientName: string): Promise<ArrayB
 
   const surveyData = forms.map(form => [
     form.name,
-    submissions.filter(s => s.form_id === form.id).length,
+    String(submissions.filter(s => s.form_id === form.id).length),
     form.is_active ? 'Active' : 'Inactive'
   ]);
 
@@ -186,7 +186,7 @@ async function generatePDF(clientId: string, clientName: string): Promise<ArrayB
     autoTable(doc, {
       startY: yPosition,
       head: [['Survey Name', 'Responses', 'Status']],
-      body: surveyData,
+      body: surveyData as any,
       theme: 'striped',
       headStyles: { fillColor: [79, 70, 229] },
       margin: { left: 20, right: 20 },
