@@ -12,7 +12,10 @@
     "purge-mock-data": "node scripts/purge-and-regenerate-mock-data.js",
     "force-purge": "node scripts/force-purge-data.js",
     "verify-data": "node scripts/verify-data.js",
-    "generate-comprehensive": "node scripts/generate-comprehensive-mock-data.js"
+    "generate-comprehensive": "node scripts/generate-comprehensive-mock-data.js",
+    "simulate": "node scripts/simulate-realistic-data.js",
+    "cache-metrics": "node scripts/manual-metric-calculation.js",
+    "quick-setup": "npm run simulate && npm run cache-metrics"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.38.4",
