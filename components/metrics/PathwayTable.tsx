@@ -7,10 +7,10 @@ import { ArrowRight, TrendingUp, AlertCircle } from 'lucide-react';
 interface PathwayTableProps {
   data: {
     topPathways: Array<{
-      sequence: string[];
+      sequence: string[] | string;
       completionRate: number;
       studentCount: number;
-      avgTimeToComplete: string;
+      avgTimeToComplete?: string;
     }>;
     deadEnds: Array<{
       experienceId: string;
@@ -19,7 +19,7 @@ interface PathwayTableProps {
       studentCount: number;
     }>;
     powerCombinations: Array<{
-      combination: string[];
+      combination: string[] | string;
       successRate: number;
       frequency: number;
     }>;
