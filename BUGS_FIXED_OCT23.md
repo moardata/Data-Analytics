@@ -257,3 +257,4 @@ These bugs were systematic issues from the companyId/clientId confusion. The fix
 - Use the `/api/client/lookup` endpoint if needed from frontend
 - Test with actual companyId values, not placeholder strings
 
+

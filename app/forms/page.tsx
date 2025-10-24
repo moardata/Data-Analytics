@@ -20,6 +20,7 @@ import EmbedCodeGenerator from '@/components/EmbedCodeGenerator';
 import { supabase } from '@/lib/supabase';
 import { WhopClientAuth } from '@/components/WhopClientAuth';
 import { fixFormFieldIds } from '@/lib/utils/formHelpers';
+import { triggerConfetti } from '@/components/SurveyCompletionTracker';
 import { 
   BarChart, 
   Bar, 
@@ -48,6 +49,8 @@ function FormsContent() {
   const [submissions, setSubmissions] = useState<any[]>([]);
   const [selectedSubmission, setSelectedSubmission] = useState<any | null>(null);
   const [analytics, setAnalytics] = useState<any>(null);
+  const [completedForms, setCompletedForms] = useState<string[]>([]);
+  const [showConfetti, setShowConfetti] = useState(false);
 
   useEffect(() => {
     fetchForms();
@@ -59,6 +62,36 @@ function FormsContent() {
       fetchSubmissions();
     }
   }, [activeTab, clientId]);
+
+  useEffect(() => {
+    if (userRole === 'student') {
+      fetchCompletedForms();
+    }
+  }, [userRole, clientId]);
+
+  const fetchCompletedForms = async () => {
+    try {
+      // Get entity ID from supabase (current user)
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      const { data: entityData } = await supabase
+        .from('entities')
+        .select('id')
+        .eq('email', user.email)
+        .single();
+
+      if (!entityData) return;
+
+      const response = await fetch(`/api/forms/completion?companyId=${clientId}&entityId=${entityData.id}`);
+      if (response.ok) {
+        const data = await response.json();
+        setCompletedForms(data.completedFormIds || []);
+      }
+    } catch (error) {
+      console.error('Error fetching completed forms:', error);
+    }
+  };
 
   const checkUserRole = async () => {
     try {
@@ -341,8 +374,22 @@ function FormsContent() {
     });
 
     if (response.ok) {
-      setSelectedForm(null);
-      alert('Survey submitted successfully! Thank you for your feedback.');
+      // 🎉 Trigger confetti celebration!
+      triggerConfetti();
+      
+      // Add to completed forms
+      setCompletedForms([...completedForms, selectedForm.id]);
+      
+      // Show success message with a delay to let confetti start
+      setTimeout(() => {
+        alert('Survey submitted successfully! Thank you for your feedback! 🎉');
+        setSelectedForm(null);
+      }, 500);
+      
+      // Refresh completed forms list
+      if (userRole === 'student') {
+        fetchCompletedForms();
+      }
     } else {
       alert('Failed to submit survey. Please try again.');
     }
@@ -410,13 +457,27 @@ function FormsContent() {
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {forms.map((form) => (
-                <Card key={form.id} className="border border-[#1a1a1a] bg-[#0f0f0f] shadow-lg hover:shadow-xl hover:shadow-[#10B981]/10 transition-all duration-300 hover:border-[#10B981]/30 group">
+              {forms.map((form) => {
+                const isCompleted = completedForms.includes(form.id);
+                return (
+                <Card key={form.id} className={`border shadow-lg hover:shadow-xl transition-all duration-300 group ${
+                  isCompleted 
+                    ? 'border-[#10B981] bg-[#10B981]/5' 
+                    : 'border-[#1a1a1a] bg-[#0f0f0f] hover:border-[#10B981]/30'
+                }`}>
                   <CardHeader className="pb-3">
-                    <CardTitle className="text-[#F8FAFC] flex items-center gap-2 group-hover:text-[#10B981] transition-colors">
-                      <FileText className="h-5 w-5 text-[#10B981]" />
-                      {form.name}
-                    </CardTitle>
+                    <div className="flex items-center justify-between mb-2">
+                      <CardTitle className="text-[#F8FAFC] flex items-center gap-2 group-hover:text-[#10B981] transition-colors">
+                        <FileText className="h-5 w-5 text-[#10B981]" />
+                        {form.name}
+                      </CardTitle>
+                      {isCompleted && (
+                        <Badge className="bg-[#10B981] text-white border-0 gap-1 px-2 py-1">
+                          <CheckCircle className="h-3 w-3" />
+                          Completed ✨
+                        </Badge>
+                      )}
+                    </div>
                     <CardDescription className="text-[#A1A1AA] group-hover:text-[#F8FAFC] transition-colors">
                       {form.description || 'No description'}
                     </CardDescription>
@@ -427,14 +488,27 @@ function FormsContent() {
                       {form.fields?.length || 0} fields
                     </div>
                     
+                    {isCompleted && (
+                      <div className="bg-[#10B981]/10 border border-[#10B981]/30 rounded-lg p-3">
+                        <p className="text-sm text-[#10B981] font-medium">
+                          🎉 Thank you for completing this survey!
+                        </p>
+                      </div>
+                    )}
+                    
                     <div className="space-y-3">
                       {/* Submit Survey Button */}
                       <Button 
                         onClick={() => setSelectedForm(form)}
-                        className="w-full gap-2 bg-[#10B981] hover:bg-[#0E9F71] text-white font-medium py-3 px-6 rounded-lg transition-all duration-200 hover:shadow-lg hover:shadow-[#10B981]/25"
+                        disabled={isCompleted}
+                        className={`w-full gap-2 font-medium py-3 px-6 rounded-lg transition-all duration-200 ${
+                          isCompleted
+                            ? 'bg-[#6B7280] hover:bg-[#6B7280] text-white opacity-60 cursor-not-allowed'
+                            : 'bg-[#10B981] hover:bg-[#0E9F71] text-white hover:shadow-lg hover:shadow-[#10B981]/25'
+                        }`}
                       >
                         <FileText className="h-5 w-5" />
-                        Submit Survey
+                        {isCompleted ? 'Already Completed' : 'Submit Survey'}
                       </Button>
                       
                       {/* Preview Button */}
@@ -451,7 +525,7 @@ function FormsContent() {
                     </div>
                   </CardContent>
                 </Card>
-              ))}
+              )})}
             </div>
           )}
         </div>

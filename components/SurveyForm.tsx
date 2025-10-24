@@ -4,6 +4,7 @@ import * as React from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils/cn';
+import { triggerConfetti } from './SurveyCompletionTracker';
 
 const ratingScale = [1, 2, 3, 4, 5];
 
@@ -31,11 +32,16 @@ export default function SurveyForm() {
       });
       
       if (response.ok) {
-        alert('Thank you for your feedback!');
-        // Reset form
-        setRating(null);
-        setRecommend('');
-        setLiked('');
+        // Trigger confetti celebration! 🎉
+        triggerConfetti();
+        
+        setTimeout(() => {
+          alert('Thank you for your feedback! 🎉');
+          // Reset form
+          setRating(null);
+          setRecommend('');
+          setLiked('');
+        }, 500);
       } else {
         alert('Failed to submit feedback. Please try again.');
       }
