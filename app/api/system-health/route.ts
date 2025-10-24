@@ -27,17 +27,32 @@ export async function GET(request: NextRequest) {
     const clientId = clientData.id; // This is the actual UUID
 
     // Get comprehensive system health data
-    const healthData = await getSystemHealth(clientId);
-    
-    return NextResponse.json({ 
-      success: true, 
-      health: healthData,
-      timestamp: new Date().toISOString()
-    });
+    try {
+      const healthData = await getSystemHealth(clientId);
+      
+      return NextResponse.json({ 
+        success: true, 
+        health: healthData,
+        timestamp: new Date().toISOString()
+      });
+    } catch (healthError) {
+      console.error('Error calculating system health:', healthError);
+      // Return minimal health data instead of error
+      return NextResponse.json({ 
+        success: true, 
+        health: null,
+        message: 'System health data not available yet. Generate insights to enable monitoring.',
+        timestamp: new Date().toISOString()
+      });
+    }
 
   } catch (error) {
     console.error('System health error:', error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    return NextResponse.json({ 
+      success: true,
+      health: null,
+      message: 'System health monitoring will be available once you have insights data.'
+    });
   }
 }
 

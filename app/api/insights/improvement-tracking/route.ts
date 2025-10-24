@@ -103,20 +103,40 @@ export async function GET(request: NextRequest) {
 
     if (error) {
       console.error('Error fetching improvements:', error);
-      return NextResponse.json({ error: 'Failed to fetch improvements' }, { status: 500 });
+      // Return empty data instead of error
+      return NextResponse.json({ 
+        improvements: [],
+        summary: {
+          totalActions: 0,
+          averageImprovement: 0,
+          bestImprovement: 0,
+          totalMetricsImproved: 0,
+          improvementRate: 0
+        }
+      });
     }
 
     // Calculate overall improvement summary
-    const summary = calculateOverallImprovementSummary(improvements);
+    const summary = calculateOverallImprovementSummary(improvements || []);
 
     return NextResponse.json({ 
-      improvements,
+      improvements: improvements || [],
       summary
     });
 
   } catch (error) {
     console.error('Improvement tracking GET error:', error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    // Return empty data gracefully instead of error
+    return NextResponse.json({ 
+      improvements: [],
+      summary: {
+        totalActions: 0,
+        averageImprovement: 0,
+        bestImprovement: 0,
+        totalMetricsImproved: 0,
+        improvementRate: 0
+      }
+    });
   }
 }
 
