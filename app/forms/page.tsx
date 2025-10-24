@@ -623,7 +623,7 @@ function FormsContent() {
         <div className="flex gap-2 border-b border-[#1a1a1a]">
           {[
             { id: 'surveys', label: 'My Surveys', icon: FileText, description: 'View pre-saved surveys' },
-            { id: 'builder', label: 'Customize', icon: Settings, description: 'Edit survey content' },
+            { id: 'builder', label: 'Create', icon: Settings, description: 'Create and edit surveys' },
             { id: 'submissions', label: 'Submissions', icon: Users, description: 'View form submissions' },
             { id: 'analytics', label: 'Analytics', icon: BarChart3, description: 'View response data' },
             { id: 'export', label: 'Export Data', icon: Download, description: 'Download collected data' }
