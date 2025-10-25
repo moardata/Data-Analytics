@@ -10,16 +10,24 @@ export interface PricingTier {
   displayName: string;
   price: number; // USD per month
   currency: 'USD';
+  trialDays?: number; // Free trial period in days
   limits: {
     maxStudents: number;
-    maxForms: number;
+    maxResponsesPerMonth: number; // AI-analyzed survey responses
     aiInsightsPerDay: number;
-    aiInsightsHistory: number; // Days to keep insights
-    dataExport: boolean;
-    advancedAnalytics: boolean;
+    dataRetentionDays: number;
+    dashboardMetrics: string[]; // Which metrics are unlocked
+    csvExport: boolean;
+    pdfExport: boolean;
+    apiAccess: boolean;
+    timeFilters: boolean;
+    formBranching: boolean;
+    atRiskAlerts: boolean;
+    whiteLabelForms: boolean;
     emailSupport: boolean;
-    prioritySupport: boolean;
-    customBranding: boolean;
+    emailResponseTime: string; // e.g., "72hr", "48hr"
+    liveChat: boolean;
+    dedicatedManager: boolean;
   };
   features: string[];
   whopPlanId: string; // Whop product ID
@@ -28,13 +36,10 @@ export interface PricingTier {
 /**
  * Pricing Tiers
  * 
- * Note: Typical Whop group sizes:
- * - Small courses: 10-100 members
- * - Medium communities: 100-1,000 members
- * - Large communities: 1,000-10,000 members
- * - Mega communities: 10,000-100,000+ members
- * 
- * We set limits slightly above typical sizes to allow growth
+ * Structure: Response-based limits (not form count)
+ * - Unlimited forms for all tiers
+ * - Cap on AI-analyzed responses per month (what costs us money)
+ * - Progressive unlocking of dashboard metrics and features
  */
 export const PRICING_TIERS: Record<TierName, PricingTier> = {
   starter: {
@@ -42,17 +47,25 @@ export const PRICING_TIERS: Record<TierName, PricingTier> = {
     displayName: 'Starter',
     price: 30,
     currency: 'USD',
+    trialDays: 7, // 7-day free trial
     whopPlanId: 'prod_n8rHHckjTjJdD',
     limits: {
       maxStudents: 100,
-      maxForms: 999, // Unlimited custom forms
+      maxResponsesPerMonth: 100, // AI-analyzed survey responses
       aiInsightsPerDay: 5,
-      aiInsightsHistory: 14, // 14-day data retention
-      dataExport: false,
-      advancedAnalytics: false, // 3 of 6 core dashboard metrics
-      emailSupport: true, // 72hr support
-      prioritySupport: false,
-      customBranding: false,
+      dataRetentionDays: 14,
+      dashboardMetrics: ['consistency', 'popular', 'feedback'], // 3 of 6 unlocked
+      csvExport: false,
+      pdfExport: false,
+      apiAccess: false,
+      timeFilters: false,
+      formBranching: false,
+      atRiskAlerts: false,
+      whiteLabelForms: false,
+      emailSupport: true,
+      emailResponseTime: '72hr',
+      liveChat: false,
+      dedicatedManager: false,
     },
     features: [
       '5 daily AI insights',
@@ -73,14 +86,21 @@ export const PRICING_TIERS: Record<TierName, PricingTier> = {
     whopPlanId: 'prod_4ISBWlTlS81KL',
     limits: {
       maxStudents: 1000,
-      maxForms: 999, // Unlimited forms + branching logic
+      maxResponsesPerMonth: 1000,
       aiInsightsPerDay: 10,
-      aiInsightsHistory: 60, // 60-day data retention
-      dataExport: true, // CSV exports
-      advancedAnalytics: true, // Full dashboard (all 6 metrics)
-      emailSupport: true, // 48hr support
-      prioritySupport: false,
-      customBranding: false,
+      dataRetentionDays: 60,
+      dashboardMetrics: ['consistency', 'popular', 'feedback', 'breakthrough', 'commitment', 'pathways'], // All 6
+      csvExport: true,
+      pdfExport: false,
+      apiAccess: false,
+      timeFilters: true,
+      formBranching: true,
+      atRiskAlerts: false,
+      whiteLabelForms: false,
+      emailSupport: true,
+      emailResponseTime: '48hr',
+      liveChat: false,
+      dedicatedManager: false,
     },
     features: [
       '10 daily AI insights',
@@ -103,14 +123,21 @@ export const PRICING_TIERS: Record<TierName, PricingTier> = {
     whopPlanId: 'prod_6O1w6a9outgyO',
     limits: {
       maxStudents: 2000,
-      maxForms: 999, // Unlimited forms + white-label
+      maxResponsesPerMonth: 10000,
       aiInsightsPerDay: 15,
-      aiInsightsHistory: 180, // 180-day data retention
-      dataExport: true, // CSV + PDF exports
-      advancedAnalytics: true, // Full dashboard + automated alerts
+      dataRetentionDays: 180,
+      dashboardMetrics: ['consistency', 'popular', 'feedback', 'breakthrough', 'commitment', 'pathways'],
+      csvExport: true,
+      pdfExport: true,
+      apiAccess: false,
+      timeFilters: true,
+      formBranching: true,
+      atRiskAlerts: true,
+      whiteLabelForms: true,
       emailSupport: true,
-      prioritySupport: true, // Priority support (24hr) + live chat
-      customBranding: true, // White-label
+      emailResponseTime: '24hr',
+      liveChat: true,
+      dedicatedManager: false,
     },
     features: [
       '15 daily AI insights',
@@ -133,15 +160,22 @@ export const PRICING_TIERS: Record<TierName, PricingTier> = {
     currency: 'USD',
     whopPlanId: 'prod_bm98P1RCFrFmF',
     limits: {
-      maxStudents: 999999, // 2,000+ students (unlimited)
-      maxForms: 999, // Unlimited forms + full API
-      aiInsightsPerDay: 20, // 20 daily AI insights + custom on-demand
-      aiInsightsHistory: 365, // 365-day data retention
-      dataExport: true, // Full API access
-      advancedAnalytics: true, // Custom AI fine-tuning
+      maxStudents: 999999, // Unlimited
+      maxResponsesPerMonth: 999999, // Unlimited
+      aiInsightsPerDay: 20,
+      dataRetentionDays: 365,
+      dashboardMetrics: ['consistency', 'popular', 'feedback', 'breakthrough', 'commitment', 'pathways'],
+      csvExport: true,
+      pdfExport: true,
+      apiAccess: true,
+      timeFilters: true,
+      formBranching: true,
+      atRiskAlerts: true,
+      whiteLabelForms: true,
       emailSupport: true,
-      prioritySupport: true,
-      customBranding: true, // White-label everything
+      emailResponseTime: '2hr',
+      liveChat: true,
+      dedicatedManager: true,
     },
     features: [
       '20 daily AI insights + custom on-demand',
@@ -159,10 +193,32 @@ export const PRICING_TIERS: Record<TierName, PricingTier> = {
 };
 
 /**
- * Get tier by name
+ * Map old tier names to new ones
  */
-export function getTier(tierName: TierName): PricingTier {
-  return PRICING_TIERS[tierName];
+function mapLegacyTierName(tierName: string): TierName {
+  const mapping: Record<string, TierName> = {
+    'atom': 'starter',
+    'core': 'growth',
+    'pulse': 'pro',
+    'surge': 'scale',
+    'quantum': 'scale',
+  };
+  return mapping[tierName] || (tierName as TierName);
+}
+
+/**
+ * Get tier by name (handles legacy tier names)
+ */
+export function getTier(tierName: string): PricingTier {
+  const mappedName = mapLegacyTierName(tierName);
+  const tier = PRICING_TIERS[mappedName];
+  
+  if (!tier) {
+    console.warn(`Unknown tier: ${tierName}, falling back to starter`);
+    return PRICING_TIERS.starter;
+  }
+  
+  return tier;
 }
 
 /**
@@ -173,23 +229,20 @@ export function getAllTiers(): PricingTier[] {
 }
 
 /**
+ * Check if a tier can access a specific dashboard metric
+ */
+export function canAccessMetric(tier: TierName, metricId: string): boolean {
+  const tierData = getTier(tier);
+  return tierData.limits.dashboardMetrics.includes(metricId);
+}
+
+/**
  * Check if a tier can perform an action
  */
 export function canPerformAction(
   tier: TierName,
-  action: 'export' | 'advancedAnalytics' | 'customBranding'
+  action: 'csvExport' | 'pdfExport' | 'apiAccess' | 'timeFilters' | 'formBranching' | 'atRiskAlerts' | 'whiteLabelForms'
 ): boolean {
   const tierData = getTier(tier);
-  switch (action) {
-    case 'export':
-      return tierData.limits.dataExport;
-    case 'advancedAnalytics':
-      return tierData.limits.advancedAnalytics;
-    case 'customBranding':
-      return tierData.limits.customBranding;
-    default:
-      return false;
-  }
+  return tierData.limits[action] || false;
 }
-
-

@@ -9,7 +9,8 @@ import { Button } from '@/components/ui/button';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils/cn';
-import { Info, Users, Target, TrendingUp, RefreshCw } from 'lucide-react';
+import { Info, Users, Target, TrendingUp, RefreshCw, Lock, Zap } from 'lucide-react';
+import { canAccessMetric, type TierName } from '@/lib/pricing/tiers';
 
 // New metric components
 import ConsistencyScoreGauge from '@/components/metrics/ConsistencyScoreGauge';
@@ -18,6 +19,7 @@ import PathwayTable from '@/components/metrics/PathwayTable';
 import PopularContentList from '@/components/metrics/PopularContentList';
 import FeedbackThemesList from '@/components/metrics/FeedbackThemesList';
 import CommitmentDistribution from '@/components/metrics/CommitmentDistribution';
+import LockedMetricCard from '@/components/metrics/LockedMetricCard';
 
 /**
  * ADVANCED DASHBOARD METRICS
@@ -117,6 +119,22 @@ export default function DashboardCreatorAnalytics({ clientId: companyIdOrClientI
   const [actualClientId, setActualClientId] = useState<string | null>(null);
   const [timeRange, setTimeRange] = useState<string>('7D');
   const [activeTab, setActiveTab] = useState<string>('engagement');
+  const [userTier, setUserTier] = useState<TierName>('starter');
+
+  // Fetch user tier
+  useEffect(() => {
+    const fetchTier = async () => {
+      if (!companyIdOrClientId) return;
+      try {
+        const res = await fetch(`/api/usage/check?companyId=${companyIdOrClientId}`);
+        const data = await res.json();
+        setUserTier(data.tier || 'starter');
+      } catch (err) {
+        console.error('Error fetching tier:', err);
+      }
+    };
+    fetchTier();
+  }, [companyIdOrClientId]);
 
   // Convert companyId to UUID clientId if needed
   useEffect(() => {
@@ -401,7 +419,15 @@ export default function DashboardCreatorAnalytics({ clientId: companyIdOrClientI
           </div>
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
             <ConsistencyScoreGauge data={metrics.engagementConsistency} />
-            <AhaMomentChart data={metrics.ahaMoments} />
+            {canAccessMetric(userTier, 'breakthrough') ? (
+              <AhaMomentChart data={metrics.ahaMoments} />
+            ) : (
+              <LockedMetricCard 
+                title="Breakthrough Moments"
+                description="Content that sparks student success"
+                requiredTier="Growth"
+              />
+            )}
           </div>
         </TabsContent>
 
@@ -414,8 +440,24 @@ export default function DashboardCreatorAnalytics({ clientId: companyIdOrClientI
             </p>
           </div>
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-            <CommitmentDistribution data={metrics.commitmentScores} />
-            <PathwayTable data={metrics.contentPathways} />
+            {canAccessMetric(userTier, 'commitment') ? (
+              <CommitmentDistribution data={metrics.commitmentScores} />
+            ) : (
+              <LockedMetricCard 
+                title="Student Commitment"
+                description="Who's likely to complete your course"
+                requiredTier="Growth"
+              />
+            )}
+            {canAccessMetric(userTier, 'pathways') ? (
+              <PathwayTable data={metrics.contentPathways} />
+            ) : (
+              <LockedMetricCard 
+                title="Best Learning Paths"
+                description="What content order works best"
+                requiredTier="Growth"
+              />
+            )}
           </div>
         </TabsContent>
 
