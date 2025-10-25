@@ -22,7 +22,7 @@ export function OnboardingFlow({ onInfoClick, onSettingsClick }: OnboardingFlowP
   useEffect(() => {
     // Check if user has completed onboarding
     if (typeof window !== 'undefined') {
-      const completed = localStorage.getItem('onboarding_completed');
+      const completed = localStorage.getItem('onboarding_completed_v2');
       if (!completed) {
         // Show after a brief delay so the app loads first
         setTimeout(() => setShow(true), 1000);
@@ -32,7 +32,7 @@ export function OnboardingFlow({ onInfoClick, onSettingsClick }: OnboardingFlowP
 
   const handleSkip = () => {
     if (typeof window !== 'undefined') {
-      localStorage.setItem('onboarding_completed', 'true');
+      localStorage.setItem('onboarding_completed_v2', 'true');
     }
     setShow(false);
   };
@@ -45,7 +45,7 @@ export function OnboardingFlow({ onInfoClick, onSettingsClick }: OnboardingFlowP
 
   const handleSettingsClick = () => {
     if (typeof window !== 'undefined') {
-      localStorage.setItem('onboarding_completed', 'true');
+      localStorage.setItem('onboarding_completed_v2', 'true');
     }
     setShow(false);
     
