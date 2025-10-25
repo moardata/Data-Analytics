@@ -11,6 +11,31 @@ export function TopBar() {
   const [showUsers, setShowUsers] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
+  
+  // Settings state with localStorage persistence
+  const [autoInsights, setAutoInsights] = useState(() => {
+    if (typeof window === 'undefined') return true;
+    const saved = localStorage.getItem('auto_insights');
+    return saved === null ? true : saved === 'true';
+  });
+  
+  const [notifSurveys, setNotifSurveys] = useState(() => {
+    if (typeof window === 'undefined') return true;
+    const saved = localStorage.getItem('notif_surveys');
+    return saved === null ? true : saved === 'true';
+  });
+  
+  const [notifInsights, setNotifInsights] = useState(() => {
+    if (typeof window === 'undefined') return true;
+    const saved = localStorage.getItem('notif_insights');
+    return saved === null ? true : saved === 'true';
+  });
+  
+  const [notifWeekly, setNotifWeekly] = useState(() => {
+    if (typeof window === 'undefined') return false;
+    const saved = localStorage.getItem('notif_weekly');
+    return saved === null ? false : saved === 'true';
+  });
 
   // Mock notifications (replace with real API call)
   const notifications = [
@@ -20,6 +45,19 @@ export function TopBar() {
   ];
 
   const unreadCount = notifications.filter(n => n.unread).length;
+
+  const handleToggle = (setting: string, value: boolean) => {
+    if (typeof window !== 'undefined') {
+      localStorage.setItem(setting, String(value));
+    }
+    
+    switch(setting) {
+      case 'auto_insights': setAutoInsights(value); break;
+      case 'notif_surveys': setNotifSurveys(value); break;
+      case 'notif_insights': setNotifInsights(value); break;
+      case 'notif_weekly': setNotifWeekly(value); break;
+    }
+  };
 
   return (
     <>
@@ -69,44 +107,83 @@ export function TopBar() {
                     AI-powered analytics platform for Whop creators
                   </CardDescription>
                 </CardHeader>
-                <CardContent className="space-y-3 text-[#A1A1AA] text-sm">
-                  <p>CreatorIQ helps you understand your community better through:</p>
-                  <ul className="space-y-2 ml-4">
-                    <li className="flex items-start gap-2">
-                      <ChevronRight className="h-4 w-4 text-[#10B981] mt-0.5" />
-                      <span>AI-powered insights from student feedback</span>
-                    </li>
-                    <li className="flex items-start gap-2">
-                      <ChevronRight className="h-4 w-4 text-[#10B981] mt-0.5" />
-                      <span>Custom survey builder with 10+ niche templates</span>
-                    </li>
-                    <li className="flex items-start gap-2">
-                      <ChevronRight className="h-4 w-4 text-[#10B981] mt-0.5" />
-                      <span>Real-time analytics and engagement tracking</span>
-                    </li>
-                    <li className="flex items-start gap-2">
-                      <ChevronRight className="h-4 w-4 text-[#10B981] mt-0.5" />
-                      <span>Data export and comprehensive reporting</span>
-                    </li>
-                  </ul>
+                <CardContent className="space-y-4 text-[#A1A1AA] text-sm">
+                  <p className="leading-relaxed">
+                    CreatorIQ helps you grow your Whop community by understanding what your students need, what's working, and where to improve.
+                  </p>
                 </CardContent>
               </Card>
 
               <Card className="border-[#1a1a1a] bg-[#0a0a0a]">
                 <CardHeader>
-                  <CardTitle className="text-[#F8FAFC] text-sm">Quick Links</CardTitle>
+                  <CardTitle className="text-[#F8FAFC] text-sm">📊 How It Works</CardTitle>
                 </CardHeader>
-                <CardContent className="space-y-2">
-                  <Button variant="ghost" className="w-full justify-start text-[#A1A1AA] hover:text-[#10B981]">
-                    <Book className="h-4 w-4 mr-2" />
-                    Documentation
-                    <ExternalLink className="h-3 w-3 ml-auto" />
-                  </Button>
-                  <Button variant="ghost" className="w-full justify-start text-[#A1A1AA] hover:text-[#10B981]">
-                    <HelpCircle className="h-4 w-4 mr-2" />
-                    Help & Support
-                    <ExternalLink className="h-3 w-3 ml-auto" />
-                  </Button>
+                <CardContent className="space-y-4 text-sm">
+                  <div>
+                    <div className="text-[#10B981] font-semibold mb-1">1. Collect Feedback</div>
+                    <p className="text-[#A1A1AA]">Use the Forms page to create surveys with 10+ niche templates (Trading, Fitness, E-commerce, etc.). Students see them in their dashboard.</p>
+                  </div>
+                  <div>
+                    <div className="text-[#10B981] font-semibold mb-1">2. AI Generates Insights</div>
+                    <p className="text-[#A1A1AA]">Our AI analyzes responses and generates actionable recommendations - no fake data, only real patterns from your students.</p>
+                  </div>
+                  <div>
+                    <div className="text-[#10B981] font-semibold mb-1">3. Take Action</div>
+                    <p className="text-[#A1A1AA]">Mark insights as "Actioned" to track improvements. See what content performs best and which students need support.</p>
+                  </div>
+                  <div>
+                    <div className="text-[#10B981] font-semibold mb-1">4. Track Results</div>
+                    <p className="text-[#A1A1AA]">Dashboard shows student engagement, completion rates, sentiment analysis, and content performance - all in real-time.</p>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card className="border-[#1a1a1a] bg-[#0a0a0a]">
+                <CardHeader>
+                  <CardTitle className="text-[#F8FAFC] text-sm">🎯 Quick Start Guide</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-2 text-sm">
+                  <div className="flex items-start gap-2">
+                    <span className="text-[#10B981] font-bold">→</span>
+                    <div>
+                      <span className="text-[#F8FAFC] font-medium">Forms:</span>
+                      <span className="text-[#A1A1AA]"> Click "Niche Templates" to create your first survey in seconds</span>
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-2">
+                    <span className="text-[#10B981] font-bold">→</span>
+                    <div>
+                      <span className="text-[#F8FAFC] font-medium">AI Insights:</span>
+                      <span className="text-[#A1A1AA]"> Click "Generate Insights" after collecting 3+ responses</span>
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-2">
+                    <span className="text-[#10B981] font-bold">→</span>
+                    <div>
+                      <span className="text-[#F8FAFC] font-medium">Dashboard:</span>
+                      <span className="text-[#A1A1AA]"> View student engagement and content performance metrics</span>
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-2">
+                    <span className="text-[#10B981] font-bold">→</span>
+                    <div>
+                      <span className="text-[#F8FAFC] font-medium">Revenue:</span>
+                      <span className="text-[#A1A1AA]"> Track subscriptions, churn, and revenue trends</span>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card className="border-[#1a1a1a] bg-[#0a0a0a]">
+                <CardHeader>
+                  <CardTitle className="text-[#F8FAFC] text-sm">💡 Pro Tips</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-2 text-sm text-[#A1A1AA]">
+                  <p>• Use niche-specific templates to get better, targeted feedback</p>
+                  <p>• Generate insights weekly to track improvement trends</p>
+                  <p>• Mark insights as "Actioned" to build your improvement history</p>
+                  <p>• Export data regularly to share with your team</p>
+                  <p>• Check Dashboard daily to spot issues early</p>
                 </CardContent>
               </Card>
 
@@ -282,7 +359,12 @@ export function TopBar() {
                     <div className="flex items-center justify-between">
                       <span className="text-sm text-[#A1A1AA]">Auto-generate Insights</span>
                       <label className="relative inline-flex items-center cursor-pointer">
-                        <input type="checkbox" className="sr-only peer" defaultChecked />
+                        <input 
+                          type="checkbox" 
+                          className="sr-only peer" 
+                          checked={autoInsights}
+                          onChange={(e) => handleToggle('auto_insights', e.target.checked)}
+                        />
                         <div className="w-9 h-5 bg-[#1a1a1a] peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-[#10B981]"></div>
                       </label>
                     </div>
@@ -300,21 +382,36 @@ export function TopBar() {
                     <div className="flex items-center justify-between">
                       <span className="text-sm text-[#A1A1AA]">New Survey Responses</span>
                       <label className="relative inline-flex items-center cursor-pointer">
-                        <input type="checkbox" className="sr-only peer" defaultChecked />
+                        <input 
+                          type="checkbox" 
+                          className="sr-only peer" 
+                          checked={notifSurveys}
+                          onChange={(e) => handleToggle('notif_surveys', e.target.checked)}
+                        />
                         <div className="w-9 h-5 bg-[#1a1a1a] peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-[#10B981]"></div>
                       </label>
                     </div>
                     <div className="flex items-center justify-between">
                       <span className="text-sm text-[#A1A1AA]">AI Insights Generated</span>
                       <label className="relative inline-flex items-center cursor-pointer">
-                        <input type="checkbox" className="sr-only peer" defaultChecked />
+                        <input 
+                          type="checkbox" 
+                          className="sr-only peer" 
+                          checked={notifInsights}
+                          onChange={(e) => handleToggle('notif_insights', e.target.checked)}
+                        />
                         <div className="w-9 h-5 bg-[#1a1a1a] peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-[#10B981]"></div>
                       </label>
                     </div>
                     <div className="flex items-center justify-between">
                       <span className="text-sm text-[#A1A1AA]">Weekly Summary</span>
                       <label className="relative inline-flex items-center cursor-pointer">
-                        <input type="checkbox" className="sr-only peer" />
+                        <input 
+                          type="checkbox" 
+                          className="sr-only peer" 
+                          checked={notifWeekly}
+                          onChange={(e) => handleToggle('notif_weekly', e.target.checked)}
+                        />
                         <div className="w-9 h-5 bg-[#1a1a1a] peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-[#10B981]"></div>
                       </label>
                     </div>
