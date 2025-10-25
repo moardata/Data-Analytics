@@ -11,22 +11,22 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils/cn';
 import { getAllTiers, type TierName } from '@/lib/pricing/tiers';
+import { FeatureComparisonTable } from '@/components/FeatureComparisonTable';
 
 export const dynamic = 'force-dynamic';
 
 const planEmojis: Record<TierName, string> = {
-  atom: '⚛️',
-  core: '🧭',
-  pulse: '🚀',
-  surge: '🏆',
-  quantum: '💼',
+  starter: '⚛️',
+  growth: '🚀',
+  pro: '🏆',
+  scale: '💼',
 };
 
 function UpgradeContent() {
   const searchParams = useSearchParams();
   const clientId = searchParams.get('companyId') || process.env.NEXT_PUBLIC_WHOP_COMPANY_ID;
   
-  const [currentTier, setCurrentTier] = useState<TierName>('atom');
+  const [currentTier, setCurrentTier] = useState<TierName>('starter');
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -37,7 +37,7 @@ function UpgradeContent() {
     try {
       const res = await fetch(`/api/usage/check?companyId=${clientId}`);
       const data = await res.json();
-      setCurrentTier(data.tier || 'atom');
+      setCurrentTier(data.tier || 'starter');
     } catch (error) {
       console.error('Error fetching tier:', error);
     } finally {
@@ -46,11 +46,6 @@ function UpgradeContent() {
   };
 
   const handleUpgrade = (tierName: TierName) => {
-    if (tierName === 'atom') {
-      alert('You\'re already on the free plan!');
-      return;
-    }
-
     if (tierName === currentTier) {
       alert('You\'re already on this plan!');
       return;
@@ -69,7 +64,7 @@ function UpgradeContent() {
   };
 
   const tiers = getAllTiers();
-  const isPopular = (tierName: TierName) => tierName === 'pulse';
+  const isPopular = (tierName: TierName) => tierName === 'pro';
   const isCurrentTier = (tierName: TierName) => tierName === currentTier;
 
   if (loading) {
@@ -84,13 +79,18 @@ function UpgradeContent() {
     <div className="min-h-screen bg-gradient-to-b from-[#0a0a0a] to-[#0f0f0f] py-12 px-4">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
-        <div className="text-center mb-16">
+        <div className="text-center mb-12">
           <h1 className="text-5xl font-black text-[#F8FAFC] mb-4 tracking-tight">
             Choose Your Plan
           </h1>
           <p className="text-[#A1A1AA] text-lg max-w-2xl mx-auto">
-            Unlock more features and higher limits for your analytics
+            Start FREE for 7 days - See what's working in your course
           </p>
+        </div>
+
+        {/* Feature Comparison Table */}
+        <div className="mb-16">
+          <FeatureComparisonTable />
         </div>
 
         {/* Pricing Cards */}
@@ -129,16 +129,23 @@ function UpgradeContent() {
                     <div className="flex items-center justify-center w-14 h-14 rounded-xl bg-[#10B981]/10 border border-[#10B981]/20">
                       <span className="text-3xl">{emoji}</span>
                     </div>
-                    {highlight && (
-                      <div className="rounded-lg px-3 py-1.5 text-xs font-semibold bg-[#10B981]/10 border border-[#10B981]/30 text-[#10B981] shadow-[0_0_15px_rgba(16,185,129,0.2)]">
-                        Popular
-                      </div>
-                    )}
-                    {current && (
-                      <div className="rounded-lg px-3 py-1.5 text-xs font-semibold bg-[#10B981]/20 border border-[#10B981]/40 text-[#10B981]">
-                        Current
-                      </div>
-                    )}
+                    <div className="flex flex-col gap-2 items-end">
+                      {tier.trialDays && (
+                        <div className="rounded-lg px-3 py-1.5 text-xs font-bold bg-[#10B981] border border-[#10B981] text-white shadow-[0_0_20px_rgba(16,185,129,0.4)]">
+                          {tier.trialDays}-DAY FREE
+                        </div>
+                      )}
+                      {highlight && !tier.trialDays && (
+                        <div className="rounded-lg px-3 py-1.5 text-xs font-semibold bg-[#10B981]/10 border border-[#10B981]/30 text-[#10B981] shadow-[0_0_15px_rgba(16,185,129,0.2)]">
+                          Most Popular
+                        </div>
+                      )}
+                      {current && (
+                        <div className="rounded-lg px-3 py-1.5 text-xs font-semibold bg-[#10B981]/20 border border-[#10B981]/40 text-[#10B981]">
+                          Current Plan
+                        </div>
+                      )}
+                    </div>
                   </div>
 
                   {/* Plan name and price */}
@@ -173,12 +180,14 @@ function UpgradeContent() {
                       'border shadow-lg',
                       current
                         ? 'bg-[#1a1a1a] border-[#2a2a2a] text-[#71717A] cursor-not-allowed'
+                        : tier.trialDays
+                        ? 'bg-[#10B981] hover:bg-[#0E9F71] border-[#10B981] text-white shadow-[0_0_25px_rgba(16,185,129,0.4)] hover:shadow-[0_0_35px_rgba(16,185,129,0.6)]'
                         : highlight
                         ? 'bg-[#10B981] hover:bg-[#0E9F71] border-[#10B981] text-white shadow-[0_0_25px_rgba(16,185,129,0.4)] hover:shadow-[0_0_35px_rgba(16,185,129,0.6)]'
                         : 'bg-[#0a0a0a] hover:bg-[#1a1a1a] border-[#10B981]/30 hover:border-[#10B981]/50 text-[#F8FAFC] hover:shadow-[0_0_20px_rgba(16,185,129,0.2)]'
                     )}
                   >
-                    {current ? 'Current Plan' : tier.name === 'atom' ? 'Downgrade' : 'Upgrade'}
+                    {current ? 'Current Plan' : tier.trialDays ? 'Start FREE Trial' : 'Upgrade Now'}
                   </Button>
                 </CardContent>
               </Card>

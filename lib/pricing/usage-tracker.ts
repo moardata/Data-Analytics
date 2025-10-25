@@ -9,6 +9,7 @@ import { getTier, type TierName } from './tiers';
 export interface UsageStats {
   studentCount: number;
   formCount: number;
+  responsesThisMonth: number;
   aiInsightsToday: number;
   lastResetDate: string;
 }
@@ -50,6 +51,17 @@ export async function getClientUsage(companyId: string): Promise<UsageStats> {
     .select('*', { count: 'exact', head: true })
     .eq('client_id', clientId);
 
+  // Get responses this month
+  const firstDayOfMonth = new Date();
+  firstDayOfMonth.setDate(1);
+  firstDayOfMonth.setHours(0, 0, 0, 0);
+  
+  const { count: responsesThisMonth } = await supabase
+    .from('form_submissions')
+    .select('*', { count: 'exact', head: true })
+    .eq('client_id', clientId)
+    .gte('created_at', firstDayOfMonth.toISOString());
+
   // Get AI insights generated today (if ai_runs table exists)
   let aiInsightsToday = 0;
   try {
@@ -76,6 +88,7 @@ export async function getClientUsage(companyId: string): Promise<UsageStats> {
   return {
     studentCount: studentCount || 0,
     formCount: formCount || 0,
+    responsesThisMonth: responsesThisMonth || 0,
     aiInsightsToday: aiInsightsToday || 0,
     lastResetDate: today,
   };
@@ -87,11 +100,9 @@ export async function getClientUsage(companyId: string): Promise<UsageStats> {
 export async function checkLimit(
   companyId: string,
   tier: TierName,
-  action: 'addStudent' | 'createForm' | 'generateInsight'
+  action: 'addStudent' | 'analyzeResponse' | 'generateInsight'
 ): Promise<{ allowed: boolean; reason?: string; current?: number; limit?: number }> {
-  // Map database tier to bundle name if needed
-  const actualTier = tier as TierName;
-  const tierData = getTier(actualTier);
+  const tierData = getTier(tier);
   const usage = await getClientUsage(companyId);
 
   switch (action) {
@@ -100,29 +111,26 @@ export async function checkLimit(
       if (usage.studentCount >= studentLimit) {
         return {
           allowed: false,
-          reason: `Student limit reached. Upgrade to add more students.`,
+          reason: `Student limit reached (${studentLimit}). Upgrade to add more students.`,
           current: usage.studentCount,
           limit: studentLimit,
         };
       }
       return { allowed: true };
 
-    case 'createForm':
-      const formLimit = tierData.limits.maxForms;
-      if (usage.formCount >= formLimit) {
+    case 'analyzeResponse':
+      const responseLimit = tierData.limits.maxResponsesPerMonth;
+      if (usage.responsesThisMonth >= responseLimit) {
         return {
           allowed: false,
-          reason: `Form limit reached. Upgrade to create more forms.`,
-          current: usage.formCount,
-          limit: formLimit,
+          reason: `Monthly response limit reached (${responseLimit}). Upgrade to analyze more responses.`,
+          current: usage.responsesThisMonth,
+          limit: responseLimit,
         };
       }
       return { allowed: true };
 
     case 'generateInsight':
-      // TEMP: Bypass limit for testing OpenAI API
-      return { allowed: true };
-      
       const insightLimit = tierData.limits.aiInsightsPerDay;
       if (usage.aiInsightsToday >= insightLimit) {
         return {
@@ -196,7 +204,7 @@ export async function cleanupOldInsights(companyId: string, tier: TierName): Pro
 
   const tierData = getTier(tier);
   const cutoffDate = new Date();
-  cutoffDate.setDate(cutoffDate.getDate() - tierData.limits.aiInsightsHistory);
+  cutoffDate.setDate(cutoffDate.getDate() - tierData.limits.dataRetentionDays);
 
   const { data: oldInsights, error } = await supabase
     .from('insights')
