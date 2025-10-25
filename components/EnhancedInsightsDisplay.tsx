@@ -89,26 +89,13 @@ export default function EnhancedInsightsDisplay({ companyId }: EnhancedInsightsD
 
   const fetchHistory = async () => {
     try {
-      // Mock history data - in real implementation, this would fetch from database
-      const mockHistory: InsightsHistory[] = [
-        {
-          id: 'history-1',
-          timestamp: new Date(Date.now() - 86400000).toISOString(),
-          totalInsights: 8,
-          categories: { performance: 3, retention: 2, feedback: 2, trend: 1 },
-          summary: 'Previous analysis showed engagement improvements'
-        },
-        {
-          id: 'history-2',
-          timestamp: new Date(Date.now() - 172800000).toISOString(),
-          totalInsights: 12,
-          categories: { performance: 4, retention: 3, feedback: 3, trend: 2 },
-          summary: 'Analysis revealed course pacing issues'
-        }
-      ];
-      setHistory(mockHistory);
+      // Fetch real insight history from database
+      // For now, history feature is disabled until we implement proper historical tracking
+      // Just set empty array - no fake data
+      setHistory([]);
     } catch (error) {
       console.error('Error fetching history:', error);
+      setHistory([]);
     }
   };
 

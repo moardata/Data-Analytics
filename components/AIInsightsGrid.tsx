@@ -17,6 +17,7 @@ export interface Insight {
   severity?: InsightSeverity;
   tags?: string[];
   metricDeltaPct?: number;
+  status?: string;
 }
 
 export function InsightsGrid({
@@ -52,6 +53,7 @@ export function InsightCard({
   accent?: string;
 }) {
   const [open, setOpen] = useState(false);
+  const [actionTaken, setActionTaken] = useState(item.status === 'action_taken');
   const toggle = () => setOpen((v) => !v);
   const pillColor = (s?: InsightSeverity) =>
     ({
@@ -60,6 +62,22 @@ export function InsightCard({
       warning: '#FFD700',
       critical: '#FF0040',
     }[s || 'info']);
+
+  const handleMarkAction = async () => {
+    try {
+      const response = await fetch('/api/insights/mark-action', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ insightId: item.id })
+      });
+
+      if (response.ok) {
+        setActionTaken(true);
+      }
+    } catch (error) {
+      console.error('Error marking action:', error);
+    }
+  };
 
   return (
     <div
@@ -137,6 +155,30 @@ export function InsightCard({
               ))}
             </div>
           )}
+          
+          {/* Action Button */}
+          <div className="mt-4 pt-4 border-t border-[#1a1a1a]">
+            {actionTaken ? (
+              <div className="flex items-center gap-2 text-sm">
+                <div className="w-6 h-6 rounded-full bg-[#10B981] flex items-center justify-center">
+                  <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                  </svg>
+                </div>
+                <span className="text-[#10B981] font-medium">Action Taken ✓</span>
+              </div>
+            ) : (
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleMarkAction();
+                }}
+                className="w-full py-2 px-4 rounded-lg bg-[#10B981] hover:bg-[#0E9F71] text-white font-medium text-sm transition-all"
+              >
+                Mark as Actioned
+              </button>
+            )}
+          </div>
         </div>
       </div>
     </div>

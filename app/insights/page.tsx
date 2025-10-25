@@ -115,7 +115,8 @@ function InsightsContent() {
               insight.priority === 'medium' ? 'warning' : 
               insight.category === 'positive' ? 'success' : 'info',
     tags: insight.tags || [],
-    metricDeltaPct: insight.confidence ? Math.round(insight.confidence * 100) : undefined
+    metricDeltaPct: insight.confidence ? Math.round(insight.confidence * 100) : undefined,
+    status: insight.status || 'generated'
   }));
 
   const generateInsights = async () => {

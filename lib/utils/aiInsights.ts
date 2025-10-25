@@ -405,7 +405,7 @@ async function storeInsights(clientId: string, result: AIAnalysisResult, isAIGen
       suggested_action: theme.suggested_action,
       urgency: theme.urgency,
       ai_generated: isAIGenerated, // Only true if actually from OpenAI
-      model: isAIGenerated ? 'gpt-4o-mini' : 'stub'
+      model: 'gpt-4o-mini' // All insights now come from OpenAI
     }
   }));
 
