@@ -81,20 +81,20 @@ function UpgradeContent() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-[#0d0f12] to-[#14171c] py-12">
-      <div className="max-w-7xl mx-auto px-4">
+    <div className="min-h-screen bg-gradient-to-b from-[#0a0a0a] to-[#0f0f0f] py-12 px-4">
+      <div className="max-w-7xl mx-auto">
         {/* Header */}
-        <div className="text-center mb-12">
-          <h1 className="text-4xl font-bold text-white mb-4">
+        <div className="text-center mb-16">
+          <h1 className="text-5xl font-black text-[#F8FAFC] mb-4 tracking-tight">
             Choose Your Plan
           </h1>
-          <p className="text-zinc-400 text-lg">
+          <p className="text-[#A1A1AA] text-lg max-w-2xl mx-auto">
             Unlock more features and higher limits for your analytics
           </p>
         </div>
 
         {/* Pricing Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 max-w-6xl mx-auto">
           {tiers.map((tier) => {
             const highlight = isPopular(tier.name);
             const current = isCurrentTier(tier.name);
@@ -104,55 +104,78 @@ function UpgradeContent() {
               <Card
                 key={tier.name}
                 className={cn(
-                  'relative rounded-2xl border border-[#2A2F36] bg-gradient-to-b from-[#16191F] to-[#121418]',
-                  'transition-all duration-300 shadow-[0_0_20px_rgba(0,0,0,0.5),inset_0_0_8px_rgba(255,255,255,0.05)]',
-                  'hover:shadow-[0_0_25px_rgba(16,185,129,0.6),inset_0_0_12px_rgba(16,185,129,0.2)] hover:border-emerald-500 hover:scale-[1.02]'
+                  'relative rounded-2xl overflow-hidden',
+                  'border border-[#1a1a1a] bg-gradient-to-br from-[#0f0f0f] via-[#1a1a1a] to-[#0f0f0f]',
+                  'transition-all duration-300',
+                  'shadow-[0_0_0_1px_rgba(26,26,26,0.6),0_24px_60px_-20px_rgba(0,0,0,0.65),inset_0_1px_0_rgba(255,255,255,0.04)]',
+                  highlight && 'border-[#10B981]/40',
+                  'hover:shadow-[0_0_30px_rgba(16,185,129,0.3),0_0_0_1px_rgba(16,185,129,0.4),inset_0_1px_0_rgba(255,255,255,0.08)]',
+                  'hover:scale-[1.02]'
                 )}
               >
-                {/* Neon border glow */}
-                <div className="absolute inset-0 rounded-2xl opacity-0 hover:opacity-100 transition-all duration-300 pointer-events-none">
-                  <div className="absolute inset-0 rounded-2xl bg-[radial-gradient(circle_at_center,rgba(16,185,129,0.15),transparent_70%)]" />
-                </div>
+                {/* Top gradient shine */}
+                <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[#10B981]/20 to-transparent" />
+                
+                {/* Glow overlay on hover */}
+                <div className={cn(
+                  "absolute inset-0 opacity-0 transition-opacity duration-300 pointer-events-none",
+                  "bg-gradient-to-br from-[#10B981]/5 via-transparent to-transparent",
+                  "group-hover:opacity-100"
+                )} />
 
-                <CardContent className="relative p-6">
-                  <div className="flex items-center justify-between mb-3">
-                    <div className="text-3xl">{emoji}</div>
+                <CardContent className="relative p-8">
+                  {/* Header with icon and badge */}
+                  <div className="flex items-start justify-between mb-6">
+                    <div className="flex items-center justify-center w-14 h-14 rounded-xl bg-[#10B981]/10 border border-[#10B981]/20">
+                      <span className="text-3xl">{emoji}</span>
+                    </div>
                     {highlight && (
-                      <div className="rounded-full px-3 py-1 text-[12px] font-medium bg-emerald-900/30 border border-emerald-600 text-emerald-300">
+                      <div className="rounded-lg px-3 py-1.5 text-xs font-semibold bg-[#10B981]/10 border border-[#10B981]/30 text-[#10B981] shadow-[0_0_15px_rgba(16,185,129,0.2)]">
                         Popular
                       </div>
                     )}
                     {current && (
-                      <div className="rounded-full px-3 py-1 text-[12px] font-medium bg-blue-900/30 border border-blue-600 text-blue-300">
+                      <div className="rounded-lg px-3 py-1.5 text-xs font-semibold bg-[#10B981]/20 border border-[#10B981]/40 text-[#10B981]">
                         Current
                       </div>
                     )}
                   </div>
 
-                  <h3 className="text-xl font-semibold text-white">{tier.displayName}</h3>
-                  <p className="text-2xl font-bold text-emerald-400 mb-4">
-                    ${tier.price}
-                    <span className="text-zinc-500 text-sm font-normal">/month</span>
-                  </p>
+                  {/* Plan name and price */}
+                  <div className="mb-6">
+                    <h3 className="text-2xl font-bold text-[#F8FAFC] mb-2">{tier.displayName}</h3>
+                    <div className="flex items-baseline gap-1">
+                      <span className="text-4xl font-black text-[#F8FAFC]">${tier.price}</span>
+                      <span className="text-[#A1A1AA] text-base font-medium">/month</span>
+                    </div>
+                  </div>
 
-                  <ul className="space-y-2 text-sm text-zinc-400 mb-6">
+                  {/* Features list */}
+                  <ul className="space-y-3 mb-8 min-h-[200px]">
                     {tier.features.map((feature, idx) => (
-                      <li key={idx} className="flex items-start gap-2">
-                        <span className="text-emerald-400 mt-[2px]">✔</span> {feature}
+                      <li key={idx} className="flex items-start gap-3 text-sm">
+                        <div className="flex-shrink-0 w-5 h-5 rounded-full bg-[#10B981]/10 border border-[#10B981]/30 flex items-center justify-center mt-0.5">
+                          <svg className="w-3 h-3 text-[#10B981]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                          </svg>
+                        </div>
+                        <span className="text-[#D4D4D8] leading-relaxed">{feature}</span>
                       </li>
                     ))}
                   </ul>
 
+                  {/* CTA Button */}
                   <Button
                     onClick={() => handleUpgrade(tier.name)}
                     disabled={current}
                     className={cn(
-                      'w-full border text-white transition-all',
+                      'w-full h-12 rounded-xl font-semibold transition-all duration-300',
+                      'border shadow-lg',
                       current
-                        ? 'bg-[#2A2F36] border-[#2A2F36] cursor-not-allowed opacity-50'
+                        ? 'bg-[#1a1a1a] border-[#2a2a2a] text-[#71717A] cursor-not-allowed'
                         : highlight
-                        ? 'bg-emerald-700/40 hover:bg-emerald-700 border-emerald-600'
-                        : 'bg-[#0B2C24]/40 hover:bg-[#0E3A2F]/60 border-[#17493A]'
+                        ? 'bg-[#10B981] hover:bg-[#0E9F71] border-[#10B981] text-white shadow-[0_0_25px_rgba(16,185,129,0.4)] hover:shadow-[0_0_35px_rgba(16,185,129,0.6)]'
+                        : 'bg-[#0a0a0a] hover:bg-[#1a1a1a] border-[#10B981]/30 hover:border-[#10B981]/50 text-[#F8FAFC] hover:shadow-[0_0_20px_rgba(16,185,129,0.2)]'
                     )}
                   >
                     {current ? 'Current Plan' : tier.name === 'atom' ? 'Downgrade' : 'Upgrade'}
@@ -161,6 +184,13 @@ function UpgradeContent() {
               </Card>
             );
           })}
+        </div>
+
+        {/* Bottom info */}
+        <div className="mt-16 text-center">
+          <p className="text-[#71717A] text-sm">
+            All plans include basic analytics and webhook integrations. Cancel anytime.
+          </p>
         </div>
       </div>
     </div>
