@@ -193,10 +193,32 @@ export const PRICING_TIERS: Record<TierName, PricingTier> = {
 };
 
 /**
- * Get tier by name
+ * Map old tier names to new ones
  */
-export function getTier(tierName: TierName): PricingTier {
-  return PRICING_TIERS[tierName];
+function mapLegacyTierName(tierName: string): TierName {
+  const mapping: Record<string, TierName> = {
+    'atom': 'starter',
+    'core': 'growth',
+    'pulse': 'pro',
+    'surge': 'scale',
+    'quantum': 'scale',
+  };
+  return mapping[tierName] || (tierName as TierName);
+}
+
+/**
+ * Get tier by name (handles legacy tier names)
+ */
+export function getTier(tierName: string): PricingTier {
+  const mappedName = mapLegacyTierName(tierName);
+  const tier = PRICING_TIERS[mappedName];
+  
+  if (!tier) {
+    console.warn(`Unknown tier: ${tierName}, falling back to starter`);
+    return PRICING_TIERS.starter;
+  }
+  
+  return tier;
 }
 
 /**
