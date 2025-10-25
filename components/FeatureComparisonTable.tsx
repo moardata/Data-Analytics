@@ -22,47 +22,33 @@ export function FeatureComparisonTable() {
 
   const features: FeatureRow[] = [
     // Pricing
-    { label: 'Monthly Price', starter: '$30', growth: '$99', pro: '$299', scale: '$599' },
-    { label: 'Free Trial', starter: '7 days', growth: '—', pro: '—', scale: '—' },
+    { label: 'Price', starter: '$30/mo', growth: '$99/mo', pro: '$299/mo', scale: '$599/mo' },
+    { label: 'Trial', starter: '7 days FREE', growth: '—', pro: '—', scale: '—' },
     
-    // Limits
+    // Core Limits
     { label: 'Students', starter: '100', growth: '1,000', pro: '2,000', scale: 'Unlimited' },
-    { label: 'AI Insights/Day', starter: '5', growth: '10', pro: '15', scale: '20+' },
+    { label: 'AI Insights/Day', starter: '5', growth: '10', pro: '15', scale: '20' },
     { label: 'Responses/Month', starter: '100', growth: '1,000', pro: '10,000', scale: 'Unlimited' },
-    { label: 'Data Retention', starter: '14 days', growth: '60 days', pro: '180 days', scale: '365 days' },
     
-    // Dashboard
+    // Features
     { label: 'Dashboard Metrics', starter: '3 of 6', growth: 'All 6', pro: 'All 6', scale: 'All 6' },
-    { label: 'Time Filters', starter: false, growth: true, pro: true, scale: true },
-    { label: 'At-Risk Alerts', starter: false, growth: false, pro: true, scale: true },
-    
-    // Forms
-    { label: 'Custom Forms', starter: 'Unlimited', growth: 'Unlimited', pro: 'Unlimited', scale: 'Unlimited' },
-    { label: 'Form Branching', starter: false, growth: true, pro: true, scale: true },
-    { label: 'White-Label Forms', starter: false, growth: false, pro: true, scale: true },
-    
-    // Exports
     { label: 'CSV Export', starter: false, growth: true, pro: true, scale: true },
     { label: 'PDF Reports', starter: false, growth: false, pro: true, scale: true },
     { label: 'API Access', starter: false, growth: false, pro: false, scale: true },
-    
-    // Support
-    { label: 'Email Support', starter: '72hr', growth: '48hr', pro: '24hr', scale: '2hr SLA' },
-    { label: 'Live Chat', starter: false, growth: false, pro: true, scale: true },
-    { label: 'Success Manager', starter: false, growth: false, pro: false, scale: true },
+    { label: 'Support', starter: '72hr', growth: '48hr', pro: '24hr', scale: '2hr' },
   ];
 
   const renderCell = (value: boolean | string | number, isHighlight: boolean = false) => {
     if (typeof value === 'boolean') {
       return value ? (
-        <Check className="w-5 h-5 text-[#10B981] mx-auto" />
+        <Check className="w-4 h-4 text-[#10B981] mx-auto" />
       ) : (
-        <X className="w-5 h-5 text-[#71717A] mx-auto" />
+        <X className="w-4 h-4 text-[#3a3a3a] mx-auto" />
       );
     }
     return (
       <span className={cn(
-        "text-sm font-medium",
+        "text-xs font-medium",
         isHighlight ? "text-[#F8FAFC]" : "text-[#A1A1AA]"
       )}>
         {value}
@@ -72,53 +58,43 @@ export function FeatureComparisonTable() {
 
   return (
     <div className="w-full overflow-x-auto">
-      <div className="min-w-[800px]">
-        {/* Header Row */}
-        <div className="grid grid-cols-5 gap-4 mb-2">
-          <div className="text-sm font-semibold text-[#A1A1AA]">Features</div>
-          {tiers.map((tier) => (
-            <div
-              key={tier.name}
-              className={cn(
-                "text-center p-4 rounded-t-2xl",
-                tier.name === 'pro' && "bg-[#10B981]/10 border-2 border-[#10B981]/30 border-b-0"
-              )}
-            >
-              <div className="text-lg font-bold text-[#F8FAFC]">{tier.displayName}</div>
-              {tier.name === 'pro' && (
-                <div className="mt-1 text-xs font-semibold text-[#10B981]">Most Popular</div>
-              )}
-              {tier.trialDays && (
-                <div className="mt-1 text-xs font-semibold text-[#10B981]">{tier.trialDays}-day FREE trial</div>
-              )}
-            </div>
-          ))}
-        </div>
-
-        {/* Feature Rows */}
+      <div className="min-w-[700px]">
+        {/* Compact table */}
         <div className="rounded-2xl border border-[#1a1a1a] bg-gradient-to-br from-[#0f0f0f] via-[#1a1a1a] to-[#0f0f0f] overflow-hidden">
+          {/* Header */}
+          <div className="grid grid-cols-5 gap-3 p-4 border-b border-[#1a1a1a] bg-[#0a0a0a]/70">
+            <div className="text-xs font-bold uppercase text-[#71717A] tracking-wide">Feature</div>
+            {tiers.map((tier) => (
+              <div key={tier.name} className="text-center">
+                <div className="text-sm font-bold text-[#F8FAFC]">{tier.displayName}</div>
+                {tier.name === 'pro' && (
+                  <div className="mt-0.5 text-[10px] font-semibold text-[#10B981]">POPULAR</div>
+                )}
+                {tier.trialDays && (
+                  <div className="mt-0.5 text-[10px] font-semibold text-[#10B981]">FREE TRIAL</div>
+                )}
+              </div>
+            ))}
+          </div>
+
+          {/* Feature Rows - More Compact */}
           {features.map((feature, idx) => (
             <div
               key={feature.label}
               className={cn(
-                "grid grid-cols-5 gap-4 p-4 items-center",
-                idx % 2 === 0 ? "bg-[#0a0a0a]/50" : "bg-transparent",
-                idx !== features.length - 1 && "border-b border-[#1a1a1a]/50"
+                "grid grid-cols-5 gap-3 px-4 py-2.5 items-center transition-colors",
+                idx % 2 === 0 ? "bg-[#0a0a0a]/30" : "bg-transparent",
+                "hover:bg-[#0a0a0a]/50",
+                idx !== features.length - 1 && "border-b border-[#1a1a1a]/30"
               )}
             >
-              <div className="text-sm font-medium text-[#D4D4D8]">{feature.label}</div>
-              <div className="text-center p-2 rounded-lg">
-                {renderCell(feature.starter)}
-              </div>
-              <div className="text-center p-2 rounded-lg">
-                {renderCell(feature.growth)}
-              </div>
-              <div className="text-center p-2 rounded-lg bg-[#10B981]/5">
+              <div className="text-xs font-medium text-[#A1A1AA]">{feature.label}</div>
+              <div className="text-center">{renderCell(feature.starter)}</div>
+              <div className="text-center">{renderCell(feature.growth)}</div>
+              <div className="text-center bg-[#10B981]/5 rounded-lg py-1">
                 {renderCell(feature.pro, true)}
               </div>
-              <div className="text-center p-2 rounded-lg">
-                {renderCell(feature.scale)}
-              </div>
+              <div className="text-center">{renderCell(feature.scale)}</div>
             </div>
           ))}
         </div>
