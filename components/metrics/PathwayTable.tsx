@@ -72,7 +72,7 @@ export default function PathwayTable({ data }: PathwayTableProps) {
                         )}
                       </div>
                       <div className="text-sm font-bold text-emerald-400">
-                        {(pathway.completionRate * 100).toFixed(0)}%
+                        {pathway.completionRate.toFixed(0)}%
                       </div>
                     </div>
                     <div className="flex items-center justify-between text-xs text-zinc-400">
@@ -107,7 +107,7 @@ export default function PathwayTable({ data }: PathwayTableProps) {
                     <span className="text-sm text-white">{deadEnd.experienceName || deadEnd.experienceId || 'Unknown'}</span>
                   </div>
                   <div className="text-sm font-bold text-red-400">
-                    {deadEnd.dropOffRate ? (deadEnd.dropOffRate * 100).toFixed(0) : deadEnd.completionRate ? ((1 - deadEnd.completionRate) * 100).toFixed(0) : 0}% drop-off
+                    {deadEnd.dropOffRate ? deadEnd.dropOffRate.toFixed(0) : deadEnd.completionRate ? (100 - deadEnd.completionRate).toFixed(0) : 0}% drop-off
                   </div>
                 </div>
               ))}
@@ -146,7 +146,7 @@ export default function PathwayTable({ data }: PathwayTableProps) {
                         )}
                       </div>
                       <div className="text-xs font-bold text-blue-400">
-                        {(combo.successRate * 100).toFixed(0)}% success
+                        {combo.successRate.toFixed(0)}% success
                       </div>
                     </div>
                   </div>
@@ -164,7 +164,7 @@ export default function PathwayTable({ data }: PathwayTableProps) {
               Students who take {typeof topPathways[0].sequence === 'string' 
                 ? topPathways[0].sequence 
                 : topPathways[0].sequence.join(' → ')
-              } have {(topPathways[0].completionRate * 100).toFixed(0)}% success rates
+              } have {topPathways[0].completionRate.toFixed(0)}% success rates
             </div>
           </div>
         )}
