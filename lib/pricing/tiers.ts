@@ -3,7 +3,7 @@
  * Based on Whop group sizes and realistic creator needs
  */
 
-export type TierName = 'starter' | 'growth' | 'pro' | 'scale';
+export type TierName = 'core' | 'pulse' | 'surge' | 'quantum';
 
 export interface PricingTier {
   name: TierName;
@@ -42,9 +42,9 @@ export interface PricingTier {
  * - Progressive unlocking of dashboard metrics and features
  */
 export const PRICING_TIERS: Record<TierName, PricingTier> = {
-  starter: {
-    name: 'starter',
-    displayName: 'Starter',
+  core: {
+    name: 'core',
+    displayName: 'Core',
     price: 30,
     currency: 'USD',
     trialDays: 7, // 7-day free trial
@@ -78,9 +78,9 @@ export const PRICING_TIERS: Record<TierName, PricingTier> = {
     ],
   },
 
-  growth: {
-    name: 'growth',
-    displayName: 'Growth',
+  pulse: {
+    name: 'pulse',
+    displayName: 'Pulse',
     price: 99,
     currency: 'USD',
     whopPlanId: 'prod_4ISBWlTlS81KL',
@@ -115,9 +115,9 @@ export const PRICING_TIERS: Record<TierName, PricingTier> = {
     ],
   },
 
-  pro: {
-    name: 'pro',
-    displayName: 'Pro',
+  surge: {
+    name: 'surge',
+    displayName: 'Surge',
     price: 299,
     currency: 'USD',
     whopPlanId: 'prod_6O1w6a9outgyO',
@@ -153,9 +153,9 @@ export const PRICING_TIERS: Record<TierName, PricingTier> = {
     ],
   },
 
-  scale: {
-    name: 'scale',
-    displayName: 'Scale',
+  quantum: {
+    name: 'quantum',
+    displayName: 'Quantum',
     price: 599,
     currency: 'USD',
     whopPlanId: 'prod_bm98P1RCFrFmF',
@@ -197,11 +197,11 @@ export const PRICING_TIERS: Record<TierName, PricingTier> = {
  */
 function mapLegacyTierName(tierName: string): TierName {
   const mapping: Record<string, TierName> = {
-    'atom': 'starter',
-    'core': 'growth',
-    'pulse': 'pro',
-    'surge': 'scale',
-    'quantum': 'scale',
+    'atom': 'core',
+    'starter': 'core',
+    'growth': 'pulse',
+    'pro': 'surge',
+    'scale': 'quantum',
   };
   return mapping[tierName] || (tierName as TierName);
 }
@@ -214,8 +214,8 @@ export function getTier(tierName: string): PricingTier {
   const tier = PRICING_TIERS[mappedName];
   
   if (!tier) {
-    console.warn(`Unknown tier: ${tierName}, falling back to starter`);
-    return PRICING_TIERS.starter;
+    console.warn(`Unknown tier: ${tierName}, falling back to core`);
+    return PRICING_TIERS.core;
   }
   
   return tier;

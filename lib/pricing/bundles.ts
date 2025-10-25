@@ -31,9 +31,9 @@ export interface BundleInfo {
 export const PLAN_TO_BUNDLE: Record<string, BundleInfo> = {
   'prod_n8rHHckjTjJdD': { 
     tier: 'pro', 
-    bundle: 'starter', 
-    displayName: 'Starter',
-    description: 'Starter tier for growing creators',
+    bundle: 'core', 
+    displayName: 'Core',
+    description: 'Core tier for growing creators',
     features: {
       aiFeatures: ['5 daily AI insights'],
       dataCollection: ['Unlimited custom forms'],
@@ -48,9 +48,9 @@ export const PLAN_TO_BUNDLE: Record<string, BundleInfo> = {
   },
   'prod_4ISBWlTlS81KL': { 
     tier: 'pro', 
-    bundle: 'growth', 
-    displayName: 'Growth',
-    description: 'Growth tier with advanced analytics',
+    bundle: 'pulse', 
+    displayName: 'Pulse',
+    description: 'Pulse tier with advanced analytics',
     features: {
       aiFeatures: ['10 daily AI insights', 'Full dashboard (all 6 metrics)'],
       dataCollection: ['Unlimited forms + branching logic', 'Time range filters'],
@@ -65,9 +65,9 @@ export const PLAN_TO_BUNDLE: Record<string, BundleInfo> = {
   },
   'prod_6O1w6a9outgyO': { 
     tier: 'premium', 
-    bundle: 'pro', 
-    displayName: 'Pro',
-    description: 'Professional tier with alerts and white-label',
+    bundle: 'surge', 
+    displayName: 'Surge',
+    description: 'Surge tier with alerts and white-label',
     features: {
       aiFeatures: ['15 daily AI insights', 'At-risk student alerts', 'Cohort analysis'],
       dataCollection: ['Unlimited forms + white-label'],
@@ -82,9 +82,9 @@ export const PLAN_TO_BUNDLE: Record<string, BundleInfo> = {
   },
   'prod_bm98P1RCFrFmF': { 
     tier: 'premium', 
-    bundle: 'scale', 
-    displayName: 'Scale',
-    description: 'Enterprise tier with custom AI and dedicated support',
+    bundle: 'quantum', 
+    displayName: 'Quantum',
+    description: 'Quantum tier with custom AI and dedicated support',
     features: {
       aiFeatures: ['20 daily AI insights + custom on-demand', 'Custom AI fine-tuning', 'Multi-account management'],
       dataCollection: ['Unlimited forms + full API', 'White-label everything'],
@@ -105,9 +105,9 @@ export const PLAN_TO_BUNDLE: Record<string, BundleInfo> = {
 export function getBundleInfo(planId: string): BundleInfo {
   return PLAN_TO_BUNDLE[planId] || {
     tier: 'pro',
-    bundle: 'starter',
-    displayName: 'Starter',
-    description: 'Starter tier for growing creators',
+    bundle: 'core',
+    displayName: 'Core',
+    description: 'Core tier for growing creators',
     features: {
       aiFeatures: ['5 daily AI insights'],
       dataCollection: ['Unlimited custom forms'],

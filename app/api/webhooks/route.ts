@@ -469,7 +469,7 @@ async function getOrCreateEntity(whopUserId: string, eventData: any) {
 async function getOrCreateClient(whopCompanyId: string, eventData: any): Promise<string | null> {
 	// Determine tier and bundle from plan_id (if provided)
 	const planId = eventData.plan_id || eventData.membership_plan_id;
-	const { tier, bundle } = planId ? getBundleInfo(planId) : { tier: 'pro' as const, bundle: 'starter' };
+	const { tier, bundle } = planId ? getBundleInfo(planId) : { tier: 'pro' as const, bundle: 'core' };
 
 	// Try to find existing client
 	const { data: existing } = await supabase
