@@ -12,11 +12,10 @@ const PLAN_PRICING: Record<string, number> = {
   'plan_1': 10,
   'plan_2': 15,
   'plan_3': 20,
-  'plan_gDIQ1ypIFaZoQ': 0,  // Atom (Free)
-  'plan_hnYnLn6egXRis': 20, // Core
-  'plan_OvGPVPXu6sarv': 100, // Pulse
-  'plan_YWwjHKXiWT6vq': 200, // Surge
-  'plan_BcSpDXIeGcklw': 400, // Quantum
+  'prod_n8rHHckjTjJdD': 30,  // Starter
+  'prod_4ISBWlTlS81KL': 99,  // Growth
+  'prod_6O1w6a9outgyO': 299, // Pro
+  'prod_bm98P1RCFrFmF': 599, // Scale
 };
 
 // CORS headers

@@ -3,7 +3,7 @@
  * Based on Whop group sizes and realistic creator needs
  */
 
-export type TierName = 'atom' | 'core' | 'pulse' | 'surge' | 'quantum';
+export type TierName = 'starter' | 'growth' | 'pro' | 'scale';
 
 export interface PricingTier {
   name: TierName;
@@ -37,132 +37,123 @@ export interface PricingTier {
  * We set limits slightly above typical sizes to allow growth
  */
 export const PRICING_TIERS: Record<TierName, PricingTier> = {
-  atom: {
-    name: 'atom',
-    displayName: 'Atom',
-    price: 0,
+  starter: {
+    name: 'starter',
+    displayName: 'Starter',
+    price: 30,
     currency: 'USD',
-    whopPlanId: 'plan_gDIQ1ypIFaZoQ',
+    whopPlanId: 'prod_n8rHHckjTjJdD',
     limits: {
-      maxStudents: 20, // Perfect for testing/small courses
-      maxForms: 2,
-      aiInsightsPerDay: 1,
-      aiInsightsHistory: 7, // Keep insights for 1 week
-      dataExport: false,
-      advancedAnalytics: false,
-      emailSupport: false,
-      prioritySupport: false,
-      customBranding: false,
-    },
-    features: [
-      '1 daily insight (aggregated)',
-      'Basic webhooks + form data',
-      '7-day retention window',
-      'Community support only',
-    ],
-  },
-
-  core: {
-    name: 'core',
-    displayName: 'Core',
-    price: 20,
-    currency: 'USD',
-    whopPlanId: 'plan_hnYnLn6egXRis',
-    limits: {
-      maxStudents: 200, // Small-medium courses
-      maxForms: 10,
+      maxStudents: 100,
+      maxForms: 999, // Unlimited custom forms
       aiInsightsPerDay: 5,
-      aiInsightsHistory: 30, // Keep insights for 1 month
-      dataExport: true,
-      advancedAnalytics: false,
-      emailSupport: true,
+      aiInsightsHistory: 14, // 14-day data retention
+      dataExport: false,
+      advancedAnalytics: false, // 3 of 6 core dashboard metrics
+      emailSupport: true, // 72hr support
       prioritySupport: false,
       customBranding: false,
     },
     features: [
-      '5 daily insights + sentiment',
-      'Engagement + survey + sales data',
-      'CSV export',
-      '30-day retention window',
-      'Email support',
+      '5 daily AI insights',
+      'Up to 100 students',
+      '3 core dashboard metrics',
+      'Unlimited custom forms',
+      '100 responses analyzed/month',
+      '14-day data retention',
+      'Email support (72hr)',
     ],
   },
 
-  pulse: {
-    name: 'pulse',
-    displayName: 'Pulse',
-    price: 100,
+  growth: {
+    name: 'growth',
+    displayName: 'Growth',
+    price: 99,
     currency: 'USD',
-    whopPlanId: 'plan_OvGPVPXu6sarv',
+    whopPlanId: 'prod_4ISBWlTlS81KL',
     limits: {
-      maxStudents: 2000, // Medium-large communities
-      maxForms: 50,
+      maxStudents: 1000,
+      maxForms: 999, // Unlimited forms + branching logic
       aiInsightsPerDay: 10,
-      aiInsightsHistory: 90, // Keep insights for 3 months
-      dataExport: true,
-      advancedAnalytics: true,
-      emailSupport: true,
+      aiInsightsHistory: 60, // 60-day data retention
+      dataExport: true, // CSV exports
+      advancedAnalytics: true, // Full dashboard (all 6 metrics)
+      emailSupport: true, // 48hr support
       prioritySupport: false,
       customBranding: false,
     },
     features: [
-      '10 daily AI insights + trend charting',
-      'All webhooks + form history',
-      'CSV / PDF export',
-      '90-day retention window',
-      'Priority chat support',
+      '10 daily AI insights',
+      'Up to 1,000 students',
+      'Full dashboard (all 6 metrics)',
+      'Unlimited forms + branching logic',
+      '1,000 responses analyzed/month',
+      '60-day data retention',
+      'CSV exports',
+      'Time range filters (1D/7D/1M)',
+      'Email support (48hr)',
     ],
   },
 
-  surge: {
-    name: 'surge',
-    displayName: 'Surge',
-    price: 200,
+  pro: {
+    name: 'pro',
+    displayName: 'Pro',
+    price: 299,
     currency: 'USD',
-    whopPlanId: 'plan_YWwjHKXiWT6vq',
+    whopPlanId: 'prod_6O1w6a9outgyO',
     limits: {
-      maxStudents: 10000, // Large communities
-      maxForms: 100,
-      aiInsightsPerDay: 25,
-      aiInsightsHistory: 180, // Keep insights for 6 months
-      dataExport: true,
-      advancedAnalytics: true,
+      maxStudents: 2000,
+      maxForms: 999, // Unlimited forms + white-label
+      aiInsightsPerDay: 15,
+      aiInsightsHistory: 180, // 180-day data retention
+      dataExport: true, // CSV + PDF exports
+      advancedAnalytics: true, // Full dashboard + automated alerts
       emailSupport: true,
-      prioritySupport: true,
-      customBranding: true,
+      prioritySupport: true, // Priority support (24hr) + live chat
+      customBranding: true, // White-label
     },
     features: [
-      '25 AI insights + forecasting + cluster segmentation',
-      'Real-time student feed',
-      'CSV / PDF / API export',
-      '180-day retention window',
-      'Priority support + branding',
+      '15 daily AI insights',
+      'Up to 2,000 students',
+      'Full dashboard + automated alerts',
+      'Unlimited forms + white-label',
+      '10,000 responses analyzed/month',
+      '180-day data retention',
+      'CSV + PDF exports',
+      'At-risk student alerts',
+      'Cohort analysis',
+      'Priority support (24hr) + live chat',
     ],
   },
 
-  quantum: {
-    name: 'quantum',
-    displayName: 'Quantum',
-    price: 400,
+  scale: {
+    name: 'scale',
+    displayName: 'Scale',
+    price: 599,
     currency: 'USD',
-    whopPlanId: 'plan_BcSpDXIeGcklw',
+    whopPlanId: 'prod_bm98P1RCFrFmF',
     limits: {
-      maxStudents: 100000, // Mega communities
-      maxForms: 500,
-      aiInsightsPerDay: 999, // Unlimited custom LLM insights
-      aiInsightsHistory: 365, // Keep insights for 1 year
-      dataExport: true,
-      advancedAnalytics: true,
+      maxStudents: 999999, // 2,000+ students (unlimited)
+      maxForms: 999, // Unlimited forms + full API
+      aiInsightsPerDay: 20, // 20 daily AI insights + custom on-demand
+      aiInsightsHistory: 365, // 365-day data retention
+      dataExport: true, // Full API access
+      advancedAnalytics: true, // Custom AI fine-tuning
       emailSupport: true,
       prioritySupport: true,
-      customBranding: true,
+      customBranding: true, // White-label everything
     },
     features: [
-      'Custom LLM fine-tuned insights + multi-account',
-      'Cross-community analytics',
-      'Full API + data stream export',
-      '365-day retention window',
-      'Dedicated manager support',
+      '20 daily AI insights + custom on-demand',
+      '2,000+ students (unlimited)',
+      'Custom AI fine-tuning',
+      'Unlimited forms + full API',
+      'Unlimited responses analyzed',
+      '365-day data retention',
+      'Full API access',
+      'White-label everything',
+      'Multi-account management',
+      'Dedicated success manager (2hr SLA)',
     ],
   },
 };
