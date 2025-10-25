@@ -19,6 +19,37 @@ function SettingsContent() {
   const experienceId = searchParams.get('experienceId') || searchParams.get('experience_id');
   const [syncing, setSyncing] = useState(false);
   const [syncMessage, setSyncMessage] = useState('');
+  
+  // Notification settings with localStorage
+  const [emailDaily, setEmailDaily] = useState(() => {
+    if (typeof window === 'undefined') return true;
+    const saved = localStorage.getItem('email_daily');
+    return saved === null ? true : saved === 'true';
+  });
+  
+  const [emailWeekly, setEmailWeekly] = useState(() => {
+    if (typeof window === 'undefined') return false;
+    const saved = localStorage.getItem('email_weekly');
+    return saved === null ? false : saved === 'true';
+  });
+  
+  const [analyticsTracking, setAnalyticsTracking] = useState(() => {
+    if (typeof window === 'undefined') return true;
+    const saved = localStorage.getItem('analytics_tracking');
+    return saved === null ? true : saved === 'true';
+  });
+
+  const handleToggle = (setting: string, value: boolean) => {
+    if (typeof window !== 'undefined') {
+      localStorage.setItem(setting, String(value));
+    }
+    
+    switch(setting) {
+      case 'email_daily': setEmailDaily(value); break;
+      case 'email_weekly': setEmailWeekly(value); break;
+      case 'analytics_tracking': setAnalyticsTracking(value); break;
+    }
+  };
 
   // Build query string to preserve in navigation
   const queryParams = new URLSearchParams();
@@ -166,15 +197,27 @@ function SettingsContent() {
             <CardContent className="space-y-3">
               <div className="flex items-center justify-between">
                 <span className="text-[#A1A1AA]">Email insights daily</span>
-                <div className="w-12 h-6 bg-[#10B981] rounded-full relative">
-                  <div className="w-4 h-4 bg-white rounded-full absolute right-1 top-1"></div>
-                </div>
+                <label className="relative inline-flex items-center cursor-pointer">
+                  <input 
+                    type="checkbox" 
+                    className="sr-only peer" 
+                    checked={emailDaily}
+                    onChange={(e) => handleToggle('email_daily', e.target.checked)}
+                  />
+                  <div className="w-11 h-6 bg-[#1a1a1a] peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#10B981]"></div>
+                </label>
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-[#A1A1AA]">Weekly summary</span>
-                <div className="w-12 h-6 bg-[#1a1a1a] rounded-full relative">
-                  <div className="w-4 h-4 bg-white rounded-full absolute left-1 top-1"></div>
-                </div>
+                <label className="relative inline-flex items-center cursor-pointer">
+                  <input 
+                    type="checkbox" 
+                    className="sr-only peer" 
+                    checked={emailWeekly}
+                    onChange={(e) => handleToggle('email_weekly', e.target.checked)}
+                  />
+                  <div className="w-11 h-6 bg-[#1a1a1a] peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#10B981]"></div>
+                </label>
               </div>
             </CardContent>
           </Card>
@@ -199,9 +242,15 @@ function SettingsContent() {
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-[#A1A1AA]">Analytics tracking</span>
-                <div className="w-12 h-6 bg-[#10B981] rounded-full relative">
-                  <div className="w-4 h-4 bg-white rounded-full absolute right-1 top-1"></div>
-                </div>
+                <label className="relative inline-flex items-center cursor-pointer">
+                  <input 
+                    type="checkbox" 
+                    className="sr-only peer" 
+                    checked={analyticsTracking}
+                    onChange={(e) => handleToggle('analytics_tracking', e.target.checked)}
+                  />
+                  <div className="w-11 h-6 bg-[#1a1a1a] peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#10B981]"></div>
+                </label>
               </div>
               <Button 
                 onClick={handleExportData}

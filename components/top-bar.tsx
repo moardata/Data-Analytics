@@ -5,6 +5,7 @@ import { Bell, Users, Settings, Info, X, ChevronRight, Sparkles, Database, Shiel
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { OnboardingFlow } from './OnboardingFlow';
 
 export function TopBar() {
   const [showInfo, setShowInfo] = useState(false);
@@ -61,6 +62,11 @@ export function TopBar() {
 
   return (
     <>
+      {/* First-time onboarding flow */}
+      <OnboardingFlow 
+        onInfoClick={() => setShowInfo(true)}
+      />
+      
       <div className="fixed top-0 right-0 left-0 z-40 bg-[#0a0a0a] border-b border-[#1a1a1a] h-16 flex items-center justify-between px-6">
         {/* Left side - CreatorIQ Logo */}
         <div className="flex items-center">
