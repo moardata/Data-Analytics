@@ -294,57 +294,53 @@ export async function generateWithOpenAI(texts: any[]): Promise<AIAnalysisResult
 
   const prompt = `You are an expert AI analyst for online course/membership businesses. Analyze ${texts.length} data points including survey responses, event patterns, subscription metrics, and behavioral analytics.
 
-Provide actionable insights focused on:
+CRITICAL RULES - DO NOT VIOLATE:
+1. ONLY analyze data that is EXPLICITLY PROVIDED below - DO NOT invent data
+2. DO NOT mention modules, lessons, or features that are NOT in the provided data
+3. DO NOT create insights about problems that are NOT mentioned by students
+4. If only 1-2 responses exist, generate ONLY 1-2 insights maximum
+5. Every insight MUST cite specific text from the data provided
 
-1. REVENUE & CHURN: Payment patterns, cancellations, refund trends, retention issues
-2. ENGAGEMENT METRICS: Activity patterns, drop-off points, student participation
-3. SENTIMENT ANALYSIS: Customer satisfaction, pain points, positive feedback
-4. TREND IDENTIFICATION: Emerging patterns, recurring issues, growth opportunities
-5. PERFORMANCE OPTIMIZATION: Specific areas for improvement with clear metrics
+Provide actionable insights focused on:
+1. REVENUE & CHURN: Payment patterns, cancellations, refund trends (only if mentioned)
+2. ENGAGEMENT METRICS: Activity patterns, drop-off points (only if data shows this)
+3. SENTIMENT ANALYSIS: Customer satisfaction, pain points (from actual feedback)
+4. SPECIFIC REQUESTS: What students explicitly asked for or mentioned
 
 For EACH insight, provide:
-- title: Specific, descriptive name (include module/lesson if mentioned)
-- share_pct: Realistic percentage of responses mentioning this (0-100)
+- title: Based ONLY on what students actually said
+- share_pct: TRUE percentage (if 1 out of 5 mentioned it = 20%, if 1 out of 1 = 100%)
 - sentiment: positive, negative, or neutral
-- suggested_action: SPECIFIC, detailed action with metrics and examples
+- suggested_action: Address the ACTUAL issue mentioned, with metrics
 - urgency: low, medium, or high
 
-FOCUS ON ACTIONABLE INSIGHTS. Be specific about:
-- Which modules/lessons have issues
-- Specific technical problems (video quality, loading, mobile issues)
-- Content gaps or confusion points
-- Engagement patterns and drop-off points
-- Positive feedback to amplify
-
-Example of EXCELLENT insight:
+STRICT EXAMPLE - With 1 response saying "Better trading charts":
+CORRECT:
 {
-  "title": "Mobile video crashes in Module 3 (Real Estate Law)",
-  "share_pct": 23,
+  "title": "Request for improved trading analysis charts",
+  "share_pct": 100,
   "sentiment": "negative",
-  "suggested_action": "Fix mobile video player for Module 3 - 23% of students report crashes. Implement adaptive bitrate streaming and test on iOS/Android. Consider breaking 45-min video into 3 shorter segments.",
-  "urgency": "high"
-}
-
-Example of GOOD engagement insight:
-{
-  "title": "High drop-off after Module 2 quiz",
-  "share_pct": 18,
-  "sentiment": "negative", 
-  "suggested_action": "Redesign Module 2 quiz - 18% of students drop off here. Make quiz less intimidating, add hints, or break into smaller assessments. Consider pre-quiz preparation materials.",
+  "suggested_action": "Enhance trading analysis charts based on student feedback. Review current chart implementation and add requested improvements such as better indicators, clearer timeframes, or interactive features.",
   "urgency": "medium"
 }
 
-Student Feedback Data:
+INCORRECT (DO NOT DO THIS):
+{
+  "title": "Video quality issues in Module 2",  // ❌ NOT MENTIONED
+  "title": "Drop-off at Module 4", // ❌ NOT MENTIONED
+  "title": "Interactive quizzes needed" // ❌ NOT MENTIONED
+}
+
+Actual Student Feedback Data (${texts.length} responses):
 ${textSample}
 
-Return JSON with 4-5 focused insights, summary, and key takeaways:
+Return JSON with ONLY insights that are DIRECTLY supported by the data above. If only 1-3 responses exist, return 1-2 insights max:
 {
   "themes": [
-    { "title": "...", "share_pct": 25, "sentiment": "negative", "suggested_action": "...", "urgency": "high" },
-    { "title": "...", "share_pct": 40, "sentiment": "positive", "suggested_action": "...", "urgency": "low" }
+    { "title": "...", "share_pct": X, "sentiment": "...", "suggested_action": "...", "urgency": "..." }
   ],
-  "summary": "2-3 sentence overview highlighting key engagement patterns and sentiment trends",
-  "key_takeaways": ["Specific actionable takeaway 1", "Specific takeaway 2", "Specific takeaway 3"]
+  "summary": "Brief overview of ACTUAL feedback trends",
+  "key_takeaways": ["Only takeaways from REAL data"]
 }`;
 
   try {
@@ -354,16 +350,16 @@ Return JSON with 4-5 focused insights, summary, and key takeaways:
       messages: [
         { 
           role: 'system', 
-          content: 'You are an expert AI analyst specializing in online education and course optimization. You excel at identifying engagement patterns, sentiment trends, and actionable recommendations. Always provide specific, data-driven insights with clear metrics and examples. Return only valid JSON.' 
+          content: 'You are an expert AI analyst specializing in online education and course optimization. You are STRICT about only analyzing data that is explicitly provided - you never invent or hallucinate information. You provide specific, data-driven insights with clear evidence from the feedback. Return only valid JSON.' 
         },
         { role: 'user', content: prompt }
       ],
       response_format: { type: 'json_object' }, // Ensures structured JSON output
-      temperature: 0.7, // Balanced creativity and consistency
-      max_tokens: 1500, // Increased for more detailed insights
+      temperature: 0.3, // Low temperature for factual, evidence-based analysis (no hallucination)
+      max_tokens: 1000, // Reasonable limit
       top_p: 0.9, // Nucleus sampling for better quality
-      frequency_penalty: 0.1, // Reduces repetition
-      presence_penalty: 0.1, // Encourages topic diversity
+      frequency_penalty: 0.3, // Higher to reduce repetition
+      presence_penalty: 0.2, // Encourages sticking to provided data
     });
 
     const resultText = response.choices[0].message.content;
@@ -372,6 +368,14 @@ Return JSON with 4-5 focused insights, summary, and key takeaways:
     }
     
     const result = JSON.parse(resultText);
+    
+    // Validate and limit insights based on data size
+    const maxInsights = texts.length <= 3 ? 2 : texts.length <= 10 ? 3 : 5;
+    if (result.themes && result.themes.length > maxInsights) {
+      console.log(`⚠️ Limiting insights from ${result.themes.length} to ${maxInsights} based on ${texts.length} data points`);
+      result.themes = result.themes.slice(0, maxInsights);
+    }
+    
     return result as AIAnalysisResult;
   } catch (error: any) {
     console.error('Failed to use OpenAI:', {
