@@ -32,6 +32,7 @@ export async function getClientUsage(companyId: string): Promise<UsageStats> {
     return {
       studentCount: 0,
       formCount: 0,
+      responsesThisMonth: 0,
       aiInsightsToday: 0,
       lastResetDate: today,
     };
