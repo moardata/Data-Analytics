@@ -3,7 +3,7 @@
  * Based on Whop group sizes and realistic creator needs
  */
 
-export type TierName = 'core' | 'pulse' | 'surge' | 'quantum';
+export type TierName = 'starter' | 'growth' | 'pro' | 'scale';
 
 export interface PricingTier {
   name: TierName;
