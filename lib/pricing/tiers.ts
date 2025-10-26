@@ -42,9 +42,9 @@ export interface PricingTier {
  * - Progressive unlocking of dashboard metrics and features
  */
 export const PRICING_TIERS: Record<TierName, PricingTier> = {
-  core: {
-    name: 'core',
-    displayName: 'Core',
+  starter: {
+    name: 'starter',
+    displayName: 'Starter',
     price: 30,
     currency: 'USD',
     trialDays: 7, // 7-day free trial
@@ -78,9 +78,9 @@ export const PRICING_TIERS: Record<TierName, PricingTier> = {
     ],
   },
 
-  pulse: {
-    name: 'pulse',
-    displayName: 'Pulse',
+  growth: {
+    name: 'growth',
+    displayName: 'Growth',
     price: 99,
     currency: 'USD',
     whopPlanId: 'prod_4ISBWlTlS81KL',
@@ -115,9 +115,9 @@ export const PRICING_TIERS: Record<TierName, PricingTier> = {
     ],
   },
 
-  surge: {
-    name: 'surge',
-    displayName: 'Surge',
+  pro: {
+    name: 'pro',
+    displayName: 'Pro',
     price: 299,
     currency: 'USD',
     whopPlanId: 'prod_6O1w6a9outgyO',
@@ -153,9 +153,9 @@ export const PRICING_TIERS: Record<TierName, PricingTier> = {
     ],
   },
 
-  quantum: {
-    name: 'quantum',
-    displayName: 'Quantum',
+  scale: {
+    name: 'scale',
+    displayName: 'Scale',
     price: 599,
     currency: 'USD',
     whopPlanId: 'prod_bm98P1RCFrFmF',

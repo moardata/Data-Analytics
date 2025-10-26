@@ -5,8 +5,9 @@
 
 'use client';
 
-import { Check, X } from 'lucide-react';
+import { Check, X, Zap } from 'lucide-react';
 import { getAllTiers, type TierName } from '@/lib/pricing/tiers';
+import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils/cn';
 
 interface FeatureRow {
@@ -17,7 +18,12 @@ interface FeatureRow {
   scale: boolean | string | number;
 }
 
-export function FeatureComparisonTable() {
+interface FeatureComparisonTableProps {
+  onSelectTier: (tierName: TierName) => void;
+  currentTier?: TierName;
+}
+
+export function FeatureComparisonTable({ onSelectTier, currentTier }: FeatureComparisonTableProps) {
   const tiers = getAllTiers();
 
   const features: FeatureRow[] = [
@@ -60,17 +66,33 @@ export function FeatureComparisonTable() {
         {/* Compact table */}
         <div className="rounded-2xl border border-[#1a1a1a] bg-gradient-to-br from-[#0f0f0f] via-[#1a1a1a] to-[#0f0f0f] overflow-hidden">
           {/* Header */}
-          <div className="grid grid-cols-5 gap-3 p-4 border-b border-[#1a1a1a] bg-[#0a0a0a]/70">
+          <div className="grid grid-cols-5 gap-3 p-6 border-b border-[#1a1a1a] bg-[#0a0a0a]/70">
             <div className="text-xs font-bold uppercase text-[#71717A] tracking-wide">Feature</div>
             {tiers.map((tier) => (
-              <div key={tier.name} className="text-center">
-                <div className="text-sm font-bold text-[#F8FAFC]">{tier.displayName}</div>
-                {tier.name === 'pro' && (
-                  <div className="mt-0.5 text-[10px] font-semibold text-[#10B981]">POPULAR</div>
-                )}
-                {tier.trialDays && (
-                  <div className="mt-0.5 text-[10px] font-semibold text-[#10B981]">FREE TRIAL</div>
-                )}
+              <div key={tier.name} className="text-center space-y-2">
+                <div>
+                  <div className="text-sm font-bold text-[#F8FAFC]">{tier.displayName}</div>
+                  {tier.name === 'pro' && (
+                    <div className="mt-0.5 text-[10px] font-semibold text-[#10B981]">POPULAR</div>
+                  )}
+                  {tier.trialDays && (
+                    <div className="mt-0.5 text-[10px] font-semibold text-[#10B981]">FREE TRIAL</div>
+                  )}
+                </div>
+                <Button
+                  onClick={() => onSelectTier(tier.name)}
+                  disabled={currentTier === tier.name}
+                  className={cn(
+                    'w-full h-9 text-xs font-semibold transition-all',
+                    currentTier === tier.name
+                      ? 'bg-[#1a1a1a] border-[#2a2a2a] text-[#71717A] cursor-not-allowed'
+                      : tier.trialDays || tier.name === 'pro'
+                      ? 'bg-[#10B981] hover:bg-[#0E9F71] border-[#10B981] text-white shadow-[0_0_15px_rgba(16,185,129,0.3)]'
+                      : 'bg-[#0a0a0a] hover:bg-[#1a1a1a] border-[#10B981]/30 hover:border-[#10B981]/50 text-[#F8FAFC]'
+                  )}
+                >
+                  {currentTier === tier.name ? 'Current' : tier.trialDays ? 'Start FREE' : 'Select'}
+                </Button>
               </div>
             ))}
           </div>
