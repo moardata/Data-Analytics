@@ -197,11 +197,11 @@ export const PRICING_TIERS: Record<TierName, PricingTier> = {
  */
 function mapLegacyTierName(tierName: string): TierName {
   const mapping: Record<string, TierName> = {
-    'atom': 'core',
-    'starter': 'core',
-    'growth': 'pulse',
-    'pro': 'surge',
-    'scale': 'quantum',
+    'atom': 'starter',
+    'core': 'growth',
+    'pulse': 'pro',
+    'surge': 'scale',
+    'quantum': 'scale',
   };
   return mapping[tierName] || (tierName as TierName);
 }
