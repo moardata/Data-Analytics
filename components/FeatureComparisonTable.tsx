@@ -23,7 +23,6 @@ export function FeatureComparisonTable() {
   const features: FeatureRow[] = [
     // Pricing
     { label: 'Price', starter: '$30/mo', growth: '$99/mo', pro: '$299/mo', scale: '$599/mo' },
-    { label: 'Trial', starter: '7 days FREE', growth: '—', pro: '—', scale: '—' },
     
     // Core Limits
     { label: 'Students', starter: '100', growth: '1,000', pro: '2,000', scale: 'Unlimited' },
