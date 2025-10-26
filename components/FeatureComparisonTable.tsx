@@ -34,7 +34,6 @@ export function FeatureComparisonTable() {
     { label: 'CSV Export', starter: false, growth: true, pro: true, scale: true },
     { label: 'PDF Reports', starter: false, growth: false, pro: true, scale: true },
     { label: 'API Access', starter: false, growth: false, pro: false, scale: true },
-    { label: 'Support', starter: '72hr', growth: '48hr', pro: '24hr', scale: '2hr' },
   ];
 
   const renderCell = (value: boolean | string | number, isHighlight: boolean = false) => {
