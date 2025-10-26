@@ -88,17 +88,60 @@ function UpgradeContent() {
           </p>
         </div>
 
-        {/* Feature Comparison Table */}
-        <div className="mb-16">
-          <FeatureComparisonTable onSelectTier={handleUpgrade} currentTier={currentTier} />
-        </div>
+            {/* Feature Comparison Table */}
+            <div className="mb-16">
+              <FeatureComparisonTable onSelectTier={handleUpgrade} currentTier={currentTier} />
+            </div>
 
-        {/* Bottom info */}
-        <div className="mt-16 text-center">
-          <p className="text-[#71717A] text-sm">
-            All plans include basic analytics and webhook integrations. Cancel anytime.
-          </p>
-        </div>
+            {/* FAQ Section */}
+            <div className="mb-16">
+              <h2 className="text-3xl font-bold text-[#F8FAFC] mb-8 text-center">
+                Frequently Asked Questions
+              </h2>
+              <div className="max-w-3xl mx-auto space-y-4">
+                {[
+                  {
+                    question: "Question 1 - Edit this tomorrow",
+                    answer: "Answer 1 - Add your answer here"
+                  },
+                  {
+                    question: "Question 2 - Edit this tomorrow",
+                    answer: "Answer 2 - Add your answer here"
+                  },
+                  {
+                    question: "Question 3 - Edit this tomorrow",
+                    answer: "Answer 3 - Add your answer here"
+                  },
+                  {
+                    question: "Question 4 - Edit this tomorrow",
+                    answer: "Answer 4 - Add your answer here"
+                  },
+                  {
+                    question: "Question 5 - Edit this tomorrow",
+                    answer: "Answer 5 - Add your answer here"
+                  },
+                ].map((faq, index) => (
+                  <div 
+                    key={index}
+                    className="rounded-2xl border border-[#1a1a1a] bg-gradient-to-br from-[#0f0f0f] via-[#1a1a1a] to-[#0f0f0f] p-6 transition-all duration-300 hover:border-[#10B981]/30"
+                  >
+                    <h3 className="text-lg font-semibold text-[#F8FAFC] mb-3">
+                      {faq.question}
+                    </h3>
+                    <p className="text-[#A1A1AA] text-sm leading-relaxed">
+                      {faq.answer}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Bottom info */}
+            <div className="mt-16 text-center">
+              <p className="text-[#71717A] text-sm">
+                All plans include basic analytics and webhook integrations. Cancel anytime.
+              </p>
+            </div>
       </div>
     </div>
   );
