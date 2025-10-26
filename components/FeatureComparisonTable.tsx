@@ -69,8 +69,8 @@ export function FeatureComparisonTable({ onSelectTier, currentTier }: FeatureCom
           <div className="grid grid-cols-5 gap-3 p-6 border-b border-[#1a1a1a] bg-[#0a0a0a]/70">
             <div className="text-xs font-bold uppercase text-[#71717A] tracking-wide">Feature</div>
             {tiers.map((tier) => (
-              <div key={tier.name} className="text-center space-y-2">
-                <div>
+              <div key={tier.name} className="text-center space-y-2 flex flex-col h-full">
+                <div className="flex-1">
                   <div className="text-sm font-bold text-[#F8FAFC]">{tier.displayName}</div>
                 {tier.name === 'pulse' && (
                   <div className="mt-0.5 text-[10px] font-semibold text-[#10B981]">POPULAR</div>
@@ -83,12 +83,10 @@ export function FeatureComparisonTable({ onSelectTier, currentTier }: FeatureCom
                   onClick={() => onSelectTier(tier.name)}
                   disabled={currentTier === tier.name}
                   className={cn(
-                    'w-full h-9 text-xs font-semibold transition-all',
+                    'w-full h-9 text-xs font-semibold transition-all duration-300',
                     currentTier === tier.name
                       ? 'bg-[#1a1a1a] border-[#2a2a2a] text-[#71717A] cursor-not-allowed'
-                      : tier.trialDays || tier.name === 'pulse'
-                      ? 'bg-[#10B981] hover:bg-[#0E9F71] border-[#10B981] text-white shadow-[0_0_15px_rgba(16,185,129,0.3)]'
-                      : 'bg-[#0a0a0a] hover:bg-[#1a1a1a] border-[#10B981]/30 hover:border-[#10B981]/50 text-[#F8FAFC]'
+                      : 'bg-[#10B981]/20 hover:bg-[#10B981]/30 border-[#10B981]/40 hover:border-[#10B981]/60 text-white backdrop-blur-sm hover:shadow-[0_0_20px_rgba(16,185,129,0.4)] hover:shadow-[0_0_40px_rgba(16,185,129,0.2)]'
                   )}
                 >
                   {currentTier === tier.name ? 'Current' : tier.trialDays ? 'Start FREE' : 'Select'}
