@@ -3,7 +3,7 @@
  * Based on Whop group sizes and realistic creator needs
  */
 
-export type TierName = 'starter' | 'growth' | 'pro' | 'scale';
+export type TierName = 'atom' | 'core' | 'pulse' | 'surge';
 
 export interface PricingTier {
   name: TierName;
@@ -42,8 +42,8 @@ export interface PricingTier {
  * - Progressive unlocking of dashboard metrics and features
  */
 export const PRICING_TIERS: Record<TierName, PricingTier> = {
-  starter: {
-    name: 'starter',
+  atom: {
+    name: 'atom',
     displayName: 'Starter',
     price: 30,
     currency: 'USD',
@@ -78,8 +78,8 @@ export const PRICING_TIERS: Record<TierName, PricingTier> = {
     ],
   },
 
-  growth: {
-    name: 'growth',
+  core: {
+    name: 'core',
     displayName: 'Growth',
     price: 99,
     currency: 'USD',
@@ -115,8 +115,8 @@ export const PRICING_TIERS: Record<TierName, PricingTier> = {
     ],
   },
 
-  pro: {
-    name: 'pro',
+  pulse: {
+    name: 'pulse',
     displayName: 'Pro',
     price: 299,
     currency: 'USD',
@@ -153,8 +153,8 @@ export const PRICING_TIERS: Record<TierName, PricingTier> = {
     ],
   },
 
-  scale: {
-    name: 'scale',
+  surge: {
+    name: 'surge',
     displayName: 'Scale',
     price: 599,
     currency: 'USD',
@@ -193,32 +193,10 @@ export const PRICING_TIERS: Record<TierName, PricingTier> = {
 };
 
 /**
- * Map old tier names to new ones
+ * Get tier by name
  */
-function mapLegacyTierName(tierName: string): TierName {
-  const mapping: Record<string, TierName> = {
-    'atom': 'starter',
-    'core': 'growth',
-    'pulse': 'pro',
-    'surge': 'scale',
-    'quantum': 'scale',
-  };
-  return mapping[tierName] || (tierName as TierName);
-}
-
-/**
- * Get tier by name (handles legacy tier names)
- */
-export function getTier(tierName: string): PricingTier {
-  const mappedName = mapLegacyTierName(tierName);
-  const tier = PRICING_TIERS[mappedName];
-  
-  if (!tier) {
-    console.warn(`Unknown tier: ${tierName}, falling back to core`);
-    return PRICING_TIERS.core;
-  }
-  
-  return tier;
+export function getTier(tierName: TierName): PricingTier {
+  return PRICING_TIERS[tierName] || PRICING_TIERS.atom;
 }
 
 /**

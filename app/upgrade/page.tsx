@@ -16,17 +16,17 @@ import { FeatureComparisonTable } from '@/components/FeatureComparisonTable';
 export const dynamic = 'force-dynamic';
 
 const planEmojis: Record<TierName, string> = {
-  starter: '⚛️',
-  growth: '🚀',
-  pro: '🏆',
-  scale: '💼',
+  atom: '⚛️',
+  core: '🚀',
+  pulse: '🏆',
+  surge: '💼',
 };
 
 function UpgradeContent() {
   const searchParams = useSearchParams();
   const clientId = searchParams.get('companyId') || process.env.NEXT_PUBLIC_WHOP_COMPANY_ID;
   
-  const [currentTier, setCurrentTier] = useState<TierName>('starter');
+  const [currentTier, setCurrentTier] = useState<TierName>('atom');
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -37,7 +37,7 @@ function UpgradeContent() {
     try {
       const res = await fetch(`/api/usage/check?companyId=${clientId}`);
       const data = await res.json();
-      setCurrentTier(data.tier || 'starter');
+      setCurrentTier(data.tier || 'atom');
     } catch (error) {
       console.error('Error fetching tier:', error);
     } finally {
@@ -64,7 +64,7 @@ function UpgradeContent() {
   };
 
   const tiers = getAllTiers();
-  const isPopular = (tierName: TierName) => tierName === 'pro';
+  const isPopular = (tierName: TierName) => tierName === 'pulse';
   const isCurrentTier = (tierName: TierName) => tierName === currentTier;
 
   if (loading) {

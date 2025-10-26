@@ -12,10 +12,10 @@ import { cn } from '@/lib/utils/cn';
 
 interface FeatureRow {
   label: string;
-  starter: boolean | string | number;
-  growth: boolean | string | number;
-  pro: boolean | string | number;
-  scale: boolean | string | number;
+  atom: boolean | string | number;
+  core: boolean | string | number;
+  pulse: boolean | string | number;
+  surge: boolean | string | number;
 }
 
 interface FeatureComparisonTableProps {
@@ -28,18 +28,18 @@ export function FeatureComparisonTable({ onSelectTier, currentTier }: FeatureCom
 
   const features: FeatureRow[] = [
     // Pricing
-    { label: 'Price', starter: '$30/mo', growth: '$99/mo', pro: '$299/mo', scale: '$599/mo' },
+    { label: 'Price', atom: '$30/mo', core: '$99/mo', pulse: '$299/mo', surge: '$599/mo' },
     
     // Core Limits
-    { label: 'Students', starter: '100', growth: '1,000', pro: '2,000', scale: 'Unlimited' },
-    { label: 'AI Insights/Day', starter: '5', growth: '10', pro: '15', scale: '20' },
-    { label: 'Responses/Month', starter: '100', growth: '1,000', pro: '10,000', scale: 'Unlimited' },
+    { label: 'Students', atom: '100', core: '1,000', pulse: '2,000', surge: 'Unlimited' },
+    { label: 'AI Insights/Day', atom: '5', core: '10', pulse: '15', surge: '20' },
+    { label: 'Responses/Month', atom: '100', core: '1,000', pulse: '10,000', surge: 'Unlimited' },
     
     // Features
-    { label: 'Dashboard Metrics', starter: '3 of 6', growth: 'All 6', pro: 'All 6', scale: 'All 6' },
-    { label: 'CSV Export', starter: false, growth: true, pro: true, scale: true },
-    { label: 'PDF Reports', starter: false, growth: false, pro: true, scale: true },
-    { label: 'API Access', starter: false, growth: false, pro: false, scale: true },
+    { label: 'Dashboard Metrics', atom: '3 of 6', core: 'All 6', pulse: 'All 6', surge: 'All 6' },
+    { label: 'CSV Export', atom: false, core: true, pulse: true, surge: true },
+    { label: 'PDF Reports', atom: false, core: false, pulse: true, surge: true },
+    { label: 'API Access', atom: false, core: false, pulse: false, surge: true },
   ];
 
   const renderCell = (value: boolean | string | number, isHighlight: boolean = false) => {
@@ -72,9 +72,9 @@ export function FeatureComparisonTable({ onSelectTier, currentTier }: FeatureCom
               <div key={tier.name} className="text-center space-y-2">
                 <div>
                   <div className="text-sm font-bold text-[#F8FAFC]">{tier.displayName}</div>
-                  {tier.name === 'pro' && (
-                    <div className="mt-0.5 text-[10px] font-semibold text-[#10B981]">POPULAR</div>
-                  )}
+                {tier.name === 'pulse' && (
+                  <div className="mt-0.5 text-[10px] font-semibold text-[#10B981]">POPULAR</div>
+                )}
                   {tier.trialDays && (
                     <div className="mt-0.5 text-[10px] font-semibold text-[#10B981]">FREE TRIAL</div>
                   )}
@@ -86,7 +86,7 @@ export function FeatureComparisonTable({ onSelectTier, currentTier }: FeatureCom
                     'w-full h-9 text-xs font-semibold transition-all',
                     currentTier === tier.name
                       ? 'bg-[#1a1a1a] border-[#2a2a2a] text-[#71717A] cursor-not-allowed'
-                      : tier.trialDays || tier.name === 'pro'
+                      : tier.trialDays || tier.name === 'pulse'
                       ? 'bg-[#10B981] hover:bg-[#0E9F71] border-[#10B981] text-white shadow-[0_0_15px_rgba(16,185,129,0.3)]'
                       : 'bg-[#0a0a0a] hover:bg-[#1a1a1a] border-[#10B981]/30 hover:border-[#10B981]/50 text-[#F8FAFC]'
                   )}
@@ -109,12 +109,12 @@ export function FeatureComparisonTable({ onSelectTier, currentTier }: FeatureCom
               )}
             >
               <div className="text-xs font-medium text-[#A1A1AA]">{feature.label}</div>
-              <div className="text-center">{renderCell(feature.starter)}</div>
-              <div className="text-center">{renderCell(feature.growth)}</div>
+              <div className="text-center">{renderCell(feature.atom)}</div>
+              <div className="text-center">{renderCell(feature.core)}</div>
               <div className="text-center bg-[#10B981]/5 rounded-lg py-1">
-                {renderCell(feature.pro, true)}
+                {renderCell(feature.pulse, true)}
               </div>
-              <div className="text-center">{renderCell(feature.scale)}</div>
+              <div className="text-center">{renderCell(feature.surge)}</div>
             </div>
           ))}
         </div>
