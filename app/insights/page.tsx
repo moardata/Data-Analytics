@@ -251,13 +251,13 @@ function InsightsContent() {
         {/* Header */}
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-8">
           <div>
-            <h1 className="text-2xl md:text-3xl font-semibold flex items-center gap-3">
-              <div className="w-10 h-10 rounded-lg bg-[#10B981] flex items-center justify-center">
-                <Sparkles className="h-6 w-6 text-white" />
-              </div>
-              AI Insights
-            </h1>
-            <p className="text-[#A1A1AA] mt-2">
+            <div>
+              <h1 className="text-2xl md:text-3xl font-bold text-[#F8FAFC] mb-2">
+                AI Insights
+              </h1>
+              <div className="w-16 h-1 bg-gradient-to-r from-[#8B5CF6] to-[#8B5CF6]/50 rounded-full mb-3"></div>
+            </div>
+            <p className="text-[#A1A1AA]">
               AI-powered recommendations and analytics for your community
             </p>
           </div>
@@ -268,7 +268,7 @@ function InsightsContent() {
                 onClick={() => setTimeRange('daily')}
                 className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
                   timeRange === 'daily'
-                    ? 'bg-[#10B981] text-white shadow-md'
+                    ? 'border border-[#10B981]/30 bg-[#0B2C24] text-[#10B981]'
                     : 'text-[#A1A1AA] hover:text-[#F8FAFC] hover:bg-[#1a1a1a]'
                 }`}
               >
@@ -278,7 +278,7 @@ function InsightsContent() {
                 onClick={() => setTimeRange('weekly')}
                 className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
                   timeRange === 'weekly'
-                    ? 'bg-[#10B981] text-white shadow-md'
+                    ? 'border border-[#10B981]/30 bg-[#0B2C24] text-[#10B981]'
                     : 'text-[#A1A1AA] hover:text-[#F8FAFC] hover:bg-[#1a1a1a]'
                 }`}
               >
