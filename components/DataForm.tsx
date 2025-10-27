@@ -60,20 +60,26 @@ export function DataForm({ formId, fields, onSubmit, title, description }: DataF
   };
 
   return (
-    <div className="bg-[#171A1F] rounded-xl shadow-lg p-8 border border-[#2A2F36]">
+    <div className="relative overflow-hidden rounded-xl shadow-lg p-8 border border-[#1a1a1a]/70 bg-gradient-to-br from-[#0f0f0f] via-[#1a1a1a] to-[#0f0f0f]">
+      {/* Metallic sheen overlay */}
+      <div className="pointer-events-none absolute inset-0 opacity-30">
+        <div className="absolute inset-0 bg-gradient-to-b from-white/4 via-transparent to-transparent" />
+      </div>
+      
+      <div className="relative z-10">
       {title && (
-        <h2 className="text-3xl font-black text-[#E1E4EA] mb-3">{title}</h2>
+        <h2 className="text-3xl font-black text-[#F8FAFC] mb-3">{title}</h2>
       )}
       {description && (
-        <p className="text-lg font-semibold text-[#9AA4B2] mb-6">{description}</p>
+        <p className="text-lg font-semibold text-[#A1A1AA] mb-6">{description}</p>
       )}
 
       <form onSubmit={handleSubmit} className="space-y-6">
         {fields.map(field => (
           <div key={field.id}>
-            <label className="block text-lg font-bold text-[#E1E4EA] mb-2">
+            <label className="block text-lg font-bold text-[#F8FAFC] mb-2">
               {field.label}
-              {field.required && <span className="text-red-400 ml-1 text-xl">*</span>}
+              {field.required && <span className="text-[#10B981] ml-1 text-xl">*</span>}
             </label>
 
             {(field.type === 'text' || field.type === 'short_text') && (
@@ -82,7 +88,7 @@ export function DataForm({ formId, fields, onSubmit, title, description }: DataF
                 value={responses[field.id] || ''}
                 onChange={(e) => handleFieldChange(field.id, e.target.value)}
                 placeholder={field.placeholder}
-                className="w-full px-4 py-2 bg-[#0d0f12] border border-[#2A2F36] rounded-lg text-[#E1E4EA] placeholder-[#9AA4B2] focus:ring-2 focus:ring-[#10B981] focus:border-[#10B981]"
+                className="w-full px-4 py-3 bg-[#0a0a0a]/50 border border-[#1a1a1a] rounded-lg text-[#F8FAFC] placeholder-[#A1A1AA] focus:ring-2 focus:ring-[#10B981]/50 focus:border-[#10B981] transition-all"
                 required={field.required}
               />
             )}
@@ -93,7 +99,7 @@ export function DataForm({ formId, fields, onSubmit, title, description }: DataF
                 onChange={(e) => handleFieldChange(field.id, e.target.value)}
                 placeholder={field.placeholder}
                 rows={4}
-                className="w-full px-4 py-2 bg-[#0d0f12] border border-[#2A2F36] rounded-lg text-[#E1E4EA] placeholder-[#9AA4B2] focus:ring-2 focus:ring-[#10B981] focus:border-[#10B981]"
+                className="w-full px-4 py-3 bg-[#0a0a0a]/50 border border-[#1a1a1a] rounded-lg text-[#F8FAFC] placeholder-[#A1A1AA] focus:ring-2 focus:ring-[#10B981]/50 focus:border-[#10B981] transition-all resize-none"
                 required={field.required}
               />
             )}
@@ -104,7 +110,7 @@ export function DataForm({ formId, fields, onSubmit, title, description }: DataF
                 value={responses[field.id] || ''}
                 onChange={(e) => handleFieldChange(field.id, e.target.value)}
                 placeholder={field.placeholder}
-                className="w-full px-4 py-2 bg-[#0d0f12] border border-[#2A2F36] rounded-lg text-[#E1E4EA] placeholder-[#9AA4B2] focus:ring-2 focus:ring-[#10B981] focus:border-[#10B981]"
+                className="w-full px-4 py-3 bg-[#0a0a0a]/50 border border-[#1a1a1a] rounded-lg text-[#F8FAFC] placeholder-[#A1A1AA] focus:ring-2 focus:ring-[#10B981]/50 focus:border-[#10B981] transition-all"
                 required={field.required}
               />
             )}
@@ -115,7 +121,7 @@ export function DataForm({ formId, fields, onSubmit, title, description }: DataF
                 value={responses[field.id] || ''}
                 onChange={(e) => handleFieldChange(field.id, e.target.value)}
                 placeholder={field.placeholder}
-                className="w-full px-4 py-2 bg-[#0d0f12] border border-[#2A2F36] rounded-lg text-[#E1E4EA] placeholder-[#9AA4B2] focus:ring-2 focus:ring-[#10B981] focus:border-[#10B981]"
+                className="w-full px-4 py-3 bg-[#0a0a0a]/50 border border-[#1a1a1a] rounded-lg text-[#F8FAFC] placeholder-[#A1A1AA] focus:ring-2 focus:ring-[#10B981]/50 focus:border-[#10B981] transition-all"
                 required={field.required}
               />
             )}
@@ -306,13 +312,14 @@ export function DataForm({ formId, fields, onSubmit, title, description }: DataF
           disabled={submitting}
           className={`w-full py-4 px-6 rounded-xl font-bold text-lg transition-all shadow-lg ${
             submitting
-              ? 'bg-[#2A2F36] cursor-not-allowed text-[#9AA4B2] border border-[#2A2F36]'
-              : 'bg-[#0B2C24] hover:bg-[#0E3A2F] text-white border border-[#17493A] hover:border-[#10B981] hover:shadow-[#10B981]/20'
+              ? 'bg-[#3F3F46] cursor-not-allowed text-[#A1A1AA] border border-[#3F3F46]'
+              : 'bg-gradient-to-r from-[#10B981] to-[#0E9F71] hover:from-[#0E9F71] hover:to-[#10B981] text-white shadow-[#10B981]/20'
           }`}
         >
           {submitting ? 'Submitting...' : 'Submit'}
         </button>
       </form>
+      </div>
     </div>
   );
 }

@@ -876,28 +876,41 @@ function FormsContent() {
 
       {/* Inline Form Preview Modal */}
       {selectedForm && (
-        <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50 p-4">
-          <div className="bg-[#0f0f0f] border border-[#1a1a1a] rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-hidden">
-            <div className="flex items-center justify-between p-4 border-b border-[#1a1a1a]">
-              <h3 className="text-lg font-semibold text-[#F8FAFC]">
-                {selectedForm.name} - Preview
-              </h3>
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="relative overflow-hidden border border-[#1a1a1a]/70 bg-gradient-to-br from-[#0f0f0f] via-[#1a1a1a] to-[#0f0f0f] rounded-xl shadow-2xl shadow-[#10B981]/10 max-w-4xl w-full max-h-[90vh]">
+            {/* Metallic sheen overlay */}
+            <div className="pointer-events-none absolute inset-0 opacity-40">
+              <div className="absolute inset-0 bg-gradient-to-b from-white/4 via-transparent to-transparent" />
+            </div>
+            
+            {/* Header */}
+            <div className="relative z-10 flex items-center justify-between p-6 border-b border-[#1a1a1a]/50">
+              <div>
+                <h3 className="text-xl font-bold text-[#F8FAFC] flex items-center gap-2">
+                  <Eye className="h-5 w-5 text-[#10B981]" />
+                  {selectedForm.name}
+                </h3>
+                <p className="text-sm text-[#A1A1AA] mt-1">Preview Mode</p>
+              </div>
               <Button
                 onClick={() => setSelectedForm(null)}
                 variant="ghost"
                 size="sm"
-                className="text-[#A1A1AA] hover:text-[#F8FAFC]"
+                className="text-[#A1A1AA] hover:text-[#F8FAFC] hover:bg-[#1a1a1a] rounded-lg transition-all"
               >
-                <X className="h-4 w-4" />
+                <X className="h-5 w-5" />
               </Button>
             </div>
-            <div className="p-6 overflow-y-auto max-h-[calc(90vh-80px)]">
-              <div className="mb-4">
-                <p className="text-[#A1A1AA] text-sm">
+            
+            {/* Content */}
+            <div className="relative z-10 p-6 overflow-y-auto max-h-[calc(90vh-100px)]">
+              <div className="mb-6 p-4 rounded-lg border border-[#10B981]/20 bg-[#0B2C24]/30">
+                <p className="text-[#E2E8F0] text-sm">
                   {selectedForm.description || 'No description provided'}
                 </p>
-                <p className="text-[#A1A1AA] text-xs mt-1">
-                  {selectedForm.fields?.length || 0} fields
+                <p className="text-[#10B981] text-xs mt-2 flex items-center gap-2">
+                  <CheckCircle className="h-3 w-3" />
+                  {selectedForm.fields?.length || 0} fields in this survey
                 </p>
               </div>
               <DataForm
