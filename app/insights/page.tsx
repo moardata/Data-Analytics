@@ -5,7 +5,7 @@
 
 'use client';
 
-import { Suspense, useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useSearchParams } from 'next/navigation';
 
 export const dynamic = 'force-dynamic';
@@ -606,13 +606,5 @@ function InsightsContent() {
 }
 
 export default function InsightsPage() {
-  return (
-    <Suspense fallback={
-      <div className="min-h-screen bg-gradient-to-b from-[#0a0a0a] to-[#0f0f0f]">
-        <LoadingScreen message="Loading AI Insights" size="lg" />
-      </div>
-    }>
-      <InsightsContent />
-    </Suspense>
-  );
+  return <InsightsContent />;
 }

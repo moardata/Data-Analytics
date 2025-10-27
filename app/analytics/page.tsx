@@ -11,7 +11,7 @@
 
 'use client';
 
-import { Suspense, useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import DashboardCreatorAnalytics from '@/components/DashboardCreatorAnalytics';
 import { adaptToCreatorAnalytics } from '@/lib/utils/adaptDashboardCreatorAnalytics';
 import { PermissionsBanner } from '@/components/PermissionsBanner';
@@ -344,13 +344,5 @@ function AnalyticsContent() {
 }
 
 export default function AnalyticsPage() {
-  return (
-    <Suspense fallback={
-      <div className="min-h-screen bg-gradient-to-b from-[#0a0a0a] to-[#0f0f0f]">
-        <LoadingScreen message="Loading analytics" size="lg" />
-      </div>
-    }>
-      <AnalyticsContent />
-    </Suspense>
-  );
+  return <AnalyticsContent />;
 }

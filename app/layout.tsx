@@ -11,6 +11,7 @@ import { ThemeVariantProvider } from "@/contexts/theme-variant-context";
 import { MainContent } from "@/components/main-content";
 import { ThemeDataAttribute } from "@/components/ThemeDataAttribute";
 import "./globals.css";
+import "./page-transition.css";
 
 const inter = Inter({
 	subsets: ["latin"],

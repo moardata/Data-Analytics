@@ -5,7 +5,7 @@
 
 'use client';
 
-import React, { Suspense, useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useSearchParams } from 'next/navigation';
 
 export const dynamic = 'force-dynamic';
@@ -1009,13 +1009,5 @@ function FormsContent() {
 }
 
 export default function FormsPage() {
-  return (
-    <Suspense fallback={
-      <div className="min-h-screen bg-gradient-to-b from-[#0a0a0a] to-[#0f0f0f]">
-        <LoadingScreen message="Loading surveys" size="lg" />
-      </div>
-    }>
-      <FormsContent />
-    </Suspense>
-  );
+  return <FormsContent />;
 }

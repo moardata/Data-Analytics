@@ -1,0 +1,27 @@
+/* Smooth page transitions for better UX */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Apply smooth fade-in to all page content */
+main > div {
+  animation: fadeIn 0.3s ease-out;
+}
+
+/* Smooth transitions for interactive elements */
+button, a {
+  transition: all 0.2s ease-in-out;
+}
+
+/* Prevent flash of unstyled content */
+html {
+  background-color: #0a0a0a;
+}
+
