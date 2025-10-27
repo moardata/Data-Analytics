@@ -337,13 +337,13 @@ export default function FormBuilderEnhanced({ existingForm, onSaveComplete, comp
               <h1 className="text-xl font-semibold tracking-tight text-[#F8FAFC]">Create Survey</h1>
               <p className="mt-1 text-sm text-[#A1A1AA]">Create, customize, and preview surveys with presets</p>
             </div>
-            <div className="flex gap-2">
+            <div className="flex gap-2 flex-wrap">
               <Button
                 onClick={() => {
                   setShowNicheTemplates(!showNicheTemplates);
                   setShowPresets(false);
                 }}
-                className="gap-2 bg-[#10B981] hover:bg-[#0E9F71] text-white"
+                className="gap-2 bg-[#10B981] hover:bg-[#0E9F71] text-white shadow-md shadow-[#10B981]/20 rounded-lg px-4 py-2 transition-all"
                 size="sm"
               >
                 <Sparkles className="h-4 w-4" />
@@ -354,7 +354,7 @@ export default function FormBuilderEnhanced({ existingForm, onSaveComplete, comp
                   setShowPresets(!showPresets);
                   setShowNicheTemplates(false);
                 }}
-                className="gap-2 bg-[#0B2C24] hover:bg-[#0E3A2F] text-white border border-[#17493A]"
+                className="gap-2 border border-[#1a1a1a] bg-[#0f0f0f] hover:bg-[#1a1a1a] text-[#F8FAFC] rounded-lg px-4 py-2 transition-all"
                 size="sm"
               >
                 <Star className="h-4 w-4" />
@@ -362,7 +362,7 @@ export default function FormBuilderEnhanced({ existingForm, onSaveComplete, comp
               </Button>
               <Button
                 onClick={() => setShowPreview(!showPreview)}
-                className="gap-2 bg-[#0B2C24] hover:bg-[#0E3A2F] text-white border border-[#17493A]"
+                className="gap-2 border border-[#1a1a1a] bg-[#0f0f0f] hover:bg-[#1a1a1a] text-[#F8FAFC] rounded-lg px-4 py-2 transition-all"
                 size="sm"
               >
                 <Eye className="h-4 w-4" />
@@ -371,7 +371,7 @@ export default function FormBuilderEnhanced({ existingForm, onSaveComplete, comp
               <Button
                 onClick={saveAsPreset}
                 disabled={!draft.name.trim() || draft.fields.length === 0}
-                className="gap-2 bg-[#0B2C24] hover:bg-[#0E3A2F] text-white border border-[#17493A] disabled:opacity-50"
+                className="gap-2 border border-[#1a1a1a] bg-[#0f0f0f] hover:bg-[#1a1a1a] text-[#F8FAFC] rounded-lg px-4 py-2 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                 size="sm"
               >
                 <Save className="h-4 w-4" />
@@ -441,10 +441,10 @@ export default function FormBuilderEnhanced({ existingForm, onSaveComplete, comp
                       </div>
 
                       <div className="flex flex-wrap gap-2">
-                        <Button className="border border-[#2A2F36] bg-[#0B2C24]/40 hover:bg-[#0B2C24]/60" onClick={() => moveField(i, -1)}>Up</Button>
-                        <Button className="border border-[#2A2F36] bg-[#0B2C24]/40 hover:bg-[#0B2C24]/60" onClick={() => moveField(i, 1)}>Down</Button>
-                        <Button className="border border-[#2A2F36] bg-[#0B2C24]/40 hover:bg-[#0B2C24]/60" onClick={() => duplicateField(i)}>Duplicate</Button>
-                        <Button className="border border-red-900/40 bg-red-900/20 hover:bg-red-900/40" onClick={() => deleteField(i)}>Delete</Button>
+                        <Button className="border border-[#1a1a1a] bg-[#0f0f0f] hover:bg-[#1a1a1a] text-[#A1A1AA] hover:text-[#F8FAFC] text-xs px-3 py-1.5 rounded-lg transition-all" onClick={() => moveField(i, -1)} size="sm">Up</Button>
+                        <Button className="border border-[#1a1a1a] bg-[#0f0f0f] hover:bg-[#1a1a1a] text-[#A1A1AA] hover:text-[#F8FAFC] text-xs px-3 py-1.5 rounded-lg transition-all" onClick={() => moveField(i, 1)} size="sm">Down</Button>
+                        <Button className="border border-[#1a1a1a] bg-[#0f0f0f] hover:bg-[#1a1a1a] text-[#A1A1AA] hover:text-[#F8FAFC] text-xs px-3 py-1.5 rounded-lg transition-all" onClick={() => duplicateField(i)} size="sm">Duplicate</Button>
+                        <Button className="border border-[#EF4444]/30 bg-[#EF4444]/10 hover:bg-[#EF4444]/20 text-[#EF4444] hover:text-[#FF5555] text-xs px-3 py-1.5 rounded-lg transition-all" onClick={() => deleteField(i)} size="sm">Delete</Button>
                       </div>
                     </div>
 
@@ -583,7 +583,7 @@ export default function FormBuilderEnhanced({ existingForm, onSaveComplete, comp
                     <CardContent className="pt-0">
                       <Button
                         onClick={() => loadTemplate(preset)}
-                        className="w-full gap-2 bg-[#0B2C24] hover:bg-[#0E3A2F] text-white border border-[#17493A]"
+                        className="w-full gap-2 bg-[#10B981] hover:bg-[#0E9F71] text-white rounded-lg shadow-md shadow-[#10B981]/20 transition-all"
                         size="sm"
                       >
                         <Plus className="h-4 w-4" />
@@ -615,7 +615,7 @@ export default function FormBuilderEnhanced({ existingForm, onSaveComplete, comp
                         <CardContent className="pt-0">
                           <Button
                             onClick={() => loadPreset(preset)}
-                            className="w-full gap-2 bg-[#0B2C24] hover:bg-[#0E3A2F] text-white border border-[#17493A]"
+                            className="w-full gap-2 bg-[#10B981] hover:bg-[#0E9F71] text-white rounded-lg shadow-md shadow-[#10B981]/20 transition-all"
                             size="sm"
                           >
                             <Copy className="h-4 w-4" />
@@ -744,7 +744,7 @@ export default function FormBuilderEnhanced({ existingForm, onSaveComplete, comp
                       "border border-[#2A2F36] focus:border-emerald-600 focus:outline-none"
                     )}
                   />
-                  <Button className="border border-emerald-700/50 bg-emerald-900/30 hover:bg-emerald-900/50" onClick={addOption}>+</Button>
+                  <Button className="bg-[#10B981] hover:bg-[#0E9F71] text-white px-4 rounded-lg shadow-md shadow-[#10B981]/20 transition-all" onClick={addOption}>+</Button>
                 </div>
                 {options.length > 0 && (
                   <ul className="flex flex-wrap gap-2">
@@ -785,13 +785,14 @@ export default function FormBuilderEnhanced({ existingForm, onSaveComplete, comp
             <div className="flex flex-wrap items-center gap-3 pt-2">
               <Button
                 onClick={addField}
-                className="border border-emerald-700/60 bg-emerald-900/40 hover:bg-emerald-900/60"
+                className="gap-2 bg-[#10B981] hover:bg-[#0E9F71] text-white font-medium px-6 py-2.5 rounded-xl shadow-md shadow-[#10B981]/20 transition-all"
               >
+                <Plus className="h-4 w-4" />
                 Add Field
               </Button>
               <Button
                 onClick={resetComposer}
-                className="border border-[#2A2F36] bg-[#0B2C24]/30 hover:bg-[#0B2C24]/50"
+                className="border border-[#1a1a1a] bg-[#0f0f0f] hover:bg-[#1a1a1a] text-[#A1A1AA] hover:text-[#F8FAFC] px-6 py-2.5 rounded-xl transition-all"
               >
                 Reset
               </Button>
@@ -799,24 +800,16 @@ export default function FormBuilderEnhanced({ existingForm, onSaveComplete, comp
           </section>
 
           {/* Footer actions */}
-          <section className="flex flex-col-reverse items-stretch gap-3 pt-4 sm:flex-row sm:items-center sm:justify-between">
-            {/* Schema preview */}
-            <pre className="max-h-56 w-full overflow-auto rounded-xl border border-[#1a1a1a]/70 bg-[#0a0a0a] p-3 text-xs text-[#F8FAFC] sm:w-1/2">
-{JSON.stringify(draft, null, 2)}
-            </pre>
-
-            <div className="flex gap-3 sm:self-start">
-              <Button className="border border-[#2A2F36] bg-[#0B2C24]/40 hover:bg-[#0B2C24]/60" onClick={() => navigator.clipboard.writeText(JSON.stringify(draft))}>
-                Copy schema
-              </Button>
-              <Button 
-                className="border border-emerald-700/60 bg-emerald-900/40 hover:bg-emerald-900/60" 
-                onClick={handleSave}
-                disabled={!draft.name.trim()}
-              >
-                {isEditMode ? 'Update Form' : 'Save Form'}
-              </Button>
-            </div>
+          <section className="flex justify-end pt-6 border-t border-[#1a1a1a]/30">
+            <Button 
+              className="gap-2 bg-gradient-to-r from-[#10B981] to-[#0E9F71] hover:from-[#0E9F71] hover:to-[#10B981] text-white font-semibold px-8 py-3 rounded-xl shadow-lg shadow-[#10B981]/20 transition-all disabled:opacity-50 disabled:cursor-not-allowed" 
+              onClick={handleSave}
+              disabled={!draft.name.trim() || draft.fields.length === 0}
+              size="lg"
+            >
+              <Save className="h-5 w-5" />
+              {isEditMode ? 'Update Survey' : 'Save Survey'}
+            </Button>
           </section>
         </CardContent>
       </Card>
