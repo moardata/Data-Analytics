@@ -490,7 +490,7 @@ function FormsContent() {
         <div className="rounded-2xl border border-[#1a1a1a]/70 bg-gradient-to-br from-[#0f0f0f] via-[#1a1a1a] to-[#0f0f0f] p-6">
           <div>
             <h2 className="text-2xl font-bold text-[#F8FAFC] mb-2">Surveys Section</h2>
-            <div className="w-16 h-1 bg-gradient-to-r from-[#8B5CF6] to-[#8B5CF6]/50 rounded-full mb-3"></div>
+            <div className="w-16 h-1 bg-gradient-to-r from-[#F59E0B] to-[#F59E0B]/50 rounded-full mb-3"></div>
           </div>
           <p className="text-[#A1A1AA] text-sm">
             View, customize, schedule, and export survey data with seamless precision
@@ -564,34 +564,55 @@ function FormsContent() {
           </Card>
         </div>
 
-        {/* Tab Navigation - Colorful */}
-        <div className="grid grid-cols-4 gap-3 bg-[#0f0f0f] border border-[#1a1a1a] rounded-xl p-2">
-          {[
-            { id: 'surveys', label: 'My Surveys', icon: FileText, description: 'View pre-saved surveys', colorClass: 'bg-purple-500/10 text-purple-400 border-purple-500/20 hover:bg-purple-500/20 data-[active=true]:bg-purple-500 data-[active=true]:text-white data-[active=true]:shadow-[0_0_20px_rgba(168,85,247,0.4)]' },
-            { id: 'builder', label: 'Create', icon: Settings, description: 'Create and edit surveys', colorClass: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20 hover:bg-emerald-500/20 data-[active=true]:bg-emerald-500 data-[active=true]:text-white data-[active=true]:shadow-[0_0_20px_rgba(16,185,129,0.4)]' },
-            { id: 'submissions', label: 'Submissions', icon: Users, description: 'View form submissions', colorClass: 'bg-blue-500/10 text-blue-400 border-blue-500/20 hover:bg-blue-500/20 data-[active=true]:bg-blue-500 data-[active=true]:text-white data-[active=true]:shadow-[0_0_20px_rgba(59,130,246,0.4)]' },
-            { id: 'export', label: 'Export Data', icon: Download, description: 'Download collected data', colorClass: 'bg-orange-500/10 text-orange-400 border-orange-500/20 hover:bg-orange-500/20 data-[active=true]:bg-orange-500 data-[active=true]:text-white data-[active=true]:shadow-[0_0_20px_rgba(245,158,11,0.4)]' }
-          ].map((tab) => {
-            const Icon = tab.icon;
-            return (
-              <button
-                key={tab.id}
-                onClick={() => {
-                  // Clear editing form when clicking Builder tab from another tab (to create new form)
-                  if (tab.id === 'builder' && activeTab !== 'builder') {
-                    setEditingForm(null);
-                  }
-                  setActiveTab(tab.id as any);
-                }}
-                data-active={activeTab === tab.id}
-                className={`flex items-center justify-center gap-2 px-4 py-3 text-sm font-medium rounded-lg border transition-all duration-200 ${tab.colorClass}`}
-                title={tab.description}
-              >
-                <Icon className="h-4 w-4" />
-                {tab.label}
-              </button>
-            );
-          })}
+        {/* Tab Navigation - Matching Dashboard Style */}
+        <div className="flex gap-2 border-b border-[#1a1a1a] bg-[#0f0f0f]">
+          <button
+            onClick={() => setActiveTab('surveys')}
+            className={`flex items-center gap-2 px-6 py-3 text-sm font-medium transition-all ${
+              activeTab === 'surveys'
+                ? 'bg-[#A855F7] text-white shadow-[0_0_20px_rgba(168,85,247,0.6)]'
+                : 'text-[#A1A1AA] hover:text-[#F8FAFC]'
+            }`}
+          >
+            <FileText className="h-4 w-4" />
+            My Surveys
+          </button>
+          <button
+            onClick={() => {
+              setEditingForm(null);
+              setActiveTab('builder');
+            }}
+            className={`flex items-center gap-2 px-6 py-3 text-sm font-medium transition-all ${
+              activeTab === 'builder'
+                ? 'bg-[#10B981] text-white shadow-[0_0_20px_rgba(16,185,129,0.6)]'
+                : 'text-[#A1A1AA] hover:text-[#F8FAFC]'
+            }`}
+          >
+            <Settings className="h-4 w-4" />
+            Create
+          </button>
+          <button
+            onClick={() => setActiveTab('submissions')}
+            className={`flex items-center gap-2 px-6 py-3 text-sm font-medium transition-all ${
+              activeTab === 'submissions'
+                ? 'bg-[#3B82F6] text-white shadow-[0_0_20px_rgba(59,130,246,0.6)]'
+                : 'text-[#A1A1AA] hover:text-[#F8FAFC]'
+            }`}
+          >
+            <Users className="h-4 w-4" />
+            Submissions
+          </button>
+          <button
+            onClick={() => setActiveTab('export')}
+            className={`flex items-center gap-2 px-6 py-3 text-sm font-medium transition-all ${
+              activeTab === 'export'
+                ? 'bg-[#F59E0B] text-white shadow-[0_0_20px_rgba(245,158,11,0.6)]'
+                : 'text-[#A1A1AA] hover:text-[#F8FAFC]'
+            }`}
+          >
+            <Download className="h-4 w-4" />
+            Export Data
+          </button>
         </div>
 
         {/* Tab Content */}
