@@ -31,16 +31,21 @@ export default function ConsistencyScoreGauge({ data }: ConsistencyScoreGaugePro
   const strokeDashoffset = circumference - (averageScore / 100) * circumference;
 
   return (
-    <Card className="relative rounded-2xl border border-[#1a1a1a] bg-[#0f0f0f] overflow-hidden shadow-[0_0_0_1px_rgba(26,26,26,0.6),0_24px_60px_-20px_rgba(0,0,0,0.65),inset_0_1px_0_rgba(255,255,255,0.04)]">
-      <CardContent className="p-6">
+    <Card className="relative rounded-2xl border border-[#1a1a1a]/70 bg-gradient-to-br from-[#0f0f0f] via-[#1a1a1a] to-[#0f0f0f] overflow-hidden shadow-lg hover:shadow-xl hover:shadow-purple-500/10 transition-all">
+      {/* Metallic sheen */}
+      <div className="pointer-events-none absolute inset-0 opacity-30">
+        <div className="absolute inset-0 bg-gradient-to-b from-white/5 via-transparent to-transparent" />
+      </div>
+      
+      <CardContent className="p-6 relative z-10">
         <div className="flex items-center justify-between mb-4">
-            <div>
-              <h3 className="text-base font-semibold text-[#F8FAFC]">Student Consistency</h3>
-              <p className="text-sm text-[#A1A1AA]">How regularly your students show up</p>
+            <div className="flex-1 min-w-0 pr-2">
+              <h3 className="text-base font-semibold text-[#F8FAFC] truncate">Student Consistency</h3>
+              <p className="text-sm text-[#A1A1AA] line-clamp-2">How regularly your students show up</p>
             </div>
-          <div className="text-right">
+          <div className="text-right flex-shrink-0">
             <div className="text-2xl font-bold text-white">{averageScore.toFixed(1)}</div>
-            <div className="text-xs text-zinc-400">out of 100</div>
+            <div className="text-xs text-[#A1A1AA] whitespace-nowrap">out of 100</div>
           </div>
         </div>
 
@@ -85,36 +90,36 @@ export default function ConsistencyScoreGauge({ data }: ConsistencyScoreGaugePro
 
         {/* Distribution */}
         <div className="space-y-3">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-2">
-              <div className="w-3 h-3 rounded-full bg-purple-500" style={{ boxShadow: '0 0 8px #A855F7' }}></div>
-              <span className="text-sm text-zinc-300">High (70-100)</span>
+          <div className="flex items-center justify-between gap-2">
+            <div className="flex items-center space-x-2 flex-1 min-w-0">
+              <div className="w-3 h-3 rounded-full bg-purple-500 flex-shrink-0" style={{ boxShadow: '0 0 8px #A855F7' }}></div>
+              <span className="text-sm text-[#E2E8F0] truncate">High (70-100)</span>
             </div>
-            <span className="text-sm font-medium text-white">{distribution.high}</span>
+            <span className="text-sm font-medium text-white flex-shrink-0">{distribution.high}</span>
           </div>
           
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-2">
-              <div className="w-3 h-3 rounded-full bg-blue-500" style={{ boxShadow: '0 0 8px #3B82F6' }}></div>
-              <span className="text-sm text-zinc-300">Medium (40-69)</span>
+          <div className="flex items-center justify-between gap-2">
+            <div className="flex items-center space-x-2 flex-1 min-w-0">
+              <div className="w-3 h-3 rounded-full bg-blue-500 flex-shrink-0" style={{ boxShadow: '0 0 8px #3B82F6' }}></div>
+              <span className="text-sm text-[#E2E8F0] truncate">Medium (40-69)</span>
             </div>
-            <span className="text-sm font-medium text-white">{distribution.medium}</span>
+            <span className="text-sm font-medium text-white flex-shrink-0">{distribution.medium}</span>
           </div>
           
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-2">
-              <div className="w-3 h-3 rounded-full bg-yellow-500" style={{ boxShadow: '0 0 8px #F59E0B' }}></div>
-              <span className="text-sm text-zinc-300">Low (0-39)</span>
+          <div className="flex items-center justify-between gap-2">
+            <div className="flex items-center space-x-2 flex-1 min-w-0">
+              <div className="w-3 h-3 rounded-full bg-yellow-500 flex-shrink-0" style={{ boxShadow: '0 0 8px #F59E0B' }}></div>
+              <span className="text-sm text-[#E2E8F0] truncate">Low (0-39)</span>
             </div>
-            <span className="text-sm font-medium text-white">{distribution.low}</span>
+            <span className="text-sm font-medium text-white flex-shrink-0">{distribution.low}</span>
           </div>
         </div>
 
         {/* Trend */}
-        <div className="mt-4 pt-4 border-t border-zinc-800">
-          <div className="flex items-center justify-between">
-            <span className="text-xs text-zinc-400">vs last period</span>
-            <span className={`text-sm font-medium ${trend.startsWith('+') ? 'text-emerald-400' : 'text-red-400'}`}>
+        <div className="mt-4 pt-4 border-t border-[#1a1a1a]/50">
+          <div className="flex items-center justify-between gap-2">
+            <span className="text-xs text-[#A1A1AA] truncate">vs last period</span>
+            <span className={`text-sm font-medium flex-shrink-0 ${trend.startsWith('+') ? 'text-emerald-400' : 'text-red-400'}`}>
               {trend}
             </span>
           </div>

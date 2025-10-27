@@ -355,39 +355,53 @@ export default function DashboardCreatorAnalytics({ clientId: companyIdOrClientI
         </p>
       </div>
 
-      {/* Stats Cards */}
+      {/* Stats Cards - Bubbly and User-Friendly */}
       <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-        <Card className="border border-[#1a1a1a]/70 bg-gradient-to-br from-[#0f0f0f] via-[#1a1a1a] to-[#0f0f0f] p-4">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-lg bg-purple-500/20 flex items-center justify-center">
-              <Users className="h-5 w-5 text-purple-500" />
+        <Card className="relative overflow-hidden border border-[#1a1a1a]/70 bg-gradient-to-br from-[#0f0f0f] via-[#1a1a1a] to-[#0f0f0f] rounded-2xl shadow-lg hover:shadow-xl hover:shadow-purple-500/10 transition-all group">
+          {/* Metallic sheen */}
+          <div className="pointer-events-none absolute inset-0 opacity-30">
+            <div className="absolute inset-0 bg-gradient-to-b from-white/5 via-transparent to-transparent" />
+          </div>
+          <div className="relative z-10 p-5">
+            <div className="flex items-center gap-3 mb-2">
+              <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-purple-500/20 to-purple-500/5 flex items-center justify-center shadow-lg shadow-purple-500/10">
+                <Users className="h-6 w-6 text-purple-400" />
+              </div>
             </div>
-            <div>
-              <p className="text-2xl font-bold text-[#F8FAFC]">{metrics.commitmentScores.totalStudents}</p>
-              <p className="text-xs text-[#A1A1AA]">Total Students</p>
-            </div>
+            <p className="text-3xl font-black text-[#F8FAFC] mb-1 truncate">{metrics.commitmentScores.totalStudents}</p>
+            <p className="text-sm font-medium text-[#A1A1AA] truncate">Total Students</p>
           </div>
         </Card>
-        <Card className="border border-[#1a1a1a]/70 bg-gradient-to-br from-[#0f0f0f] via-[#1a1a1a] to-[#0f0f0f] p-4">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-lg bg-green-500/20 flex items-center justify-center">
-              <TrendingUp className="h-5 w-5 text-green-500" />
+        
+        <Card className="relative overflow-hidden border border-[#1a1a1a]/70 bg-gradient-to-br from-[#0f0f0f] via-[#1a1a1a] to-[#0f0f0f] rounded-2xl shadow-lg hover:shadow-xl hover:shadow-green-500/10 transition-all group">
+          {/* Metallic sheen */}
+          <div className="pointer-events-none absolute inset-0 opacity-30">
+            <div className="absolute inset-0 bg-gradient-to-b from-white/5 via-transparent to-transparent" />
+          </div>
+          <div className="relative z-10 p-5">
+            <div className="flex items-center gap-3 mb-2">
+              <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-green-500/20 to-green-500/5 flex items-center justify-center shadow-lg shadow-green-500/10">
+                <TrendingUp className="h-6 w-6 text-green-400" />
+              </div>
             </div>
-            <div>
-              <p className="text-2xl font-bold text-[#F8FAFC]">{metrics.engagementConsistency.averageScore.toFixed(1)}</p>
-              <p className="text-xs text-[#A1A1AA]">Avg Consistency</p>
-            </div>
+            <p className="text-3xl font-black text-[#F8FAFC] mb-1 truncate">{metrics.engagementConsistency.averageScore.toFixed(1)}</p>
+            <p className="text-sm font-medium text-[#A1A1AA] truncate">Avg Consistency</p>
           </div>
         </Card>
-        <Card className="border border-[#1a1a1a]/70 bg-gradient-to-br from-[#0f0f0f] via-[#1a1a1a] to-[#0f0f0f] p-4">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-lg bg-blue-500/20 flex items-center justify-center">
-              <Target className="h-5 w-5 text-blue-500" />
+        
+        <Card className="relative overflow-hidden border border-[#1a1a1a]/70 bg-gradient-to-br from-[#0f0f0f] via-[#1a1a1a] to-[#0f0f0f] rounded-2xl shadow-lg hover:shadow-xl hover:shadow-blue-500/10 transition-all group">
+          {/* Metallic sheen */}
+          <div className="pointer-events-none absolute inset-0 opacity-30">
+            <div className="absolute inset-0 bg-gradient-to-b from-white/5 via-transparent to-transparent" />
+          </div>
+          <div className="relative z-10 p-5">
+            <div className="flex items-center gap-3 mb-2">
+              <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-blue-500/20 to-blue-500/5 flex items-center justify-center shadow-lg shadow-blue-500/10">
+                <Target className="h-6 w-6 text-blue-400" />
+              </div>
             </div>
-            <div>
-              <p className="text-2xl font-bold text-[#F8FAFC]">{metrics.popularContent.totalEngagements}</p>
-              <p className="text-xs text-[#A1A1AA]">Engagements Today</p>
-            </div>
+            <p className="text-3xl font-black text-[#F8FAFC] mb-1 truncate">{metrics.popularContent.totalEngagements}</p>
+            <p className="text-sm font-medium text-[#A1A1AA] truncate">Engagements Today</p>
           </div>
         </Card>
       </div>
