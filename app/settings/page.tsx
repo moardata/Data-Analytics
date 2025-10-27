@@ -23,19 +23,6 @@ function SettingsContent() {
   const [showInfoModal, setShowInfoModal] = useState(false);
   const [infoModalData, setInfoModalData] = useState({ title: '', message: '', icon: 'feedback' as 'feedback' | 'support' });
   
-  // Notification settings with localStorage
-  const [emailDaily, setEmailDaily] = useState(() => {
-    if (typeof window === 'undefined') return true;
-    const saved = localStorage.getItem('email_daily');
-    return saved === null ? true : saved === 'true';
-  });
-  
-  const [emailWeekly, setEmailWeekly] = useState(() => {
-    if (typeof window === 'undefined') return false;
-    const saved = localStorage.getItem('email_weekly');
-    return saved === null ? false : saved === 'true';
-  });
-  
   const [analyticsTracking, setAnalyticsTracking] = useState(() => {
     if (typeof window === 'undefined') return true;
     const saved = localStorage.getItem('analytics_tracking');
@@ -48,8 +35,6 @@ function SettingsContent() {
     }
     
     switch(setting) {
-      case 'email_daily': setEmailDaily(value); break;
-      case 'email_weekly': setEmailWeekly(value); break;
       case 'analytics_tracking': setAnalyticsTracking(value); break;
     }
   };
@@ -194,44 +179,6 @@ function SettingsContent() {
               >
                 Upgrade Plan
               </Button>
-            </CardContent>
-          </Card>
-
-          <Card className="border border-[#1a1a1a] bg-[#0f0f0f] shadow-lg">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-[#F8FAFC]">
-                <Bell className="h-5 w-5 text-[#10B981]" />
-                Notifications
-              </CardTitle>
-              <CardDescription className="text-[#A1A1AA]">
-                Get notified about insights and updates
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-3">
-              <div className="flex items-center justify-between">
-                <span className="text-[#A1A1AA]">Email insights daily</span>
-                <label className="relative inline-flex items-center cursor-pointer">
-                  <input 
-                    type="checkbox" 
-                    className="sr-only peer" 
-                    checked={emailDaily}
-                    onChange={(e) => handleToggle('email_daily', e.target.checked)}
-                  />
-                  <div className="w-11 h-6 bg-[#1a1a1a] peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#10B981]"></div>
-                </label>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-[#A1A1AA]">Weekly summary</span>
-                <label className="relative inline-flex items-center cursor-pointer">
-                  <input 
-                    type="checkbox" 
-                    className="sr-only peer" 
-                    checked={emailWeekly}
-                    onChange={(e) => handleToggle('email_weekly', e.target.checked)}
-                  />
-                  <div className="w-11 h-6 bg-[#1a1a1a] peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#10B981]"></div>
-                </label>
-              </div>
             </CardContent>
           </Card>
 
