@@ -5,7 +5,6 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { supabaseServer as supabase } from '@/lib/supabase-server';
-import { whopClient } from '@whop/next';
 
 export async function POST(request: NextRequest) {
   try {
