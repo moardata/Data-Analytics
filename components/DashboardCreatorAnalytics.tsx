@@ -425,13 +425,16 @@ export default function DashboardCreatorAnalytics({ clientId: companyIdOrClientI
 
         {/* Student Engagement Tab */}
         <TabsContent value="engagement" className="mt-6 space-y-6">
-          <div className="rounded-2xl border border-[#1a1a1a]/70 bg-gradient-to-br from-[#0f0f0f] via-[#1a1a1a] to-[#0f0f0f] p-6">
-            <h3 className="text-xl font-bold text-[#F8FAFC] mb-2">📊 Understanding Your Students</h3>
-            <p className="text-[#A1A1AA] text-sm">
+          <div className="rounded-2xl border border-[#8B5CF6]/30 bg-gradient-to-br from-[#0f0f0f] via-[#1a1a1a] to-[#0f0f0f] p-6 shadow-lg shadow-[#8B5CF6]/5">
+            <h3 className="text-xl font-bold text-[#F8FAFC] mb-2 flex items-center gap-2">
+              <div className="w-1.5 h-8 bg-gradient-to-b from-[#8B5CF6] to-[#8B5CF6]/50 rounded-full"></div>
+              📊 Understanding Your Students
+            </h3>
+            <p className="text-[#A1A1AA] text-sm ml-6">
               See how consistently your students show up, when they have breakthrough moments, and who's likely to complete your course. Use these insights to provide timely support and celebrate wins.
             </p>
           </div>
-          <div className="space-y-6">
+          <div className="space-y-6 border-l-2 border-[#8B5CF6]/20 pl-4">
             <ConsistencyScoreGauge data={metrics.engagementConsistency} />
             {canAccessMetric(userTier, 'breakthrough') ? (
               <AhaMomentChart data={metrics.ahaMoments} />
@@ -447,13 +450,16 @@ export default function DashboardCreatorAnalytics({ clientId: companyIdOrClientI
 
         {/* Student Commitment Tab */}
         <TabsContent value="commitment" className="mt-6 space-y-6">
-          <div className="rounded-2xl border border-[#1a1a1a]/70 bg-gradient-to-br from-[#0f0f0f] via-[#1a1a1a] to-[#0f0f0f] p-6">
-            <h3 className="text-xl font-bold text-[#F8FAFC] mb-2">🎯 Student Success & Content Paths</h3>
-            <p className="text-[#A1A1AA] text-sm">
+          <div className="rounded-2xl border border-[#F59E0B]/30 bg-gradient-to-br from-[#0f0f0f] via-[#1a1a1a] to-[#0f0f0f] p-6 shadow-lg shadow-[#F59E0B]/5">
+            <h3 className="text-xl font-bold text-[#F8FAFC] mb-2 flex items-center gap-2">
+              <div className="w-1.5 h-8 bg-gradient-to-b from-[#F59E0B] to-[#F59E0B]/50 rounded-full"></div>
+              🎯 Student Success & Content Paths
+            </h3>
+            <p className="text-[#A1A1AA] text-sm ml-6">
               Track which students are likely to complete your course and discover the learning paths that lead to success. Use this to identify at-risk students and optimize your content flow.
             </p>
           </div>
-          <div className="space-y-6">
+          <div className="space-y-6 border-l-2 border-[#F59E0B]/20 pl-4">
             {canAccessMetric(userTier, 'commitment') ? (
               <CommitmentDistribution data={metrics.commitmentScores} />
             ) : (
@@ -477,13 +483,16 @@ export default function DashboardCreatorAnalytics({ clientId: companyIdOrClientI
 
         {/* Content Performance Tab */}
         <TabsContent value="content" className="mt-6 space-y-6">
-          <div className="rounded-2xl border border-[#1a1a1a]/70 bg-gradient-to-br from-[#0f0f0f] via-[#1a1a1a] to-[#0f0f0f] p-6">
-            <h3 className="text-xl font-bold text-[#F8FAFC] mb-2">🔥 What's Working Right Now</h3>
-            <p className="text-[#A1A1AA] text-sm">
+          <div className="rounded-2xl border border-[#3B82F6]/30 bg-gradient-to-br from-[#0f0f0f] via-[#1a1a1a] to-[#0f0f0f] p-6 shadow-lg shadow-[#3B82F6]/5">
+            <h3 className="text-xl font-bold text-[#F8FAFC] mb-2 flex items-center gap-2">
+              <div className="w-1.5 h-8 bg-gradient-to-b from-[#3B82F6] to-[#3B82F6]/50 rounded-full"></div>
+              🔥 What's Working Right Now
+            </h3>
+            <p className="text-[#A1A1AA] text-sm ml-6">
               See which content is getting the most attention today and what your students are saying. Use this to double down on what works and improve what doesn't.
             </p>
           </div>
-          <div className="space-y-6">
+          <div className="space-y-6 border-l-2 border-[#3B82F6]/20 pl-4">
             <PopularContentList data={metrics.popularContent} />
             <FeedbackThemesList data={metrics.feedbackThemes} />
           </div>

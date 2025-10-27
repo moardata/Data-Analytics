@@ -31,7 +31,7 @@ export default function PathwayTable({ data }: PathwayTableProps) {
   const { topPathways, deadEnds, powerCombinations } = data;
 
   return (
-    <Card className="relative rounded-2xl border border-[#1a1a1a]/70 bg-gradient-to-br from-[#0f0f0f] via-[#1a1a1a] to-[#0f0f0f] overflow-hidden shadow-lg hover:shadow-xl hover:shadow-emerald-500/10 transition-all">
+    <Card className="relative rounded-2xl border-l-4 border-l-[#F59E0B]/50 border-t border-r border-b border-[#1a1a1a]/70 bg-gradient-to-br from-[#0f0f0f] via-[#1a1a1a] to-[#0f0f0f] overflow-hidden shadow-lg hover:shadow-xl hover:shadow-[#F59E0B]/20 transition-all">
       {/* Metallic sheen */}
       <div className="pointer-events-none absolute inset-0 opacity-30">
         <div className="absolute inset-0 bg-gradient-to-b from-white/5 via-transparent to-transparent" />

@@ -21,7 +21,7 @@ export default function AhaMomentChart({ data }: AhaMomentChartProps) {
   const { topExperiences, avgTimeToFirstBreakthrough, stagnantStudents } = data;
 
   return (
-    <Card className="relative rounded-2xl border border-[#1a1a1a]/70 bg-gradient-to-br from-[#0f0f0f] via-[#1a1a1a] to-[#0f0f0f] overflow-hidden shadow-lg hover:shadow-xl hover:shadow-green-500/10 transition-all">
+    <Card className="relative rounded-2xl border-l-4 border-l-[#8B5CF6]/50 border-t border-r border-b border-[#1a1a1a]/70 bg-gradient-to-br from-[#0f0f0f] via-[#1a1a1a] to-[#0f0f0f] overflow-hidden shadow-lg hover:shadow-xl hover:shadow-[#8B5CF6]/20 transition-all">
       {/* Metallic sheen */}
       <div className="pointer-events-none absolute inset-0 opacity-30">
         <div className="absolute inset-0 bg-gradient-to-b from-white/5 via-transparent to-transparent" />
