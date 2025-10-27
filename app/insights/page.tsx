@@ -271,7 +271,7 @@ function InsightsContent() {
               variant="outline"
               onClick={handleRefresh}
               disabled={refreshing || loading || !companyId}
-              className="border-[#1a1a1a] text-[#A1A1AA] hover:bg-[#1a1a1a] rounded-xl px-4 py-3 disabled:opacity-50"
+              className="border border-[#1a1a1a] bg-[#0a0a0a] hover:bg-[#0f0f0f] text-[#F8FAFC] rounded-xl px-4 py-3 disabled:opacity-50 transition-all"
               title="Refresh insights"
             >
               <RefreshCw className={`h-4 w-4 ${refreshing ? 'animate-spin' : ''}`} />
