@@ -485,23 +485,83 @@ function FormsContent() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-[#0a0a0a] to-[#0f0f0f] p-8">
-      <div className="max-w-6xl mx-auto space-y-8">
+      <div className="max-w-6xl mx-auto space-y-6">
         {/* Header - Friendly Welcome Section */}
         <div className="rounded-2xl border border-[#1a1a1a]/70 bg-gradient-to-br from-[#0f0f0f] via-[#1a1a1a] to-[#0f0f0f] p-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-3xl font-bold text-[#F8FAFC] mb-2">
-                Surveys Section
-              </h1>
-              <p className="text-[#A1A1AA] text-sm">
-                View, customize, schedule, and export survey data with seamless precision
-              </p>
-            </div>
-            <Badge className="bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-4 py-2">
-              <Sparkles className="h-4 w-4 mr-2" />
-              {forms.filter(f => f.is_active).length} Active
-            </Badge>
+          <div>
+            <h2 className="text-2xl font-bold text-[#F8FAFC] mb-2">Surveys Section</h2>
+            <div className="w-16 h-1 bg-gradient-to-r from-[#8B5CF6] to-[#8B5CF6]/50 rounded-full mb-3"></div>
           </div>
+          <p className="text-[#A1A1AA] text-sm">
+            View, customize, schedule, and export survey data with seamless precision
+          </p>
+        </div>
+
+        {/* Stats Cards - Bubbly and User-Friendly */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <Card className="relative overflow-hidden border border-[#1a1a1a]/70 bg-gradient-to-br from-[#0f0f0f] via-[#1a1a1a] to-[#0f0f0f] rounded-2xl shadow-lg hover:shadow-xl hover:shadow-purple-500/10 transition-all group">
+            {/* Metallic sheen */}
+            <div className="pointer-events-none absolute inset-0 opacity-30">
+              <div className="absolute inset-0 bg-gradient-to-b from-white/5 via-transparent to-transparent" />
+            </div>
+            <div className="relative z-10 p-5">
+              <div className="flex items-center gap-3 mb-2">
+                <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-purple-500/20 to-purple-500/5 flex items-center justify-center shadow-lg shadow-purple-500/10">
+                  <FileText className="h-6 w-6 text-purple-400" />
+                </div>
+              </div>
+              <p className="text-3xl font-black text-[#F8FAFC] mb-1 truncate">{forms.length}</p>
+              <p className="text-sm font-medium text-[#A1A1AA] truncate">Total Surveys</p>
+            </div>
+          </Card>
+
+          <Card className="relative overflow-hidden border border-[#1a1a1a]/70 bg-gradient-to-br from-[#0f0f0f] via-[#1a1a1a] to-[#0f0f0f] rounded-2xl shadow-lg hover:shadow-xl hover:shadow-emerald-500/10 transition-all group">
+            {/* Metallic sheen */}
+            <div className="pointer-events-none absolute inset-0 opacity-30">
+              <div className="absolute inset-0 bg-gradient-to-b from-white/5 via-transparent to-transparent" />
+            </div>
+            <div className="relative z-10 p-5">
+              <div className="flex items-center gap-3 mb-2">
+                <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-emerald-500/20 to-emerald-500/5 flex items-center justify-center shadow-lg shadow-emerald-500/10">
+                  <CheckCircle className="h-6 w-6 text-emerald-400" />
+                </div>
+              </div>
+              <p className="text-3xl font-black text-[#F8FAFC] mb-1 truncate">{forms.filter(f => f.is_active).length}</p>
+              <p className="text-sm font-medium text-[#A1A1AA] truncate">Active</p>
+            </div>
+          </Card>
+
+          <Card className="relative overflow-hidden border border-[#1a1a1a]/70 bg-gradient-to-br from-[#0f0f0f] via-[#1a1a1a] to-[#0f0f0f] rounded-2xl shadow-lg hover:shadow-xl hover:shadow-blue-500/10 transition-all group">
+            {/* Metallic sheen */}
+            <div className="pointer-events-none absolute inset-0 opacity-30">
+              <div className="absolute inset-0 bg-gradient-to-b from-white/5 via-transparent to-transparent" />
+            </div>
+            <div className="relative z-10 p-5">
+              <div className="flex items-center gap-3 mb-2">
+                <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-blue-500/20 to-blue-500/5 flex items-center justify-center shadow-lg shadow-blue-500/10">
+                  <Users className="h-6 w-6 text-blue-400" />
+                </div>
+              </div>
+              <p className="text-3xl font-black text-[#F8FAFC] mb-1 truncate">{submissions.length}</p>
+              <p className="text-sm font-medium text-[#A1A1AA] truncate">Submissions</p>
+            </div>
+          </Card>
+
+          <Card className="relative overflow-hidden border border-[#1a1a1a]/70 bg-gradient-to-br from-[#0f0f0f] via-[#1a1a1a] to-[#0f0f0f] rounded-2xl shadow-lg hover:shadow-xl hover:shadow-orange-500/10 transition-all group">
+            {/* Metallic sheen */}
+            <div className="pointer-events-none absolute inset-0 opacity-30">
+              <div className="absolute inset-0 bg-gradient-to-b from-white/5 via-transparent to-transparent" />
+            </div>
+            <div className="relative z-10 p-5">
+              <div className="flex items-center gap-3 mb-2">
+                <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-orange-500/20 to-orange-500/5 flex items-center justify-center shadow-lg shadow-orange-500/10">
+                  <BarChart3 className="h-6 w-6 text-orange-400" />
+                </div>
+              </div>
+              <p className="text-3xl font-black text-[#F8FAFC] mb-1 truncate">{forms.reduce((sum, f) => sum + (f.fields?.length || 0), 0)}</p>
+              <p className="text-sm font-medium text-[#A1A1AA] truncate">Total Fields</p>
+            </div>
+          </Card>
         </div>
 
         {/* Tab Navigation - Colorful */}
