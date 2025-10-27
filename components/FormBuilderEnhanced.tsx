@@ -343,7 +343,7 @@ export default function FormBuilderEnhanced({ existingForm, onSaveComplete, comp
                   setShowNicheTemplates(!showNicheTemplates);
                   setShowPresets(false);
                 }}
-                className="gap-2 bg-[#10B981] hover:bg-[#0E9F71] text-white shadow-md shadow-[#10B981]/20 rounded-lg px-4 py-2 transition-all"
+                className="gap-2 border border-[#10B981]/30 bg-[#0B2C24] hover:bg-[#0E3A2F] text-[#10B981] hover:text-[#34D399] rounded-lg px-4 py-2 transition-all"
                 size="sm"
               >
                 <Sparkles className="h-4 w-4" />
@@ -583,7 +583,7 @@ export default function FormBuilderEnhanced({ existingForm, onSaveComplete, comp
                     <CardContent className="pt-0">
                       <Button
                         onClick={() => loadTemplate(preset)}
-                        className="w-full gap-2 bg-[#10B981] hover:bg-[#0E9F71] text-white rounded-lg shadow-md shadow-[#10B981]/20 transition-all"
+                        className="w-full gap-2 border border-[#10B981]/30 bg-[#0B2C24] hover:bg-[#0E3A2F] text-[#10B981] hover:text-[#34D399] rounded-lg transition-all"
                         size="sm"
                       >
                         <Plus className="h-4 w-4" />
@@ -615,7 +615,7 @@ export default function FormBuilderEnhanced({ existingForm, onSaveComplete, comp
                         <CardContent className="pt-0">
                           <Button
                             onClick={() => loadPreset(preset)}
-                            className="w-full gap-2 bg-[#10B981] hover:bg-[#0E9F71] text-white rounded-lg shadow-md shadow-[#10B981]/20 transition-all"
+                            className="w-full gap-2 border border-[#10B981]/30 bg-[#0B2C24] hover:bg-[#0E3A2F] text-[#10B981] hover:text-[#34D399] rounded-lg transition-all"
                             size="sm"
                           >
                             <Copy className="h-4 w-4" />
@@ -744,7 +744,7 @@ export default function FormBuilderEnhanced({ existingForm, onSaveComplete, comp
                       "border border-[#2A2F36] focus:border-emerald-600 focus:outline-none"
                     )}
                   />
-                  <Button className="bg-[#10B981] hover:bg-[#0E9F71] text-white px-4 rounded-lg shadow-md shadow-[#10B981]/20 transition-all" onClick={addOption}>+</Button>
+                  <Button className="border border-[#10B981]/30 bg-[#0B2C24] hover:bg-[#0E3A2F] text-[#10B981] hover:text-[#34D399] px-4 rounded-lg transition-all" onClick={addOption}>+</Button>
                 </div>
                 {options.length > 0 && (
                   <ul className="flex flex-wrap gap-2">
@@ -785,7 +785,7 @@ export default function FormBuilderEnhanced({ existingForm, onSaveComplete, comp
             <div className="flex flex-wrap items-center gap-3 pt-2">
               <Button
                 onClick={addField}
-                className="gap-2 bg-[#10B981] hover:bg-[#0E9F71] text-white font-medium px-6 py-2.5 rounded-xl shadow-md shadow-[#10B981]/20 transition-all"
+                className="gap-2 border border-[#10B981]/30 bg-[#0B2C24] hover:bg-[#0E3A2F] text-[#10B981] hover:text-[#34D399] font-medium px-6 py-2.5 rounded-xl transition-all"
               >
                 <Plus className="h-4 w-4" />
                 Add Field
@@ -802,7 +802,7 @@ export default function FormBuilderEnhanced({ existingForm, onSaveComplete, comp
           {/* Footer actions */}
           <section className="flex justify-end pt-6 border-t border-[#1a1a1a]/30">
             <Button 
-              className="gap-2 bg-gradient-to-r from-[#10B981] to-[#0E9F71] hover:from-[#0E9F71] hover:to-[#10B981] text-white font-semibold px-8 py-3 rounded-xl shadow-lg shadow-[#10B981]/20 transition-all disabled:opacity-50 disabled:cursor-not-allowed" 
+              className="gap-2 border border-[#10B981]/30 bg-[#0B2C24] hover:bg-[#0E3A2F] text-[#10B981] hover:text-[#34D399] font-semibold px-8 py-3 rounded-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed" 
               onClick={handleSave}
               disabled={!draft.name.trim() || draft.fields.length === 0}
               size="lg"

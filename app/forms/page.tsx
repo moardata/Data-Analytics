@@ -455,8 +455,8 @@ function FormsContent() {
                         disabled={isCompleted}
                         className={`w-full gap-2 font-medium py-3 px-6 rounded-lg transition-all duration-200 ${
                           isCompleted
-                            ? 'bg-[#6B7280] hover:bg-[#6B7280] text-white opacity-60 cursor-not-allowed'
-                            : 'bg-[#10B981] hover:bg-[#0E9F71] text-white hover:shadow-lg hover:shadow-[#10B981]/25'
+                            ? 'bg-[#3F3F46] text-[#A1A1AA] opacity-60 cursor-not-allowed'
+                            : 'border border-[#10B981]/30 bg-[#0B2C24] hover:bg-[#0E3A2F] text-[#10B981] hover:text-[#34D399]'
                         }`}
                       >
                         <FileText className="h-5 w-5" />
@@ -558,7 +558,7 @@ function FormsContent() {
                   </p>
                   <Button 
                     onClick={() => setActiveTab('builder')}
-                    className="gap-2 bg-gradient-to-r from-[#10B981] to-[#0E9F71] hover:from-[#0E9F71] hover:to-[#10B981] text-white font-semibold px-8 py-3 rounded-xl shadow-lg shadow-[#10B981]/20 transition-all"
+                    className="gap-2 border border-[#10B981]/30 bg-[#0B2C24] hover:bg-[#0E3A2F] text-[#10B981] hover:text-[#34D399] font-semibold px-8 py-3 rounded-xl transition-all"
                   >
                     <Plus className="h-5 w-5" />
                     Create Your First Form
@@ -701,9 +701,9 @@ function FormsContent() {
                   </p>
                   <Button
                     onClick={() => setActiveTab('surveys')}
-                    className="bg-[#10B981] hover:bg-[#0E9F71] text-white"
+                    className="gap-2 border border-[#10B981]/30 bg-[#0B2C24] hover:bg-[#0E3A2F] text-[#10B981] hover:text-[#34D399] transition-all"
                   >
-                    <FileText className="h-4 w-4 mr-2" />
+                    <FileText className="h-4 w-4" />
                     View Surveys
                   </Button>
                 </CardContent>
@@ -718,7 +718,7 @@ function FormsContent() {
                     <Button
                       onClick={enrichStudents}
                       disabled={isEnriching}
-                      className="bg-[#10B981] hover:bg-[#0E9F71] text-white text-sm"
+                      className="border border-[#10B981]/30 bg-[#0B2C24] hover:bg-[#0E3A2F] text-[#10B981] hover:text-[#34D399] text-sm transition-all"
                       size="sm"
                     >
                       {isEnriching ? (
@@ -736,7 +736,7 @@ function FormsContent() {
                         </>
                       )}
                     </Button>
-                    <Badge className="bg-[#10B981] text-white border-0">
+                    <Badge className="bg-[#0B2C24] border border-[#10B981]/40 text-[#10B981]">
                       <Users className="h-3 w-3 mr-1" />
                       {submissions.length} Total
                     </Badge>
