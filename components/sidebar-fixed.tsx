@@ -13,7 +13,6 @@ import {
   FileText, 
   Settings,
   TrendingUp,
-  Users,
   Zap
 } from 'lucide-react'
 import { BrainMicrochipIcon } from '@/components/icons/BrainMicrochipIcon'
@@ -24,7 +23,6 @@ const navItems = [
   { href: '/analytics', label: 'Dashboard', icon: LayoutDashboard },
   { href: '/forms', label: 'Forms', icon: FileText },
   { href: '/insights', label: 'AI Insights', icon: BrainMicrochipIcon },
-  { href: '/students', label: 'Students', icon: Users },
   { href: '/revenue', label: 'Revenue', icon: TrendingUp },
 ]
 

@@ -12,7 +12,6 @@ import {
   LayoutDashboard, 
   FileText, 
   Settings,
-  Users,
   Zap,
   Sparkles
 } from 'lucide-react'
@@ -23,7 +22,6 @@ const navItems = [
   { href: '/analytics', label: 'Dashboard', icon: LayoutDashboard },
   { href: '/forms', label: 'Forms', icon: FileText },
   { href: '/insights', label: 'AI Insights', icon: Sparkles },
-  { href: '/students', label: 'Students', icon: Users },
   { href: '/settings', label: 'Settings', icon: Settings },
   { href: '/upgrade', label: 'Upgrade', icon: Zap },
 ]

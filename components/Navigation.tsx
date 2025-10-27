@@ -26,7 +26,6 @@ export function Navigation() {
     { href: '/', label: 'Home', icon: '🏠' },
     { href: '/analytics', label: 'Analytics', icon: '📊' },
     { href: '/courses', label: 'Courses', icon: '📚' },
-    { href: '/students', label: 'Students', icon: '👥' },
     { href: '/revenue', label: 'Revenue', icon: '💰' },
     { href: '/forms', label: 'Forms', icon: '📝' },
     { href: '/insights', label: 'AI Insights', icon: '🧠' },
