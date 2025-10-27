@@ -5,6 +5,7 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { supabaseServer as supabase } from '@/lib/supabase-server';
+import { whopClient } from '@whop/next';
 
 export async function POST(request: NextRequest) {
   try {
@@ -21,7 +22,7 @@ export async function POST(request: NextRequest) {
     console.log('🔍 [Import Members] Starting import for company:', companyId);
 
     // Get or create client record
-    const { data: clientData, error: clientError } = await supabase
+    const { data: clientData, error: clientError} = await supabase
       .from('clients')
       .select('id, name, email')
       .eq('company_id', companyId)
@@ -47,11 +48,11 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    console.log('📡 [Import Members] Fetching members from Whop API...');
+    console.log('📡 [Import Members] Fetching memberships from Whop API...');
 
-    // Fetch memberships for this company
+    // Use correct Whop API endpoint - list memberships
     const membershipsResponse = await fetch(
-      `https://api.whop.com/api/v5/memberships?company_id=${companyId}&per=100`,
+      `https://api.whop.com/api/v5/memberships?owned_by=${companyId}&per=100`,
       {
         headers: {
           'Authorization': `Bearer ${whopApiKey}`,
@@ -60,18 +61,46 @@ export async function POST(request: NextRequest) {
       }
     );
 
+    let memberships = [];
+    
     if (!membershipsResponse.ok) {
-      console.error('❌ [Import Members] Whop API error:', membershipsResponse.status);
+      const errorText = await membershipsResponse.text();
+      console.error('❌ [Import Members] Whop API error:', membershipsResponse.status, errorText);
+      
+      // If 404, it might mean no memberships exist yet
+      if (membershipsResponse.status === 404) {
+        console.log('⚠️ [Import Members] No memberships found - company may not have any members yet');
+        return NextResponse.json({
+          success: true,
+          imported: 0,
+          updated: 0,
+          enriched: 0,
+          total: 0,
+          message: 'No members found in your Whop company yet. Members will be added automatically as they join via webhooks.'
+        });
+      }
+      
       return NextResponse.json(
-        { error: `Whop API returned ${membershipsResponse.status}` },
+        { error: `Whop API error (${membershipsResponse.status}). Make sure your Whop API key is valid and has proper permissions.` },
         { status: 500 }
       );
     }
 
     const membershipsData = await membershipsResponse.json();
-    const memberships = membershipsData.data || [];
+    memberships = membershipsData.data || [];
 
     console.log(`📊 [Import Members] Found ${memberships.length} memberships`);
+    
+    if (memberships.length === 0) {
+      return NextResponse.json({
+        success: true,
+        imported: 0,
+        updated: 0,
+        enriched: 0,
+        total: 0,
+        message: 'No members found. New members will be added automatically via webhooks when they join.'
+      });
+    }
 
     let imported = 0;
     let updated = 0;
