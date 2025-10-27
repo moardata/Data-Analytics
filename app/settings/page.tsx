@@ -94,22 +94,27 @@ function SettingsContent() {
     }
 
     setSyncing(true);
-    setSyncMessage('🔄 Enriching student data from Whop...');
+    setSyncMessage('🔄 Importing members from Whop...');
 
     try {
-      const response = await fetch(`/api/admin/enrich-students?companyId=${companyId}`, {
+      const response = await fetch(`/api/admin/import-members?companyId=${companyId}`, {
         method: 'POST',
       });
 
       const data = await response.json();
 
       if (data.success) {
-        setSyncMessage(`✅ Successfully enriched ${data.enrichedCount} student profiles with real names and photos!`);
+        const parts = [];
+        if (data.imported > 0) parts.push(`${data.imported} imported`);
+        if (data.updated > 0) parts.push(`${data.updated} updated`);
+        if (data.enriched > 0) parts.push(`${data.enriched} enriched`);
+        
+        setSyncMessage(`✅ Success! ${parts.join(', ')}. Total: ${data.total} members processed.`);
       } else {
-        setSyncMessage(`⚠️ ${data.error || 'Some students could not be enriched'}`);
+        setSyncMessage(`⚠️ ${data.error || 'Import completed with issues'}`);
       }
     } catch (error) {
-      setSyncMessage('❌ Error enriching student data. Please try again.');
+      setSyncMessage('❌ Error importing members. Please try again.');
     } finally {
       setSyncing(false);
     }
@@ -137,16 +142,16 @@ function SettingsContent() {
                 Data Management
               </CardTitle>
               <CardDescription className="text-[#A1A1AA]">
-                Enrich student profiles with real data
+                Import your Whop members and populate analytics
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="text-sm text-[#A1A1AA]">
                 <p className="mb-2">
-                  Fetch real names and profile photos from Whop for all your students.
+                  Import all current members from Whop to instantly populate your analytics dashboard.
                 </p>
                 <p className="text-xs text-[#A1A1AA]">
-                  This updates existing student records with their actual Whop profile data.
+                  This fetches member data including names, emails, and profile photos.
                 </p>
               </div>
               <Button 
@@ -155,7 +160,7 @@ function SettingsContent() {
                 className="bg-[#0a0a0a] hover:bg-[#1a1a1a] text-white border border-[#1a1a1a] flex items-center gap-2"
               >
                 <RefreshCw className={`h-4 w-4 ${syncing ? 'animate-spin' : ''}`} />
-                {syncing ? 'Enriching...' : 'Enrich Student Data'}
+                {syncing ? 'Importing...' : 'Import Members from Whop'}
               </Button>
               {syncMessage && (
                 <div className={`text-sm p-3 rounded ${
