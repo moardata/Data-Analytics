@@ -51,6 +51,7 @@ function FormsContent() {
   const [analytics, setAnalytics] = useState<any>(null);
   const [completedForms, setCompletedForms] = useState<string[]>([]);
   const [showConfetti, setShowConfetti] = useState(false);
+  const [isEnriching, setIsEnriching] = useState(false);
 
   useEffect(() => {
     fetchForms();
@@ -213,6 +214,32 @@ function FormsContent() {
     } catch (error) {
       console.error('Error fetching submissions:', error);
       setSubmissions([]);
+    }
+  };
+
+  const enrichStudents = async () => {
+    setIsEnriching(true);
+    try {
+      const response = await fetch(`/api/admin/enrich-students?companyId=${clientId}`, {
+        method: 'POST',
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        alert(`✅ Successfully enriched ${data.enrichedCount} student profiles with Whop data!`);
+        // Refresh submissions to show updated data
+        fetchSubmissions();
+      } else {
+        const error = await response.json();
+        alert(`⚠️ Enrichment completed with some issues: ${error.error || 'Unknown error'}`);
+        // Still refresh to show any successful updates
+        fetchSubmissions();
+      }
+    } catch (error) {
+      console.error('Error enriching students:', error);
+      alert('❌ Failed to enrich student data. Please try again.');
+    } finally {
+      setIsEnriching(false);
     }
   };
 
@@ -790,14 +817,43 @@ function FormsContent() {
                   <h3 className="text-xl font-semibold text-[#F8FAFC]">
                     Form Submissions ({submissions.length})
                   </h3>
-                  <Badge className="bg-[#10B981] text-white border-0">
-                    <Users className="h-3 w-3 mr-1" />
-                    {submissions.length} Total
-                  </Badge>
+                  <div className="flex items-center gap-3">
+                    <Button
+                      onClick={enrichStudents}
+                      disabled={isEnriching}
+                      className="bg-[#10B981] hover:bg-[#0E9F71] text-white text-sm"
+                      size="sm"
+                    >
+                      {isEnriching ? (
+                        <>
+                          <svg className="animate-spin h-4 w-4 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                          </svg>
+                          Enriching...
+                        </>
+                      ) : (
+                        <>
+                          <Users className="h-4 w-4 mr-2" />
+                          Sync Student Data
+                        </>
+                      )}
+                    </Button>
+                    <Badge className="bg-[#10B981] text-white border-0">
+                      <Users className="h-3 w-3 mr-1" />
+                      {submissions.length} Total
+                    </Badge>
+                  </div>
                 </div>
 
                 <div className="space-y-3">
-                  {submissions.map((submission) => (
+                  {submissions.map((submission) => {
+                    // Get student avatar from metadata
+                    const avatarUrl = submission.entities?.metadata?.avatar_url || 
+                                     submission.entities?.metadata?.avatar ||
+                                     submission.entities?.metadata?.profile_picture_url;
+                    
+                    return (
                     <Card key={submission.id} className="border border-[#1a1a1a] bg-[#0f0f0f] hover:border-[#10B981]/30 transition-colors">
                       <CardHeader 
                         className="pb-3 cursor-pointer"
@@ -805,8 +861,16 @@ function FormsContent() {
                       >
                         <div className="flex items-center justify-between">
                           <div className="flex items-center gap-3">
-                            <div className="w-10 h-10 rounded-full bg-[#10B981]/20 flex items-center justify-center">
-                              <Users className="h-5 w-5 text-[#10B981]" />
+                            <div className="w-10 h-10 rounded-full bg-[#10B981]/20 flex items-center justify-center overflow-hidden border border-[#10B981]/30">
+                              {avatarUrl ? (
+                                <img 
+                                  src={avatarUrl} 
+                                  alt={submission.entities?.name || 'Student'} 
+                                  className="w-full h-full object-cover"
+                                />
+                              ) : (
+                                <Users className="h-5 w-5 text-[#10B981]" />
+                              )}
                             </div>
                             <div>
                               <CardTitle className="text-[#F8FAFC] text-lg">
@@ -856,7 +920,8 @@ function FormsContent() {
                         </CardContent>
                       )}
                     </Card>
-                  ))}
+                    );
+                  })}
                 </div>
               </div>
             )}

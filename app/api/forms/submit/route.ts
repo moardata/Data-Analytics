@@ -57,22 +57,83 @@ export async function POST(request: NextRequest) {
 
     const clientId = clientData.id; // This is the actual UUID
 
-    // First, create or get the entity record
-    console.log('👤 [Form Submit API] Creating/getting entity record for:', entityId);
-    const { data: entityData, error: entityError } = await supabase
+    // First, check if entity already exists
+    console.log('👤 [Form Submit API] Looking up entity record for:', entityId);
+    let entityData: any = null;
+    
+    const { data: existingEntity } = await supabase
       .from('entities')
-      .upsert({
-        whop_user_id: entityId,
-        client_id: clientId,
-        name: `Student ${entityId}`,
-        email: null,
-        metadata: { source: 'form_submission' }
-      }, {
-        onConflict: 'client_id,whop_user_id',
-        ignoreDuplicates: false
-      })
-      .select()
+      .select('*')
+      .eq('client_id', clientId)
+      .eq('whop_user_id', entityId)
       .single();
+
+    if (existingEntity) {
+      entityData = existingEntity;
+      console.log('✅ [Form Submit API] Found existing entity:', entityData.id);
+    } else {
+      // Entity doesn't exist, create it with Whop user data
+      console.log('🔍 [Form Submit API] Fetching user data from Whop for:', entityId);
+      
+      let userName = `Student ${entityId}`;
+      let userEmail = null;
+      let metadata: any = { source: 'form_submission' };
+      
+      // Try to fetch user info from Whop API
+      try {
+        const whopApiKey = process.env.WHOP_API_KEY;
+        if (whopApiKey && !entityId.startsWith('user_biz_')) {
+          const userResponse = await fetch(`https://api.whop.com/api/v5/users/${entityId}`, {
+            headers: {
+              'Authorization': `Bearer ${whopApiKey}`,
+              'Content-Type': 'application/json',
+            },
+          });
+
+          if (userResponse.ok) {
+            const userData = await userResponse.json();
+            console.log('✅ [Form Submit API] Got user data from Whop:', { 
+              username: userData.username,
+              hasAvatar: !!(userData.profile_picture_url || userData.avatar)
+            });
+            
+            if (userData.username) userName = userData.username;
+            if (userData.email) userEmail = userData.email;
+            if (userData.profile_picture_url || userData.avatar) {
+              metadata.avatar_url = userData.profile_picture_url || userData.avatar;
+            }
+            if (userData.profile_pic_url) metadata.avatar_url = userData.profile_pic_url;
+          } else {
+            console.log('⚠️ [Form Submit API] Whop API returned:', userResponse.status);
+          }
+        }
+      } catch (whopError) {
+        console.log('⚠️ [Form Submit API] Could not fetch user from Whop:', whopError);
+      }
+
+      // Create new entity with enriched data
+      const { data: newEntity, error: entityError } = await supabase
+        .from('entities')
+        .insert({
+          whop_user_id: entityId,
+          client_id: clientId,
+          name: userName,
+          email: userEmail,
+          metadata
+        })
+        .select()
+        .single();
+
+      if (entityError || !newEntity) {
+        console.error('❌ [Form Submit API] Entity creation failed:', entityError);
+        throw new Error(`Failed to create entity: ${entityError?.message}`);
+      }
+
+      entityData = newEntity;
+      console.log('✅ [Form Submit API] Created new entity with Whop data:', entityData.id);
+    }
+
+    const { error: entityError } = { error: null }; // For backward compatibility
 
     console.log('📊 [Form Submit API] Entity result:', {
       success: !!entityData,
