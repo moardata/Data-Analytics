@@ -6,6 +6,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabaseServer as supabase } from '@/lib/supabase-server';
 import { simpleAuth } from '@/lib/auth/simple-auth';
+import { canPerformAction, type TierName } from '@/lib/pricing/tiers';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 
@@ -18,7 +19,7 @@ export async function GET(request: NextRequest) {
     // First, get the client record for this company
     const { data: clientData, error: clientError } = await supabase
       .from('clients')
-      .select('id, name')
+      .select('id, name, current_tier')
       .eq('company_id', companyId)
       .single();
 
@@ -26,6 +27,15 @@ export async function GET(request: NextRequest) {
       return NextResponse.json(
         { error: 'Client not found for this company' },
         { status: 404 }
+      );
+    }
+
+    // Check if user can export PDF
+    const tier = (clientData.current_tier || 'atom') as TierName;
+    if (!canPerformAction(tier, 'pdfExport')) {
+      return NextResponse.json(
+        { error: 'PDF export requires Pro plan or higher. Please upgrade your plan.' },
+        { status: 403 }
       );
     }
 

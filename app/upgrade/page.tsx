@@ -101,24 +101,24 @@ function UpgradeContent() {
               <div className="max-w-3xl mx-auto space-y-4">
                 {[
                   {
-                    question: "Question 1 - Edit this tomorrow",
-                    answer: "Answer 1 - Add your answer here"
+                    question: "Do I get a free trial?",
+                    answer: "Yes! All plans include a 7-day free trial. No credit card required to start."
                   },
                   {
-                    question: "Question 2 - Edit this tomorrow",
-                    answer: "Answer 2 - Add your answer here"
+                    question: "Can I change plans later?",
+                    answer: "Absolutely! You can upgrade or downgrade your plan anytime. Changes take effect immediately."
                   },
                   {
-                    question: "Question 3 - Edit this tomorrow",
-                    answer: "Answer 3 - Add your answer here"
+                    question: "What happens if I reach my limits?",
+                    answer: "You'll receive a notification when approaching your limits. You can either upgrade your plan or wait until next month when limits reset."
                   },
                   {
-                    question: "Question 4 - Edit this tomorrow",
-                    answer: "Answer 4 - Add your answer here"
+                    question: "Can I cancel anytime?",
+                    answer: "Yes! Cancel anytime with no penalties. Your data remains accessible for 30 days after cancellation."
                   },
                   {
-                    question: "Question 5 - Edit this tomorrow",
-                    answer: "Answer 5 - Add your answer here"
+                    question: "Which plan should I choose?",
+                    answer: "Start with the Starter plan if you're just beginning. Upgrade to Growth when you hit 100+ students. Pro and Scale are for larger communities with advanced needs."
                   },
                 ].map((faq, index) => (
                   <div 

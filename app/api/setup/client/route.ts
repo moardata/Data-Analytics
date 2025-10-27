@@ -51,7 +51,11 @@ export async function POST(request: NextRequest) {
       }, { headers: corsHeaders });
     }
 
-    // Create new client record
+    // Calculate trial end date (7 days from now)
+    const trialEndsAt = new Date();
+    trialEndsAt.setDate(trialEndsAt.getDate() + 7);
+
+    // Create new client record with automatic free trial
     const { data: newClient, error } = await supabase
       .from('clients')
       .insert({
@@ -59,8 +63,9 @@ export async function POST(request: NextRequest) {
         company_id: companyId,
         email: companyEmail || `company_${companyId}@whop.com`,
         name: companyName || `Company ${companyId}`,
-        current_tier: 'free', // Standardized tier system (free/pro/premium)
-        subscription_status: 'active',
+        current_tier: 'atom', // Start with Starter tier during trial
+        subscription_status: 'trialing',
+        trial_ends_at: trialEndsAt.toISOString(),
       })
       .select('id')
       .single();
@@ -74,8 +79,10 @@ export async function POST(request: NextRequest) {
     }
 
     return NextResponse.json({
-      message: 'Client created successfully',
+      message: 'Client created successfully with 7-day free trial',
       clientId: newClient.id,
+      trialEndsAt: trialEndsAt.toISOString(),
+      tier: 'atom',
     }, { headers: corsHeaders });
 
   } catch (error) {

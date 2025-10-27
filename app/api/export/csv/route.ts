@@ -6,6 +6,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabaseServer as supabase } from '@/lib/supabase-server';
 import { simpleAuth } from '@/lib/auth/simple-auth';
+import { canPerformAction, type TierName } from '@/lib/pricing/tiers';
 
 export async function GET(request: NextRequest) {
   try {
@@ -19,7 +20,7 @@ export async function GET(request: NextRequest) {
     // First, get the client record for this company
     const { data: clientData, error: clientError } = await supabase
       .from('clients')
-      .select('id')
+      .select('id, current_tier')
       .eq('company_id', companyId)
       .single();
 
@@ -27,6 +28,15 @@ export async function GET(request: NextRequest) {
       return NextResponse.json(
         { error: 'Client not found for this company' },
         { status: 404 }
+      );
+    }
+
+    // Check if user can export CSV
+    const tier = (clientData.current_tier || 'atom') as TierName;
+    if (!canPerformAction(tier, 'csvExport')) {
+      return NextResponse.json(
+        { error: 'CSV export requires Growth plan or higher. Please upgrade your plan.' },
+        { status: 403 }
       );
     }
 
