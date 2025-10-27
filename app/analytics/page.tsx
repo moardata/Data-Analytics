@@ -16,6 +16,7 @@ import DashboardCreatorAnalytics from '@/components/DashboardCreatorAnalytics';
 import { adaptToCreatorAnalytics } from '@/lib/utils/adaptDashboardCreatorAnalytics';
 import { PermissionsBanner } from '@/components/PermissionsBanner';
 import { useWhopAuth } from '@/lib/hooks/useWhopAuth';
+import { LoadingScreen } from '@/components/LoadingScreen';
 
 export const dynamic = 'force-dynamic';
 
@@ -384,8 +385,8 @@ function AnalyticsContent() {
 export default function AnalyticsPage() {
   return (
     <Suspense fallback={
-      <div className="flex items-center justify-center min-h-screen bg-gradient-to-b from-[#0d0f12] to-[#14171c]">
-        <div className="w-16 h-16 border-4 border-[#10B981] border-t-transparent rounded-full animate-spin" />
+      <div className="min-h-screen bg-gradient-to-b from-[#0a0a0a] to-[#0f0f0f]">
+        <LoadingScreen message="Loading analytics" size="lg" />
       </div>
     }>
       <AnalyticsContent />

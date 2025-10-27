@@ -10,6 +10,7 @@ import { useSearchParams } from 'next/navigation';
 
 export const dynamic = 'force-dynamic';
 import { Plus, FileText, Eye, CheckCircle, Share2, Copy, BookOpen, Code, Download, Settings, BarChart3, Clock, Users, X, Trash2, Sparkles } from 'lucide-react';
+import { LoadingScreen } from '@/components/LoadingScreen';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -309,11 +310,8 @@ function FormsContent() {
   // Show loading state
   if (userRole === 'loading') {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-[#0d0f12] to-[#14171c] flex items-center justify-center">
-        <div className="text-[#D1D5DB] text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#10B981] mx-auto mb-4"></div>
-          <p>Loading your surveys...</p>
-        </div>
+      <div className="min-h-screen bg-gradient-to-b from-[#0a0a0a] to-[#0f0f0f]">
+        <LoadingScreen message="Loading your surveys" size="lg" />
       </div>
     );
   }
@@ -488,31 +486,31 @@ function FormsContent() {
   return (
     <div className="min-h-screen bg-gradient-to-b from-[#0a0a0a] to-[#0f0f0f] p-8">
       <div className="max-w-6xl mx-auto space-y-8">
-        {/* Header */}
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-5xl font-black text-[#F8FAFC] mb-2">
-              Surveys Section
-            </h1>
-            <p className="text-xl font-bold text-[#A1A1AA]">
-              View, customize, schedule, and export survey data with seamless precision
-            </p>
-          </div>
-          <div className="flex items-center gap-4">
-            <Badge className="bg-[#0B2C24] text-[#10B981] border-[#17493A] px-3 py-1">
-              <Users className="h-3 w-3 mr-1" />
-              {forms.filter(f => f.is_active).length} Active Surveys
+        {/* Header - Friendly Welcome Section */}
+        <div className="rounded-2xl border border-[#1a1a1a]/70 bg-gradient-to-br from-[#0f0f0f] via-[#1a1a1a] to-[#0f0f0f] p-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-3xl font-bold text-[#F8FAFC] mb-2">
+                Surveys Section
+              </h1>
+              <p className="text-[#A1A1AA] text-sm">
+                View, customize, schedule, and export survey data with seamless precision
+              </p>
+            </div>
+            <Badge className="bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-4 py-2">
+              <Sparkles className="h-4 w-4 mr-2" />
+              {forms.filter(f => f.is_active).length} Active
             </Badge>
           </div>
         </div>
 
-        {/* Tab Navigation */}
-        <div className="flex gap-2 border-b border-[#1a1a1a]">
+        {/* Tab Navigation - Colorful */}
+        <div className="grid grid-cols-4 gap-3 bg-[#0f0f0f] border border-[#1a1a1a] rounded-xl p-2">
           {[
-            { id: 'surveys', label: 'My Surveys', icon: FileText, description: 'View pre-saved surveys' },
-            { id: 'builder', label: 'Create', icon: Settings, description: 'Create and edit surveys' },
-            { id: 'submissions', label: 'Submissions', icon: Users, description: 'View form submissions' },
-            { id: 'export', label: 'Export Data', icon: Download, description: 'Download collected data' }
+            { id: 'surveys', label: 'My Surveys', icon: FileText, color: 'purple', colorClass: 'bg-purple-500/10 text-purple-400 border-purple-500/20 hover:bg-purple-500/20 data-[active=true]:bg-purple-500 data-[active=true]:text-white data-[active=true]:shadow-[0_0_20px_rgba(168,85,247,0.4)]' },
+            { id: 'builder', label: 'Create', icon: Settings, color: 'emerald', colorClass: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20 hover:bg-emerald-500/20 data-[active=true]:bg-emerald-500 data-[active=true]:text-white data-[active=true]:shadow-[0_0_20px_rgba(16,185,129,0.4)]' },
+            { id: 'submissions', label: 'Submissions', icon: Users, color: 'blue', colorClass: 'bg-blue-500/10 text-blue-400 border-blue-500/20 hover:bg-blue-500/20 data-[active=true]:bg-blue-500 data-[active=true]:text-white data-[active=true]:shadow-[0_0_20px_rgba(59,130,246,0.4)]' },
+            { id: 'export', label: 'Export Data', icon: Download, color: 'orange', colorClass: 'bg-orange-500/10 text-orange-400 border-orange-500/20 hover:bg-orange-500/20 data-[active=true]:bg-orange-500 data-[active=true]:text-white data-[active=true]:shadow-[0_0_20px_rgba(245,158,11,0.4)]' }
           ].map((tab) => {
             const Icon = tab.icon;
             return (
@@ -525,11 +523,8 @@ function FormsContent() {
                   }
                   setActiveTab(tab.id as any);
                 }}
-                className={`flex items-center gap-2 px-4 py-3 text-sm font-medium border-b-2 transition-all duration-200 ${
-                  activeTab === tab.id
-                    ? 'border-[#10B981] text-[#10B981] bg-[#0B2C24]/30'
-                    : 'border-transparent text-[#A1A1AA] hover:text-[#F8FAFC] hover:bg-[#1a1a1a]/50'
-                }`}
+                data-active={activeTab === tab.id}
+                className={`flex items-center justify-center gap-2 px-4 py-3 text-sm font-medium rounded-lg border transition-all duration-200 ${tab.colorClass}`}
                 title={tab.description}
               >
                 <Icon className="h-4 w-4" />
@@ -549,19 +544,21 @@ function FormsContent() {
                   <div className="absolute inset-0 bg-gradient-to-b from-white/4 via-transparent to-transparent" />
                 </div>
                 <CardContent className="py-16 text-center relative z-10">
-                  <FileText className="h-16 w-16 mx-auto mb-4 text-[#10B981]/30" />
-                  <h3 className="text-2xl font-black text-[#F8FAFC] mb-2">
-                    No forms yet
+                  <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-purple-500/20 to-purple-500/5 flex items-center justify-center mx-auto mb-4 shadow-lg shadow-purple-500/10">
+                    <FileText className="h-10 w-10 text-purple-400" />
+                  </div>
+                  <h3 className="text-2xl font-bold text-[#F8FAFC] mb-2">
+                    No surveys yet
                   </h3>
-                  <p className="text-lg text-[#A1A1AA] mb-6">
-                    Create your first form to start collecting student feedback
+                  <p className="text-[#A1A1AA] mb-6 max-w-md mx-auto">
+                    Create your first survey to start collecting valuable student feedback
                   </p>
                   <Button 
                     onClick={() => setActiveTab('builder')}
-                    className="gap-2 border border-[#10B981]/30 bg-[#0B2C24] hover:bg-[#0E3A2F] text-[#10B981] hover:text-[#34D399] font-semibold px-8 py-3 rounded-xl transition-all"
+                    className="gap-2 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white font-semibold px-8 py-3 rounded-xl transition-all shadow-lg shadow-emerald-500/20"
                   >
                     <Plus className="h-5 w-5" />
-                    Create Your First Form
+                    Create Your First Survey
                   </Button>
                 </CardContent>
               </Card>
@@ -933,8 +930,8 @@ function FormsContent() {
 export default function FormsPage() {
   return (
     <Suspense fallback={
-      <div className="flex items-center justify-center min-h-screen bg-gradient-to-b from-[#0d0f12] to-[#14171c]">
-        <div className="w-16 h-16 border-4 border-[#10B981] border-t-transparent rounded-full animate-spin" />
+      <div className="min-h-screen bg-gradient-to-b from-[#0a0a0a] to-[#0f0f0f]">
+        <LoadingScreen message="Loading surveys" size="lg" />
       </div>
     }>
       <FormsContent />

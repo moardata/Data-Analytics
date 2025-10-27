@@ -10,6 +10,7 @@ import { useSearchParams } from 'next/navigation';
 
 export const dynamic = 'force-dynamic';
 import { Zap, RefreshCw, TrendingUp, AlertCircle, Lightbulb, Sparkles, Activity, Brain, Target, Download, HelpCircle } from 'lucide-react';
+import { LoadingScreen } from '@/components/LoadingScreen';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -219,11 +220,8 @@ function InsightsContent() {
   // Show loading state while getting company ID
   if (!companyId) {
     return (
-      <div className={`min-h-screen ${theme.bg} flex items-center justify-center`}>
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#10B981] mx-auto mb-4"></div>
-          <p className="text-[#F8FAFC]">Loading AI Insights...</p>
-        </div>
+      <div className={`min-h-screen ${theme.bg}`}>
+        <LoadingScreen message="Loading AI Insights" size="lg" />
       </div>
     );
   }
@@ -610,8 +608,8 @@ function InsightsContent() {
 export default function InsightsPage() {
   return (
     <Suspense fallback={
-      <div className="flex items-center justify-center min-h-screen bg-gradient-to-b from-[#0a0a0a] to-[#0f0f0f]">
-        <div className="w-16 h-16 border-4 border-[#10B981] border-t-transparent rounded-full animate-spin" />
+      <div className="min-h-screen bg-gradient-to-b from-[#0a0a0a] to-[#0f0f0f]">
+        <LoadingScreen message="Loading AI Insights" size="lg" />
       </div>
     }>
       <InsightsContent />
