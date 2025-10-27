@@ -10,7 +10,6 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { Settings as SettingsIcon, User, Bell, Key, Database, RefreshCw, MessageCircle, HelpCircle } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { ThemeVariantToggle } from '@/components/ThemeVariantToggle';
 import { InfoModal } from '@/components/InfoModal';
 
 function SettingsContent() {
@@ -117,9 +116,6 @@ function SettingsContent() {
         </div>
 
         <div className="space-y-6">
-          {/* Theme Toggle */}
-          <ThemeVariantToggle />
-
           <Card className="border border-[#1a1a1a] bg-[#0f0f0f] shadow-lg">
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-[#F8FAFC]">

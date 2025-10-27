@@ -1,6 +1,6 @@
 /**
  * Theme Variant Context
- * Manages theme switching for A/B testing
+ * Auto-detects and adapts to Whop's dark/light mode
  */
 
 'use client';
@@ -18,23 +18,58 @@ interface ThemeVariantContextType {
 const ThemeVariantContext = createContext<ThemeVariantContextType | undefined>(undefined);
 
 export function ThemeVariantProvider({ children }: { children: React.ReactNode }) {
-  const [variant, setVariantState] = useState<ThemeVariant>('default');
-  const [theme, setTheme] = useState<ThemeColors>(getTheme('default'));
+  const [variant, setVariantState] = useState<ThemeVariant>('dark');
+  const [theme, setTheme] = useState<ThemeColors>(getTheme('dark'));
 
-  // Load saved preference from localStorage
+  // Auto-detect Whop's appearance (dark/light mode)
   useEffect(() => {
-    const saved = localStorage.getItem('theme-variant') as ThemeVariant;
-    const validThemes: ThemeVariant[] = ['default', 'variant-b', 'frosted-light', 'spectrum-glow', 'pro-graphite'];
-    if (saved && validThemes.includes(saved)) {
-      setVariantState(saved);
-      setTheme(getTheme(saved));
+    // Check if running in Whop iframe
+    const isInWhop = window.self !== window.top;
+    
+    if (isInWhop) {
+      // Listen for Whop theme changes via postMessage
+      const handleMessage = (event: MessageEvent) => {
+        // Whop sends color theme updates
+        if (event.data && typeof event.data === 'object') {
+          const appearance = event.data.appearance;
+          if (appearance === 'dark' || appearance === 'light') {
+            setVariantState(appearance);
+            setTheme(getTheme(appearance));
+          }
+        }
+      };
+
+      window.addEventListener('message', handleMessage);
+
+      // Request current theme from Whop
+      if (window.parent) {
+        window.parent.postMessage({ type: 'getColorTheme' }, '*');
+      }
+
+      return () => window.removeEventListener('message', handleMessage);
+    } else {
+      // Fallback: Use system preference if not in Whop
+      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      const initialTheme: ThemeVariant = prefersDark ? 'dark' : 'light';
+      setVariantState(initialTheme);
+      setTheme(getTheme(initialTheme));
+
+      // Listen for system theme changes
+      const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+      const handleChange = (e: MediaQueryListEvent) => {
+        const newTheme: ThemeVariant = e.matches ? 'dark' : 'light';
+        setVariantState(newTheme);
+        setTheme(getTheme(newTheme));
+      };
+
+      mediaQuery.addEventListener('change', handleChange);
+      return () => mediaQuery.removeEventListener('change', handleChange);
     }
   }, []);
 
   const setVariant = (newVariant: ThemeVariant) => {
     setVariantState(newVariant);
     setTheme(getTheme(newVariant));
-    localStorage.setItem('theme-variant', newVariant);
   };
 
   return (
