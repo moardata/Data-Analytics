@@ -41,6 +41,7 @@ function InsightsContent() {
   const [refreshing, setRefreshing] = useState(false);
   const [activeTab, setActiveTab] = useState('insights');
   const [showSuccess, setShowSuccess] = useState(false);
+  const [timeRange, setTimeRange] = useState<'daily' | 'weekly'>('daily');
 
   // Get company ID from URL (same as analytics page)
   useEffect(() => {
@@ -59,12 +60,12 @@ function InsightsContent() {
     }
   }, [companyId]);
 
-  // Load existing insights when client ID is available
+  // Load existing insights when client ID, company ID, or time range changes
   useEffect(() => {
     if (clientId && companyId) {
       loadExistingInsights();
     }
-  }, [clientId, companyId]);
+  }, [clientId, companyId, timeRange]);
 
   const fetchClientId = async (companyId: string) => {
     try {
@@ -84,8 +85,8 @@ function InsightsContent() {
 
   const loadExistingInsights = async () => {
     try {
-      console.log('📡 Loading existing insights...');
-      const response = await fetch(`/api/insights/generate?companyId=${companyId}`, {
+      console.log('📡 Loading existing insights for time range:', timeRange);
+      const response = await fetch(`/api/insights/generate?companyId=${companyId}&timeRange=${timeRange}`, {
         method: 'GET',
         headers: { 'Content-Type': 'application/json' }
       });
@@ -122,6 +123,7 @@ function InsightsContent() {
   const generateInsights = async () => {
     console.log('🚀 Generate Insights clicked');
     console.log('Company ID:', companyId);
+    console.log('Time Range:', timeRange);
     
     if (!companyId) {
       console.error('❌ No company ID available');
@@ -133,11 +135,11 @@ function InsightsContent() {
     
     try {
       console.log('📡 Making API call to /api/insights/generate');
-      const response = await fetch(`/api/insights/generate?companyId=${companyId}`, {
+      const response = await fetch(`/api/insights/generate?companyId=${companyId}&timeRange=${timeRange}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          timeRange: 'week',
+          timeRange: timeRange,
           includeAnomalies: true
         })
       });
@@ -178,13 +180,14 @@ function InsightsContent() {
     try {
       setRefreshing(true);
       console.log('🔄 Refreshing insights for company:', companyId);
+      console.log('🔄 Time range:', timeRange);
       
       // Re-generate insights (force fresh calculation)
-      const response = await fetch(`/api/insights/generate?companyId=${companyId}`, {
+      const response = await fetch(`/api/insights/generate?companyId=${companyId}&timeRange=${timeRange}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          timeRange: 'week',
+          timeRange: timeRange,
           includeAnomalies: true
         })
       });
@@ -246,7 +249,7 @@ function InsightsContent() {
       
       <div className="container mx-auto px-4 py-8">
         {/* Header */}
-        <div className="flex items-center justify-between mb-8">
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-8">
           <div>
             <h1 className="text-2xl md:text-3xl font-semibold flex items-center gap-3">
               <div className="w-10 h-10 rounded-lg bg-[#10B981] flex items-center justify-center">
@@ -258,7 +261,31 @@ function InsightsContent() {
               AI-powered recommendations and analytics for your community
             </p>
           </div>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3 flex-wrap">
+            {/* Time Range Selector */}
+            <div className="flex items-center gap-2 bg-[#0f0f0f] border border-[#1a1a1a] rounded-xl p-1">
+              <button
+                onClick={() => setTimeRange('daily')}
+                className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+                  timeRange === 'daily'
+                    ? 'bg-[#10B981] text-white shadow-md'
+                    : 'text-[#A1A1AA] hover:text-[#F8FAFC] hover:bg-[#1a1a1a]'
+                }`}
+              >
+                Daily
+              </button>
+              <button
+                onClick={() => setTimeRange('weekly')}
+                className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+                  timeRange === 'weekly'
+                    ? 'bg-[#10B981] text-white shadow-md'
+                    : 'text-[#A1A1AA] hover:text-[#F8FAFC] hover:bg-[#1a1a1a]'
+                }`}
+              >
+                Weekly
+              </button>
+            </div>
+            
             <Button 
               onClick={generateInsights}
               disabled={loading || !companyId}

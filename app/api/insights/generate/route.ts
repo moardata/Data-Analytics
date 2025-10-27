@@ -162,13 +162,19 @@ export async function GET(request: NextRequest) {
 
     const limit = parseInt(searchParams.get('limit') || '10');
     const dismissed = searchParams.get('dismissed') === 'true';
+    const timeRange = searchParams.get('timeRange') || 'daily';
+    
+    // Calculate date range for filtering
+    const daysAgo = timeRange === 'daily' ? 1 : timeRange === 'weekly' ? 7 : 7;
+    const startDate = new Date(Date.now() - daysAgo * 86400000).toISOString();
 
-    // Fetch existing insights
+    // Fetch existing insights within time range
     const query = supabase
       .from('insights')
       .select('*')
       .eq('client_id', clientId)
       .eq('dismissed', dismissed)
+      .gte('created_at', startDate)
       .order('created_at', { ascending: false })
       .limit(limit);
 

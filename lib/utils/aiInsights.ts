@@ -65,7 +65,7 @@ export async function generateInsightsForClient(
 
   try {
     // Get comprehensive data using the enhanced data collection API
-    const daysAgo = range === 'week' ? 7 : range === 'month' ? 30 : 90;
+    const daysAgo = range === 'daily' ? 1 : range === 'weekly' || range === 'week' ? 7 : range === 'month' ? 30 : 90;
     const startDate = new Date(Date.now() - daysAgo * 86400000).toISOString();
 
     // Get ALL available data sources - form submissions, events, subscriptions
