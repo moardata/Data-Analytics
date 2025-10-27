@@ -590,7 +590,7 @@ function FormsContent() {
                         <CheckCircle className="h-4 w-4 text-[#10B981]" />
                         {form.fields?.length || 0} fields
                         {userRole === 'owner' && (
-                          <Badge className={`ml-2 ${form.is_active ? 'bg-[#10B981] text-white shadow-md shadow-[#10B981]/30' : 'bg-[#3F3F46] text-[#A1A1AA]'}`}>
+                          <Badge className={`ml-2 ${form.is_active ? 'bg-[#0B2C24] border border-[#10B981]/40 text-[#10B981]' : 'bg-[#3F3F46] text-[#A1A1AA]'}`}>
                             {form.is_active ? 'Published' : 'Draft'}
                           </Badge>
                         )}
@@ -657,7 +657,7 @@ function FormsContent() {
                               alert('Failed to update survey status. Please try again.');
                             }
                           }}
-                          className="w-full gap-2 bg-gradient-to-r from-[#10B981] to-[#0E9F71] hover:from-[#0E9F71] hover:to-[#10B981] text-white font-medium py-3 px-6 rounded-lg shadow-md shadow-[#10B981]/20 transition-all duration-200"
+                          className="w-full gap-2 border border-[#10B981]/30 bg-[#0B2C24] hover:bg-[#0E3A2F] text-[#10B981] hover:text-[#34D399] font-medium py-3 px-6 rounded-lg transition-all duration-200"
                         >
                           <FileText className="h-5 w-5" />
                           {form.is_active ? 'Unpublish from Students' : 'Publish to Students'}
