@@ -51,7 +51,7 @@ export async function POST(request: NextRequest) {
 
     // Use correct Whop API endpoint - list memberships
     const membershipsResponse = await fetch(
-      `https://api.whop.com/api/v5/memberships?owned_by=${companyId}&per=100`,
+      `https://api.whop.com/api/v2/memberships?company_id=${companyId}&per=100`,
       {
         headers: {
           'Authorization': `Bearer ${whopApiKey}`,
@@ -109,7 +109,7 @@ export async function POST(request: NextRequest) {
     // Process each membership
     for (const membership of memberships) {
       try {
-        const whopUserId = membership.user?.id || membership.user_id;
+        const whopUserId = membership.user || membership.user_id || membership.id;
         
         if (!whopUserId) {
           console.log('⚠️ [Import Members] Skipping membership without user ID');
