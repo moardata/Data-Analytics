@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { Card, CardContent } from '@/components/ui/card';
-import { TrendingUp, Clock, AlertTriangle } from 'lucide-react';
+import { TrendingUp, Clock, AlertTriangle, HelpCircle } from 'lucide-react';
 
 interface AhaMomentChartProps {
   data: {
@@ -30,7 +30,16 @@ export default function AhaMomentChart({ data }: AhaMomentChartProps) {
       <CardContent className="p-6 relative z-10">
         <div className="flex items-center justify-between mb-6 gap-2">
             <div className="flex-1 min-w-0">
-              <h3 className="text-base font-semibold text-[#F8FAFC] truncate">Breakthrough Moments</h3>
+              <div className="flex items-center gap-2 mb-1">
+                <h3 className="text-base font-semibold text-[#F8FAFC] truncate">Breakthrough Moments</h3>
+                <div className="group/info relative">
+                  <HelpCircle className="h-4 w-4 text-[#A1A1AA] hover:text-[#10B981] cursor-help transition-colors flex-shrink-0" />
+                  <div className="invisible group-hover/info:visible absolute left-0 top-6 w-64 p-3 bg-[#0a0a0a] border border-[#10B981]/30 rounded-lg shadow-xl z-50">
+                    <p className="text-xs text-[#F8FAFC] font-semibold mb-1">Breakthrough Moments</p>
+                    <p className="text-xs text-[#A1A1AA]">Identifies which content creates "aha moments" that spike student engagement. Double down on what works!</p>
+                  </div>
+                </div>
+              </div>
               <p className="text-sm text-[#A1A1AA] line-clamp-2">Content that sparks student success</p>
             </div>
           <TrendingUp className="w-5 h-5 text-green-500 flex-shrink-0" style={{ filter: 'drop-shadow(0 0 8px #10B981)' }} />

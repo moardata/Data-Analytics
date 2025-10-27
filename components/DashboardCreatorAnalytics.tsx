@@ -9,7 +9,7 @@ import { Button } from '@/components/ui/button';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils/cn';
-import { Info, Users, Target, TrendingUp, RefreshCw, Lock, Zap } from 'lucide-react';
+import { Info, Users, Target, TrendingUp, RefreshCw, Lock, Zap, HelpCircle } from 'lucide-react';
 import { canAccessMetric, type TierName } from '@/lib/pricing/tiers';
 
 // New metric components
@@ -363,9 +363,16 @@ export default function DashboardCreatorAnalytics({ clientId: companyIdOrClientI
             <div className="absolute inset-0 bg-gradient-to-b from-white/5 via-transparent to-transparent" />
           </div>
           <div className="relative z-10 p-5">
-            <div className="flex items-center gap-3 mb-2">
+            <div className="flex items-center justify-between gap-3 mb-2">
               <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-purple-500/20 to-purple-500/5 flex items-center justify-center shadow-lg shadow-purple-500/10">
                 <Users className="h-6 w-6 text-purple-400" />
+              </div>
+              <div className="group/info relative">
+                <HelpCircle className="h-4 w-4 text-[#A1A1AA] hover:text-[#10B981] cursor-help transition-colors" />
+                <div className="invisible group-hover/info:visible absolute right-0 top-6 w-64 p-3 bg-[#0a0a0a] border border-[#10B981]/30 rounded-lg shadow-xl z-50">
+                  <p className="text-xs text-[#F8FAFC] font-semibold mb-1">Total Students</p>
+                  <p className="text-xs text-[#A1A1AA]">Tracks your total student count. Watch this grow as you attract more members!</p>
+                </div>
               </div>
             </div>
             <p className="text-3xl font-black text-[#F8FAFC] mb-1 truncate">{metrics.commitmentScores.totalStudents}</p>
@@ -379,9 +386,16 @@ export default function DashboardCreatorAnalytics({ clientId: companyIdOrClientI
             <div className="absolute inset-0 bg-gradient-to-b from-white/5 via-transparent to-transparent" />
           </div>
           <div className="relative z-10 p-5">
-            <div className="flex items-center gap-3 mb-2">
+            <div className="flex items-center justify-between gap-3 mb-2">
               <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-green-500/20 to-green-500/5 flex items-center justify-center shadow-lg shadow-green-500/10">
                 <TrendingUp className="h-6 w-6 text-green-400" />
+              </div>
+              <div className="group/info relative">
+                <HelpCircle className="h-4 w-4 text-[#A1A1AA] hover:text-[#10B981] cursor-help transition-colors" />
+                <div className="invisible group-hover/info:visible absolute right-0 top-6 w-64 p-3 bg-[#0a0a0a] border border-[#10B981]/30 rounded-lg shadow-xl z-50">
+                  <p className="text-xs text-[#F8FAFC] font-semibold mb-1">Average Consistency</p>
+                  <p className="text-xs text-[#A1A1AA]">Measures how regularly students show up. Higher scores mean better engagement and retention!</p>
+                </div>
               </div>
             </div>
             <p className="text-3xl font-black text-[#F8FAFC] mb-1 truncate">{metrics.engagementConsistency.averageScore.toFixed(1)}</p>
@@ -395,9 +409,16 @@ export default function DashboardCreatorAnalytics({ clientId: companyIdOrClientI
             <div className="absolute inset-0 bg-gradient-to-b from-white/5 via-transparent to-transparent" />
           </div>
           <div className="relative z-10 p-5">
-            <div className="flex items-center gap-3 mb-2">
+            <div className="flex items-center justify-between gap-3 mb-2">
               <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-blue-500/20 to-blue-500/5 flex items-center justify-center shadow-lg shadow-blue-500/10">
                 <Target className="h-6 w-6 text-blue-400" />
+              </div>
+              <div className="group/info relative">
+                <HelpCircle className="h-4 w-4 text-[#A1A1AA] hover:text-[#10B981] cursor-help transition-colors" />
+                <div className="invisible group-hover/info:visible absolute right-0 top-6 w-64 p-3 bg-[#0a0a0a] border border-[#10B981]/30 rounded-lg shadow-xl z-50">
+                  <p className="text-xs text-[#F8FAFC] font-semibold mb-1">Engagements Today</p>
+                  <p className="text-xs text-[#A1A1AA]">Shows how many times students interacted with your content today. Track daily momentum!</p>
+                </div>
               </div>
             </div>
             <p className="text-3xl font-black text-[#F8FAFC] mb-1 truncate">{metrics.popularContent.totalEngagements}</p>

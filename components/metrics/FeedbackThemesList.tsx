@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { Card, CardContent } from '@/components/ui/card';
-import { MessageSquare, Plus, AlertCircle, CheckCircle, Clock } from 'lucide-react';
+import { MessageSquare, Plus, AlertCircle, CheckCircle, Clock, HelpCircle } from 'lucide-react';
 import Link from 'next/link';
 
 interface FeedbackThemesListProps {
@@ -93,7 +93,16 @@ export default function FeedbackThemesList({ data }: FeedbackThemesListProps) {
       <CardContent className="p-6 relative z-10">
         <div className="flex items-center justify-between mb-6 gap-2">
           <div className="flex-1 min-w-0">
-            <h3 className="text-base font-semibold text-[#F8FAFC] truncate">What Students Say</h3>
+            <div className="flex items-center gap-2 mb-1">
+              <h3 className="text-base font-semibold text-[#F8FAFC] truncate">What Students Say</h3>
+              <div className="group/info relative">
+                <HelpCircle className="h-4 w-4 text-[#A1A1AA] hover:text-[#10B981] cursor-help transition-colors flex-shrink-0" />
+                <div className="invisible group-hover/info:visible absolute left-0 top-6 w-64 p-3 bg-[#0a0a0a] border border-[#10B981]/30 rounded-lg shadow-xl z-50">
+                  <p className="text-xs text-[#F8FAFC] font-semibold mb-1">Student Feedback Themes</p>
+                  <p className="text-xs text-[#A1A1AA]">AI analyzes survey responses to find common themes. Discover what students love and what needs improvement!</p>
+                </div>
+              </div>
+            </div>
             <p className="text-sm text-[#A1A1AA]">{totalSubmissions} responses analyzed</p>
           </div>
           <MessageSquare className="w-5 h-5 text-emerald-500 flex-shrink-0" />

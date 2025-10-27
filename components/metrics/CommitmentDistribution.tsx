@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { Card, CardContent } from '@/components/ui/card';
-import { AlertTriangle, CheckCircle, Clock } from 'lucide-react';
+import { AlertTriangle, CheckCircle, Clock, HelpCircle } from 'lucide-react';
 
 interface CommitmentDistributionProps {
   data: {
@@ -41,7 +41,16 @@ export default function CommitmentDistribution({ data }: CommitmentDistributionP
       <CardContent className="p-6 relative z-10">
         <div className="flex items-center justify-between mb-6 gap-2">
             <div className="flex-1 min-w-0">
-              <h3 className="text-base font-semibold text-[#F8FAFC] truncate">Student Commitment</h3>
+              <div className="flex items-center gap-2 mb-1">
+                <h3 className="text-base font-semibold text-[#F8FAFC] truncate">Student Commitment</h3>
+                <div className="group/info relative">
+                  <HelpCircle className="h-4 w-4 text-[#A1A1AA] hover:text-[#10B981] cursor-help transition-colors flex-shrink-0" />
+                  <div className="invisible group-hover/info:visible absolute left-0 top-6 w-64 p-3 bg-[#0a0a0a] border border-[#10B981]/30 rounded-lg shadow-xl z-50">
+                    <p className="text-xs text-[#F8FAFC] font-semibold mb-1">Student Commitment Score</p>
+                    <p className="text-xs text-[#A1A1AA]">Predicts who's likely to complete your course. Identify at-risk students early and provide timely support!</p>
+                  </div>
+                </div>
+              </div>
               <p className="text-sm text-[#A1A1AA] line-clamp-2">Who's likely to complete your course</p>
             </div>
           <div className="text-right flex-shrink-0">
