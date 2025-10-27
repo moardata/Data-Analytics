@@ -5,6 +5,8 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { supabaseServer as supabase } from '@/lib/supabase-server';
+import { checkLimit, getClientUsage } from '@/lib/pricing/usage-tracker';
+import { type TierName } from '@/lib/pricing/tiers';
 
 export async function POST(request: NextRequest) {
   try {
@@ -23,7 +25,7 @@ export async function POST(request: NextRequest) {
     // Get or create client record
     const { data: clientData, error: clientError} = await supabase
       .from('clients')
-      .select('id, name, email')
+      .select('id, name, email, current_tier')
       .eq('company_id', companyId)
       .single();
 
@@ -36,6 +38,14 @@ export async function POST(request: NextRequest) {
     }
 
     const clientId = clientData.id;
+    const tier = (clientData.current_tier || 'atom') as TierName;
+
+    // Check current student count
+    const currentUsage = await getClientUsage(companyId);
+    console.log('📊 [Import Members] Current usage:', {
+      students: currentUsage.studentCount,
+      tier
+    });
 
     // Fetch members from Whop API
     const whopApiKey = process.env.WHOP_API_KEY;
@@ -170,7 +180,16 @@ export async function POST(request: NextRequest) {
           continue;
         }
 
-        // Entity doesn't exist - create it with Whop data
+        // Entity doesn't exist - check if we can add more students
+        const limitCheck = await checkLimit(companyId, tier, 'addStudent');
+        
+        if (!limitCheck.allowed) {
+          console.warn('⚠️ [Import Members] Student limit reached:', limitCheck.reason);
+          errors.push(`Limit reached: ${limitCheck.reason}`);
+          break; // Stop importing more students
+        }
+
+        // Create it with Whop data
         let userName = `Student ${whopUserId}`;
         let userEmail = membership.user?.email || null;
         let metadata: any = { source: 'whop_import' };
