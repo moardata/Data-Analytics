@@ -92,27 +92,37 @@ function AnalyticsContent() {
     }
 
     setSyncing(true);
-    setSyncMessage('🔄 Syncing students from Whop...');
+    setSyncMessage('🔄 Importing members from Whop...');
 
     try {
-      const response = await fetch(`/api/sync/students?companyId=${companyId}`, {
+      const response = await fetch(`/api/admin/import-members?companyId=${companyId}`, {
         method: 'POST',
       });
 
       const data = await response.json();
 
       if (data.success) {
-        setSyncMessage(`✅ ${data.message}`);
+        const parts = [];
+        if (data.imported > 0) parts.push(`${data.imported} imported`);
+        if (data.updated > 0) parts.push(`${data.updated} updated`);
+        if (data.enriched > 0) parts.push(`${data.enriched} enriched`);
+        
+        const message = parts.length > 0 
+          ? `✅ Success! ${parts.join(', ')}. Total: ${data.total} members processed.`
+          : '✅ All members are already synced!';
+        
+        setSyncMessage(message);
+        
         // Refresh dashboard data
         setTimeout(() => {
           fetchData();
           setSyncMessage('');
-        }, 2000);
+        }, 3000);
       } else {
-        setSyncMessage(`❌ ${data.error || 'Failed to sync students'}`);
+        setSyncMessage(`❌ ${data.error || 'Failed to import members'}`);
       }
     } catch (error) {
-      setSyncMessage('❌ Error syncing students. Please try again.');
+      setSyncMessage('❌ Error importing members. Please try again.');
     } finally {
       setSyncing(false);
     }
@@ -264,15 +274,15 @@ function AnalyticsContent() {
               <button
                 onClick={handleSyncStudents}
                 disabled={syncing}
-                className="px-6 py-3 bg-[#10B981] text-white rounded-lg hover:bg-[#0E3A2F] disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 mx-auto"
+                className="px-6 py-3 border border-[#10B981]/30 bg-[#0B2C24] hover:bg-[#0E3A2F] text-[#10B981] hover:text-[#34D399] rounded-lg disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 mx-auto transition-all"
               >
                 {syncing ? (
                   <>
-                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
-                    Syncing...
+                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-[#10B981]"></div>
+                    Importing...
                   </>
                 ) : (
-                  'Sync Students from Whop'
+                  'Import Members from Whop'
                 )}
               </button>
               {syncMessage && (
@@ -307,8 +317,8 @@ function AnalyticsContent() {
   return (
     <div className="min-h-screen bg-gradient-to-b from-[#0a0a0a] to-[#0f0f0f]">
       <div className="max-w-[1600px] mx-auto p-6">
-        {/* User Role Badge */}
-        <div className="mb-4 flex items-center justify-between">
+        {/* User Role Badge and Sync Button */}
+        <div className="mb-4 flex items-center justify-between flex-wrap gap-4">
           <div className="flex items-center gap-3">
             <div className="flex items-center gap-2 bg-[#0f0f0f] border border-[#1a1a1a] rounded-lg px-3 py-2">
               <svg className="w-4 h-4 text-[#10B981]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -322,51 +332,43 @@ function AnalyticsContent() {
               {companyId}
             </div>
           </div>
+          
+          {/* Sync Button - Always visible */}
+          <div className="flex items-center gap-3">
+            <button
+              onClick={handleSyncStudents}
+              disabled={syncing}
+              className="px-4 py-2 border border-[#10B981]/30 bg-[#0B2C24] hover:bg-[#0E3A2F] text-[#10B981] hover:text-[#34D399] rounded-lg disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 transition-all text-sm font-medium"
+            >
+              {syncing ? (
+                <>
+                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-[#10B981]"></div>
+                  Importing...
+                </>
+              ) : (
+                <>
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                  </svg>
+                  Import Members
+                </>
+              )}
+            </button>
+          </div>
         </div>
         
-        <PermissionsBanner missing={missingPermissions} />
-        
-        {/* Sync Students Button - Always visible when no data */}
-        {dashboardData && dashboardData.totalStudents === 0 && (
-          <div className="mb-6 p-4 bg-[#0f0f0f] rounded-lg border border-[#1a1a1a]">
-            <div className="flex items-center justify-between">
-              <div>
-                <h3 className="text-lg font-semibold text-[#F8FAFC] mb-2">No Students Found</h3>
-                <p className="text-[#A1A1AA] text-sm">
-                  Import your existing students from Whop to start tracking analytics.
-                </p>
-              </div>
-              <button
-                onClick={handleSyncStudents}
-                disabled={syncing}
-                className="px-6 py-3 bg-[#10B981] text-white rounded-lg hover:bg-[#0E3A2F] disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
-              >
-                {syncing ? (
-                  <>
-                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
-                    Syncing...
-                  </>
-                ) : (
-                  <>
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                    </svg>
-                    Sync Students from Whop
-                  </>
-                )}
-              </button>
-            </div>
-            {syncMessage && (
-              <div className={`mt-3 text-sm p-3 rounded ${
-                syncMessage.startsWith('✅') ? 'bg-green-900/20 text-green-400' :
-                syncMessage.startsWith('🔄') ? 'bg-blue-900/20 text-blue-400' :
-                'bg-red-900/20 text-red-400'
-              }`}>
-                {syncMessage}
-              </div>
-            )}
+        {/* Sync Message */}
+        {syncMessage && (
+          <div className={`mb-4 text-sm p-3 rounded ${
+            syncMessage.startsWith('✅') ? 'bg-green-900/20 text-green-400 border border-green-900/30' :
+            syncMessage.startsWith('🔄') ? 'bg-blue-900/20 text-blue-400 border border-blue-900/30' :
+            'bg-red-900/20 text-red-400 border border-red-900/30'
+          }`}>
+            {syncMessage}
           </div>
         )}
+        
+        <PermissionsBanner missing={missingPermissions} />
         
         <DashboardCreatorAnalytics
           clientId={companyId}
