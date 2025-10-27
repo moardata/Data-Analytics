@@ -133,17 +133,9 @@ export async function POST(request: NextRequest) {
       console.log('✅ [Form Submit API] Created new entity with Whop data:', entityData.id);
     }
 
-    const { error: entityError } = { error: null }; // For backward compatibility
-
-    console.log('📊 [Form Submit API] Entity result:', {
-      success: !!entityData,
-      entityId: entityData?.id,
-      error: entityError?.message
-    });
-
-    if (entityError || !entityData) {
-      console.error('❌ [Form Submit API] Entity creation failed:', entityError);
-      throw new Error(`Failed to create entity: ${entityError?.message}`);
+    if (!entityData) {
+      console.error('❌ [Form Submit API] Entity creation failed: No entity data');
+      throw new Error('Failed to create or retrieve entity');
     }
 
     // Store form submission
