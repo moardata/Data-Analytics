@@ -11,8 +11,6 @@ import { Settings as SettingsIcon, User, Bell, Key, Database, RefreshCw } from '
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { ThemeVariantToggle } from '@/components/ThemeVariantToggle';
-import { FeedbackModal } from '@/components/FeedbackModal';
-import { SupportModal } from '@/components/SupportModal';
 
 function SettingsContent() {
   const router = useRouter();
@@ -21,8 +19,6 @@ function SettingsContent() {
   const experienceId = searchParams.get('experienceId') || searchParams.get('experience_id');
   const [syncing, setSyncing] = useState(false);
   const [syncMessage, setSyncMessage] = useState('');
-  const [showFeedbackModal, setShowFeedbackModal] = useState(false);
-  const [showSupportModal, setShowSupportModal] = useState(false);
   
   // Notification settings with localStorage
   const [emailDaily, setEmailDaily] = useState(() => {
@@ -71,11 +67,11 @@ function SettingsContent() {
   };
 
   const handleSubmitFeedback = () => {
-    setShowFeedbackModal(true);
+    alert('💬 To submit feedback, please message the app creator directly on Whop!\n\nYou can easily find and message us through your Whop dashboard.');
   };
 
   const handleContactSupport = () => {
-    setShowSupportModal(true);
+    alert('🆘 Need help? Please message the app creator directly on Whop!\n\nYou can easily find and message us through your Whop dashboard for quick support.');
   };
 
   const handleSyncStudents = async () => {
@@ -293,18 +289,6 @@ function SettingsContent() {
 
         </div>
       </div>
-
-      {/* Modals */}
-      <FeedbackModal 
-        isOpen={showFeedbackModal}
-        onClose={() => setShowFeedbackModal(false)}
-        companyId={companyId}
-      />
-      <SupportModal 
-        isOpen={showSupportModal}
-        onClose={() => setShowSupportModal(false)}
-        companyId={companyId}
-      />
     </div>
   );
 }
