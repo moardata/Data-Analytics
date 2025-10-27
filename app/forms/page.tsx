@@ -543,9 +543,13 @@ function FormsContent() {
         {activeTab === 'surveys' && (
           <div>
             {forms.length === 0 ? (
-              <Card className="border border-[#1a1a1a] bg-[#0f0f0f] shadow-lg">
-                <CardContent className="py-16 text-center">
-                  <FileText className="h-16 w-16 mx-auto mb-4 text-[#2A2F36]" />
+              <Card className="relative overflow-hidden border border-[#1a1a1a]/70 bg-gradient-to-br from-[#0f0f0f] via-[#1a1a1a] to-[#0f0f0f] shadow-lg">
+                {/* Metallic sheen overlay */}
+                <div className="pointer-events-none absolute inset-0 opacity-40">
+                  <div className="absolute inset-0 bg-gradient-to-b from-white/4 via-transparent to-transparent" />
+                </div>
+                <CardContent className="py-16 text-center relative z-10">
+                  <FileText className="h-16 w-16 mx-auto mb-4 text-[#10B981]/30" />
                   <h3 className="text-2xl font-black text-[#F8FAFC] mb-2">
                     No forms yet
                   </h3>
@@ -554,7 +558,7 @@ function FormsContent() {
                   </p>
                   <Button 
                     onClick={() => setActiveTab('builder')}
-                    className="gap-2 bg-[#0a0a0a] hover:bg-[#1a1a1a] text-white border border-[#1a1a1a]"
+                    className="gap-2 bg-gradient-to-r from-[#10B981] to-[#0E9F71] hover:from-[#0E9F71] hover:to-[#10B981] text-white font-semibold px-8 py-3 rounded-xl shadow-lg shadow-[#10B981]/20 transition-all"
                   >
                     <Plus className="h-5 w-5" />
                     Create Your First Form
@@ -566,22 +570,27 @@ function FormsContent() {
                 {forms
                   .filter(form => userRole === 'owner' || form.is_active)
                   .map((form) => (
-                  <Card key={form.id} className="border border-[#1a1a1a] bg-[#0f0f0f] shadow-lg hover:shadow-xl hover:shadow-[#10B981]/10 transition-all duration-300 hover:border-[#10B981]/30 group">
-                    <CardHeader className="pb-3">
+                  <Card key={form.id} className="relative overflow-hidden border border-[#1a1a1a]/70 bg-gradient-to-br from-[#0f0f0f] via-[#1a1a1a] to-[#0f0f0f] shadow-lg hover:shadow-xl hover:shadow-[#10B981]/20 transition-all duration-300 hover:border-[#10B981]/50 group">
+                    {/* Metallic sheen overlay */}
+                    <div className="pointer-events-none absolute inset-0 opacity-40">
+                      <div className="absolute inset-0 bg-gradient-to-b from-white/4 via-transparent to-transparent" />
+                    </div>
+                    
+                    <CardHeader className="pb-3 relative z-10">
                       <CardTitle className="text-[#F8FAFC] flex items-center gap-2 group-hover:text-[#10B981] transition-colors">
                         <FileText className="h-5 w-5 text-[#10B981]" />
                         {form.name}
                       </CardTitle>
-                      <CardDescription className="text-[#A1A1AA] group-hover:text-[#F8FAFC] transition-colors">
+                      <CardDescription className="text-[#A1A1AA] group-hover:text-[#E2E8F0] transition-colors">
                         {form.description || 'No description'}
                       </CardDescription>
                     </CardHeader>
-                    <CardContent className="space-y-4">
-                      <div className="flex items-center gap-2 text-sm text-[#A1A1AA] group-hover:text-[#F8FAFC] transition-colors">
+                    <CardContent className="space-y-4 relative z-10">
+                      <div className="flex items-center gap-2 text-sm text-[#A1A1AA] group-hover:text-[#E2E8F0] transition-colors">
                         <CheckCircle className="h-4 w-4 text-[#10B981]" />
                         {form.fields?.length || 0} fields
                         {userRole === 'owner' && (
-                          <Badge className={`ml-2 ${form.is_active ? 'bg-[#10B981] text-white' : 'bg-[#6B7280] text-white'}`}>
+                          <Badge className={`ml-2 ${form.is_active ? 'bg-[#10B981] text-white shadow-md shadow-[#10B981]/30' : 'bg-[#3F3F46] text-[#A1A1AA]'}`}>
                             {form.is_active ? 'Published' : 'Draft'}
                           </Badge>
                         )}
@@ -591,7 +600,7 @@ function FormsContent() {
                       <div className="flex gap-2">
                         <Button 
                           onClick={() => setSelectedForm(form)}
-                          className="flex-1 gap-2 bg-[#0a0a0a] hover:bg-[#1a1a1a] text-white border border-[#1a1a1a]"
+                          className="flex-1 gap-2 border border-[#1a1a1a] bg-[#0f0f0f]/80 hover:bg-[#1a1a1a] text-[#F8FAFC] hover:text-white transition-all rounded-lg"
                         >
                           <Eye className="h-4 w-4" />
                             Preview
@@ -601,14 +610,14 @@ function FormsContent() {
                               setEditingForm(form);
                               setActiveTab('builder');
                             }}
-                            className="flex-1 gap-2 bg-[#0a0a0a] hover:bg-[#1a1a1a] text-white border border-[#1a1a1a]"
+                            className="flex-1 gap-2 border border-[#1a1a1a] bg-[#0f0f0f]/80 hover:bg-[#1a1a1a] text-[#F8FAFC] hover:text-white transition-all rounded-lg"
                           >
                             <Settings className="h-4 w-4" />
                             Manage
                           </Button>
                           <Button 
                             onClick={() => deleteForm(form.id)}
-                            className="gap-2 bg-[#7f1d1d] hover:bg-[#991b1b] text-white border border-[#991b1b]"
+                            className="gap-2 border border-[#EF4444]/30 bg-[#EF4444]/10 hover:bg-[#EF4444]/20 text-[#EF4444] hover:text-[#FF5555] transition-all rounded-lg"
                             title="Delete Survey"
                           >
                             <Trash2 className="h-4 w-4" />
@@ -648,7 +657,7 @@ function FormsContent() {
                               alert('Failed to update survey status. Please try again.');
                             }
                           }}
-                          className="w-full gap-2 bg-[#0a0a0a] hover:bg-[#1a1a1a] text-white border border-[#1a1a1a] font-medium py-3 px-6 rounded-lg transition-all duration-200"
+                          className="w-full gap-2 bg-gradient-to-r from-[#10B981] to-[#0E9F71] hover:from-[#0E9F71] hover:to-[#10B981] text-white font-medium py-3 px-6 rounded-lg shadow-md shadow-[#10B981]/20 transition-all duration-200"
                         >
                           <FileText className="h-5 w-5" />
                           {form.is_active ? 'Unpublish from Students' : 'Publish to Students'}
