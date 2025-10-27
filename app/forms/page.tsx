@@ -565,10 +565,10 @@ function FormsContent() {
         </div>
 
         {/* Tab Navigation - Matching Dashboard Style */}
-        <div className="flex gap-2 border-b border-[#1a1a1a] bg-[#0f0f0f]">
+        <div className="grid grid-cols-4 border-b border-[#1a1a1a] bg-[#0f0f0f]">
           <button
             onClick={() => setActiveTab('surveys')}
-            className={`flex items-center gap-2 px-6 py-3 text-sm font-medium transition-all ${
+            className={`flex items-center justify-center gap-2 px-6 py-3 text-sm font-medium transition-all ${
               activeTab === 'surveys'
                 ? 'bg-[#A855F7] text-white shadow-[0_0_20px_rgba(168,85,247,0.6)]'
                 : 'text-[#A1A1AA] hover:text-[#F8FAFC]'
@@ -582,7 +582,7 @@ function FormsContent() {
               setEditingForm(null);
               setActiveTab('builder');
             }}
-            className={`flex items-center gap-2 px-6 py-3 text-sm font-medium transition-all ${
+            className={`flex items-center justify-center gap-2 px-6 py-3 text-sm font-medium transition-all ${
               activeTab === 'builder'
                 ? 'bg-[#10B981] text-white shadow-[0_0_20px_rgba(16,185,129,0.6)]'
                 : 'text-[#A1A1AA] hover:text-[#F8FAFC]'
@@ -593,7 +593,7 @@ function FormsContent() {
           </button>
           <button
             onClick={() => setActiveTab('submissions')}
-            className={`flex items-center gap-2 px-6 py-3 text-sm font-medium transition-all ${
+            className={`flex items-center justify-center gap-2 px-6 py-3 text-sm font-medium transition-all ${
               activeTab === 'submissions'
                 ? 'bg-[#3B82F6] text-white shadow-[0_0_20px_rgba(59,130,246,0.6)]'
                 : 'text-[#A1A1AA] hover:text-[#F8FAFC]'
@@ -604,7 +604,7 @@ function FormsContent() {
           </button>
           <button
             onClick={() => setActiveTab('export')}
-            className={`flex items-center gap-2 px-6 py-3 text-sm font-medium transition-all ${
+            className={`flex items-center justify-center gap-2 px-6 py-3 text-sm font-medium transition-all ${
               activeTab === 'export'
                 ? 'bg-[#F59E0B] text-white shadow-[0_0_20px_rgba(245,158,11,0.6)]'
                 : 'text-[#A1A1AA] hover:text-[#F8FAFC]'

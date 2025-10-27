@@ -78,15 +78,37 @@ interface DashboardMetrics {
 }
 
 // ----------------------------------------
-// Toolbar with info button only
+// Toolbar with info button and import members button
 // ----------------------------------------
-function DashboardToolbar() {
+function DashboardToolbar({ onImportMembers, syncing }: { onImportMembers?: () => void; syncing?: boolean }) {
   const [showInfo, setShowInfo] = React.useState(false);
   
   return (
-    <div className="flex flex-wrap items-center gap-2">
-      <div className="text-lg font-semibold text-[#F8FAFC]">Dashboard</div>
+    <div className="flex flex-wrap items-center gap-4">
+      <div>
+        <div className="text-2xl font-bold text-[#F8FAFC]">Dashboard</div>
+        <div className="w-16 h-1 bg-gradient-to-r from-[#10B981] to-[#10B981]/50 rounded-full mt-2"></div>
+      </div>
       <div className="ml-auto flex items-center gap-2">
+        {onImportMembers && (
+          <Button 
+            onClick={onImportMembers}
+            disabled={syncing}
+            className="border border-[#1a1a1a] bg-[#0a0a0a] hover:bg-[#1a1a1a] text-[#F8FAFC] disabled:opacity-50"
+          >
+            {syncing ? (
+              <>
+                <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
+                Importing...
+              </>
+            ) : (
+              <>
+                <RefreshCw className="h-4 w-4 mr-2" />
+                Import Members
+              </>
+            )}
+          </Button>
+        )}
         <Button 
           onClick={() => setShowInfo(!showInfo)}
           className="border border-[#1a1a1a] bg-[#0a0a0a] hover:bg-[#1a1a1a] text-[#F8FAFC]"
