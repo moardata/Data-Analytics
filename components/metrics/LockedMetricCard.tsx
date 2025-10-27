@@ -24,37 +24,30 @@ export default function LockedMetricCard({ title, description, requiredTier }: L
 
   return (
     <Card className="relative rounded-2xl border border-[#1a1a1a]/70 bg-gradient-to-br from-[#0f0f0f] via-[#1a1a1a] to-[#0f0f0f] overflow-hidden shadow-lg min-h-[320px] flex items-center justify-center">
-      {/* Subtle blur overlay - barely visible */}
-      <div className="absolute inset-0 bg-[#0a0a0a]/20 backdrop-blur-sm z-10 flex items-center justify-center rounded-2xl p-4">
-        {/* Borderless floating upgrade panel */}
-        <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-[#0a0a0a]/95 via-[#0f0f0f]/90 to-[#0a0a0a]/95 backdrop-blur-lg p-8 shadow-2xl shadow-black/40 w-full max-w-sm">
-          {/* Subtle glow effect */}
-          <div className="pointer-events-none absolute inset-0 opacity-40">
-            <div className="absolute inset-0 bg-gradient-to-b from-[#10B981]/10 via-transparent to-transparent" />
+      {/* Full background blur */}
+      <div className="absolute inset-0 backdrop-blur-md z-10 flex items-center justify-center p-4">
+        {/* Clean floating content */}
+        <div className="relative z-10 text-center max-w-xs">
+          <div className="w-16 h-16 mx-auto mb-5 rounded-full bg-[#10B981]/10 flex items-center justify-center">
+            <Lock className="w-7 h-7 text-[#10B981]" strokeWidth={1.5} />
           </div>
-          
-          <div className="relative z-10 text-center">
-            <div className="w-20 h-20 mx-auto mb-4 rounded-full bg-gradient-to-br from-[#10B981]/30 to-[#10B981]/10 flex items-center justify-center shadow-xl shadow-[#10B981]/20">
-              <Lock className="w-10 h-10 text-[#10B981]" />
-            </div>
-            <h4 className="text-xl font-bold text-[#F8FAFC] mb-2">Upgrade to Unlock</h4>
-            <p className="text-sm text-[#E2E8F0] mb-1 line-clamp-1">{title}</p>
-            <p className="text-xs text-[#A1A1AA] mb-4 line-clamp-2">{description}</p>
-            <p className="text-xs text-[#A1A1AA] mb-5">
-              Requires <span className="text-[#10B981] font-semibold">{requiredTier}</span> plan
-            </p>
-            <Link href={`/upgrade${queryString}`}>
-              <Button className="w-full bg-gradient-to-r from-[#10B981] to-[#0E9F71] hover:from-[#0E9F71] hover:to-[#10B981] text-white font-semibold px-6 py-3 rounded-xl shadow-lg shadow-[#10B981]/30 transition-all">
-                <Zap className="w-4 h-4 mr-2" />
-                Upgrade Now
-              </Button>
-            </Link>
-          </div>
+          <h4 className="text-xl font-bold text-[#F8FAFC] mb-2">Upgrade to Unlock</h4>
+          <p className="text-sm text-[#E2E8F0] mb-1 line-clamp-1">{title}</p>
+          <p className="text-xs text-[#A1A1AA] mb-4 line-clamp-2">{description}</p>
+          <p className="text-xs text-[#A1A1AA] mb-5">
+            Requires <span className="text-[#10B981] font-semibold">{requiredTier}</span> plan
+          </p>
+          <Link href={`/upgrade${queryString}`}>
+            <Button className="w-full border border-[#10B981]/30 bg-[#0B2C24] hover:bg-[#0E3A2F] text-[#10B981] hover:text-[#34D399] font-semibold px-6 py-3 rounded-xl transition-all">
+              <Zap className="w-4 h-4 mr-2" />
+              Upgrade Now
+            </Button>
+          </Link>
         </div>
       </div>
 
-      {/* Background preview (more visible with blur) */}
-      <CardContent className="p-6 opacity-60 absolute inset-0 flex flex-col">
+      {/* Background preview (visible through blur) */}
+      <CardContent className="p-6 opacity-100 absolute inset-0 flex flex-col">
         <div className="flex items-center justify-between mb-4">
           <div className="flex-1 min-w-0">
             <h3 className="text-base font-semibold text-[#F8FAFC] truncate">{title}</h3>
