@@ -8,6 +8,7 @@ import type { NextRequest } from "next/server";
 import { supabaseServer as supabase } from "@/lib/supabase-server";
 import { normalizeWhopEvent, extractSubscriptionData, isValidWebhookEvent } from "@/lib/utils/normalizeEvent";
 import { getBundleInfo } from '@/lib/pricing/bundles';
+import { checkLimit, type TierName } from '@/lib/pricing/usage-tracker';
 
 // NOTE: Webhook validation is disabled for development/testing
 // To enable validation in production, uncomment and configure WHOP_WEBHOOK_SECRET
@@ -441,6 +442,25 @@ async function getOrCreateEntity(whopUserId: string, eventData: any) {
 		hasMetadata: Object.keys(metadata).length > 0
 	});
 
+	// CHECK STUDENT LIMIT BEFORE CREATING NEW ENTITY
+	const { data: clientCheck } = await supabase
+		.from('clients')
+		.select('current_tier')
+		.eq('id', clientId)
+		.single();
+	
+	if (clientCheck) {
+		const tier = (clientCheck.current_tier || 'atom') as TierName;
+		const limitCheck = await checkLimit(companyId, tier, 'addStudent');
+		
+		if (!limitCheck.allowed) {
+			console.warn(`⚠️ [Webhook] Student limit reached for company ${companyId}:`, limitCheck.reason);
+			// Don't create the entity - they've hit their limit
+			// In a real scenario, you might want to notify the creator
+			return null;
+		}
+	}
+
 	// Create new entity (student/member)
 	const { data: newEntity, error } = await supabase
 		.from('entities')
@@ -459,7 +479,7 @@ async function getOrCreateEntity(whopUserId: string, eventData: any) {
 		return null;
 	}
 
-	console.log(`Created new entity for user ${whopUserId}`);
+	console.log(`✅ Created new entity for user ${whopUserId} (within limits)`);
 	return newEntity;
 }
 

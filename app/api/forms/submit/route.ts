@@ -6,6 +6,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabaseServer as supabase } from '@/lib/supabase-server';
 import { simpleAuth } from '@/lib/auth/simple-auth';
+import { checkLimit, type TierName } from '@/lib/pricing/usage-tracker';
 
 export async function POST(request: NextRequest) {
   try {
@@ -37,7 +38,7 @@ export async function POST(request: NextRequest) {
     console.log('🔍 [Form Submit API] Looking up client for company:', companyId);
     const { data: clientData, error: clientError } = await supabase
       .from('clients')
-      .select('id')
+      .select('id, current_tier')
       .eq('company_id', companyId)
       .single();
 
@@ -56,6 +57,24 @@ export async function POST(request: NextRequest) {
     }
 
     const clientId = clientData.id; // This is the actual UUID
+    const tier = (clientData.current_tier || 'atom') as TierName;
+
+    // CHECK RESPONSE LIMIT BEFORE ACCEPTING SUBMISSION
+    const limitCheck = await checkLimit(companyId, tier, 'analyzeResponse');
+    
+    if (!limitCheck.allowed) {
+      console.warn('⚠️ [Form Submit API] Response limit reached:', limitCheck);
+      return NextResponse.json(
+        { 
+          error: limitCheck.reason,
+          limitReached: true,
+          current: limitCheck.current,
+          limit: limitCheck.limit,
+          upgradeUrl: '/upgrade',
+        },
+        { status: 429 } // Too Many Requests
+      );
+    }
 
     // First, check if entity already exists
     console.log('👤 [Form Submit API] Looking up entity record for:', entityId);
