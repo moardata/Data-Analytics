@@ -431,7 +431,7 @@ export default function DashboardCreatorAnalytics({ clientId: companyIdOrClientI
               See how consistently your students show up, when they have breakthrough moments, and who's likely to complete your course. Use these insights to provide timely support and celebrate wins.
             </p>
           </div>
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+          <div className="space-y-6">
             <ConsistencyScoreGauge data={metrics.engagementConsistency} />
             {canAccessMetric(userTier, 'breakthrough') ? (
               <AhaMomentChart data={metrics.ahaMoments} />
@@ -453,7 +453,7 @@ export default function DashboardCreatorAnalytics({ clientId: companyIdOrClientI
               Track which students are likely to complete your course and discover the learning paths that lead to success. Use this to identify at-risk students and optimize your content flow.
             </p>
           </div>
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+          <div className="space-y-6">
             {canAccessMetric(userTier, 'commitment') ? (
               <CommitmentDistribution data={metrics.commitmentScores} />
             ) : (
@@ -483,7 +483,7 @@ export default function DashboardCreatorAnalytics({ clientId: companyIdOrClientI
               See which content is getting the most attention today and what your students are saying. Use this to double down on what works and improve what doesn't.
             </p>
           </div>
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+          <div className="space-y-6">
             <PopularContentList data={metrics.popularContent} />
             <FeedbackThemesList data={metrics.feedbackThemes} />
           </div>
