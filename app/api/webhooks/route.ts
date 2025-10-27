@@ -8,7 +8,8 @@ import type { NextRequest } from "next/server";
 import { supabaseServer as supabase } from "@/lib/supabase-server";
 import { normalizeWhopEvent, extractSubscriptionData, isValidWebhookEvent } from "@/lib/utils/normalizeEvent";
 import { getBundleInfo } from '@/lib/pricing/bundles';
-import { checkLimit, type TierName } from '@/lib/pricing/usage-tracker';
+import { checkLimit } from '@/lib/pricing/usage-tracker';
+import { type TierName } from '@/lib/pricing/tiers';
 
 // NOTE: Webhook validation is disabled for development/testing
 // To enable validation in production, uncomment and configure WHOP_WEBHOOK_SECRET

@@ -6,7 +6,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabaseServer as supabase } from '@/lib/supabase-server';
 import { simpleAuth } from '@/lib/auth/simple-auth';
-import { checkLimit, type TierName } from '@/lib/pricing/usage-tracker';
+import { checkLimit } from '@/lib/pricing/usage-tracker';
+import { type TierName } from '@/lib/pricing/tiers';
 
 export async function POST(request: NextRequest) {
   try {
