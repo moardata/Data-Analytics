@@ -94,25 +94,22 @@ function SettingsContent() {
     }
 
     setSyncing(true);
-    setSyncMessage('🔄 Syncing students from Whop...');
+    setSyncMessage('🔄 Enriching student data from Whop...');
 
     try {
-      const response = await fetch(`/api/sync/students?companyId=${companyId}`, {
+      const response = await fetch(`/api/admin/enrich-students?companyId=${companyId}`, {
         method: 'POST',
       });
 
       const data = await response.json();
 
       if (data.success) {
-        setSyncMessage(`✅ ${data.message}`);
-        setTimeout(() => {
-          router.push(`/students${queryString}`);
-        }, 2000);
+        setSyncMessage(`✅ Successfully enriched ${data.enrichedCount} student profiles with real names and photos!`);
       } else {
-        setSyncMessage(`❌ ${data.error || 'Failed to sync students'}`);
+        setSyncMessage(`⚠️ ${data.error || 'Some students could not be enriched'}`);
       }
     } catch (error) {
-      setSyncMessage('❌ Error syncing students. Please try again.');
+      setSyncMessage('❌ Error enriching student data. Please try again.');
     } finally {
       setSyncing(false);
     }
@@ -140,16 +137,16 @@ function SettingsContent() {
                 Data Management
               </CardTitle>
               <CardDescription className="text-[#A1A1AA]">
-                Sync and manage your student data
+                Enrich student profiles with real data
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="text-sm text-[#A1A1AA]">
                 <p className="mb-2">
-                  Import existing students from Whop into your analytics dashboard.
+                  Fetch real names and profile photos from Whop for all your students.
                 </p>
                 <p className="text-xs text-[#A1A1AA]">
-                  This will sync all current members from your Whop group.
+                  This updates existing student records with their actual Whop profile data.
                 </p>
               </div>
               <Button 
@@ -158,7 +155,7 @@ function SettingsContent() {
                 className="bg-[#0a0a0a] hover:bg-[#1a1a1a] text-white border border-[#1a1a1a] flex items-center gap-2"
               >
                 <RefreshCw className={`h-4 w-4 ${syncing ? 'animate-spin' : ''}`} />
-                {syncing ? 'Syncing...' : 'Sync Students from Whop'}
+                {syncing ? 'Enriching...' : 'Enrich Student Data'}
               </Button>
               {syncMessage && (
                 <div className={`text-sm p-3 rounded ${
