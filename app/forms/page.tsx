@@ -831,7 +831,7 @@ function FormsContent() {
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-2xl mx-auto">
                     <Button 
                       className="gap-2 bg-[#0a0a0a] hover:bg-[#1a1a1a] text-white border border-[#1a1a1a] h-12"
                       onClick={() => {
@@ -851,16 +851,6 @@ function FormsContent() {
                     >
                       <Download className="h-4 w-4" />
                       Export Responses (CSV)
-                    </Button>
-                    <Button 
-                      className="gap-2 bg-[#0a0a0a] hover:bg-[#1a1a1a] text-white border border-[#1a1a1a] h-12"
-                      onClick={() => {
-                        // Export analytics report as PDF
-                        window.open(`/api/export/pdf?companyId=${clientId}`, '_blank');
-                      }}
-                    >
-                      <Download className="h-4 w-4" />
-                      Analytics Report (PDF)
                     </Button>
                   </div>
                   <div className="text-center py-4">
