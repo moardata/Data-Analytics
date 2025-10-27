@@ -507,10 +507,10 @@ function FormsContent() {
         {/* Tab Navigation - Colorful */}
         <div className="grid grid-cols-4 gap-3 bg-[#0f0f0f] border border-[#1a1a1a] rounded-xl p-2">
           {[
-            { id: 'surveys', label: 'My Surveys', icon: FileText, color: 'purple', colorClass: 'bg-purple-500/10 text-purple-400 border-purple-500/20 hover:bg-purple-500/20 data-[active=true]:bg-purple-500 data-[active=true]:text-white data-[active=true]:shadow-[0_0_20px_rgba(168,85,247,0.4)]' },
-            { id: 'builder', label: 'Create', icon: Settings, color: 'emerald', colorClass: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20 hover:bg-emerald-500/20 data-[active=true]:bg-emerald-500 data-[active=true]:text-white data-[active=true]:shadow-[0_0_20px_rgba(16,185,129,0.4)]' },
-            { id: 'submissions', label: 'Submissions', icon: Users, color: 'blue', colorClass: 'bg-blue-500/10 text-blue-400 border-blue-500/20 hover:bg-blue-500/20 data-[active=true]:bg-blue-500 data-[active=true]:text-white data-[active=true]:shadow-[0_0_20px_rgba(59,130,246,0.4)]' },
-            { id: 'export', label: 'Export Data', icon: Download, color: 'orange', colorClass: 'bg-orange-500/10 text-orange-400 border-orange-500/20 hover:bg-orange-500/20 data-[active=true]:bg-orange-500 data-[active=true]:text-white data-[active=true]:shadow-[0_0_20px_rgba(245,158,11,0.4)]' }
+            { id: 'surveys', label: 'My Surveys', icon: FileText, description: 'View pre-saved surveys', colorClass: 'bg-purple-500/10 text-purple-400 border-purple-500/20 hover:bg-purple-500/20 data-[active=true]:bg-purple-500 data-[active=true]:text-white data-[active=true]:shadow-[0_0_20px_rgba(168,85,247,0.4)]' },
+            { id: 'builder', label: 'Create', icon: Settings, description: 'Create and edit surveys', colorClass: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20 hover:bg-emerald-500/20 data-[active=true]:bg-emerald-500 data-[active=true]:text-white data-[active=true]:shadow-[0_0_20px_rgba(16,185,129,0.4)]' },
+            { id: 'submissions', label: 'Submissions', icon: Users, description: 'View form submissions', colorClass: 'bg-blue-500/10 text-blue-400 border-blue-500/20 hover:bg-blue-500/20 data-[active=true]:bg-blue-500 data-[active=true]:text-white data-[active=true]:shadow-[0_0_20px_rgba(59,130,246,0.4)]' },
+            { id: 'export', label: 'Export Data', icon: Download, description: 'Download collected data', colorClass: 'bg-orange-500/10 text-orange-400 border-orange-500/20 hover:bg-orange-500/20 data-[active=true]:bg-orange-500 data-[active=true]:text-white data-[active=true]:shadow-[0_0_20px_rgba(245,158,11,0.4)]' }
           ].map((tab) => {
             const Icon = tab.icon;
             return (
