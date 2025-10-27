@@ -76,9 +76,19 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         { 
           error: limitCheck.reason,
-          current: limitCheck.current,
-          limit: limitCheck.limit,
-          upgrade: { message: 'Upgrade for more AI insights', url: '/upgrade' },
+          limitReached: true,
+          details: {
+            current: limitCheck.current,
+            limit: limitCheck.limit,
+            tier: tier,
+            feature: 'AI Insights',
+            resetPeriod: 'daily'
+          },
+          upgrade: { 
+            message: 'Upgrade to get more AI insights per day',
+            url: `/upgrade?companyId=${companyId}`,
+            recommendedTier: tier === 'atom' ? 'core' : 'pulse'
+          },
         },
         { status: 429, headers: corsHeaders } // Too Many Requests
       );

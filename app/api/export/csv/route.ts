@@ -35,7 +35,21 @@ export async function GET(request: NextRequest) {
     const tier = (clientData.current_tier || 'atom') as TierName;
     if (!canPerformAction(tier, 'csvExport')) {
       return NextResponse.json(
-        { error: 'CSV export requires Growth plan or higher. Please upgrade your plan.' },
+        { 
+          error: 'CSV export requires Growth plan or higher.',
+          featureLocked: true,
+          details: {
+            tier: tier,
+            feature: 'CSV Export',
+            requiredTier: 'core',
+            requiredTierName: 'Growth'
+          },
+          upgrade: {
+            message: 'Upgrade to Growth plan to unlock CSV exports',
+            url: `/upgrade?companyId=${companyId}`,
+            recommendedTier: 'core'
+          }
+        },
         { status: 403 }
       );
     }

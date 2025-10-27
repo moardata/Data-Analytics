@@ -34,7 +34,21 @@ export async function GET(request: NextRequest) {
     const tier = (clientData.current_tier || 'atom') as TierName;
     if (!canPerformAction(tier, 'pdfExport')) {
       return NextResponse.json(
-        { error: 'PDF export requires Pro plan or higher. Please upgrade your plan.' },
+        { 
+          error: 'PDF export requires Pro plan or higher.',
+          featureLocked: true,
+          details: {
+            tier: tier,
+            feature: 'PDF Export',
+            requiredTier: 'pulse',
+            requiredTierName: 'Pro'
+          },
+          upgrade: {
+            message: 'Upgrade to Pro plan to unlock PDF exports',
+            url: `/upgrade?companyId=${companyId}`,
+            recommendedTier: 'pulse'
+          }
+        },
         { status: 403 }
       );
     }

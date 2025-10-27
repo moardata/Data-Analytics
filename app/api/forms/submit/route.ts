@@ -65,13 +65,30 @@ export async function POST(request: NextRequest) {
     
     if (!limitCheck.allowed) {
       console.warn('⚠️ [Form Submit API] Response limit reached:', limitCheck);
+      
+      // Calculate when limit resets (first day of next month)
+      const nextMonth = new Date();
+      nextMonth.setMonth(nextMonth.getMonth() + 1);
+      nextMonth.setDate(1);
+      nextMonth.setHours(0, 0, 0, 0);
+      
       return NextResponse.json(
         { 
           error: limitCheck.reason,
           limitReached: true,
-          current: limitCheck.current,
-          limit: limitCheck.limit,
-          upgradeUrl: '/upgrade',
+          details: {
+            current: limitCheck.current,
+            limit: limitCheck.limit,
+            tier: tier,
+            feature: 'Form Responses',
+            resetPeriod: 'monthly',
+            resetDate: nextMonth.toISOString()
+          },
+          upgrade: { 
+            message: 'Upgrade to analyze more responses per month',
+            url: `/upgrade?companyId=${companyId}`,
+            recommendedTier: tier === 'atom' ? 'core' : 'pulse'
+          },
         },
         { status: 429 } // Too Many Requests
       );
