@@ -16,11 +16,11 @@ SELECT * FROM clients WHERE company_id = 'biz_3GYHNPbGkZCEky';
 -- STEP 3: If account exists, update it:
 UPDATE clients 
 SET 
-  current_tier = 'surge',
-  subscription_tier = 'premium',
+  current_tier = 'core',
+  subscription_tier = 'pro',
   subscription_status = 'active',
   trial_ends_at = NOW() + INTERVAL '1 year',
-  whop_plan_id = 'prod_bm98P1RCFrFmF',
+  whop_plan_id = 'prod_4ISBWlTlS81KL',
   updated_at = NOW()
 WHERE company_id = 'biz_3GYHNPbGkZCEky';
 
@@ -40,12 +40,12 @@ SELECT
   'biz_3GYHNPbGkZCEky',
   'biz_3GYHNPbGkZCEky',
   'dev@premium.test',
-  'Premium Dev Account',
-  'surge',
-  'premium',
+  'Growth Dev Account',
+  'core',
+  'pro',
   'active',
   NOW() + INTERVAL '1 year',
-  'prod_bm98P1RCFrFmF'
+  'prod_4ISBWlTlS81KL'
 WHERE NOT EXISTS (
   SELECT 1 FROM clients WHERE company_id = 'biz_3GYHNPbGkZCEky'
 );
