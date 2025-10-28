@@ -376,7 +376,7 @@ function InsightsContent() {
                   <AlertCircle className="h-4 w-4 text-[#F59E0B]" />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="text-2xl font-bold text-[#F8FAFC]">{insights.filter(i => i.category === 'issue').length}</p>
+                  <p className="text-2xl font-bold text-[#F8FAFC]">{insights.filter(i => i.metadata?.sentiment === 'negative' || i.insight_type === 'alert').length}</p>
                   <p className="text-xs text-[#A1A1AA] truncate">Issues</p>
                 </div>
               </div>
@@ -397,7 +397,7 @@ function InsightsContent() {
                   <Zap className="h-4 w-4 text-[#10B981]" />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="text-2xl font-bold text-[#F8FAFC]">{insights.filter(i => i.status === 'generated').length}</p>
+                  <p className="text-2xl font-bold text-[#F8FAFC]">{insights.filter(i => i.metadata?.ai_generated === true).length}</p>
                   <p className="text-xs text-[#A1A1AA] truncate">AI Generated</p>
                 </div>
               </div>
@@ -418,7 +418,7 @@ function InsightsContent() {
                   <TrendingUp className="h-4 w-4 text-[#10B981]" />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="text-2xl font-bold text-[#F8FAFC]">{insights.filter(i => i.category === 'positive').length}</p>
+                  <p className="text-2xl font-bold text-[#F8FAFC]">{insights.filter(i => i.metadata?.sentiment === 'positive').length}</p>
                   <p className="text-xs text-[#A1A1AA] truncate">Positive</p>
                 </div>
               </div>
