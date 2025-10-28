@@ -231,15 +231,15 @@ function InsightsContent() {
       {/* Success Popup */}
       {showSuccess && (
         <div className="fixed top-4 right-4 z-50 animate-in slide-in-from-right-5 duration-300">
-          <div className="bg-[#10B981] text-white px-6 py-4 rounded-xl shadow-lg flex items-center gap-3">
-            <div className="w-6 h-6 rounded-full bg-white/20 flex items-center justify-center">
-              <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+          <div className="bg-[#0f0f0f] border border-[#1a1a1a] px-6 py-4 rounded-xl shadow-xl flex items-center gap-3">
+            <div className="w-6 h-6 rounded-full bg-[#10B981]/20 flex items-center justify-center">
+              <svg className="w-4 h-4 text-[#10B981]" fill="currentColor" viewBox="0 0 20 20">
                 <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
               </svg>
             </div>
             <div>
-              <p className="font-semibold">Insights Generated!</p>
-              <p className="text-sm opacity-90">AI analysis completed successfully</p>
+              <p className="font-semibold text-[#F8FAFC]">Insights Generated</p>
+              <p className="text-sm text-[#A1A1AA]">AI analysis completed</p>
             </div>
           </div>
         </div>
