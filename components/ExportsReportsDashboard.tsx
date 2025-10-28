@@ -85,8 +85,8 @@ export default function ExportsReportsDashboard({ companyId }: ExportsReportsDas
   ];
 
   const isPremium = userTier === 'pulse' || userTier === 'surge';
-  const canExportPDF = canPerformAction(userTier, 'pdfExport');
-  const canExportCSV = canPerformAction(userTier, 'csvExport');
+  const canExportPDF = canPerformAction(userTier, 'pdfExport', companyId);
+  const canExportCSV = canPerformAction(userTier, 'csvExport', companyId);
 
   const handleExport = async (option: ExportOption) => {
     // Check if user has permission

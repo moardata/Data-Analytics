@@ -509,7 +509,7 @@ export default function DashboardCreatorAnalytics({ clientId: companyIdOrClientI
           </div>
           <div className="space-y-6 border-l-2 border-[#8B5CF6]/20 pl-4">
             <ConsistencyScoreGauge data={metrics.engagementConsistency} />
-            {canAccessMetric(userTier, 'breakthrough') ? (
+            {canAccessMetric(userTier, 'breakthrough', companyIdOrClientId) ? (
               <AhaMomentChart data={metrics.ahaMoments} />
             ) : (
               <LockedMetricCard 
@@ -535,7 +535,7 @@ export default function DashboardCreatorAnalytics({ clientId: companyIdOrClientI
             </div>
           </div>
           <div className="space-y-6 border-l-2 border-[#F59E0B]/20 pl-4">
-            {canAccessMetric(userTier, 'commitment') ? (
+            {canAccessMetric(userTier, 'commitment', companyIdOrClientId) ? (
               <CommitmentDistribution data={metrics.commitmentScores} />
             ) : (
               <LockedMetricCard 
@@ -544,7 +544,7 @@ export default function DashboardCreatorAnalytics({ clientId: companyIdOrClientI
                 requiredTier="Growth"
               />
             )}
-            {canAccessMetric(userTier, 'pathways') ? (
+            {canAccessMetric(userTier, 'pathways', companyIdOrClientId) ? (
               <PathwayTable data={metrics.contentPathways} />
             ) : (
               <LockedMetricCard 

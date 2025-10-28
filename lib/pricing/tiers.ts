@@ -208,11 +208,28 @@ export function getAllTiers(): PricingTier[] {
 
 /**
  * Check if a tier can access a specific dashboard metric
+ * 
+ * @param tier - The user's subscription tier
+ * @param metricId - The metric to check access for
+ * @param companyId - Optional company ID for dev bypass (client-side)
  */
-export function canAccessMetric(tier: TierName, metricId: string): boolean {
-  // DEV BYPASS: Always allow access in development mode
-  if (process.env.NODE_ENV === 'development' || process.env.ENABLE_DEV_BYPASS === 'true') {
+export function canAccessMetric(tier: TierName, metricId: string, companyId?: string): boolean {
+  // DEV BYPASS: Check for dev company IDs (works on both client and server)
+  const DEV_COMPANY_IDS = ['biz_3GYHNPbGkZCEky', 'biz_Jkhjc11f6HHRxh'];
+  if (companyId && DEV_COMPANY_IDS.includes(companyId)) {
     return true;
+  }
+  
+  // DEV BYPASS: Always allow in 'surge' tier (highest tier unlocks everything)
+  if (tier === 'surge') {
+    return true;
+  }
+  
+  // DEV BYPASS: Server-side environment check
+  if (typeof process !== 'undefined' && process.env) {
+    if (process.env.NODE_ENV === 'development' || process.env.ENABLE_DEV_BYPASS === 'true') {
+      return true;
+    }
   }
   
   const tierData = getTier(tier);
@@ -221,14 +238,32 @@ export function canAccessMetric(tier: TierName, metricId: string): boolean {
 
 /**
  * Check if a tier can perform an action
+ * 
+ * @param tier - The user's subscription tier
+ * @param action - The action to check permission for
+ * @param companyId - Optional company ID for dev bypass (client-side)
  */
 export function canPerformAction(
   tier: TierName,
-  action: 'csvExport' | 'pdfExport' | 'apiAccess' | 'timeFilters' | 'formBranching' | 'atRiskAlerts' | 'whiteLabelForms'
+  action: 'csvExport' | 'pdfExport' | 'apiAccess' | 'timeFilters' | 'formBranching' | 'atRiskAlerts' | 'whiteLabelForms',
+  companyId?: string
 ): boolean {
-  // DEV BYPASS: Always allow access in development mode
-  if (process.env.NODE_ENV === 'development' || process.env.ENABLE_DEV_BYPASS === 'true') {
+  // DEV BYPASS: Check for dev company IDs (works on both client and server)
+  const DEV_COMPANY_IDS = ['biz_3GYHNPbGkZCEky', 'biz_Jkhjc11f6HHRxh'];
+  if (companyId && DEV_COMPANY_IDS.includes(companyId)) {
     return true;
+  }
+  
+  // DEV BYPASS: Always allow in 'surge' tier (highest tier unlocks everything)
+  if (tier === 'surge') {
+    return true;
+  }
+  
+  // DEV BYPASS: Server-side environment check
+  if (typeof process !== 'undefined' && process.env) {
+    if (process.env.NODE_ENV === 'development' || process.env.ENABLE_DEV_BYPASS === 'true') {
+      return true;
+    }
   }
   
   const tierData = getTier(tier);
