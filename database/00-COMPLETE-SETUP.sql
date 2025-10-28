@@ -15,8 +15,27 @@ CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 -- STEP 1: CREATE ALL TABLES
 -- ============================================================================
 
+-- Drop existing table if needed (ONLY RUN THIS IN DEV)
+DROP TABLE IF EXISTS improvement_summaries CASCADE;
+DROP TABLE IF EXISTS improvement_tracking CASCADE;
+DROP TABLE IF EXISTS insight_actions CASCADE;
+DROP TABLE IF EXISTS lesson_interactions CASCADE;
+DROP TABLE IF EXISTS course_enrollments CASCADE;
+DROP TABLE IF EXISTS course_lessons CASCADE;
+DROP TABLE IF EXISTS courses CASCADE;
+DROP TABLE IF EXISTS webhook_events CASCADE;
+DROP TABLE IF EXISTS ai_text_pool CASCADE;
+DROP TABLE IF EXISTS ai_runs CASCADE;
+DROP TABLE IF EXISTS form_submissions CASCADE;
+DROP TABLE IF EXISTS form_templates CASCADE;
+DROP TABLE IF EXISTS insights CASCADE;
+DROP TABLE IF EXISTS subscriptions CASCADE;
+DROP TABLE IF EXISTS events CASCADE;
+DROP TABLE IF EXISTS entities CASCADE;
+DROP TABLE IF EXISTS clients CASCADE;
+
 -- Clients table: Stores Whop creators using the analytics app
-CREATE TABLE IF NOT EXISTS clients (
+CREATE TABLE clients (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   whop_user_id TEXT NOT NULL UNIQUE,
   company_id TEXT NOT NULL UNIQUE,
@@ -32,7 +51,7 @@ CREATE TABLE IF NOT EXISTS clients (
 );
 
 -- Entities table: Stores students/community members
-CREATE TABLE IF NOT EXISTS entities (
+CREATE TABLE entities (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   client_id UUID NOT NULL REFERENCES clients(id) ON DELETE CASCADE,
   whop_user_id TEXT NOT NULL,
@@ -45,7 +64,7 @@ CREATE TABLE IF NOT EXISTS entities (
 );
 
 -- Events table: Stores all incoming webhook events and custom events
-CREATE TABLE IF NOT EXISTS events (
+CREATE TABLE events (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   client_id UUID NOT NULL REFERENCES clients(id) ON DELETE CASCADE,
   entity_id UUID REFERENCES entities(id) ON DELETE SET NULL,
@@ -57,7 +76,7 @@ CREATE TABLE IF NOT EXISTS events (
 );
 
 -- Subscriptions table: Tracks student subscriptions
-CREATE TABLE IF NOT EXISTS subscriptions (
+CREATE TABLE subscriptions (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   client_id UUID NOT NULL REFERENCES clients(id) ON DELETE CASCADE,
   entity_id UUID NOT NULL REFERENCES entities(id) ON DELETE CASCADE,
@@ -75,7 +94,7 @@ CREATE TABLE IF NOT EXISTS subscriptions (
 );
 
 -- Insights table: Stores AI-generated insights and recommendations
-CREATE TABLE IF NOT EXISTS insights (
+CREATE TABLE insights (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   client_id UUID NOT NULL REFERENCES clients(id) ON DELETE CASCADE,
   insight_type TEXT NOT NULL CHECK (insight_type IN ('weekly_summary', 'recommendation', 'alert', 'trend')),
@@ -89,7 +108,7 @@ CREATE TABLE IF NOT EXISTS insights (
 );
 
 -- AI Runs table: Tracks AI processing jobs
-CREATE TABLE IF NOT EXISTS ai_runs (
+CREATE TABLE ai_runs (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   client_id UUID NOT NULL REFERENCES clients(id) ON DELETE CASCADE,
   run_type TEXT NOT NULL,
@@ -102,7 +121,7 @@ CREATE TABLE IF NOT EXISTS ai_runs (
 );
 
 -- AI Text Pool table: Stores text data for AI analysis
-CREATE TABLE IF NOT EXISTS ai_text_pool (
+CREATE TABLE ai_text_pool (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   client_id UUID NOT NULL REFERENCES clients(id) ON DELETE CASCADE,
   submission_id UUID,
@@ -113,7 +132,7 @@ CREATE TABLE IF NOT EXISTS ai_text_pool (
 );
 
 -- Form Templates table: Stores customizable form definitions
-CREATE TABLE IF NOT EXISTS form_templates (
+CREATE TABLE form_templates (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   client_id UUID NOT NULL REFERENCES clients(id) ON DELETE CASCADE,
   name TEXT NOT NULL,
@@ -126,7 +145,7 @@ CREATE TABLE IF NOT EXISTS form_templates (
 );
 
 -- Form Submissions table: Stores responses to custom forms
-CREATE TABLE IF NOT EXISTS form_submissions (
+CREATE TABLE form_submissions (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   form_id UUID NOT NULL REFERENCES form_templates(id) ON DELETE CASCADE,
   entity_id UUID NOT NULL REFERENCES entities(id) ON DELETE CASCADE,
@@ -136,7 +155,7 @@ CREATE TABLE IF NOT EXISTS form_submissions (
 );
 
 -- Courses table
-CREATE TABLE IF NOT EXISTS courses (
+CREATE TABLE courses (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   client_id UUID NOT NULL REFERENCES clients(id) ON DELETE CASCADE,
   whop_course_id TEXT UNIQUE NOT NULL,
@@ -153,7 +172,7 @@ CREATE TABLE IF NOT EXISTS courses (
 );
 
 -- Course lessons table
-CREATE TABLE IF NOT EXISTS course_lessons (
+CREATE TABLE course_lessons (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   course_id UUID NOT NULL REFERENCES courses(id) ON DELETE CASCADE,
   whop_lesson_id TEXT UNIQUE NOT NULL,
@@ -170,7 +189,7 @@ CREATE TABLE IF NOT EXISTS course_lessons (
 );
 
 -- Course enrollments
-CREATE TABLE IF NOT EXISTS course_enrollments (
+CREATE TABLE course_enrollments (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   client_id UUID NOT NULL REFERENCES clients(id) ON DELETE CASCADE,
   entity_id UUID NOT NULL REFERENCES entities(id) ON DELETE CASCADE,
@@ -185,7 +204,7 @@ CREATE TABLE IF NOT EXISTS course_enrollments (
 );
 
 -- Lesson progress tracking
-CREATE TABLE IF NOT EXISTS lesson_interactions (
+CREATE TABLE lesson_interactions (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   client_id UUID NOT NULL REFERENCES clients(id) ON DELETE CASCADE,
   entity_id UUID NOT NULL REFERENCES entities(id) ON DELETE CASCADE,
@@ -202,7 +221,7 @@ CREATE TABLE IF NOT EXISTS lesson_interactions (
 );
 
 -- Webhook Events table: Tracks all incoming webhooks for debugging
-CREATE TABLE IF NOT EXISTS webhook_events (
+CREATE TABLE webhook_events (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
   action TEXT NOT NULL,
@@ -214,7 +233,7 @@ CREATE TABLE IF NOT EXISTS webhook_events (
 );
 
 -- Feedback loop tables
-CREATE TABLE IF NOT EXISTS insight_actions (
+CREATE TABLE insight_actions (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   insight_id UUID NOT NULL REFERENCES insights(id) ON DELETE CASCADE,
   action_type TEXT NOT NULL,
@@ -224,7 +243,7 @@ CREATE TABLE IF NOT EXISTS insight_actions (
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
-CREATE TABLE IF NOT EXISTS improvement_tracking (
+CREATE TABLE improvement_tracking (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   client_id UUID NOT NULL REFERENCES clients(id) ON DELETE CASCADE,
   insight_id UUID NOT NULL REFERENCES insights(id) ON DELETE CASCADE,
@@ -236,7 +255,7 @@ CREATE TABLE IF NOT EXISTS improvement_tracking (
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
-CREATE TABLE IF NOT EXISTS improvement_summaries (
+CREATE TABLE improvement_summaries (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   client_id UUID NOT NULL REFERENCES clients(id) ON DELETE CASCADE,
   insight_id UUID NOT NULL REFERENCES insights(id) ON DELETE CASCADE,
