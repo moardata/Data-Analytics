@@ -19,53 +19,53 @@ export interface PopularContent {
 }
 
 /**
- * Calculate popular content for today
+ * Calculate popular content for specified time range
+ * @param clientId - Client UUID
+ * @param days - Number of days to look back (default 7)
  */
-export async function calculatePopularContent(clientId: string): Promise<PopularContent> {
-  // Get today's date range
-  const today = new Date();
-  const startOfDay = new Date(today);
-  startOfDay.setHours(0, 0, 0, 0);
-  const endOfDay = new Date(today);
-  endOfDay.setHours(23, 59, 59, 999);
+export async function calculatePopularContent(clientId: string, days: number = 7): Promise<PopularContent> {
+  // Calculate date range
+  const now = new Date();
+  const startDate = new Date(now);
+  startDate.setDate(startDate.getDate() - days);
+  startDate.setHours(0, 0, 0, 0);
 
-  // Get all activity events from today
-  const { data: todayEvents, error: todayError } = await supabase
+  console.log(`📊 [Popular Content] Calculating for ${days} days, from ${startDate.toISOString()}`);
+
+  // Get ALL events in the time range (not just specific types)
+  const { data: currentEvents, error: currentError } = await supabase
     .from('events')
     .select('entity_id, created_at, event_data, event_type')
     .eq('client_id', clientId)
-    .in('event_type', ['activity', 'engagement', 'course_enrollment'])
-    .gte('created_at', startOfDay.toISOString())
-    .lte('created_at', endOfDay.toISOString());
+    .gte('created_at', startDate.toISOString());
 
-  if (todayError || !todayEvents || todayEvents.length === 0) {
+  console.log(`📊 [Popular Content] Found ${currentEvents?.length || 0} total events`);
+
+  if (currentError || !currentEvents || currentEvents.length === 0) {
+    console.log('⚠️ [Popular Content] No events found, returning empty');
     return getEmptyPopularContent();
   }
 
-  // Get yesterday's data for trend calculation
-  const yesterday = new Date(today);
-  yesterday.setDate(yesterday.getDate() - 1);
-  const startOfYesterday = new Date(yesterday);
-  startOfYesterday.setHours(0, 0, 0, 0);
-  const endOfYesterday = new Date(yesterday);
-  endOfYesterday.setHours(23, 59, 59, 999);
+  // Get comparison period data for trend (previous period)
+  const comparisonStart = new Date(startDate);
+  comparisonStart.setDate(comparisonStart.getDate() - days);
+  const comparisonEnd = new Date(startDate);
 
-  const { data: yesterdayEvents } = await supabase
+  const { data: comparisonEvents } = await supabase
     .from('events')
     .select('entity_id, created_at, event_data, event_type')
     .eq('client_id', clientId)
-    .in('event_type', ['activity', 'engagement', 'course_enrollment'])
-    .gte('created_at', startOfYesterday.toISOString())
-    .lte('created_at', endOfYesterday.toISOString());
+    .gte('created_at', comparisonStart.toISOString())
+    .lt('created_at', comparisonEnd.toISOString());
 
-  // Analyze today's content
-  const todayAnalysis = analyzeContentEngagement(todayEvents);
-  const yesterdayAnalysis = yesterdayEvents ? analyzeContentEngagement(yesterdayEvents) : new Map();
+  // Analyze current period content
+  const currentAnalysis = analyzeContentEngagement(currentEvents);
+  const comparisonAnalysis = comparisonEvents ? analyzeContentEngagement(comparisonEvents) : new Map();
 
   // Calculate trends and format results
-  const content = Array.from(todayAnalysis.entries()).map(([expId, data]) => {
-    const yesterdayData = yesterdayAnalysis.get(expId) || { engagements: 0, uniqueStudents: new Set() };
-    const trend = calculateTrend(data.engagements, yesterdayData.engagements);
+  const content = Array.from(currentAnalysis.entries()).map(([expId, data]) => {
+    const comparisonData = comparisonAnalysis.get(expId) || { engagements: 0, uniqueStudents: new Set() };
+    const trend = calculateTrend(data.engagements, comparisonData.engagements);
 
     return {
       experienceId: expId,
@@ -77,8 +77,10 @@ export async function calculatePopularContent(clientId: string): Promise<Popular
   }).sort((a, b) => b.engagements - a.engagements);
 
   // Calculate totals
-  const totalEngagements = todayEvents.length;
-  const totalUniqueStudents = new Set(todayEvents.map(e => e.entity_id)).size;
+  const totalEngagements = currentEvents.length;
+  const totalUniqueStudents = new Set(currentEvents.map(e => e.entity_id)).size;
+
+  console.log(`✅ [Popular Content] Total: ${totalEngagements} engagements, ${totalUniqueStudents} unique students`);
 
   return {
     content: content.slice(0, 10), // Top 10

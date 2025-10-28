@@ -20,6 +20,7 @@ function getTimeRangeDays(timeRange: string): number {
   switch (timeRange) {
     case '1D': return 1;
     case '7D': return 7;
+    case '30D': return 30;
     case '1M': return 30;
     default: return 7;
   }
@@ -42,9 +43,9 @@ export async function GET(request: NextRequest) {
 
     const days = getTimeRangeDays(timeRange);
 
-    // Get all metrics with cache-first strategy
-    // Note: For now, we calculate all metrics fresh since the calculation functions
-    // don't yet support time range filtering. Future enhancement: pass timeRange to each function.
+    console.log(`📊 [Dashboard API] Calculating metrics with ${days} days time range`);
+
+    // Get all metrics with time range support
     const [
       engagementConsistency,
       ahaMoments,
@@ -56,7 +57,7 @@ export async function GET(request: NextRequest) {
       calculateConsistencyScore(clientId),
       calculateAhaMomentScore(clientId),
       calculateContentPathways(clientId),
-      calculatePopularContent(clientId),
+      calculatePopularContent(clientId, days), // Now supports time range!
       calculateFeedbackThemes(clientId),
       calculateCommitmentScore(clientId)
     ]);
