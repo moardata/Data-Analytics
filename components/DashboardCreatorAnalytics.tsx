@@ -472,7 +472,7 @@ export default function DashboardCreatorAnalytics({ clientId: companyIdOrClientI
               </div>
             </div>
             <p className="text-3xl font-black text-[#F8FAFC] mb-1 truncate">{metrics.popularContent.totalEngagements}</p>
-            <p className="text-sm font-medium text-[#A1A1AA] truncate">Engagements Today</p>
+            <p className="text-sm font-medium text-[#A1A1AA] truncate">Engagements</p>
           </div>
         </Card>
       </div>
