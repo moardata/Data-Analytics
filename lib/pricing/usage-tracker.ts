@@ -104,7 +104,7 @@ export async function checkLimit(
   action: 'addStudent' | 'analyzeResponse' | 'generateInsight'
 ): Promise<{ allowed: boolean; reason?: string; current?: number; limit?: number }> {
   // DEV BYPASS: Always allow in development mode or for dev company IDs
-  const DEV_COMPANY_IDS = ['biz_3GYHNPbGkZCEky', 'biz_Jkhjc11f6HHRxh'];
+  const DEV_COMPANY_IDS = ['biz_3GYHNPbGkZCEky']; // Only your dev company
   if (
     process.env.NODE_ENV === 'development' || 
     process.env.ENABLE_DEV_BYPASS === 'true' ||

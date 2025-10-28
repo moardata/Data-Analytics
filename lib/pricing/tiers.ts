@@ -215,7 +215,7 @@ export function getAllTiers(): PricingTier[] {
  */
 export function canAccessMetric(tier: TierName, metricId: string, companyId?: string): boolean {
   // DEV BYPASS: Check for dev company IDs (works on both client and server)
-  const DEV_COMPANY_IDS = ['biz_3GYHNPbGkZCEky', 'biz_Jkhjc11f6HHRxh'];
+  const DEV_COMPANY_IDS = ['biz_3GYHNPbGkZCEky']; // Only your dev company
   if (companyId && DEV_COMPANY_IDS.includes(companyId)) {
     return true;
   }
@@ -249,7 +249,7 @@ export function canPerformAction(
   companyId?: string
 ): boolean {
   // DEV BYPASS: Check for dev company IDs (works on both client and server)
-  const DEV_COMPANY_IDS = ['biz_3GYHNPbGkZCEky', 'biz_Jkhjc11f6HHRxh'];
+  const DEV_COMPANY_IDS = ['biz_3GYHNPbGkZCEky']; // Only your dev company
   if (companyId && DEV_COMPANY_IDS.includes(companyId)) {
     return true;
   }
