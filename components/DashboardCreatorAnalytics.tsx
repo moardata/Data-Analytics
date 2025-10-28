@@ -78,17 +78,60 @@ interface DashboardMetrics {
 }
 
 // ----------------------------------------
-// Toolbar with info button and import members button
+// Toolbar with time range selector, info button and import members button
 // ----------------------------------------
-function DashboardToolbar({ onImportMembers, syncing }: { onImportMembers?: () => void; syncing?: boolean }) {
+function DashboardToolbar({ 
+  timeRange,
+  onTimeRangeChange,
+  onImportMembers, 
+  syncing 
+}: { 
+  timeRange: string;
+  onTimeRangeChange: (range: string) => void;
+  onImportMembers?: () => void; 
+  syncing?: boolean;
+}) {
   const [showInfo, setShowInfo] = React.useState(false);
+  
+  const timeRanges = [
+    { value: '1D', label: 'Daily' },
+    { value: '7D', label: 'Weekly' },
+    { value: '30D', label: 'Monthly' },
+  ];
   
   return (
     <div className="flex flex-wrap items-center gap-4">
-      <div>
-        <div className="text-2xl font-bold text-[#F8FAFC]">Dashboard</div>
-        <div className="w-16 h-1 bg-gradient-to-r from-[#10B981] to-[#10B981]/50 rounded-full mt-2"></div>
+      <div className="flex items-center gap-3">
+        <div>
+          <div className="text-2xl font-bold text-[#F8FAFC]">Dashboard</div>
+          <div className="w-16 h-1 bg-gradient-to-r from-[#10B981] to-[#10B981]/50 rounded-full mt-2"></div>
+        </div>
+        
+        {/* Time Range Selector */}
+        <div className="flex items-center gap-1 px-1 py-1 bg-[#0a0a0a] border border-[#1a1a1a] rounded-lg">
+          {timeRanges.map((range) => (
+            <button
+              key={range.value}
+              onClick={() => onTimeRangeChange(range.value)}
+              className={`px-3 py-1.5 text-xs font-medium rounded-md transition-all ${
+                timeRange === range.value
+                  ? 'bg-[#1a1a1a] text-[#F8FAFC]'
+                  : 'text-[#71717A] hover:text-[#A1A1AA]'
+              }`}
+            >
+              {range.label}
+            </button>
+          ))}
+        </div>
+        
+        <Button 
+          onClick={() => setShowInfo(!showInfo)}
+          className="border border-[#1a1a1a] bg-[#0a0a0a] hover:bg-[#1a1a1a] text-[#F8FAFC]"
+        >
+          <Info className="h-4 w-4" />
+        </Button>
       </div>
+      
       <div className="ml-auto flex items-center gap-2">
         {onImportMembers && (
           <Button 
@@ -109,12 +152,6 @@ function DashboardToolbar({ onImportMembers, syncing }: { onImportMembers?: () =
             )}
           </Button>
         )}
-        <Button 
-          onClick={() => setShowInfo(!showInfo)}
-          className="border border-[#1a1a1a] bg-[#0a0a0a] hover:bg-[#1a1a1a] text-[#F8FAFC]"
-        >
-          <Info className="h-4 w-4" />
-        </Button>
       </div>
       
       {showInfo && (
@@ -294,7 +331,10 @@ export default function DashboardCreatorAnalytics({ clientId: companyIdOrClientI
             <div className="text-lg font-semibold text-white">Dashboard</div>
           </div>
         }>
-          <DashboardToolbar />
+          <DashboardToolbar 
+            timeRange={timeRange}
+            onTimeRangeChange={setTimeRange}
+          />
         </Suspense>
         
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
@@ -320,7 +360,10 @@ export default function DashboardCreatorAnalytics({ clientId: companyIdOrClientI
             <div className="text-lg font-semibold text-white">Dashboard</div>
           </div>
         }>
-          <DashboardToolbar />
+          <DashboardToolbar 
+            timeRange={timeRange}
+            onTimeRangeChange={setTimeRange}
+          />
         </Suspense>
         
         <Panel>
@@ -345,7 +388,10 @@ export default function DashboardCreatorAnalytics({ clientId: companyIdOrClientI
             <div className="text-lg font-semibold text-white">Dashboard</div>
           </div>
         }>
-          <DashboardToolbar />
+          <DashboardToolbar 
+            timeRange={timeRange}
+            onTimeRangeChange={setTimeRange}
+          />
         </Suspense>
         
         <Panel>
@@ -366,7 +412,10 @@ export default function DashboardCreatorAnalytics({ clientId: companyIdOrClientI
           <div className="text-lg font-semibold text-white">Dashboard</div>
         </div>
       }>
-        <DashboardToolbar />
+        <DashboardToolbar 
+          timeRange={timeRange}
+          onTimeRangeChange={setTimeRange}
+        />
       </Suspense>
 
       {/* Welcome Section */}
