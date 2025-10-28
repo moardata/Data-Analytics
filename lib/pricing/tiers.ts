@@ -210,6 +210,11 @@ export function getAllTiers(): PricingTier[] {
  * Check if a tier can access a specific dashboard metric
  */
 export function canAccessMetric(tier: TierName, metricId: string): boolean {
+  // DEV BYPASS: Always allow access in development mode
+  if (process.env.NODE_ENV === 'development' || process.env.ENABLE_DEV_BYPASS === 'true') {
+    return true;
+  }
+  
   const tierData = getTier(tier);
   return tierData.limits.dashboardMetrics.includes(metricId);
 }
@@ -221,6 +226,11 @@ export function canPerformAction(
   tier: TierName,
   action: 'csvExport' | 'pdfExport' | 'apiAccess' | 'timeFilters' | 'formBranching' | 'atRiskAlerts' | 'whiteLabelForms'
 ): boolean {
+  // DEV BYPASS: Always allow access in development mode
+  if (process.env.NODE_ENV === 'development' || process.env.ENABLE_DEV_BYPASS === 'true') {
+    return true;
+  }
+  
   const tierData = getTier(tier);
   return tierData.limits[action] || false;
 }

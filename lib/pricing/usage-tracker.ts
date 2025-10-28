@@ -103,6 +103,16 @@ export async function checkLimit(
   tier: TierName,
   action: 'addStudent' | 'analyzeResponse' | 'generateInsight'
 ): Promise<{ allowed: boolean; reason?: string; current?: number; limit?: number }> {
+  // DEV BYPASS: Always allow in development mode or for dev company IDs
+  const DEV_COMPANY_IDS = ['biz_3GYHNPbGkZCEky', 'biz_Jkhjc11f6HHRxh'];
+  if (
+    process.env.NODE_ENV === 'development' || 
+    process.env.ENABLE_DEV_BYPASS === 'true' ||
+    DEV_COMPANY_IDS.includes(companyId)
+  ) {
+    return { allowed: true };
+  }
+  
   const tierData = getTier(tier);
   const usage = await getClientUsage(companyId);
 
