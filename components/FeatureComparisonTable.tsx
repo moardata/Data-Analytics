@@ -5,13 +5,14 @@
 
 'use client';
 
-import { Check, X, Zap } from 'lucide-react';
+import { Check, X, Zap, HelpCircle } from 'lucide-react';
 import { getAllTiers, type TierName } from '@/lib/pricing/tiers';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils/cn';
 
 interface FeatureRow {
   label: string;
+  tooltip?: string;
   atom: boolean | string | number;
   core: boolean | string | number;
   pulse: boolean | string | number;
@@ -31,9 +32,23 @@ export function FeatureComparisonTable({ onSelectTier, currentTier }: FeatureCom
     { label: 'Price', atom: '$30/mo', core: '$99/mo', pulse: '$299/mo', surge: '$599/mo' },
     
     // Core Limits
-    { label: 'Students', atom: '100', core: '1,000', pulse: '2,000', surge: 'Unlimited' },
+    { 
+      label: 'Students', 
+      tooltip: 'The number of students in your community that will be tracked and analysed by AI at one time.',
+      atom: '100', 
+      core: '1,000', 
+      pulse: '2,000', 
+      surge: 'Unlimited' 
+    },
     { label: 'AI Insights/Day', atom: '5', core: '10', pulse: '15', surge: '20' },
-    { label: 'Responses/Month', atom: '100', core: '1,000', pulse: '10,000', surge: 'Unlimited' },
+    { 
+      label: 'Responses/Month', 
+      tooltip: 'The number of survey responses you can receive per month. These are automatically analysed by AI to give you deeper insights.',
+      atom: '100', 
+      core: '1,000', 
+      pulse: '10,000', 
+      surge: 'Unlimited' 
+    },
     
     // Features
     { label: 'Dashboard Metrics', atom: '3 of 6', core: 'All 6', pulse: 'All 6', surge: 'All 6' },
@@ -105,7 +120,17 @@ export function FeatureComparisonTable({ onSelectTier, currentTier }: FeatureCom
                 idx !== features.length - 1 && "border-b border-[#1a1a1a]/30"
               )}
             >
-              <div className="text-xs font-medium text-[#A1A1AA]">{feature.label}</div>
+              <div className="flex items-center gap-1.5">
+                <span className="text-xs font-medium text-[#A1A1AA]">{feature.label}</span>
+                {feature.tooltip && (
+                  <div className="group/info relative">
+                    <HelpCircle className="h-3.5 w-3.5 text-[#71717A] hover:text-[#10B981] cursor-help transition-colors flex-shrink-0" />
+                    <div className="invisible group-hover/info:visible absolute left-0 top-6 w-64 p-3 bg-[#0a0a0a] border border-[#10B981]/30 rounded-lg shadow-xl z-50">
+                      <p className="text-xs text-[#E5E7EB] leading-relaxed">{feature.tooltip}</p>
+                    </div>
+                  </div>
+                )}
+              </div>
               <div className="text-center">{renderCell(feature.atom)}</div>
               <div className="text-center">{renderCell(feature.core)}</div>
               <div className="text-center bg-[#10B981]/5 rounded-lg py-1">
