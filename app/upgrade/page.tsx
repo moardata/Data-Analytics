@@ -13,6 +13,7 @@ import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils/cn';
 import { getAllTiers, type TierName } from '@/lib/pricing/tiers';
 import { FeatureComparisonTable } from '@/components/FeatureComparisonTable';
+import { ModernLoadingScreen } from '@/components/ModernLoadingScreen';
 
 export const dynamic = 'force-dynamic';
 
@@ -96,11 +97,7 @@ function UpgradeContent() {
   const isCurrentTier = (tierName: TierName) => currentTier !== null && tierName === currentTier;
 
   if (loading) {
-    return (
-      <div className="min-h-screen bg-gradient-to-b from-[#0d0f12] to-[#14171c] flex items-center justify-center">
-        <div className="text-[#E1E4EA]">Loading...</div>
-      </div>
-    );
+    return <ModernLoadingScreen message="Loading pricing plans..." />;
   }
 
   return (
@@ -207,11 +204,7 @@ function UpgradeContent() {
 
 export default function UpgradePage() {
   return (
-    <Suspense fallback={
-      <div className="flex items-center justify-center min-h-screen bg-gradient-to-b from-[#0d0f12] to-[#14171c]">
-        <div className="w-16 h-16 border-4 border-[#10B981] border-t-transparent rounded-full animate-spin" />
-      </div>
-    }>
+    <Suspense fallback={<ModernLoadingScreen message="Loading pricing plans..." />}>
       <UpgradeContent />
     </Suspense>
   );
