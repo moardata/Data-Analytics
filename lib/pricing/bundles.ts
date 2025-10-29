@@ -87,8 +87,8 @@ export const PLAN_TO_BUNDLE: Record<string, BundleInfo> = {
     description: 'Quantum tier with custom AI and dedicated support',
     features: {
       aiFeatures: ['20 daily AI insights + custom on-demand', 'Custom AI fine-tuning', 'Multi-account management'],
-      dataCollection: ['Unlimited forms + full API', 'White-label everything'],
-      exportIntegration: ['Full API access'],
+      dataCollection: ['Unlimited forms', 'White-label everything'],
+      exportIntegration: ['CSV + PDF + Advanced exports'],
       retentionWindow: '365 days',
       support: 'Dedicated success manager (2hr SLA)'
     },

@@ -39,7 +39,6 @@ export function FeatureComparisonTable({ onSelectTier, currentTier }: FeatureCom
     { label: 'Dashboard Metrics', atom: '3 of 6', core: 'All 6', pulse: 'All 6', surge: 'All 6' },
     { label: 'CSV Export', atom: false, core: true, pulse: true, surge: true },
     { label: 'PDF Reports', atom: false, core: false, pulse: true, surge: true },
-    { label: 'API Access', atom: false, core: false, pulse: false, surge: true },
   ];
 
   const renderCell = (value: boolean | string | number, isHighlight: boolean = false) => {
