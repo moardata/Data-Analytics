@@ -242,6 +242,7 @@ export function PaywallModal({ isOpen, onClose, reason }: PaywallModalProps) {
             )}
           </div>
         )}
+        </div>
       </div>
     </div>
   );
