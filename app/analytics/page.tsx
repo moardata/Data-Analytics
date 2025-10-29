@@ -17,7 +17,7 @@ import DashboardCreatorAnalytics from '@/components/DashboardCreatorAnalytics';
 import { adaptToCreatorAnalytics } from '@/lib/utils/adaptDashboardCreatorAnalytics';
 import { PermissionsBanner } from '@/components/PermissionsBanner';
 import { useWhopAuth } from '@/lib/hooks/useWhopAuth';
-import { LoadingScreen } from '@/components/LoadingScreen';
+import { ModernLoadingScreen } from '@/components/ModernLoadingScreen';
 import { usePaywall } from '@/hooks/use-paywall';
 import { PaywallModal } from '@/components/PaywallModal';
 

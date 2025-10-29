@@ -11,6 +11,7 @@ import { useSearchParams } from 'next/navigation';
 import RevenueDashboard from '@/components/RevenueDashboard';
 import { usePaywall } from '@/hooks/use-paywall';
 import { PaywallModal } from '@/components/PaywallModal';
+import { ModernLoadingScreen } from '@/components/ModernLoadingScreen';
 
 export const dynamic = 'force-dynamic';
 
@@ -78,11 +79,7 @@ function RevenueContent() {
   };
 
   if (loading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen bg-gradient-to-b from-[#0a0a0a] to-[#0f0f0f]">
-        <div className="w-16 h-16 border-4 border-[#10B981] border-t-transparent rounded-full animate-spin" />
-      </div>
-    );
+    return <ModernLoadingScreen message="Loading revenue data..." />;
   }
 
   return (
@@ -103,11 +100,7 @@ function RevenueContent() {
 
 export default function RevenuePage() {
   return (
-    <Suspense fallback={
-      <div className="flex items-center justify-center min-h-screen bg-gradient-to-b from-[#0a0a0a] to-[#0f0f0f]">
-        <div className="w-16 h-16 border-4 border-[#10B981] border-t-transparent rounded-full animate-spin" />
-      </div>
-    }>
+    <Suspense fallback={<ModernLoadingScreen message="Loading revenue dashboard..." />}>
       <RevenueContent />
     </Suspense>
   );
