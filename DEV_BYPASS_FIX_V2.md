@@ -192,3 +192,6 @@ WHERE company_id = 'biz_3GYHNPbGkZCEky';
 **Status**: ✅ FIXED - Client-side bypass now working!
 
 
+
+
+
