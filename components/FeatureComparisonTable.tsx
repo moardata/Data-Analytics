@@ -40,7 +40,14 @@ export function FeatureComparisonTable({ onSelectTier, currentTier }: FeatureCom
       pulse: '2,000', 
       surge: 'Unlimited' 
     },
-    { label: 'AI Insights/Day', atom: '5', core: '10', pulse: '15', surge: '20' },
+    { 
+      label: 'AI Insights/Day', 
+      tooltip: 'The number of curated AI insights that you can generate daily.',
+      atom: '5', 
+      core: '10', 
+      pulse: '15', 
+      surge: '20' 
+    },
     { 
       label: 'Responses/Month', 
       tooltip: 'The number of survey responses you can receive per month. These are automatically analysed by AI to give you deeper insights.',
