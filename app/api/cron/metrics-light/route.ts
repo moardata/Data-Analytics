@@ -9,13 +9,11 @@ import { calculatePopularContent } from '@/lib/utils/metrics/popularContent';
 
 export async function GET(request: NextRequest) {
   try {
-    console.log('🔄 [Light Metrics] Starting 15-minute sync...');
     
     // Get all active clients
     const clientIds = await getActiveClients();
     
     if (clientIds.length === 0) {
-      console.log('📊 [Light Metrics] No active clients found');
       return NextResponse.json({ 
         status: 'success', 
         message: 'No active clients',
@@ -29,7 +27,6 @@ export async function GET(request: NextRequest) {
     // Process each client
     for (const clientId of clientIds) {
       try {
-        console.log(`📊 [Light Metrics] Processing client ${clientId}...`);
         
         // Calculate popular content
         const popularContent = await calculatePopularContent(clientId);
@@ -44,7 +41,6 @@ export async function GET(request: NextRequest) {
         );
         
         processed++;
-        console.log(`✅ [Light Metrics] Cached popular content for client ${clientId}`);
         
       } catch (error) {
         const errorMsg = `Client ${clientId}: ${error instanceof Error ? error.message : 'Unknown error'}`;
@@ -53,7 +49,6 @@ export async function GET(request: NextRequest) {
       }
     }
 
-    console.log(`🎉 [Light Metrics] Completed: ${processed}/${clientIds.length} clients processed`);
     
     return NextResponse.json({
       status: 'success',

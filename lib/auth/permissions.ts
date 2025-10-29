@@ -26,7 +26,6 @@ export async function getUserPermissions(
   userId?: string
 ): Promise<UserPermissions> {
   try {
-    console.log('🔐 getUserPermissions called with companyId:', companyId);
     
     // Use the unified authentication system
     const auth = await authenticateWhopUser({ companyId, userId });

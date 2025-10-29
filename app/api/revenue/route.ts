@@ -18,11 +18,12 @@ const PLAN_PRICING: Record<string, number> = {
   'prod_bm98P1RCFrFmF': 599, // Scale
 };
 
-// CORS headers
+// CORS headers restricted to Whop domain for security
 const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Origin': 'https://whop.com',
   'Access-Control-Allow-Methods': 'GET, OPTIONS',
   'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+  'Access-Control-Allow-Credentials': 'true',
 };
 
 export async function OPTIONS() {
@@ -43,7 +44,6 @@ export async function GET(request: NextRequest) {
       .single();
 
     if (clientError || !clientData) {
-      console.log('No client found for company:', companyId);
       return NextResponse.json(
         { revenue: [], total: 0, count: 0 },
         { status: 200, headers: corsHeaders }
@@ -69,7 +69,6 @@ export async function GET(request: NextRequest) {
       .eq('client_id', clientId)
       .order('created_at', { ascending: false });
 
-    console.log(`💰 [Revenue API] Data fetched:`, {
       events: events?.length || 0,
       subscriptions: subscriptions?.length || 0,
       eventsError: eventsError?.message,
@@ -108,7 +107,6 @@ export async function GET(request: NextRequest) {
           const planPrice = PLAN_PRICING[event.event_data.plan_id];
           if (planPrice !== undefined) {
             amount = planPrice;
-            console.log(`💰 [Revenue API] Using plan pricing for ${event.event_data.plan_id}: $${planPrice}`);
           }
         }
       }
@@ -159,8 +157,6 @@ export async function GET(request: NextRequest) {
     // Sort by date descending
     revenueItems.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 
-    console.log(`💰 [Revenue API] Total revenue: $${totalRevenue} from ${revenueItems.length} items`);
-    console.log(`💰 [Revenue API] Breakdown: ${events?.length || 0} events + ${subscriptions?.length || 0} subscriptions`);
 
     return NextResponse.json({
       revenue: revenueItems,

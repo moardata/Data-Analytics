@@ -208,12 +208,10 @@ export default function DashboardCreatorAnalytics({ clientId: companyIdOrClientI
       
       // Otherwise, it's a companyId (like biz_xxx), look up the UUID
       try {
-        console.log('🔍 Looking up client UUID for company:', companyIdOrClientId);
         const response = await fetch(`/api/client/lookup?companyId=${companyIdOrClientId}`);
         
         if (response.ok) {
           const data = await response.json();
-          console.log('✅ Found client UUID:', data.clientId);
           setActualClientId(data.clientId);
         } else {
           console.error('❌ Failed to lookup client ID');
@@ -237,7 +235,6 @@ export default function DashboardCreatorAnalytics({ clientId: companyIdOrClientI
       
       try {
         setLoading(true);
-        console.log('📊 Fetching metrics for client:', actualClientId, 'with time range:', timeRange);
         const response = await fetch(`/api/dashboard/metrics?clientId=${actualClientId}&timeRange=${timeRange}`);
         
         if (!response.ok) {
@@ -247,7 +244,6 @@ export default function DashboardCreatorAnalytics({ clientId: companyIdOrClientI
         }
         
         const data = await response.json();
-        console.log('✅ Metrics loaded successfully for time range:', timeRange);
         setMetrics(data);
         setError(null);
       } catch (err) {
@@ -289,7 +285,6 @@ export default function DashboardCreatorAnalytics({ clientId: companyIdOrClientI
     try {
       setSyncing(true);
       setError(null);
-      console.log('🔄 Starting metrics sync for client:', actualClientId);
       
       const response = await fetch(`/api/dashboard/metrics?clientId=${actualClientId}`, {
         method: 'POST',
@@ -305,12 +300,10 @@ export default function DashboardCreatorAnalytics({ clientId: companyIdOrClientI
       }
 
       const data = await response.json();
-      console.log('✅ Metrics sync completed successfully:', data.metadata);
       setMetrics(data);
       setError(null);
       
       // Optional: Show success toast/notification
-      console.log('📊 Dashboard metrics refreshed at:', data.metadata.generatedAt);
     } catch (err) {
       console.error('❌ Error syncing metrics:', err);
       const errorMessage = err instanceof Error ? err.message : 'Failed to sync metrics';

@@ -63,7 +63,6 @@ export interface DataStorageHistory {
  */
 export async function storeInsightWithMetadata(data: InsightStorageData): Promise<string | null> {
   try {
-    console.log('💾 [Data Storage] Storing insight with metadata:', {
       clientId: data.clientId,
       title: data.title,
       insightType: data.insightType,
@@ -95,7 +94,6 @@ export async function storeInsightWithMetadata(data: InsightStorageData): Promis
       return null;
     }
 
-    console.log('✅ [Data Storage] Insight stored successfully:', insight.id);
     return insight.id;
 
   } catch (error) {
@@ -109,7 +107,6 @@ export async function storeInsightWithMetadata(data: InsightStorageData): Promis
  */
 export async function trackAIRunWithMetadata(data: AIRunStorageData): Promise<string | null> {
   try {
-    console.log('🤖 [Data Storage] Tracking AI run with metadata:', {
       clientId: data.clientId,
       runType: data.runType,
       status: data.status,
@@ -140,7 +137,6 @@ export async function trackAIRunWithMetadata(data: AIRunStorageData): Promise<st
       return null;
     }
 
-    console.log('✅ [Data Storage] AI run tracked successfully:', aiRun.id);
     return aiRun.id;
 
   } catch (error) {
@@ -180,7 +176,6 @@ export async function updateAIRunStatus(
       return false;
     }
 
-    console.log('✅ [Data Storage] AI run status updated:', { runId, status });
     return true;
 
   } catch (error) {
@@ -371,7 +366,6 @@ export async function updateInsightStatus(
       return false;
     }
 
-    console.log('✅ [Data Storage] Insight status updated:', { insightId, status });
     return true;
 
   } catch (error) {

@@ -48,18 +48,14 @@ export async function authenticateWhopUser(context?: WhopRequestContext): Promis
       userId = tokenResult?.userId;
       
       if (userId) {
-        console.log('✅ User authenticated:', userId);
       } else {
-        console.log('⚠️ Whop token validation timed out or no token found');
       }
     } catch (tokenError) {
-      console.log('⚠️ Whop token validation failed:', tokenError);
       userId = undefined;
     }
     
     // If no userId, we're in testing mode
     if (!userId) {
-      console.log('🧪 TESTING MODE: No Whop authentication - using fallback');
       userId = 'test_user';
     }
 
@@ -88,7 +84,6 @@ export async function authenticateWhopUser(context?: WhopRequestContext): Promis
       throw new Error('No company ID found in request');
     }
 
-    console.log('✅ Company ID detected:', companyId);
 
     // Step 4: Check if user has access to this company (with timeout)
     let accessCheck: any;
@@ -105,12 +100,10 @@ export async function authenticateWhopUser(context?: WhopRequestContext): Promis
       accessCheck = await Promise.race([accessPromise, accessTimeout]);
       
       if (!accessCheck) {
-        console.log('⚠️ Company access check timed out - granting access for testing');
         // Timeout - assume access for testing
         accessCheck = { has_access: true, access_level: 'admin' };
       }
     } catch (accessError) {
-      console.log('⚠️ Company access check failed:', accessError);
       // Error - assume access for testing
       accessCheck = { has_access: true, access_level: 'admin' };
     }
@@ -134,7 +127,6 @@ export async function authenticateWhopUser(context?: WhopRequestContext): Promis
     const isOwner = accessLevel === 'admin'; // Whop returns 'admin' for owners
     const isAdmin = isOwner;
 
-    console.log('✅ Access verified:', { userId, companyId, accessLevel, isAdmin });
 
     return {
       userId,

@@ -16,10 +16,6 @@ export async function GET(request: NextRequest) {
     const viewType = searchParams.get('viewType');
     const baseHref = searchParams.get('baseHref');
 
-    console.log('🔐 [Permissions API GET] Whop Forms app pattern:');
-    console.log('🔐 [Permissions API GET] Company ID:', companyId);
-    console.log('🔐 [Permissions API GET] ViewType:', viewType);
-    console.log('🔐 [Permissions API GET] BaseHref:', baseHref);
 
     if (!companyId) {
       return NextResponse.json({
@@ -40,7 +36,6 @@ export async function GET(request: NextRequest) {
       };
       
       actualCompanyId = experienceToCompanyMap[companyId] || 'biz_3GYHNPbGkZCEky'; // Default fallback
-      console.log('🔐 [Permissions API GET] Mapped experience to company ID:', companyId, '->', actualCompanyId);
     } else if (!companyId.startsWith('biz_')) {
       // This is a company route (like "live-analytics"), we need to get the real company ID
       const routeToCompanyMap: Record<string, string> = {
@@ -51,9 +46,7 @@ export async function GET(request: NextRequest) {
       };
       
       actualCompanyId = routeToCompanyMap[companyId] || 'biz_3GYHNPbGkZCEky'; // Default fallback
-      console.log('🔐 [Permissions API GET] Mapped route to company ID:', companyId, '->', actualCompanyId);
     } else {
-      console.log('🔐 [Permissions API GET] Using direct company ID:', actualCompanyId);
     }
     
     // Create a new request with the correct company ID
@@ -69,47 +62,34 @@ export async function GET(request: NextRequest) {
     const auth = await simpleAuth(modifiedRequest);
     
     const elapsed = Date.now() - startTime;
-    console.log(`✅ [Permissions API GET] Complete in ${elapsed}ms - Owner: ${auth.isOwner}`);
 
     // CRITICAL: Whop sends viewType="app" and /joined/ URL for BOTH students AND owners!
     // We MUST use Whop's server-side authentication (auth.isOwner) as the PRIMARY signal
     let isStudent = false;
     let isOwner = false;
     
-    console.log('🔍 [Permissions API GET] Detection signals:');
-    console.log('  - viewType:', viewType);
-    console.log('  - baseHref:', baseHref);
-    console.log('  - baseHref includes /joined/:', baseHref?.includes('/joined/'));
-    console.log('  - baseHref includes /dashboard/:', baseHref?.includes('/dashboard/'));
-    console.log('  - auth.isOwner from Whop API:', auth.isOwner);
-    console.log('  - auth.userId:', auth.userId);
     
     // PRIMARY: Use Whop's server-side authentication (MOST RELIABLE)
     if (auth.isOwner) {
       isOwner = true;
       isStudent = false;
-      console.log('👑 [Permissions API GET] ✅ OWNER detected via Whop API authentication');
     } 
     // SECONDARY: Check for explicit admin/analytics viewType
     else if (viewType === 'admin' || viewType === 'analytics') {
       isOwner = true;
       isStudent = false;
-      console.log('👑 [Permissions API GET] ✅ OWNER detected via viewType:', viewType);
     } 
     // TERTIARY: Check for /dashboard/ URL pattern
     else if (baseHref?.includes('/dashboard/')) {
       isOwner = true;
       isStudent = false;
-      console.log('👑 [Permissions API GET] ✅ OWNER detected via /dashboard/ URL');
     } 
     // DEFAULT: If not owner, must be student
     else {
       isStudent = true;
       isOwner = false;
-      console.log('🎓 [Permissions API GET] ✅ STUDENT (not owner per Whop API)');
     }
     
-    console.log('🔍 [Permissions API GET] FINAL RESULT:', { isStudent, isOwner });
 
     return NextResponse.json({
       success: true,
@@ -139,7 +119,6 @@ export async function POST(request: NextRequest) {
   const startTime = Date.now();
   
   try {
-    console.log('🔐 [Permissions API] Request received');
     
     const body = await request.json();
     const { companyId } = body;
@@ -151,7 +130,6 @@ export async function POST(request: NextRequest) {
       }, { status: 400 });
     }
 
-    console.log('🔐 [Permissions API] Authenticating for company:', companyId);
     
     // Create a mock request with the companyId
     const mockUrl = `https://app.com?companyId=${companyId}`;
@@ -163,7 +141,6 @@ export async function POST(request: NextRequest) {
     const auth = await simpleAuth(mockRequest);
     
     const elapsed = Date.now() - startTime;
-    console.log(`✅ [Permissions API] Complete in ${elapsed}ms`);
 
     return NextResponse.json({
       success: true,
@@ -190,7 +167,6 @@ export async function POST(request: NextRequest) {
     const isDevelopment = process.env.NODE_ENV === 'development';
     
     if (isDevelopment) {
-      console.log('⚠️ [Permissions API] Development mode - granting test access despite error');
       return NextResponse.json({
         success: true,
         permissions: {
@@ -207,7 +183,6 @@ export async function POST(request: NextRequest) {
       });
     } else {
       // PRODUCTION: Deny access on authentication failure
-      console.log('🔒 [Permissions API] Production mode - denying access due to auth error');
       return NextResponse.json({
         success: false,
         error: 'Authentication failed',

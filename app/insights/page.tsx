@@ -53,7 +53,6 @@ function InsightsContent() {
                             window.location.pathname.split('/').find(part => part.startsWith('biz_')) || 
                             null;
     setCompanyId(companyIdFromUrl);
-    console.log('✅ Company ID from URL:', companyIdFromUrl);
   }, []);
 
   // Convert company ID to client ID
@@ -77,7 +76,6 @@ function InsightsContent() {
       if (response.ok) {
         const data = await response.json();
         setClientId(data.clientId);
-        console.log('✅ Got client UUID:', data.clientId);
       }
     } catch (error) {
       console.error('Error fetching client ID:', error);
@@ -88,7 +86,6 @@ function InsightsContent() {
 
   const loadExistingInsights = async () => {
     try {
-      console.log('📡 Loading existing insights for time range:', timeRange);
       const response = await fetch(`/api/insights/generate?companyId=${companyId}&timeRange=${timeRange}`, {
         method: 'GET',
         headers: { 'Content-Type': 'application/json' }
@@ -96,11 +93,8 @@ function InsightsContent() {
 
       if (response.ok) {
         const data = await response.json();
-        console.log('✅ Loaded existing insights:', data);
         setInsights(data.insights || []);
-        console.log('📈 Loaded insights count:', data.insights?.length || 0);
       } else {
-        console.log('ℹ️ No existing insights found');
         setInsights([]);
       }
     } catch (error) {
@@ -124,9 +118,6 @@ function InsightsContent() {
   }));
 
   const generateInsights = async () => {
-    console.log('🚀 Generate Insights clicked');
-    console.log('Company ID:', companyId);
-    console.log('Time Range:', timeRange);
     
     if (!companyId) {
       console.error('❌ No company ID available');
@@ -134,10 +125,8 @@ function InsightsContent() {
     }
     
     setLoading(true);
-    console.log('⏳ Starting insight generation...');
     
     try {
-      console.log('📡 Making API call to /api/insights/generate');
       const response = await fetch(`/api/insights/generate?companyId=${companyId}&timeRange=${timeRange}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -147,14 +136,10 @@ function InsightsContent() {
         })
       });
 
-      console.log('📊 Response status:', response.status);
-      console.log('📊 Response ok:', response.ok);
 
       if (response.ok) {
         const data = await response.json();
-        console.log('✅ Generated insights:', data);
         setInsights(data.insights || []);
-        console.log('📈 Insights set:', data.insights?.length || 0, 'insights');
         
         // Show success popup
         setShowSuccess(true);
@@ -170,7 +155,6 @@ function InsightsContent() {
       alert(`Error: ${error instanceof Error ? error.message : 'Unknown error'}`);
     } finally {
       setLoading(false);
-      console.log('✅ Loading finished');
     }
   };
 
@@ -182,8 +166,6 @@ function InsightsContent() {
     
     try {
       setRefreshing(true);
-      console.log('🔄 Refreshing insights for company:', companyId);
-      console.log('🔄 Time range:', timeRange);
       
       // Re-generate insights (force fresh calculation)
       const response = await fetch(`/api/insights/generate?companyId=${companyId}&timeRange=${timeRange}`, {
@@ -202,14 +184,12 @@ function InsightsContent() {
       }
 
       const data = await response.json();
-      console.log('✅ Insights refreshed successfully:', data);
       setInsights(data.insights || []);
       
       // Show success notification
       setShowSuccess(true);
       setTimeout(() => setShowSuccess(false), 3000);
       
-      console.log('📊 Insights refreshed at:', new Date().toISOString());
     } catch (error) {
       console.error('❌ Error refreshing insights:', error);
       const errorMessage = error instanceof Error ? error.message : 'Failed to refresh insights';
@@ -492,9 +472,7 @@ function InsightsContent() {
                   <InsightsGrid 
                     items={transformedInsights.filter(i => i.status !== 'action_taken')}
                     columns={{ base: 1, md: 2, xl: 3 }}
-                    onOpen={(id) => console.log('Opened insight:', id)}
                     onMarkActioned={(id) => {
-                      console.log('Insight marked as actioned:', id);
                       // Refresh insights to update the lists
                       handleRefresh();
                     }}

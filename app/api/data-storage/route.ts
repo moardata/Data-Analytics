@@ -31,7 +31,6 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const { action, data } = body;
 
-    console.log(`💾 [Data Storage] ${action} for company ${companyId}`);
 
     // Get the client record for multi-tenant isolation
     const { data: clientData, error: clientError } = await supabase
@@ -119,7 +118,6 @@ export async function GET(request: NextRequest) {
     const limit = parseInt(searchParams.get('limit') || '50');
     const offset = parseInt(searchParams.get('offset') || '0');
 
-    console.log(`📊 [Data Storage] ${action} for company ${companyId}`);
 
     // Get the client record for multi-tenant isolation
     const { data: clientData, error: clientError } = await supabase

@@ -29,7 +29,6 @@ export async function GET(
       });
     } catch (error) {
       // Fallback for testing
-      console.log('⚠️ Using test mode for analytics access');
       access = { hasAccess: true, accessLevel: 'admin' };
     }
 
@@ -41,7 +40,6 @@ export async function GET(
     const experience = await whopClient.experiences.retrieve(experienceId);
     const companyId = experience.company.id;
 
-    console.log('📊 Fetching analytics for company:', companyId);
 
     // Calculate date range
     const days = timeRange === '7d' ? 7 : timeRange === '90d' ? 90 : 30;
@@ -49,7 +47,6 @@ export async function GET(
     cutoffDate.setDate(cutoffDate.getDate() - days);
 
     // For now, use the old analytics endpoint (already working)
-    // TODO: Migrate to @whop/sdk once we understand the correct API
     const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
     const analyticsResponse = await fetch(
       `${baseUrl}/api/analytics/metrics?companyId=${companyId}&timeRange=${timeRange === '7d' ? 'week' : timeRange === '90d' ? 'quarter' : 'month'}`

@@ -24,7 +24,6 @@ export function WhopClientAuth({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     async function checkAccess() {
       try {
-        console.log('🔐 [WhopClientAuth] Starting access check...');
         
         // Safety check for window object
         if (typeof window === 'undefined') {
@@ -32,7 +31,6 @@ export function WhopClientAuth({ children }: { children: React.ReactNode }) {
           return;
         }
 
-        console.log('🔐 [WhopClientAuth] Checking owner status via server...');
 
         // Get company ID from URL
         const params = new URLSearchParams(window.location.search);
@@ -40,10 +38,8 @@ export function WhopClientAuth({ children }: { children: React.ReactNode }) {
                          window.location.pathname.split('/').find(part => part.startsWith('biz_')) || 
                          '';
 
-        console.log('🔍 [WhopClientAuth] Company ID:', companyId);
 
         if (!companyId) {
-          console.log('❌ [WhopClientAuth] No company ID - defaulting to student');
           setAccessState({
             loading: false,
             isOwner: false,
@@ -56,31 +52,21 @@ export function WhopClientAuth({ children }: { children: React.ReactNode }) {
 
       // FIRST: Check what headers Whop is actually sending
       try {
-        console.log('🔍 [WhopClientAuth] Calling debug endpoint to see headers...');
         const debugResponse = await fetch('/api/debug/headers');
         const debugData = await debugResponse.json();
-        console.log('📋 [WhopClientAuth] Headers from server:', debugData);
       } catch (debugError) {
         console.error('⚠️ [WhopClientAuth] Debug endpoint error:', debugError);
       }
 
       // Check owner status via our server API (which has Whop headers)
       try {
-        console.log('🔍 [WhopClientAuth] Calling server to check ownership...');
         
         const response = await fetch(`/api/auth/check-owner?companyId=${companyId}`);
         const data = await response.json();
         
-        console.log('🔍 [WhopClientAuth] Server response:', data);
-        console.log('🔍 [WhopClientAuth] Full response details:', JSON.stringify(data, null, 2));
         
         // Log debug info if available
         if (data.debug) {
-          console.log('🔍 [WhopClientAuth] DEBUG INFO:');
-          console.log('  - Current user_id:', data.debug.user_id);
-          console.log('  - Access level:', data.debug.access_level);
-          console.log('  - Has access:', data.debug.has_access);
-          console.log('  - Method:', data.method);
         }
         
         // Check if this is a temporary/fallback response
@@ -90,7 +76,6 @@ export function WhopClientAuth({ children }: { children: React.ReactNode }) {
         }
         
         if (data.isOwner) {
-          console.log('✅ [WhopClientAuth] User IS the owner');
           setAccessState({
             loading: false,
             isOwner: true,
@@ -99,7 +84,6 @@ export function WhopClientAuth({ children }: { children: React.ReactNode }) {
             companyId: companyId,
           });
         } else {
-          console.log('✅ [WhopClientAuth] User is NOT the owner (student)');
           setAccessState({
             loading: false,
             isOwner: false,

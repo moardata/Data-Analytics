@@ -9,7 +9,6 @@ import { headers } from 'next/headers';
 export async function requireWhopHeaders(request: NextRequest): Promise<NextResponse | null> {
   // Allow in development/test mode
   if (process.env.NODE_ENV === 'development') {
-    console.log('🧪 [requireWhopHeaders] Development mode - allowing access');
     return null;
   }
 
@@ -29,7 +28,6 @@ export async function requireWhopHeaders(request: NextRequest): Promise<NextResp
       headersList.get('x-whop-access-token');
 
     if (!hasWhopHeaders) {
-      console.log('❌ [requireWhopHeaders] No Whop headers detected - blocking direct access');
       
       return NextResponse.json({
         error: 'Direct Access Not Allowed',
@@ -44,7 +42,6 @@ export async function requireWhopHeaders(request: NextRequest): Promise<NextResp
       });
     }
 
-    console.log('✅ [requireWhopHeaders] Whop headers detected');
     return null; // Allow access
 
   } catch (error) {

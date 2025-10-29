@@ -27,7 +27,6 @@ function RevenueContent() {
 
   const fetchRevenue = async () => {
     try {
-      console.log('💰 Fetching revenue for companyId:', clientId);
       const response = await fetch(`/api/revenue?companyId=${clientId}`);
       
       if (!response.ok) {
@@ -40,9 +39,6 @@ function RevenueContent() {
       }
 
       const data = await response.json();
-      console.log('✅ Revenue data received:', data);
-      console.log('📊 Revenue events count:', data.count);
-      console.log('💵 Total revenue:', data.total);
       setRevenue(data.revenue || []);
     } catch (error) {
       console.error('❌ Error fetching revenue:', error);
@@ -65,11 +61,9 @@ function RevenueContent() {
     
     try {
       setRefreshing(true);
-      console.log('🔄 Refreshing revenue data for client:', clientId);
       
       await fetchRevenue();
       
-      console.log('✅ Revenue data refreshed successfully');
     } catch (error) {
       console.error('❌ Error refreshing revenue:', error);
     } finally {

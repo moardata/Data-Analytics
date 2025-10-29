@@ -31,7 +31,6 @@ export default function StudentSurveysInterface({ companyId }: StudentSurveysInt
       const whopUserId = localStorage.getItem('whop_user_id');
       
       if (!whopUserId) {
-        console.log('No whopUserId found - student hasn\'t submitted any surveys yet');
         return;
       }
 
@@ -39,7 +38,6 @@ export default function StudentSurveysInterface({ companyId }: StudentSurveysInt
       if (response.ok) {
         const data = await response.json();
         setCompletedSurveys(data.completedFormIds || []);
-        console.log('Completed surveys:', data.completedFormIds);
       }
     } catch (error) {
       console.error('Error fetching completed surveys:', error);
@@ -98,7 +96,6 @@ export default function StudentSurveysInterface({ companyId }: StudentSurveysInt
         responses,
       };
 
-      console.log('📝 [StudentSurveysInterface] Submitting form:', {
         formId: selectedSurvey.id,
         entityId: submissionData.entityId,
         companyId: companyId,
@@ -112,7 +109,6 @@ export default function StudentSurveysInterface({ companyId }: StudentSurveysInt
         body: JSON.stringify(submissionData),
       });
 
-      console.log('📊 [StudentSurveysInterface] Submission response:', {
         ok: response.ok,
         status: response.status,
         statusText: response.statusText
@@ -120,7 +116,6 @@ export default function StudentSurveysInterface({ companyId }: StudentSurveysInt
 
       if (response.ok) {
         const result = await response.json();
-        console.log('✅ [StudentSurveysInterface] Submission successful:', result);
         
         // 🎉 TRIGGER CONFETTI!
         triggerConfetti();

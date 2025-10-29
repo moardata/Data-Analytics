@@ -44,12 +44,10 @@ export async function processDataWithAI(
   timeRange: string = 'week'
 ): Promise<AIAnalysisResult> {
   try {
-    console.log('🤖 [AI Processing] Starting enhanced analysis for client:', clientId);
 
     // Collect comprehensive data
     const dataCollection = await collectComprehensiveData(clientId, timeRange);
     
-    console.log('🤖 [AI Processing] Data collection result:', {
       hasData: dataCollection.hasData,
       surveyCount: dataCollection.surveyResponses?.length || 0,
       eventsCount: dataCollection.engagementEvents?.length || 0,
@@ -272,7 +270,6 @@ Be specific, data-driven, and actionable. Focus on patterns that can be improved
     }
     const analysis = JSON.parse(analysisText);
     
-    console.log('✅ [AI Processing] Generated structured insights:', analysis.insights.length);
     return analysis as AIAnalysisResult;
 
   } catch (error) {
@@ -415,7 +412,6 @@ async function storeAIInsights(clientId: string, result: AIAnalysisResult) {
   if (error) {
     console.error('Error storing AI insights:', error);
   } else {
-    console.log(`✅ [AI Processing] Stored ${insights.length} insights`);
   }
 }
 

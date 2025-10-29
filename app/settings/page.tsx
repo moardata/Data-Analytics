@@ -49,7 +49,6 @@ function SettingsContent() {
   };
 
   const handleExportData = () => {
-    // TODO: Implement data export
     alert('Data export feature coming soon!');
   };
 

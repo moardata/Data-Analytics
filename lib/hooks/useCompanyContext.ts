@@ -35,7 +35,6 @@ export function useCompanyContext(): CompanyContext {
         const urlCompanyId = urlParams.get('companyId') || urlParams.get('company_id');
         
         if (urlCompanyId) {
-          console.log('✅ Company ID found in URL:', urlCompanyId);
           setCompanyId(urlCompanyId);
           setLoading(false);
           return;
@@ -44,7 +43,6 @@ export function useCompanyContext(): CompanyContext {
         // Method 1.5: Check if we're in development and use the environment company ID
         if (process.env.NODE_ENV === 'development' || window.location.hostname === 'localhost') {
           const envCompanyId = 'biz_3GYHNPbGkZCEky'; // Use your actual company ID for testing
-          console.log('⚠️ Development mode: using environment company ID:', envCompanyId);
           setCompanyId(envCompanyId);
           setLoading(false);
           return;
@@ -58,7 +56,6 @@ export function useCompanyContext(): CompanyContext {
           // Try to access Whop SDK context from window
           const whopContext = (window as any).WhopSdk || (window as any).whop;
           if (whopContext?.companyId) {
-            console.log('✅ Company ID found in Whop SDK context:', whopContext.companyId);
             setCompanyId(whopContext.companyId);
             setLoading(false);
             return;
@@ -69,7 +66,6 @@ export function useCompanyContext(): CompanyContext {
           const retryCompanyId = retryUrlParams.get('companyId') || retryUrlParams.get('company_id');
           
           if (retryCompanyId) {
-            console.log('✅ Company ID found in URL (retry):', retryCompanyId);
             setCompanyId(retryCompanyId);
             setLoading(false);
             return;
@@ -82,18 +78,15 @@ export function useCompanyContext(): CompanyContext {
           const data = await response.json();
           
           if (data.success && data.companyId && data.companyId !== 'test_company') {
-            console.log('✅ Company ID found from API:', data.companyId);
             setCompanyId(data.companyId);
             setLoading(false);
             return;
           }
         } catch (apiError) {
-          console.log('⚠️ Could not fetch company ID from API:', apiError);
         }
 
         // Method 4: Fallback to environment company ID (for testing)
         const fallbackCompanyId = 'biz_3GYHNPbGkZCEky'; // Your actual company ID
-        console.log('⚠️ Using fallback company ID for testing:', fallbackCompanyId);
         setCompanyId(fallbackCompanyId);
         setLoading(false);
         return;

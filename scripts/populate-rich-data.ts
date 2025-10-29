@@ -21,13 +21,9 @@ const lastNames = ['Smith', 'Johnson', 'Williams', 'Brown', 'Jones', 'Garcia', '
                    'Lee', 'Walker', 'Hall', 'Allen', 'Young', 'King', 'Wright', 'Scott', 'Torres', 'Nguyen'];
 
 async function populateRichData() {
-  console.log('🚀 Starting rich mock data population...');
-  console.log(`📊 Target Company: ${COMPANY_ID}`);
-  console.log('');
 
   try {
     // Step 1: Create or get client record
-    console.log('1️⃣ Creating client record...');
     
     const { data: existingClient } = await supabase
       .from('clients')
@@ -39,7 +35,6 @@ async function populateRichData() {
 
     if (existingClient) {
       clientId = existingClient.id;
-      console.log('   ✅ Client already exists:', clientId);
     } else {
       const { data: newClient, error: clientError } = await supabase
         .from('clients')
@@ -55,11 +50,9 @@ async function populateRichData() {
 
       if (clientError) throw clientError;
       clientId = newClient.id;
-      console.log('   ✅ Created new client:', clientId);
     }
 
     // Step 2: Create 25 students
-    console.log('\n2️⃣ Creating 25 students...');
     const studentIds: string[] = [];
     const studentsToCreate = 25;
     let studentsCreated = 0;
@@ -94,7 +87,6 @@ async function populateRichData() {
 
       if (entityError) {
         if (entityError.code === '23505') {
-          console.log(`   ⚠️ Student ${name} already exists.`);
           const { data: existingEntity } = await supabase
             .from('entities')
             .select('id')
@@ -109,14 +101,11 @@ async function populateRichData() {
         studentIds.push(newEntity.id);
         studentsCreated++;
         if (studentsCreated % 5 === 0) {
-          console.log(`   ✅ Created ${studentsCreated}/${studentsToCreate} students...`);
         }
       }
     }
-    console.log(`   ✅ Total students created: ${studentsCreated}`);
 
     // Step 3: Create 150 analytics events (various types)
-    console.log('\n3️⃣ Creating 150 analytics events...');
     const eventTypes = ['page_view', 'course_start', 'lesson_complete', 'quiz_submit', 'video_watch', 'download', 'comment_post'];
     const eventCount = 150;
     let eventsCreated = 0;
@@ -143,10 +132,8 @@ async function populateRichData() {
 
       if (!error) eventsCreated++;
     }
-    console.log(`   ✅ Created ${eventsCreated} analytics events`);
 
     // Step 4: Create subscriptions with revenue
-    console.log('\n4️⃣ Creating subscriptions and revenue data...');
     const subscriptionPlans = [
       { plan_id: 'plan_basic', amount: 29.99, name: 'Basic' },
       { plan_id: 'plan_pro', amount: 79.99, name: 'Pro' },
@@ -185,11 +172,8 @@ async function populateRichData() {
         }
       }
     }
-    console.log(`   ✅ Created ${subscriptionsCreated} subscriptions`);
-    console.log(`   💰 Total monthly revenue: $${totalRevenue.toFixed(2)}`);
 
     // Step 5: Create revenue/payment events
-    console.log('\n5️⃣ Creating payment events...');
     let paymentsCreated = 0;
 
     for (let i = 0; i < subscriptionsCreated; i++) {
@@ -217,10 +201,8 @@ async function populateRichData() {
 
       if (!error) paymentsCreated++;
     }
-    console.log(`   ✅ Created ${paymentsCreated} payment events`);
 
     // Step 6: Create form templates
-    console.log('\n6️⃣ Creating form templates...');
     const formTemplates = [
       {
         name: 'Course Feedback Survey',
@@ -259,12 +241,10 @@ async function populateRichData() {
 
       if (!formError && newForm) {
         formIds.push(newForm.id);
-        console.log(`   ✅ Created form: ${template.name}`);
       }
     }
 
     // Step 7: Create form submissions
-    console.log('\n7️⃣ Creating form submissions...');
     let submissionsCreated = 0;
 
     // Create 30+ form responses
@@ -301,22 +281,8 @@ async function populateRichData() {
 
       if (!error) submissionsCreated++;
     }
-    console.log(`   ✅ Created ${submissionsCreated} form submissions`);
 
-    console.log('\n✅ Mock data population complete!');
-    console.log('\n📊 SUMMARY:');
-    console.log(`   Company ID: ${COMPANY_ID}`);
-    console.log(`   Client UUID: ${clientId}`);
-    console.log(`   Students: ${studentIds.length}`);
-    console.log(`   Events: ${eventsCreated + paymentsCreated}`);
-    console.log(`   Subscriptions: ${subscriptionsCreated}`);
-    console.log(`   Monthly Revenue: $${totalRevenue.toFixed(2)}`);
-    console.log(`   Forms: ${formIds.length}`);
-    console.log(`   Form Submissions: ${submissionsCreated}`);
 
-    console.log('\n🧪 Test your dashboard at:');
-    console.log(`   https://data-analytics-gold.vercel.app/analytics?companyId=${COMPANY_ID}`);
-    console.log('\n🤖 AI Insights should now have rich data to analyze!');
 
   } catch (error: any) {
     console.error('❌ Error populating mock data:', error);

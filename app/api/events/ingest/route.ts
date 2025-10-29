@@ -111,7 +111,6 @@ export async function POST(request: NextRequest) {
       );
     }
     
-    console.log(`Manual event ingested: ${eventType} for company ${companyId}`);
     
     return NextResponse.json({
       ok: true,

@@ -66,14 +66,12 @@ export function useWhopAuth(): WhopAuthState {
         
         // If experienceId is provided, fetch the company ID from it
         if (urlExperienceId && !urlCompanyId) {
-          console.log('✅ Experience ID from URL:', urlExperienceId);
           try {
             const expResponse = await fetch(`/api/experiences/${urlExperienceId}/access`);
             if (expResponse.ok) {
               const expData = await expResponse.json();
               if (expData.success && expData.companyId) {
                 urlCompanyId = expData.companyId;
-                console.log('✅ Company ID from experience:', urlCompanyId);
               }
             }
           } catch (error) {
@@ -98,10 +96,8 @@ export function useWhopAuth(): WhopAuthState {
           return;
         }
 
-        console.log('✅ Company ID from URL:', urlCompanyId);
 
         // Step 2: Verify authentication and access with backend
-        console.log('🔐 Calling /api/auth/permissions...');
         
         const response = await fetch('/api/auth/permissions', {
           method: 'POST',
@@ -114,7 +110,6 @@ export function useWhopAuth(): WhopAuthState {
           throw error;
         });
 
-        console.log('📡 Response status:', response.status);
 
         if (!response.ok) {
           const errorData = await response.json().catch(() => ({ 
@@ -138,7 +133,6 @@ export function useWhopAuth(): WhopAuthState {
         }
 
         const data = await response.json();
-        console.log('✅ Auth response:', data);
 
         if (!data.success) {
           console.error('❌ Auth API returned success=false:', data);
@@ -192,9 +186,6 @@ export function useWhopAuth(): WhopAuthState {
         const isOwner = data.permissions.userRole === 'owner';
         const isAdmin = data.permissions.userRole === 'admin' || isOwner;
         
-        console.log('✅ Authentication successful!');
-        console.log('✅ User ID:', data.permissions.userId);
-        console.log('✅ Role:', data.permissions.userRole);
         
         setState({
           userId: data.permissions.userId,

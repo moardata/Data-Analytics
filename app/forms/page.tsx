@@ -78,7 +78,6 @@ function FormsContent() {
       const whopUserId = localStorage.getItem('whop_user_id');
       
       if (!whopUserId) {
-        console.log('No whopUserId found - student hasn\'t submitted any forms yet');
         return;
       }
 
@@ -86,7 +85,6 @@ function FormsContent() {
       if (response.ok) {
         const data = await response.json();
         setCompletedForms(data.completedFormIds || []);
-        console.log('Completed forms:', data.completedFormIds);
       }
     } catch (error) {
       console.error('Error fetching completed forms:', error);
@@ -157,7 +155,6 @@ function FormsContent() {
         .single();
 
       if (!clientData) {
-        console.log('No client found for company:', clientId);
         setForms([]);
         return;
       }
@@ -196,7 +193,6 @@ function FormsContent() {
         .single();
 
       if (!clientData) {
-        console.log('No client found for company:', clientId);
         setSubmissions([]);
         return;
       }

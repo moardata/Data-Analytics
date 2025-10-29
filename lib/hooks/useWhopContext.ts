@@ -44,7 +44,6 @@ export function useWhopContext(): WhopContext {
         const urlUserId = urlParams.get('userId') || urlParams.get('user_id');
 
         if (urlCompanyId) {
-          console.log('✅ Company ID from URL:', urlCompanyId);
           setContext({
             companyId: urlCompanyId,
             userId: urlUserId,
@@ -57,7 +56,6 @@ export function useWhopContext(): WhopContext {
 
         // Method 2: Check if we're in a Whop iframe and wait for context
         if (window.self !== window.top) {
-          console.log('🔍 Detected Whop iframe context');
           
           // Wait for Whop to inject context
           await new Promise(resolve => setTimeout(resolve, 1000));
@@ -67,7 +65,6 @@ export function useWhopContext(): WhopContext {
           const retryCompanyId = retryParams.get('companyId') || retryParams.get('company_id');
           
           if (retryCompanyId) {
-            console.log('✅ Company ID from URL (retry):', retryCompanyId);
             setContext({
               companyId: retryCompanyId,
               userId: retryParams.get('userId') || retryParams.get('user_id'),
@@ -84,7 +81,6 @@ export function useWhopContext(): WhopContext {
             const data = await response.json();
             
             if (data.success && data.companyId) {
-              console.log('✅ Company ID from API:', data.companyId);
               setContext({
                 companyId: data.companyId,
                 userId: data.userId,
@@ -95,7 +91,6 @@ export function useWhopContext(): WhopContext {
               return;
             }
           } catch (apiError) {
-            console.log('⚠️ API context fetch failed:', apiError);
           }
         }
 
@@ -105,7 +100,6 @@ export function useWhopContext(): WhopContext {
             window.location.hostname.includes('vercel.app')) {
           
           const testCompanyId = 'biz_3GYHNPbGkZCEky'; // Your actual company ID
-          console.log('⚠️ Development mode: using test company ID:', testCompanyId);
           
           setContext({
             companyId: testCompanyId,

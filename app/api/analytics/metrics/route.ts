@@ -8,9 +8,9 @@ import { supabaseServer as supabase } from '@/lib/supabase-server';
 import { format, subDays } from 'date-fns';
 import { requireOwner } from '@/lib/middleware/requireOwner';
 
-// Add CORS headers for iframe compatibility
+// CORS headers restricted to Whop domain for security
 const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Origin': 'https://whop.com',
   'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
   'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-Requested-With',
   'Access-Control-Allow-Credentials': 'true',
@@ -31,7 +31,6 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Company ID required' }, { status: 400, headers: corsHeaders });
     }
     
-    console.log('✅ [Analytics] Fetching data for company:', companyId);
 
     // Check if Supabase is configured - test with a method call
     if (!supabase || !supabase.from) {
@@ -56,7 +55,6 @@ export async function GET(request: NextRequest) {
       return NextResponse.json(getEmptyMetrics(), { headers: corsHeaders });
     }
     
-    console.log('🔍 [Analytics] Looking for client with company_id:', companyId);
     
     const result = await clientsQuery
       .select('id')
@@ -66,7 +64,6 @@ export async function GET(request: NextRequest) {
     clientData = result.data;
     clientError = result.error;
     
-    console.log('📊 [Analytics] Client lookup result:', {
       found: !!clientData,
       clientId: clientData?.id,
       error: clientError?.message,
@@ -81,7 +78,6 @@ export async function GET(request: NextRequest) {
     }
 
     if (!clientData) {
-      console.log('No client found for companyId:', companyId);
       return NextResponse.json(
         { error: 'Client not found - needs initialization' },
         { status: 404, headers: corsHeaders }
@@ -119,7 +115,6 @@ export async function GET(request: NextRequest) {
         .eq('client_id', clientId),
     ]);
 
-    console.log('📊 Data fetch results:', {
       events: eventsResult.data?.length || 0,
       subscriptions: subscriptionsResult.data?.length || 0,
       entities: entitiesResult.data?.length || 0,
@@ -142,7 +137,6 @@ export async function GET(request: NextRequest) {
     const courses = coursesResult.data || [];
     const enrollments = enrollmentsResult.data || [];
 
-    console.log('✅ Data arrays created:', {
       eventsLength: events.length,
       subscriptionsLength: subscriptions.length,
       entitiesLength: entities.length,
@@ -151,7 +145,6 @@ export async function GET(request: NextRequest) {
     // Calculate metrics
     const metrics = calculateMetrics(events, subscriptions, entities, courses, enrollments, days);
 
-    console.log('✅ Calculated metrics:', {
       totalStudents: metrics.totalStudents,
       activeSubscriptions: metrics.activeSubscriptions,
       totalEvents: events.length,

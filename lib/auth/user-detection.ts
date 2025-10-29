@@ -48,13 +48,11 @@ export function detectUserType(
   if (url) {
     // Pattern: /joined/ = student access (more flexible)
     if (url.includes('/joined/')) {
-      console.log('🎓 [UserDetection] Student detected via URL pattern:', url);
       isStudent = true;
       isOperator = false;
     }
     // Pattern: /dashboard/company = operator access
     else if (url.includes('/dashboard/') || url.includes('/analytics')) {
-      console.log('👑 [UserDetection] Operator detected via URL pattern:', url);
       isStudent = false;
       isOperator = true;
     }
@@ -62,20 +60,16 @@ export function detectUserType(
   
   // Check viewType parameter (highest priority for student detection)
   if (viewType) {
-    console.log('🔍 [UserDetection] ViewType detected:', viewType);
     if (viewType === 'app') {
       // If viewType is 'app', check URL to determine if student or owner
       if (url && url.includes('/joined/')) {
-        console.log('🎓 [UserDetection] Student detected via viewType + URL pattern:', viewType, url);
         isStudent = true;
         isOperator = false;
       } else {
-        console.log('👑 [UserDetection] Owner with viewType=app detected (not student):', viewType, url);
         isStudent = false;
         isOperator = true;
       }
     } else if (viewType === 'admin' || viewType === 'analytics') {
-      console.log('👑 [UserDetection] Operator detected via viewType:', viewType);
       isStudent = false;
       isOperator = true;
     }

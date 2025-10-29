@@ -11,17 +11,14 @@ import { calculateFeedbackThemes } from '@/lib/utils/metrics/feedbackThemes';
 
 export async function GET(request: NextRequest) {
   try {
-    console.log('🔄 [Heavy Metrics] Starting 6-hour sync...');
     
     // Clean up expired metrics first
     const cleanedCount = await cleanupExpiredMetrics();
-    console.log(`🧹 [Heavy Metrics] Cleaned up ${cleanedCount} expired metrics`);
     
     // Get all active clients
     const clientIds = await getActiveClients();
     
     if (clientIds.length === 0) {
-      console.log('📊 [Heavy Metrics] No active clients found');
       return NextResponse.json({ 
         status: 'success', 
         message: 'No active clients',
@@ -35,7 +32,6 @@ export async function GET(request: NextRequest) {
     // Process each client
     for (const clientId of clientIds) {
       try {
-        console.log(`📊 [Heavy Metrics] Processing client ${clientId}...`);
         
         // Calculate aha moments
         const ahaMoments = await calculateAhaMomentScore(clientId);
@@ -68,7 +64,6 @@ export async function GET(request: NextRequest) {
         );
         
         processed++;
-        console.log(`✅ [Heavy Metrics] Cached aha moments, pathways & themes for client ${clientId}`);
         
       } catch (error) {
         const errorMsg = `Client ${clientId}: ${error instanceof Error ? error.message : 'Unknown error'}`;
@@ -77,7 +72,6 @@ export async function GET(request: NextRequest) {
       }
     }
 
-    console.log(`🎉 [Heavy Metrics] Completed: ${processed}/${clientIds.length} clients processed`);
     
     return NextResponse.json({
       status: 'success',

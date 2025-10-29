@@ -22,7 +22,6 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const { action, insightId, insightData } = body;
 
-    console.log(`🎯 [Insights Actions] ${action} for insight ${insightId}`);
 
     // Get the client record for multi-tenant isolation
     const { data: clientData, error: clientError } = await supabase
@@ -62,7 +61,6 @@ export async function POST(request: NextRequest) {
         );
       }
 
-      console.log(`✅ [Insights Actions] Marked insight ${insightId} as done`);
 
     } else if (action === 'view_details') {
       // Track that the insight was viewed
@@ -86,7 +84,6 @@ export async function POST(request: NextRequest) {
         );
       }
 
-      console.log(`👁️ [Insights Actions] Tracked view for insight ${insightId}`);
 
     } else if (action === 'create_insight') {
       // Create a new insight
@@ -117,7 +114,6 @@ export async function POST(request: NextRequest) {
         );
       }
 
-      console.log(`📝 [Insights Actions] Created new insight: ${insightData.title}`);
 
     } else {
       return NextResponse.json(
@@ -160,7 +156,6 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url);
     const status = searchParams.get('status') || 'all';
 
-    console.log(`📊 [Insights Actions] Fetching insights for company ${companyId} (status: ${status})`);
 
     // Get the client record for multi-tenant isolation
     const { data: clientData, error: clientError } = await supabase

@@ -12,7 +12,6 @@ export async function POST(request: NextRequest) {
     const body = await request.json().catch(() => ({}));
     const companyId = body.companyId || 'biz_3GYHNPbGkZCEky';
     
-    console.log('🌱 Starting database seed for company:', companyId);
     
     // Get or create client record
     let { data: client } = await supabase
@@ -36,7 +35,6 @@ export async function POST(request: NextRequest) {
     }
     
     const clientId = client.id;
-    console.log('📋 Using client ID:', clientId);
 
     // 1. Create events data (payments, engagement)
     const events = [];
@@ -93,7 +91,6 @@ export async function POST(request: NextRequest) {
       .select();
     
     if (eventsError) throw eventsError;
-    console.log(`✅ Created ${eventsData?.length || 0} events`);
 
     // 2. Create subscriptions
     const subscriptions = [];
@@ -118,7 +115,6 @@ export async function POST(request: NextRequest) {
       .select();
     
     if (subsError) throw subsError;
-    console.log(`✅ Created ${subsData?.length || 0} subscriptions`);
 
     // 3. Create entities (students)
     const entities = [];
@@ -144,7 +140,6 @@ export async function POST(request: NextRequest) {
       .select();
     
     if (entitiesError) throw entitiesError;
-    console.log(`✅ Created ${entitiesData?.length || 0} entities`);
 
     return NextResponse.json({
       success: true,

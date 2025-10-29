@@ -14,7 +14,6 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const { formId, entityId, companyId, responses } = body;
 
-    console.log('📝 [Form Submit API] Received submission:', {
       formId,
       entityId,
       companyId,
@@ -36,14 +35,12 @@ export async function POST(request: NextRequest) {
     }
 
     // First, get the client record for this company
-    console.log('🔍 [Form Submit API] Looking up client for company:', companyId);
     const { data: clientData, error: clientError } = await supabase
       .from('clients')
       .select('id, current_tier')
       .eq('company_id', companyId)
       .single();
 
-    console.log('📊 [Form Submit API] Client lookup result:', {
       found: !!clientData,
       clientId: clientData?.id,
       error: clientError?.message
@@ -95,7 +92,6 @@ export async function POST(request: NextRequest) {
     }
 
     // First, check if entity already exists
-    console.log('👤 [Form Submit API] Looking up entity record for:', entityId);
     let entityData: any = null;
     
     const { data: existingEntity } = await supabase
@@ -107,10 +103,8 @@ export async function POST(request: NextRequest) {
 
     if (existingEntity) {
       entityData = existingEntity;
-      console.log('✅ [Form Submit API] Found existing entity:', entityData.id);
     } else {
       // Entity doesn't exist, create it with Whop user data
-      console.log('🔍 [Form Submit API] Fetching user data from Whop for:', entityId);
       
       let userName = `Student ${entityId}`;
       let userEmail = null;
@@ -129,7 +123,6 @@ export async function POST(request: NextRequest) {
 
           if (userResponse.ok) {
             const userData = await userResponse.json();
-            console.log('✅ [Form Submit API] Got user data from Whop:', { 
               username: userData.username,
               hasAvatar: !!(userData.profile_picture_url || userData.avatar)
             });
@@ -141,11 +134,9 @@ export async function POST(request: NextRequest) {
             }
             if (userData.profile_pic_url) metadata.avatar_url = userData.profile_pic_url;
           } else {
-            console.log('⚠️ [Form Submit API] Whop API returned:', userResponse.status);
           }
         }
       } catch (whopError) {
-        console.log('⚠️ [Form Submit API] Could not fetch user from Whop:', whopError);
       }
 
       // Create new entity with enriched data
@@ -167,7 +158,6 @@ export async function POST(request: NextRequest) {
       }
 
       entityData = newEntity;
-      console.log('✅ [Form Submit API] Created new entity with Whop data:', entityData.id);
     }
 
     if (!entityData) {
@@ -176,7 +166,6 @@ export async function POST(request: NextRequest) {
     }
 
     // Store form submission
-    console.log('💾 [Form Submit API] Storing form submission:', {
       formId,
       entityId: entityData.id,
       clientId,
@@ -194,7 +183,6 @@ export async function POST(request: NextRequest) {
       .select()
       .single();
 
-    console.log('📊 [Form Submit API] Submission result:', {
       success: !!submission,
       submissionId: submission?.id,
       error: error?.message

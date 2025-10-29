@@ -16,9 +16,6 @@ const hasValidCredentials =
   supabaseUrl.startsWith('https://') && 
   !supabaseUrl.includes('your_supabase_url_here');
 
-console.log('DEBUG - Supabase URL:', supabaseUrl ? 'Found' : 'MISSING');
-console.log('DEBUG - Supabase Key:', supabaseKey ? 'Found' : 'MISSING');
-console.log('DEBUG - Valid Credentials:', hasValidCredentials ? 'YES' : 'NO');
 
 // Create client only if credentials are valid, otherwise create a mock
 export const supabase = hasValidCredentials && supabaseUrl && supabaseKey

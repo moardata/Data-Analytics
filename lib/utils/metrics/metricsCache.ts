@@ -43,7 +43,6 @@ export async function getCachedMetric(
       return null;
     }
 
-    console.log(`✅ Cache HIT for ${metricType} (client: ${clientId})`);
     return data.metric_data;
   } catch (error) {
     console.error(`Error getting cached metric ${metricType}:`, error);
@@ -83,7 +82,6 @@ export async function setCachedMetric(
       return false;
     }
 
-    console.log(`💾 Cached ${metricType} for client ${clientId} (TTL: ${ttlMinutes}min)`);
     return true;
   } catch (error) {
     console.error(`Error caching metric ${metricType}:`, error);
@@ -107,7 +105,6 @@ export async function getOrCalculateMetric<T>(
   }
 
   // Cache miss - calculate
-  console.log(`⚡ Cache MISS for ${metricType} - calculating...`);
   try {
     const calculated = await calculator(clientId);
     
@@ -140,7 +137,6 @@ export async function invalidateMetric(
       return false;
     }
 
-    console.log(`🗑️  Invalidated cache for ${metricType} (client: ${clientId})`);
     return true;
   } catch (error) {
     console.error(`Error invalidating metric ${metricType}:`, error);
@@ -166,7 +162,6 @@ export async function cleanupExpiredMetrics(): Promise<number> {
 
     const count = data?.length || 0;
     if (count > 0) {
-      console.log(`🧹 Cleaned up ${count} expired metrics`);
     }
     return count;
   } catch (error) {

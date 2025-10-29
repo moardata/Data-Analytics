@@ -45,12 +45,10 @@ function AnalyticsContent() {
                             window.location.pathname.split('/').find(part => part.startsWith('biz_')) || 
                             null;
     setCompanyId(companyIdFromUrl);
-    console.log('✅ Company ID from URL:', companyIdFromUrl);
     
     // Detect if running in iframe
     const inIframe = window !== window.parent;
     setIsInIframe(inIframe);
-    console.log('🔍 Iframe detection:', inIframe);
   }, []);
   
   useEffect(() => {
@@ -138,7 +136,6 @@ function AnalyticsContent() {
       return;
     }
     
-    console.log('📊 Fetching data for company:', companyId);
     
     setLoading(true);
     setError(null);
@@ -215,7 +212,6 @@ function AnalyticsContent() {
   };
 
   const handleLogEvent = (evt: { name: string; sellerId: string; meta?: Record<string, any> }) => {
-    console.log('📊 Analytics event:', evt);
     // In production, send to your analytics service (e.g., PostHog, Mixpanel, etc.)
   };
 

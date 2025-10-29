@@ -12,9 +12,6 @@ const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
 if (!supabaseUrl || !supabaseKey) {
   console.error('❌ Missing Supabase credentials!');
-  console.log('Make sure .env.local has:');
-  console.log('  NEXT_PUBLIC_SUPABASE_URL');
-  console.log('  SUPABASE_SERVICE_ROLE_KEY');
   process.exit(1);
 }
 
@@ -24,13 +21,9 @@ const supabase = createClient(supabaseUrl, supabaseKey);
 const COMPANY_ID = 'biz_3GYHNPbGkZCEky';
 
 async function populateMockData() {
-  console.log('🚀 Starting mock data population...');
-  console.log(`📊 Target Company: ${COMPANY_ID}`);
-  console.log('');
 
   try {
     // Step 1: Create or get client record
-    console.log('1️⃣ Creating client record...');
     
     const { data: existingClient } = await supabase
       .from('clients')
@@ -42,7 +35,6 @@ async function populateMockData() {
 
     if (existingClient) {
       clientId = existingClient.id;
-      console.log('   ✅ Client already exists:', clientId);
     } else {
       const { data: newClient, error: clientError } = await supabase
         .from('clients')
@@ -58,11 +50,9 @@ async function populateMockData() {
 
       if (clientError) throw clientError;
       clientId = newClient.id;
-      console.log('   ✅ Created new client:', clientId);
     }
 
     // Step 2: Create mock students/entities
-    console.log('\n2️⃣ Creating mock students...');
     
     const students = [
       { name: 'Alice Johnson', email: 'alice@test.com' },
@@ -91,15 +81,12 @@ async function populateMockData() {
         .single();
 
       if (error) {
-        console.log(`   ⚠️ Skipping ${student.name} (may already exist)`);
       } else {
         studentIds.push(data.id);
-        console.log(`   ✅ Created student: ${student.name}`);
       }
     }
 
     // Step 3: Create mock events (analytics data)
-    console.log('\n3️⃣ Creating mock analytics events...');
     
     const eventTypes = ['page_view', 'course_start', 'lesson_complete', 'quiz_submit', 'video_watch'];
     const eventCount = 50;
@@ -128,10 +115,8 @@ async function populateMockData() {
       if (!error) eventsCreated++;
     }
 
-    console.log(`   ✅ Created ${eventsCreated} analytics events`);
 
     // Step 4: Create mock subscriptions
-    console.log('\n4️⃣ Creating mock subscriptions...');
     
     const subscriptionStatuses = ['active', 'active', 'active', 'cancelled'];
     let subscriptionsCreated = 0;
@@ -157,10 +142,8 @@ async function populateMockData() {
       if (!error) subscriptionsCreated++;
     }
 
-    console.log(`   ✅ Created ${subscriptionsCreated} subscriptions`);
 
     // Step 5: Create mock revenue records
-    console.log('\n5️⃣ Creating mock revenue records...');
     
     let revenueCreated = 0;
 
@@ -183,26 +166,8 @@ async function populateMockData() {
       if (!error) revenueCreated++;
     }
 
-    console.log(`   ✅ Created ${revenueCreated} revenue records`);
 
     // Summary
-    console.log('\n✅ Mock data population complete!');
-    console.log('');
-    console.log('📊 Summary:');
-    console.log(`   Company ID: ${COMPANY_ID}`);
-    console.log(`   Client UUID: ${clientId}`);
-    console.log(`   Students: ${studentIds.length}`);
-    console.log(`   Events: ${eventsCreated}`);
-    console.log(`   Subscriptions: ${subscriptionsCreated}`);
-    console.log(`   Revenue Records: ${revenueCreated}`);
-    console.log('');
-    console.log('🧪 Test your dashboard at:');
-    console.log(`   https://data-analytics-gold.vercel.app/dashboard/${COMPANY_ID}`);
-    console.log('');
-    console.log('🔒 Multi-tenancy test:');
-    console.log('   1. View this data in your dashboard');
-    console.log('   2. Switch to a different company');
-    console.log('   3. Verify this data does NOT appear');
 
   } catch (error) {
     console.error('❌ Error populating mock data:', error);

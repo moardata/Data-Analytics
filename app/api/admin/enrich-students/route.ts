@@ -89,11 +89,9 @@ export async function POST(request: NextRequest) {
                 .eq('id', entity.id);
               
               enrichedCount++;
-              console.log(`✅ Enriched student ${whopUserId} with real data`);
             }
           }
         } catch (userError) {
-          console.log(`⚠️ Could not fetch user ${whopUserId} from Whop:`, userError);
         }
 
       } catch (error: any) {

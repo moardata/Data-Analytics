@@ -23,7 +23,6 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const { timeRange = 'week', forceRefresh = false } = body;
 
-    console.log(`🤖 [AI Analysis] Starting analysis for company ${companyId} (${timeRange})`);
 
     // Convert companyId to clientId UUID
     const { data: clientData, error: clientError } = await supabaseServer
@@ -40,7 +39,6 @@ export async function POST(request: NextRequest) {
     }
 
     const clientId = clientData.id;
-    console.log(`🤖 [AI Analysis] Found client UUID: ${clientId}`);
 
     // Perform enhanced AI analysis
     const analysisResult = await processDataWithAI(clientId, timeRange);
@@ -80,7 +78,6 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url);
     const timeRange = searchParams.get('range') || 'week';
 
-    console.log(`🤖 [AI Analysis] Getting analysis for company ${companyId} (${timeRange})`);
 
     // Convert companyId to clientId UUID
     const { data: clientData, error: clientError } = await supabaseServer
@@ -97,7 +94,6 @@ export async function GET(request: NextRequest) {
     }
 
     const clientId = clientData.id;
-    console.log(`🤖 [AI Analysis] Found client UUID: ${clientId}`);
 
     // Perform enhanced AI analysis
     const analysisResult = await processDataWithAI(clientId, timeRange);

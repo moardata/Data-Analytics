@@ -47,11 +47,9 @@ export function OwnerOnlyGuard({ children }: { children: React.ReactNode }) {
     }, 10000); // 10 second timeout
 
     async function checkOwnership() {
-      console.log('🔐 [OwnerOnlyGuard] Starting check with companyId:', companyId);
       
       // SECURITY: Wait for companyId to be available before making access decisions
       if (!companyId) {
-        console.log('⏳ [OwnerOnlyGuard] No company ID yet - staying in loading state');
         // Keep loading state - don't make any access decisions yet
         return;
       }
@@ -60,7 +58,6 @@ export function OwnerOnlyGuard({ children }: { children: React.ReactNode }) {
       clearTimeout(timeoutId);
 
       try {
-        console.log('🔍 [OwnerOnlyGuard] Calling role check API...');
         const response = await fetch(`/api/auth/check-role?companyId=${companyId}`);
         
         if (!response.ok) {
@@ -76,7 +73,6 @@ export function OwnerOnlyGuard({ children }: { children: React.ReactNode }) {
         }
         
         const data = await response.json();
-        console.log('✅ [OwnerOnlyGuard] Role check response:', data);
 
         setOwnerCheck({
           isOwner: data.isOwner || false,

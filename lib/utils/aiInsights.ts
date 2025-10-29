@@ -16,7 +16,6 @@ function getOpenAI(): OpenAI | null {
     return null;
   }
   
-  console.log('🔑 Creating fresh OpenAI client with key ending in:', key.substring(key.length - 10));
   
   // Always create new instance - don't cache!
   return new OpenAI({ apiKey: key });
@@ -60,7 +59,6 @@ export async function generateInsightsForClient(
       .single();
     aiRunId = aiRun?.id || null;
   } catch (error) {
-    console.log('ai_runs table not available, skipping run tracking');
   }
 
   try {
@@ -69,7 +67,6 @@ export async function generateInsightsForClient(
     const startDate = new Date(Date.now() - daysAgo * 86400000).toISOString();
 
     // Get ALL available data sources - form submissions, events, subscriptions
-    console.log('📊 Fetching all data sources for AI analysis...');
     
     // 1. Form submissions (feedback, surveys)
     const { data: formSubmissions, error: formError } = await supabase
@@ -108,7 +105,6 @@ export async function generateInsightsForClient(
       .eq('client_id', clientId)
       .gte('created_at', startDate);
 
-    console.log('📊 Data fetched:', {
       formSubmissions: formSubmissions?.length || 0,
       events: allEvents?.length || 0,
       subscriptions: subscriptions?.length || 0,
@@ -222,7 +218,6 @@ export async function generateInsightsForClient(
 
     // MUST have OpenAI configured - no bullshit fallbacks
     const apiKey = process.env.OPENAI_API_KEY;
-    console.log('🔍 AI Generation Check:', {
       hasAPIKey: !!apiKey,
       apiKeyLength: apiKey?.length || 0,
       apiKeyEnding: apiKey ? '...' + apiKey.substring(apiKey.length - 10) : 'NO KEY',
@@ -234,8 +229,6 @@ export async function generateInsightsForClient(
       throw new Error('OpenAI API key not found. Check Vercel environment variables.');
     }
     
-    console.log('🤖 Attempting OpenAI API call...');
-    console.log('📊 Data being sent to OpenAI:', {
       textCount: scrubbedTexts.length,
       sampleText: scrubbedTexts[0]?.text?.substring(0, 100) + '...' || 'No text'
     });
@@ -244,7 +237,6 @@ export async function generateInsightsForClient(
     const result = await generateWithOpenAI(scrubbedTexts);
     const isAIGenerated = true;
     
-    console.log('✅ OpenAI API success! Generated themes:', result.themes.length);
 
     // Store insights in database
     const insights = await storeInsights(clientId, result, isAIGenerated);
@@ -372,7 +364,6 @@ Return JSON with ONLY insights that are DIRECTLY supported by the data above. If
     // Validate and limit insights based on data size
     const maxInsights = texts.length <= 3 ? 2 : texts.length <= 10 ? 3 : 5;
     if (result.themes && result.themes.length > maxInsights) {
-      console.log(`⚠️ Limiting insights from ${result.themes.length} to ${maxInsights} based on ${texts.length} data points`);
       result.themes = result.themes.slice(0, maxInsights);
     }
     

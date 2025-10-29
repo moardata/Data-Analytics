@@ -13,6 +13,5 @@ export default async function DashboardPage({ params }: { params: Promise<{ comp
   // For now, just redirect to analytics with the companyId
   // Authentication will be handled by the analytics page
   // This allows the app to work in both test mode and production
-  console.log('📊 Dashboard accessed for company:', companyId);
   redirect(`/analytics?companyId=${companyId}`);
 }

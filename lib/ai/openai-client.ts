@@ -10,7 +10,6 @@ import OpenAI from 'openai';
 function getOpenAI(): OpenAI {
   const key = process.env.OPENAI_API_KEY;
   
-  console.log('🔑 [openai-client] Creating fresh OpenAI with key ending:', key ? '...' + key.substring(key.length - 10) : 'NO KEY');
   
   // Always create new instance - no caching!
   return new OpenAI({

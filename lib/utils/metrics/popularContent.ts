@@ -30,7 +30,6 @@ export async function calculatePopularContent(clientId: string, days: number = 7
   startDate.setDate(startDate.getDate() - days);
   startDate.setHours(0, 0, 0, 0);
 
-  console.log(`📊 [Popular Content] Calculating for ${days} days, from ${startDate.toISOString()}`);
 
   // Get ALL events in the time range (not just specific types)
   const { data: currentEvents, error: currentError } = await supabase
@@ -39,10 +38,8 @@ export async function calculatePopularContent(clientId: string, days: number = 7
     .eq('client_id', clientId)
     .gte('created_at', startDate.toISOString());
 
-  console.log(`📊 [Popular Content] Found ${currentEvents?.length || 0} total events`);
 
   if (currentError || !currentEvents || currentEvents.length === 0) {
-    console.log('⚠️ [Popular Content] No events found, returning empty');
     return getEmptyPopularContent();
   }
 
@@ -80,7 +77,6 @@ export async function calculatePopularContent(clientId: string, days: number = 7
   const totalEngagements = currentEvents.length;
   const totalUniqueStudents = new Set(currentEvents.map(e => e.entity_id)).size;
 
-  console.log(`✅ [Popular Content] Total: ${totalEngagements} engagements, ${totalUniqueStudents} unique students`);
 
   return {
     content: content.slice(0, 10), // Top 10

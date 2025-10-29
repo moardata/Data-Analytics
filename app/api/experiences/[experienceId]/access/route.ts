@@ -35,7 +35,6 @@ export async function GET(
       });
     } catch (error) {
       // Fallback for testing - grant admin access
-      console.log('⚠️ Access check failed, using test mode');
       accessResponse = {
         has_access: true,
         access_level: 'admin'

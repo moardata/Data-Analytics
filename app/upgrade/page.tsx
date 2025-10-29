@@ -41,7 +41,6 @@ function UpgradeContent() {
       // Check if message is from Whop
       if (event.origin.includes('whop.com')) {
         if (event.data?.type === 'checkout_complete' || event.data?.success) {
-          console.log('✅ Checkout complete!');
           // Refresh page to update subscription
           setTimeout(() => window.location.reload(), 1000);
         }
@@ -175,8 +174,8 @@ function UpgradeContent() {
 
       {/* Embedded Checkout Modal */}
       {selectedPlan && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm">
-          <div className="relative w-full max-w-2xl mx-4 bg-gradient-to-br from-[#0f0f0f] via-[#1a1a1a] to-[#0f0f0f] border border-[#2a2a2a] rounded-2xl shadow-2xl overflow-hidden">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
+          <div className="relative w-full max-w-lg mx-auto bg-gradient-to-br from-[#0f0f0f] via-[#1a1a1a] to-[#0f0f0f] border border-[#2a2a2a] rounded-2xl shadow-2xl overflow-hidden max-h-[85vh] flex flex-col">
             {/* Close button */}
             <button
               onClick={() => setSelectedPlan(null)}
@@ -188,12 +187,11 @@ function UpgradeContent() {
             </button>
 
             {/* Embedded Checkout */}
-            <div className="min-h-[600px]">
+            <div className="flex-1 overflow-y-auto">
               <WhopCheckoutEmbed
                 planId={selectedPlan}
                 theme="dark"
                 onComplete={(planId, receiptId) => {
-                  console.log('✅ Checkout complete!', { planId, receiptId });
                   setTimeout(() => window.location.reload(), 1000);
                 }}
                 skipRedirect={true}

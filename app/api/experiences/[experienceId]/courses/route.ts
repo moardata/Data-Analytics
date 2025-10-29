@@ -27,7 +27,6 @@ export async function GET(
       });
     } catch (error) {
       // Fallback for testing
-      console.log('⚠️ Using test mode for course access');
       access = { hasAccess: true, accessLevel: 'admin' };
     }
 

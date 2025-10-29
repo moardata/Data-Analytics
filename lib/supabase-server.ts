@@ -29,7 +29,6 @@ function getSupabaseServer(): SupabaseClient | null {
     !supabaseServiceKey.includes('your_supabase');
 
   // Enhanced logging for debugging
-  console.log('🔍 Supabase Server Init Check:', {
     hasUrl: !!supabaseUrl,
     hasKey: !!supabaseServiceKey,
     hasValidCredentials,
@@ -57,7 +56,6 @@ function getSupabaseServer(): SupabaseClient | null {
         persistSession: false,
       },
     });
-    console.log('✅ Supabase server client initialized successfully');
   }
 
   return _supabaseServer;

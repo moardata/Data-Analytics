@@ -17,7 +17,6 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    console.log(`🔓 Granting premium access to: ${companyId}`);
 
     // Set trial end date far in the future (1 year)
     const trialEndsAt = new Date();
@@ -51,7 +50,6 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    console.log('✅ Premium access granted!');
 
     return NextResponse.json({
       success: true,

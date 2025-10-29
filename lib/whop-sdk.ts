@@ -16,7 +16,6 @@ async function verifyUserToken(headers: any) {
     const authHeader = headers.get?.('authorization') || headers.authorization;
     
     if (!authHeader) {
-      console.log('⚠️ No authorization header found');
       return { userId: undefined };
     }
 
@@ -26,7 +25,6 @@ async function verifyUserToken(headers: any) {
     // Note: @whop/sdk doesn't have direct token verification
     // We'll need to use a different approach or accept test mode
     
-    console.log('🔐 Token verification requested (test mode)');
     return { userId: undefined }; // Will trigger test mode in auth
     
   } catch (error) {
@@ -45,8 +43,6 @@ const access = {
    */
   async checkIfUserHasAccessToCompany({ userId, companyId }: { userId: string; companyId: string }) {
     try {
-      console.log('⚠️ DEPRECATED: Use whopClient.users.checkAccess() directly');
-      console.log('🔍 Checking company access:', { userId, companyId });
       
       // Use the CORRECT SDK method
       const accessResponse = await whopClient.users.checkAccess(companyId, {
@@ -75,8 +71,6 @@ const access = {
    */
   async checkIfUserHasAccessToExperience({ userId, experienceId }: { userId: string; experienceId: string }) {
     try {
-      console.log('⚠️ DEPRECATED: Use whopClient.users.checkAccess() directly');
-      console.log('🔍 Checking experience access:', { userId, experienceId });
       
       // Use the CORRECT SDK method
       const accessResponse = await whopClient.users.checkAccess(experienceId, {

@@ -13,9 +13,7 @@ export async function POST(request: NextRequest) {
     const auth = await simpleAuth(request);
     const { companyId } = auth;
     
-    console.log('✅ [Sync] Auth successful:', { companyId, userId: auth.userId, isTestMode: auth.isTestMode });
 
-    console.log('🔄 Syncing students for company:', companyId);
 
     // Get or create client record
     let { data: client } = await supabase

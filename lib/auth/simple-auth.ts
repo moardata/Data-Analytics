@@ -28,36 +28,27 @@ export interface SimpleAuthResult {
  */
 export async function simpleAuth(request: Request): Promise<SimpleAuthResult> {
   const startTime = Date.now();
-  console.log('🔐 [SimpleAuth] Starting authentication...');
   
         // SECURITY: No hardcoded admin company bypasses in production
   
   try {
     // Step 1: Get company ID from URL (REQUIRED)
     const url = new URL(request.url);
-    console.log('🔍 [SimpleAuth] Full URL:', request.url);
-    console.log('🔍 [SimpleAuth] Search params:', url.searchParams.toString());
-    console.log('🔍 [SimpleAuth] companyId param:', url.searchParams.get('companyId'));
-    console.log('🔍 [SimpleAuth] company_id param:', url.searchParams.get('company_id'));
-    console.log('🔍 [SimpleAuth] ENV company ID:', process.env.NEXT_PUBLIC_WHOP_COMPANY_ID);
     
     const companyId = url.searchParams.get('companyId') || 
                      url.searchParams.get('company_id') ||
                      process.env.NEXT_PUBLIC_WHOP_COMPANY_ID;
     
     if (!companyId) {
-      console.log('❌ [SimpleAuth] No company ID found in any source');
       throw new Error('Company ID required');
     }
     
-    console.log('✅ [SimpleAuth] Company ID found:', companyId);
     
     // Step 2: Try to validate with Whop (with timeout)
     let userId: string | undefined;
     let isRealWhopAuth = false;
     
     try {
-      console.log('🔍 [SimpleAuth] Attempting Whop SDK validation...');
       
       const headersList = await headers();
       
@@ -68,7 +59,6 @@ export async function simpleAuth(request: Request): Promise<SimpleAuthResult> {
           allHeaders[key] = value.substring(0, 50) + '...'; // Log first 50 chars
         }
       });
-      console.log('🔍 [SimpleAuth] Whop-related headers:', allHeaders);
       
       // Create timeout promise (1 second)
       const timeoutPromise = new Promise<never>((_, reject) => {
@@ -80,7 +70,6 @@ export async function simpleAuth(request: Request): Promise<SimpleAuthResult> {
         whopSdk.verifyUserToken(headersList),
         timeoutPromise
       ]).catch(error => {
-        console.log('⚠️ [SimpleAuth] Whop SDK call failed/timed out:', error.message);
         return { userId: undefined };
       });
       
@@ -88,31 +77,19 @@ export async function simpleAuth(request: Request): Promise<SimpleAuthResult> {
       isRealWhopAuth = !!userId;
       
       if (userId) {
-        console.log('✅ [SimpleAuth] Real Whop authentication successful:', userId);
       } else {
-        console.log('❌ [SimpleAuth] No userId returned from Whop SDK');
       }
     } catch (sdkError) {
-      console.log('⚠️ [SimpleAuth] Whop SDK not available:', sdkError);
     }
     
-    // Step 3: If no Whop auth, check if we can use test mode
+    // Step 3: If no Whop auth, check if we can use test mode (dev only)
     if (!userId) {
-      console.log('🔍 [SimpleAuth] DEBUG - No userId found, checking environment...');
-      console.log('🔍 [SimpleAuth] DEBUG - NODE_ENV:', process.env.NODE_ENV);
-      console.log('🔍 [SimpleAuth] DEBUG - ENABLE_TEST_MODE:', process.env.ENABLE_TEST_MODE);
-      
-      // TEMPORARY FIX: Allow access when companyId is provided
-      // This bypasses Whop SDK authentication issues in the platform environment
-      // TODO: Remove this once Whop SDK headers are properly configured
-      if (companyId) {
-        console.log('🧪 [SimpleAuth] FALLBACK MODE - Company ID provided, allowing access');
-        console.log('⚠️  [SimpleAuth] Note: Whop SDK validation timed out, using fallback authentication');
-        userId = `fallback_${companyId.substring(4, 12)}`; // Consistent fallback user ID
+      // Development mode fallback
+      if (companyId && process.env.NODE_ENV === 'development') {
+        userId = `fallback_${companyId.substring(4, 12)}`;
       } else {
-        // No company ID = definitely deny access
-        console.log('🔒 [SimpleAuth] BLOCKED - No company ID provided');
-        throw new Error('Company ID required for access');
+        // Production: Require valid authentication
+        throw new Error('Authentication required');
       }
     }
     
@@ -124,7 +101,6 @@ export async function simpleAuth(request: Request): Promise<SimpleAuthResult> {
     if (isRealWhopAuth) {
       // Real Whop authentication - check actual role using CORRECT SDK method
       try {
-        console.log('🔍 [SimpleAuth] Checking user role for company...');
         
         // CORRECT METHOD: whopClient.users.checkAccess()
         const accessPromise = whopSdk.client.users.checkAccess(companyId, {
@@ -145,7 +121,6 @@ export async function simpleAuth(request: Request): Promise<SimpleAuthResult> {
           isAdmin = isOwner;
           accessLevel = isOwner ? 'owner' : role === 'customer' ? 'member' : 'test';
           
-          console.log('✅ [SimpleAuth] User role determined:', { 
             role, 
             isOwner, 
             isAdmin, 
@@ -153,14 +128,12 @@ export async function simpleAuth(request: Request): Promise<SimpleAuthResult> {
             hasAccess: accessCheck.has_access 
           });
         } else {
-          console.log('❌ [SimpleAuth] Access check timed out - BLOCKING ACCESS (fail-closed for security)');
           // SECURITY: Block access on timeout (fail-closed)
           accessLevel = 'member';
           isOwner = false;
           isAdmin = false;
         }
       } catch (roleError) {
-        console.log('❌ [SimpleAuth] Role check failed - BLOCKING ACCESS (fail-closed for security):', roleError);
         // SECURITY: Block access on error (fail-closed)
         accessLevel = 'member';
         isOwner = false;
@@ -168,14 +141,12 @@ export async function simpleAuth(request: Request): Promise<SimpleAuthResult> {
       }
     } else {
       // Test mode - grant owner access when ENABLE_TEST_MODE is true
-      console.log('🧪 [SimpleAuth] TEST MODE - Granting owner access');
       accessLevel = 'owner';
       isOwner = true;
       isAdmin = true;
     }
     
     const elapsed = Date.now() - startTime;
-    console.log(`✅ [SimpleAuth] Complete in ${elapsed}ms - Access: ${accessLevel}`);
     
     return {
       userId,

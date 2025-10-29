@@ -75,7 +75,6 @@ export async function getClientUsage(companyId: string): Promise<UsageStats> {
       .lte('created_at', `${today}T23:59:59Z`);
     aiInsightsToday = count || 0;
   } catch (error) {
-    console.log('ai_runs table not available, using insights table instead');
     // Fallback to insights table
     const { count } = await supabase
       .from('insights')
@@ -190,7 +189,6 @@ export async function trackAction(
         finished_at: new Date().toISOString(),
       });
     } catch (error) {
-      console.log('ai_runs table not available, skipping run tracking');
     }
   }
 }

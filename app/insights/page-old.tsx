@@ -378,7 +378,6 @@ function InsightsContent() {
               <InsightsGrid 
                 items={transformedInsights}
                 columns={{ base: 1, md: 2, xl: 3 }}
-                onOpen={(id) => console.log('Opened insight:', id)}
                 accent="#10B981"
               />
             </div>

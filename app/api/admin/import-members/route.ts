@@ -20,7 +20,6 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    console.log('🔍 [Import Members] Starting import for company:', companyId);
 
     // Get or create client record
     const { data: clientData, error: clientError} = await supabase
@@ -42,7 +41,6 @@ export async function POST(request: NextRequest) {
 
     // Check current student count
     const currentUsage = await getClientUsage(companyId);
-    console.log('📊 [Import Members] Current usage:', {
       students: currentUsage.studentCount,
       tier
     });
@@ -57,7 +55,6 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    console.log('📡 [Import Members] Fetching members from Whop API...');
 
     // Use members endpoint instead of memberships (works with member:basic:read scope)
     const membershipsResponse = await fetch(
@@ -85,7 +82,6 @@ export async function POST(request: NextRequest) {
       
       // If 404, it might mean no memberships exist yet
       if (membershipsResponse.status === 404) {
-        console.log('⚠️ [Import Members] No memberships found - company may not have any members yet');
         return NextResponse.json({
           success: true,
           imported: 0,
@@ -113,7 +109,6 @@ export async function POST(request: NextRequest) {
     const membershipsData = await membershipsResponse.json();
     memberships = membershipsData.data || [];
 
-    console.log(`📊 [Import Members] Found ${memberships.length} memberships`);
     
     if (memberships.length === 0) {
       return NextResponse.json({
@@ -137,7 +132,6 @@ export async function POST(request: NextRequest) {
         const whopUserId = membership.user || membership.user_id || membership.id;
         
         if (!whopUserId) {
-          console.log('⚠️ [Import Members] Skipping membership without user ID');
           continue;
         }
 
@@ -188,7 +182,6 @@ export async function POST(request: NextRequest) {
                 }
               }
             } catch (userError) {
-              console.log('⚠️ [Import Members] Could not enrich user:', whopUserId);
             }
           }
           updated++;
@@ -234,7 +227,6 @@ export async function POST(request: NextRequest) {
             enriched++;
           }
         } catch (userError) {
-          console.log('⚠️ [Import Members] Could not fetch user details for:', whopUserId);
         }
 
         // Create new entity
@@ -261,7 +253,6 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    console.log('✅ [Import Members] Import complete:', {
       imported,
       updated,
       enriched,

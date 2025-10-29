@@ -76,7 +76,6 @@ export function useWhopExperience(): WhopExperienceState {
           return;
         }
 
-        console.log('✅ Experience ID:', experienceId);
 
         // Check access via API
         const response = await fetch(`/api/experiences/${experienceId}/access`, {

@@ -60,7 +60,6 @@ async function collectAllData(clientId: string, timeRange: string, includeRaw: b
   const daysAgo = timeRange === 'week' ? 7 : timeRange === 'month' ? 30 : 90;
   const startDate = new Date(Date.now() - daysAgo * 86400000).toISOString();
 
-  console.log(`📊 [Data Collection] Collecting data for client ${clientId} (${timeRange})`);
 
   // 1. Survey Responses (Primary AI input)
   const { data: surveyResponses } = await supabase

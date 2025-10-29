@@ -26,23 +26,19 @@ function EmbedSurveyContent({ formId }: { formId: string }) {
       setLoading(true);
       setError(null);
       
-      console.log('Fetching embed form:', formId, 'for company:', companyId);
       
       // Try to fetch the real form first
       const response = await fetch(`/api/forms/public?formId=${formId}&companyId=${companyId}`);
       const data = await response.json();
 
       if (response.ok && data.form) {
-        console.log('Real form found:', data.form);
         setForm(data.form);
       } else {
-        console.log('No real form found, trying test form...');
         // Fallback to test form
         const testResponse = await fetch('/api/forms/test');
         const testData = await testResponse.json();
         
         if (testResponse.ok && testData.form) {
-          console.log('Using test form:', testData.form);
           setForm(testData.form);
         } else {
           setError('Survey not found');

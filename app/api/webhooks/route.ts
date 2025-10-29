@@ -10,25 +10,24 @@ import { normalizeWhopEvent, extractSubscriptionData, isValidWebhookEvent } from
 import { getBundleInfo } from '@/lib/pricing/bundles';
 import { checkLimit } from '@/lib/pricing/usage-tracker';
 import { type TierName } from '@/lib/pricing/tiers';
+import { makeWebhookValidator } from "@whop/api";
 
-// NOTE: Webhook validation is disabled for development/testing
-// To enable validation in production, uncomment and configure WHOP_WEBHOOK_SECRET
-// import { makeWebhookValidator } from "@whop/api";
-// const validateWebhook = makeWebhookValidator({ webhookSecret: process.env.WHOP_WEBHOOK_SECRET! });
+// Production webhook validation enabled
+const validateWebhook = makeWebhookValidator({ 
+  webhookSecret: process.env.WHOP_WEBHOOK_SECRET! 
+});
 
 export async function POST(request: NextRequest): Promise<Response> {
 	let webhookEventId: string | null = null;
 	let webhookData: any = null;
 	
 	try {
-		// Parse webhook directly (validation disabled for testing)
-		const bodyText = await request.text();
-		webhookData = JSON.parse(bodyText);
+		// Validate webhook signature and parse data
+		webhookData = await validateWebhook(request);
 		
-		console.log('📥 Webhook received:', {
 			action: webhookData.action,
 			timestamp: new Date().toISOString(),
-			version: 'v7-no-validation'
+			version: 'v1.0-production'
 		});
 
 		// Validate event structure
@@ -44,7 +43,6 @@ export async function POST(request: NextRequest): Promise<Response> {
 			});
 		}
 
-		console.log(`Received webhook: ${webhookData.action}`, {
 			action: webhookData.action,
 			userId: (webhookData.data as any)?.user_id,
 		});
@@ -69,7 +67,7 @@ export async function POST(request: NextRequest): Promise<Response> {
 		return new Response(JSON.stringify({
 			status: 'received',
 			action: webhookData.action,
-			version: 'v7-no-validation',
+			version: 'v1.0-production',
 			timestamp: new Date().toISOString()
 		}), { 
 			status: 200,
@@ -98,13 +96,12 @@ export async function POST(request: NextRequest): Promise<Response> {
 				.eq('id', webhookEventId);
 		}
 		
-		// Return detailed error for debugging (still 200 to prevent retries)
+		// Return error (still 200 to prevent retries)
 		return new Response(JSON.stringify({ 
 			error: errorMessage,
 			details: webhookData ? { action: webhookData.action } : 'No webhook data',
 			timestamp: new Date().toISOString(),
-			version: 'v7-no-validation',
-			note: 'Validation is completely disabled for testing'
+			version: 'v1.0-production'
 		}), { 
 			status: 200,
 			headers: { 'Content-Type': 'application/json' }
@@ -194,7 +191,6 @@ async function processWebhookEvent(webhookData: any, webhookEventId: string | nu
 			return;
 		}
 
-		console.log(`Stored ${normalized.eventType} event for user ${userId}`);
 
 	// Handle specific event types
 	await handleSpecificEventType(webhookData, entity.id, clientId);
@@ -243,7 +239,6 @@ async function handleSpecificEventType(webhookData: any, entityId: string, clien
 
 	// Handle payment success
 	if (action === 'payment.succeeded') {
-		console.log(`Payment succeeded: $${data.final_amount} ${data.currency} from user ${data.user_id}`);
 		// Could trigger email notifications, update user status, etc.
 	}
 
@@ -263,7 +258,6 @@ async function handleSpecificEventType(webhookData: any, entityId: string, clien
 				await updateSubscriptionStatus(subscriptionData.whopSubscriptionId, 'expired');
 			} else if (action === 'membership.experienced_claimed') {
 				// Handle experience claim - create or update subscription
-				console.log(`Experience claimed for user ${data.user_id}:`, data);
 				await upsertSubscription(clientId, entityId, subscriptionData);
 				
 				// Also create an activity event for engagement tracking
@@ -299,7 +293,6 @@ async function handleSpecificEventType(webhookData: any, entityId: string, clien
 
 	// Handle refunds
 	if (action === 'payment.refunded') {
-		console.log(`Payment refunded: $${data.final_amount} ${data.currency} for user ${data.user_id}`);
 		await supabase.from('events').insert({
 			client_id: clientId,
 			entity_id: entityId,
@@ -331,7 +324,6 @@ async function handleSpecificEventType(webhookData: any, entityId: string, clien
 
 	// Handle dispute resolutions
 	if (action === 'payment.dispute_resolved') {
-		console.log(`Dispute resolved for payment ${data.payment_id}: ${data.resolution}`);
 		await supabase.from('events').insert({
 			client_id: clientId,
 			entity_id: entityId,
@@ -393,7 +385,6 @@ async function getOrCreateEntity(whopUserId: string, eventData: any) {
 				.update(updates)
 				.eq('id', existing.id);
 			
-			console.log(`👤 [Webhook] Updated entity ${whopUserId} with new data:`, updates);
 		}
 		
 		return existing;
@@ -436,7 +427,6 @@ async function getOrCreateEntity(whopUserId: string, eventData: any) {
 	if (eventData.country) metadata.country = eventData.country;
 	if (eventData.social) metadata.social = eventData.social;
 	
-	console.log(`👤 [Webhook] Creating entity with data:`, {
 		whopUserId,
 		name: userName,
 		email: userEmail,
@@ -480,7 +470,6 @@ async function getOrCreateEntity(whopUserId: string, eventData: any) {
 		return null;
 	}
 
-	console.log(`✅ Created new entity for user ${whopUserId} (within limits)`);
 	return newEntity;
 }
 
@@ -511,7 +500,6 @@ async function getOrCreateClient(whopCompanyId: string, eventData: any): Promise
 				})
 				.eq('id', existing.id);
 			
-			console.log(`Updated client ${whopCompanyId} to tier: ${tier} (bundle: ${bundle})`);
 		}
 		return existing.id;
 	}
@@ -536,7 +524,6 @@ async function getOrCreateClient(whopCompanyId: string, eventData: any): Promise
 		return null;
 	}
 
-	console.log(`Created new client for company ${whopCompanyId} with tier: ${tier} (bundle: ${bundle})`);
 	return newClient.id;
 }
 
@@ -563,7 +550,6 @@ async function upsertSubscription(clientId: string, entityId: string, subscripti
 	if (error) {
 		console.error('Error upserting subscription:', error);
 	} else {
-		console.log(`Upserted subscription ${subscriptionData.whopSubscriptionId}`);
 	}
 }
 
@@ -579,7 +565,6 @@ async function updateSubscriptionStatus(whopSubscriptionId: string, status: stri
 	if (error) {
 		console.error('Error updating subscription status:', error);
 	} else {
-		console.log(`Updated subscription ${whopSubscriptionId} to ${status}`);
 	}
 }
 
@@ -652,7 +637,6 @@ async function collectEventDataForAI(webhookData: any, entityId: string, clientI
 			});
 		}
 
-		console.log(`📊 [AI Data Collection] Enhanced data collected for ${action}`);
 		
 	} catch (error) {
 		console.error('Error in enhanced data collection:', error);

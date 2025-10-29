@@ -81,8 +81,8 @@ export function PaywallModal({ isOpen, onClose, reason }: PaywallModalProps) {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm">
-      <div className="relative w-full max-w-2xl mx-4 bg-gradient-to-br from-[#0f0f0f] via-[#1a1a1a] to-[#0f0f0f] border border-[#2a2a2a] rounded-2xl shadow-2xl">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
+      <div className="relative w-full max-w-lg mx-auto bg-gradient-to-br from-[#0f0f0f] via-[#1a1a1a] to-[#0f0f0f] border border-[#2a2a2a] rounded-2xl shadow-2xl max-h-[85vh] overflow-hidden flex flex-col">
         {/* Close button */}
         <button
           onClick={onClose}
@@ -92,11 +92,11 @@ export function PaywallModal({ isOpen, onClose, reason }: PaywallModalProps) {
         </button>
 
         {/* Header */}
-        <div className="p-8 border-b border-[#2a2a2a]">
-          <h2 className="text-3xl font-bold text-white mb-2">
+        <div className="p-6 border-b border-[#2a2a2a]">
+          <h2 className="text-2xl font-bold text-white mb-2">
             {eligibleForTrial ? '🎉 Start Your Free Trial' : '🚀 Upgrade Required'}
           </h2>
-          <p className="text-gray-400">
+          <p className="text-sm text-gray-400">
             {reason || 'This feature requires an active subscription'}
           </p>
         </div>
@@ -108,7 +108,7 @@ export function PaywallModal({ isOpen, onClose, reason }: PaywallModalProps) {
           </div>
         ) : selectedPlan ? (
           /* Show embedded checkout for selected plan */
-          <div className="p-0 min-h-[600px]">
+          <div className="flex-1 overflow-y-auto">
             <WhopCheckoutEmbed
               planId={selectedPlan}
               theme="dark"
@@ -121,52 +121,52 @@ export function PaywallModal({ isOpen, onClose, reason }: PaywallModalProps) {
             />
           </div>
         ) : (
-          <div className="p-8">
+          <div className="p-6 overflow-y-auto">
             {eligibleForTrial ? (
               /* Free Trial Offer - ONLY Starter Plan */
-              <div className="space-y-6">
-                <div className="bg-gradient-to-r from-emerald-500/20 to-blue-500/20 border border-emerald-500/30 rounded-xl p-6">
-                  <div className="flex items-center justify-center w-20 h-20 mx-auto mb-4 bg-gradient-to-r from-emerald-500 to-emerald-600 rounded-full">
-                    <span className="text-4xl">🚀</span>
+              <div className="space-y-4">
+                <div className="bg-gradient-to-r from-emerald-500/20 to-blue-500/20 border border-emerald-500/30 rounded-xl p-5">
+                  <div className="flex items-center justify-center w-16 h-16 mx-auto mb-3 bg-gradient-to-r from-emerald-500 to-emerald-600 rounded-full">
+                    <span className="text-3xl">🚀</span>
                   </div>
                   
-                  <h3 className="text-2xl font-bold text-white text-center mb-2">Starter Plan</h3>
-                  <p className="text-center mb-4">
-                    <span className="text-emerald-400 text-xl font-bold">7 Days FREE</span>
-                    <span className="text-gray-400 text-sm block mt-1">then $30/month</span>
+                  <h3 className="text-xl font-bold text-white text-center mb-2">Starter Plan</h3>
+                  <p className="text-center mb-3">
+                    <span className="text-emerald-400 text-lg font-bold">7 Days FREE</span>
+                    <span className="text-gray-400 text-xs block mt-1">then $30/month</span>
                   </p>
                   
-                  <ul className="space-y-3 text-sm text-gray-300 mb-6">
+                  <ul className="space-y-2 text-xs text-gray-300 mb-4">
                     <li className="flex items-center">
-                      <CheckCircle className="h-5 w-5 text-emerald-400 mr-3" />
+                      <CheckCircle className="h-4 w-4 text-emerald-400 mr-2" />
                       <span>Up to 100 students</span>
                     </li>
                     <li className="flex items-center">
-                      <CheckCircle className="h-5 w-5 text-emerald-400 mr-3" />
+                      <CheckCircle className="h-4 w-4 text-emerald-400 mr-2" />
                       <span>5 AI insights per day</span>
                     </li>
                     <li className="flex items-center">
-                      <CheckCircle className="h-5 w-5 text-emerald-400 mr-3" />
+                      <CheckCircle className="h-4 w-4 text-emerald-400 mr-2" />
                       <span>Unlimited custom forms</span>
                     </li>
                     <li className="flex items-center">
-                      <CheckCircle className="h-5 w-5 text-emerald-400 mr-3" />
+                      <CheckCircle className="h-4 w-4 text-emerald-400 mr-2" />
                       <span>Full analytics dashboard</span>
                     </li>
                     <li className="flex items-center">
-                      <CheckCircle className="h-5 w-5 text-emerald-400 mr-3" />
+                      <CheckCircle className="h-4 w-4 text-emerald-400 mr-2" />
                       <span>14-day data retention</span>
                     </li>
                   </ul>
 
                   <button
                     onClick={() => handleSelectPlan('prod_Tdu9YayfFDxhc')}
-                    className="w-full py-4 px-6 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white text-lg font-bold rounded-lg transition-all duration-200 shadow-lg shadow-emerald-500/30"
+                    className="w-full py-3 px-4 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white font-bold rounded-lg transition-all duration-200 shadow-lg shadow-emerald-500/30"
                   >
                     🎉 Start 7-Day Free Trial
                   </button>
                   
-                  <p className="text-xs text-gray-500 text-center mt-4">
+                  <p className="text-xs text-gray-500 text-center mt-3">
                     No credit card charge for 7 days • Cancel anytime • Automatically renews at $30/month
                   </p>
                 </div>

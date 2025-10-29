@@ -48,7 +48,6 @@ export async function requireOwner(request: NextRequest): Promise<{
       };
     }
     
-    console.log('✅ [requireOwner] Access granted:', {
       userId: auth.userId,
       companyId: auth.companyId,
       role: auth.accessLevel,

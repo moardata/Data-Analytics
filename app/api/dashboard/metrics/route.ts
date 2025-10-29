@@ -39,11 +39,9 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    console.log(`📊 [Dashboard API] Fetching metrics for client ${clientId} with time range ${timeRange}...`);
 
     const days = getTimeRangeDays(timeRange);
 
-    console.log(`📊 [Dashboard API] Calculating metrics with ${days} days time range`);
 
     // Get all metrics with time range support
     const [
@@ -115,7 +113,6 @@ export async function GET(request: NextRequest) {
       }
     };
 
-    console.log(`✅ [Dashboard API] Successfully fetched metrics for client ${clientId}`);
     
     return NextResponse.json(response);
 
@@ -148,7 +145,6 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    console.log(`🔄 [Dashboard Sync] Force-refreshing all metrics for client ${clientId}...`);
 
     // Step 1: Invalidate all cached metrics
     const metricTypes = [
@@ -164,7 +160,6 @@ export async function POST(request: NextRequest) {
       metricTypes.map(type => invalidateMetric(clientId, type))
     );
 
-    console.log(`🗑️  [Dashboard Sync] Invalidated all cached metrics for client ${clientId}`);
 
     // Step 2: Recalculate all metrics fresh
     const [
@@ -246,7 +241,6 @@ export async function POST(request: NextRequest) {
       }
     };
 
-    console.log(`✅ [Dashboard Sync] Successfully synced all metrics for client ${clientId}`);
     
     return NextResponse.json(response);
 

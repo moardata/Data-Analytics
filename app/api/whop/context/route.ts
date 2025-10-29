@@ -33,7 +33,6 @@ export async function GET(request: NextRequest) {
                    refererUrl.pathname.match(/\/company\/([^\/]+)/)?.[1] ||
                    null;
       } catch (error) {
-        console.log('Error parsing referer:', error);
       }
     }
     
@@ -42,9 +41,7 @@ export async function GET(request: NextRequest) {
       try {
         // Note: Whop SDK app.get() method is not available in current version
         // This would require proper authentication and different SDK method
-        console.log('Whop SDK app context detection not implemented');
       } catch (error) {
-        console.log('Could not get app info from Whop SDK:', error);
       }
     }
     

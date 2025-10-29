@@ -28,20 +28,17 @@ export async function GET(request: NextRequest) {
     // Get auth info
     const auth = await simpleAuth(request);
     
-    console.log('🔐 [Role Check] Starting check:', { userId: auth.userId, companyId });
     
     let isOwner = false;
     let role = 'student';
 
     // If test mode (no Whop headers), grant owner access
     if (auth.isTestMode) {
-      console.log('🧪 [Role Check] Test mode - granting owner access');
       isOwner = true;
       role = 'owner';
     } else {
       // Real Whop auth - use the access level from simpleAuth
       // simpleAuth already checks company ownership via SDK
-      console.log('🔍 [Role Check] Using simpleAuth access level:', auth.accessLevel);
       
       // KEY LOGIC FROM WHOP:
       // - accessLevel 'owner' = Company owner (ALLOW)
@@ -49,17 +46,14 @@ export async function GET(request: NextRequest) {
       // - accessLevel 'member' = Regular member/student (BLOCK)
       
       if (auth.accessLevel === 'owner' || auth.accessLevel === 'admin') {
-        console.log('✅ [Role Check] User is owner/admin - ALLOWED');
         isOwner = true;
         role = 'owner';
       } else {
-        console.log('❌ [Role Check] User is member/student - BLOCKED');
         isOwner = false;
         role = 'student';
       }
     }
 
-    console.log('🔐 [Role Check] Final result:', {
       userId: auth.userId,
       companyId: auth.companyId,
       isOwner,
