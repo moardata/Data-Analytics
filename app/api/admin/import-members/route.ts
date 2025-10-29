@@ -57,11 +57,11 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    console.log('📡 [Import Members] Fetching memberships from Whop API...');
+    console.log('📡 [Import Members] Fetching members from Whop API...');
 
-    // Use correct Whop API endpoint - list memberships
+    // Use members endpoint instead of memberships (works with member:basic:read scope)
     const membershipsResponse = await fetch(
-      `https://api.whop.com/api/v2/memberships?company_id=${companyId}&per=100`,
+      `https://api.whop.com/api/v5/members?company_id=${companyId}&per=100`,
       {
         headers: {
           'Authorization': `Bearer ${whopApiKey}`,
@@ -80,7 +80,7 @@ export async function POST(request: NextRequest) {
         responseBody: errorText,
         apiKey: whopApiKey ? `${whopApiKey.substring(0, 10)}...` : 'NOT SET',
         companyId: companyId,
-        url: `https://api.whop.com/api/v2/memberships?company_id=${companyId}&per=100`
+        url: `https://api.whop.com/api/v5/members?company_id=${companyId}&per=100`
       });
       
       // If 404, it might mean no memberships exist yet
