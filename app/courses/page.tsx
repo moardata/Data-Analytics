@@ -10,6 +10,7 @@ import { useSearchParams } from 'next/navigation';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { BookOpen, Users, TrendingUp, CheckCircle, BarChart3, RefreshCw } from 'lucide-react';
+import { ModernLoadingScreen } from '@/components/ModernLoadingScreen';
 
 export const dynamic = 'force-dynamic';
 
