@@ -81,40 +81,32 @@ export function PaywallModal({ isOpen, onClose, reason }: PaywallModalProps) {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4 animate-fade-in">
-      {/* Subtle background glow */}
-      <div className="absolute inset-0 flex items-center justify-center">
-        <div className="w-[500px] h-[500px] bg-gradient-to-r from-purple-500/10 via-blue-500/10 to-emerald-500/10 rounded-full blur-3xl opacity-30" />
-      </div>
-      
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 animate-fade-in">
       <div className="relative w-full max-w-lg mx-auto">
-        {/* Subtle outer glow */}
-        <div className="absolute -inset-1 bg-gradient-to-r from-purple-500/20 via-blue-500/20 to-emerald-500/20 rounded-2xl blur-xl opacity-40"></div>
-        
         {/* Main modal */}
-        <div className="relative bg-[#0a0a0a] border border-[#2a2a2a] rounded-2xl shadow-2xl max-h-[85vh] overflow-hidden flex flex-col">
+        <div className="relative bg-[#0f0f0f] border border-[#1a1a1a]/70 rounded-lg shadow-2xl max-h-[85vh] overflow-hidden flex flex-col">
           {/* Close button */}
           <button
             onClick={onClose}
-            className="absolute top-3 right-3 z-10 p-1.5 text-gray-400 hover:text-white transition-colors rounded-lg hover:bg-white/5"
+            className="absolute top-4 right-4 z-10 p-1.5 text-[#A1A1AA] hover:text-[#F8FAFC] transition-colors"
           >
-            <X size={18} />
+            <X size={16} />
           </button>
 
           {/* Header */}
-          <div className="px-6 py-4 border-b border-[#2a2a2a]">
-            <h2 className="text-xl font-bold text-[#F8FAFC]">
+          <div className="px-6 py-5 border-b border-[#1a1a1a]/70">
+            <h2 className="text-lg font-semibold text-[#F8FAFC]">
               {eligibleForTrial ? 'Start Your Free Trial' : 'Upgrade Required'}
             </h2>
-            <p className="text-xs text-[#A1A1AA] mt-1">
+            <p className="text-sm text-[#A1A1AA] mt-1">
               {reason || 'This feature requires an active subscription'}
             </p>
           </div>
 
         {loading ? (
           <div className="p-8 text-center">
-            <div className="inline-block w-8 h-8 border-4 border-[#8B5CF6] border-t-transparent rounded-full animate-spin" />
-            <p className="mt-3 text-sm text-[#A1A1AA]">Loading your options...</p>
+            <div className="inline-block w-6 h-6 border-2 border-[#A1A1AA] border-t-transparent rounded-full animate-spin" />
+            <p className="mt-3 text-sm text-[#A1A1AA]">Loading...</p>
           </div>
         ) : selectedPlan ? (
           /* Show embedded checkout for selected plan */
@@ -131,52 +123,52 @@ export function PaywallModal({ isOpen, onClose, reason }: PaywallModalProps) {
             />
           </div>
         ) : (
-          <div className="p-5 overflow-y-auto">
+          <div className="p-6 overflow-y-auto">
             {eligibleForTrial ? (
               /* Free Trial Offer - ONLY Starter Plan */
-              <div className="space-y-3">
-                <div className="bg-[#1a1a1a]/50 border border-[#2a2a2a] rounded-xl p-4">
-                  <div className="flex items-center justify-center w-12 h-12 mx-auto mb-3 bg-[#8B5CF6]/10 border border-[#8B5CF6]/20 rounded-full">
-                    <span className="text-2xl">🚀</span>
+              <div className="space-y-4">
+                <div className="bg-[#1a1a1a] border border-[#1a1a1a]/70 rounded-lg p-5">
+                  <div className="flex items-center justify-center w-10 h-10 mx-auto mb-3 bg-[#1a1a1a] border border-[#2a2a2a] rounded-full">
+                    <span className="text-xl">🚀</span>
                   </div>
                   
-                  <h3 className="text-lg font-bold text-[#F8FAFC] text-center mb-2">Starter Plan</h3>
-                  <p className="text-center mb-3">
-                    <span className="text-[#8B5CF6] text-base font-bold">7 Days FREE</span>
+                  <h3 className="text-base font-semibold text-[#F8FAFC] text-center mb-2">Starter Plan</h3>
+                  <p className="text-center mb-4">
+                    <span className="text-[#8B5CF6] text-sm font-semibold">7 Days FREE</span>
                     <span className="text-[#A1A1AA] text-xs block mt-0.5">then $30/month</span>
                   </p>
                   
-                  <ul className="space-y-1.5 text-xs text-[#E1E4EA] mb-3">
+                  <ul className="space-y-2 text-sm text-[#A1A1AA] mb-4">
                     <li className="flex items-center">
-                      <CheckCircle className="h-3.5 w-3.5 text-[#8B5CF6] mr-2" />
+                      <CheckCircle className="h-3.5 w-3.5 text-[#8B5CF6] mr-2 flex-shrink-0" />
                       <span>Up to 100 students</span>
                     </li>
                     <li className="flex items-center">
-                      <CheckCircle className="h-3.5 w-3.5 text-[#8B5CF6] mr-2" />
+                      <CheckCircle className="h-3.5 w-3.5 text-[#8B5CF6] mr-2 flex-shrink-0" />
                       <span>5 AI insights per day</span>
                     </li>
                     <li className="flex items-center">
-                      <CheckCircle className="h-3.5 w-3.5 text-[#3B82F6] mr-2" />
+                      <CheckCircle className="h-3.5 w-3.5 text-[#3B82F6] mr-2 flex-shrink-0" />
                       <span>Unlimited custom forms</span>
                     </li>
                     <li className="flex items-center">
-                      <CheckCircle className="h-3.5 w-3.5 text-[#3B82F6] mr-2" />
+                      <CheckCircle className="h-3.5 w-3.5 text-[#3B82F6] mr-2 flex-shrink-0" />
                       <span>Full analytics dashboard</span>
                     </li>
                     <li className="flex items-center">
-                      <CheckCircle className="h-3.5 w-3.5 text-[#10B981] mr-2" />
+                      <CheckCircle className="h-3.5 w-3.5 text-[#10B981] mr-2 flex-shrink-0" />
                       <span>14-day data retention</span>
                     </li>
                   </ul>
 
                   <button
                     onClick={() => handleSelectPlan('prod_Tdu9YayfFDxhc')}
-                    className="w-full py-2.5 px-4 bg-[#8B5CF6]/90 hover:bg-[#8B5CF6] text-white font-semibold rounded-lg transition-all duration-200"
+                    className="w-full py-2.5 px-4 bg-[#8B5CF6]/10 hover:bg-[#8B5CF6]/20 border border-[#8B5CF6]/30 text-white backdrop-blur-sm transition-all rounded-lg"
                   >
                     Start 7-Day Free Trial
                   </button>
                     
-                  <p className="text-[10px] text-[#A1A1AA] text-center mt-2 leading-relaxed">
+                  <p className="text-[11px] text-[#71717A] text-center mt-3 leading-relaxed">
                     No credit card charge for 7 days • Cancel anytime<br/>Automatically renews at $30/month
                   </p>
                 </div>
@@ -185,7 +177,7 @@ export function PaywallModal({ isOpen, onClose, reason }: PaywallModalProps) {
                 <div className="text-center">
                   <a
                     href="/upgrade"
-                    className="text-xs text-[#A1A1AA] hover:text-[#8B5CF6] transition-colors underline"
+                    className="text-xs text-[#A1A1AA] hover:text-[#F8FAFC] transition-colors underline"
                   >
                     View all plans and pricing
                   </a>
@@ -193,8 +185,8 @@ export function PaywallModal({ isOpen, onClose, reason }: PaywallModalProps) {
               </div>
             ) : (
               /* No Free Trial - Show Plans */
-              <div className="space-y-3">
-                <p className="text-sm text-gray-400 mb-3">
+              <div className="space-y-4">
+                <p className="text-sm text-[#A1A1AA]">
                   Choose a plan to continue:
                 </p>
                 
@@ -208,26 +200,26 @@ export function PaywallModal({ isOpen, onClose, reason }: PaywallModalProps) {
                     <button
                       key={plan.planId}
                       onClick={() => handleSelectPlan(plan.planId)}
-                      className={`w-full p-3.5 border rounded-xl transition-all text-left ${
+                      className={`w-full p-4 border rounded-lg transition-all text-left ${
                         plan.popular
-                          ? 'bg-[#1a1a1a] border-[#8B5CF6]/40 hover:border-[#8B5CF6]/60 hover:bg-[#1f1f1f]'
-                          : 'bg-[#1a1a1a] border-[#2a2a2a] hover:border-[#3a3a3a] hover:bg-[#1f1f1f]'
+                          ? 'bg-[#1a1a1a] border-[#8B5CF6]/30 hover:border-[#8B5CF6]/50 hover:bg-[#1a1a1a]'
+                          : 'bg-[#1a1a1a] border-[#1a1a1a]/70 hover:border-[#2a2a2a] hover:bg-[#1a1a1a]'
                       }`}
                     >
                       <div className="flex items-center justify-between">
                         <div>
                           <div className="flex items-center gap-2">
-                            <h3 className="text-base font-bold text-[#F8FAFC]">{plan.name}</h3>
+                            <h3 className="text-sm font-semibold text-[#F8FAFC]">{plan.name}</h3>
                             {plan.popular && (
-                              <span className="px-1.5 py-0.5 text-[10px] font-semibold text-[#8B5CF6] bg-[#8B5CF6]/10 rounded-full border border-[#8B5CF6]/30">
+                              <span className="px-2 py-0.5 text-[10px] font-medium text-[#8B5CF6] bg-[#8B5CF6]/10 rounded border border-[#8B5CF6]/30">
                                 POPULAR
                               </span>
                             )}
                           </div>
-                          <p className="text-xs text-[#A1A1AA] mt-0.5">{plan.features}</p>
+                          <p className="text-xs text-[#A1A1AA] mt-1">{plan.features}</p>
                         </div>
                         <div className="text-right">
-                          <div className="text-xl font-bold text-[#F8FAFC]">{plan.price}</div>
+                          <div className="text-lg font-semibold text-[#F8FAFC]">{plan.price}</div>
                           <div className="text-[10px] text-[#71717A]">/month</div>
                         </div>
                       </div>
