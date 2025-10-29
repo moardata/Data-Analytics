@@ -13,11 +13,12 @@ import { Button } from '@/components/ui/button';
 interface OnboardingFlowProps {
   onInfoClick: () => void;
   onSettingsClick?: () => void;
+  onStartTrialClick?: () => void;
 }
 
-export function OnboardingFlow({ onInfoClick, onSettingsClick }: OnboardingFlowProps) {
+export function OnboardingFlow({ onInfoClick, onSettingsClick, onStartTrialClick }: OnboardingFlowProps) {
   const [show, setShow] = useState(false);
-  const [step, setStep] = useState(1);
+  const [step, setStep] = useState(0); // Start at 0 for trial prompt
 
   useEffect(() => {
     // Check if user has completed onboarding
@@ -38,9 +39,17 @@ export function OnboardingFlow({ onInfoClick, onSettingsClick }: OnboardingFlowP
   };
 
   const handleInfoClick = () => {
-    onInfoClick();
+    if (onInfoClick) onInfoClick();
     // Move to step 2 after 2 seconds
     setTimeout(() => setStep(2), 2000);
+  };
+
+  const handleStartTrial = () => {
+    if (onStartTrialClick) {
+      onStartTrialClick();
+    }
+    // Move to next step
+    setStep(1);
   };
 
   const handleSettingsClick = () => {
@@ -75,15 +84,74 @@ export function OnboardingFlow({ onInfoClick, onSettingsClick }: OnboardingFlowP
           </button>
           
           <div className="mb-2">
-            <CardTitle className="text-[#F8FAFC] text-xl font-bold mb-3">Welcome to CreatorIQ! 🎉</CardTitle>
-            <div className="flex items-center gap-2">
-              <div className={`h-2 w-full rounded-full transition-all duration-300 ${step >= 1 ? 'bg-gradient-to-r from-[#8B5CF6] to-[#3B82F6]' : 'bg-[#1a1a1a]'}`}></div>
-              <div className={`h-2 w-full rounded-full transition-all duration-300 ${step >= 2 ? 'bg-gradient-to-r from-[#F59E0B] to-[#10B981]' : 'bg-[#1a1a1a]'}`}></div>
-            </div>
+            <CardTitle className="text-[#F8FAFC] text-xl font-bold mb-3">
+              {step === 0 ? 'Welcome to CreatorIQ! 🎉' : 'Quick Setup Guide'}
+            </CardTitle>
+            {step > 0 && (
+              <div className="flex items-center gap-2">
+                <div className={`h-2 w-full rounded-full transition-all duration-300 ${step >= 1 ? 'bg-gradient-to-r from-[#8B5CF6] to-[#3B82F6]' : 'bg-[#1a1a1a]'}`}></div>
+                <div className={`h-2 w-full rounded-full transition-all duration-300 ${step >= 2 ? 'bg-gradient-to-r from-[#F59E0B] to-[#10B981]' : 'bg-[#1a1a1a]'}`}></div>
+              </div>
+            )}
           </div>
         </CardHeader>
 
         <CardContent className="space-y-4">
+          {step === 0 && (
+            <>
+              <div className="bg-gradient-to-r from-emerald-500/10 to-blue-500/10 border border-emerald-500/30 rounded-xl p-6">
+                <div className="flex items-center justify-center w-16 h-16 mx-auto mb-4 bg-gradient-to-r from-emerald-500 to-emerald-600 rounded-full">
+                  <span className="text-3xl">🎉</span>
+                </div>
+                <h3 className="text-[#F8FAFC] text-2xl font-bold mb-3 text-center">
+                  Welcome to CreatorIQ!
+                </h3>
+                <p className="text-[#D1D5DB] text-center mb-4">
+                  Start your <span className="text-emerald-400 font-bold">7-day FREE trial</span> and unlock AI-powered insights for your community.
+                </p>
+                
+                <div className="bg-[#0a0a0a] rounded-lg p-4 mb-4">
+                  <ul className="space-y-2 text-sm text-[#D1D5DB]">
+                    <li className="flex items-center gap-2">
+                      <CheckCircle className="h-4 w-4 text-emerald-400" />
+                      Up to 100 students
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <CheckCircle className="h-4 w-4 text-emerald-400" />
+                      5 AI insights per day
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <CheckCircle className="h-4 w-4 text-emerald-400" />
+                      Unlimited custom forms
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <CheckCircle className="h-4 w-4 text-emerald-400" />
+                      Full analytics dashboard
+                    </li>
+                  </ul>
+                </div>
+
+                <p className="text-xs text-center text-gray-500 mb-4">
+                  No charge for 7 days • Then $30/month • Cancel anytime
+                </p>
+              </div>
+
+              <Button 
+                onClick={handleStartTrial}
+                className="w-full bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white gap-2 h-12 shadow-lg shadow-emerald-500/30 text-lg font-semibold"
+              >
+                🚀 Start 7-Day Free Trial
+              </Button>
+
+              <button 
+                onClick={() => setStep(1)}
+                className="w-full text-[#A1A1AA] hover:text-[#F8FAFC] text-sm transition-colors hover:underline"
+              >
+                I'll do this later
+              </button>
+            </>
+          )}
+
           {step === 1 && (
             <>
               <div className="bg-gradient-to-r from-[#8B5CF6]/5 to-[#3B82F6]/5 border border-[#8B5CF6]/20 rounded-lg p-4 border-l-2 border-l-[#8B5CF6]">

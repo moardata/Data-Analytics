@@ -6,12 +6,14 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { OnboardingFlow } from './OnboardingFlow';
+import { PaywallModal } from './PaywallModal';
 
 export function TopBar() {
   const [showInfo, setShowInfo] = useState(false);
   const [showUsers, setShowUsers] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
+  const [showPaywall, setShowPaywall] = useState(false);
   
   // Settings state with localStorage persistence
   const [autoInsights, setAutoInsights] = useState(() => {
@@ -65,6 +67,14 @@ export function TopBar() {
       {/* First-time onboarding flow */}
       <OnboardingFlow 
         onInfoClick={() => setShowInfo(true)}
+        onStartTrialClick={() => setShowPaywall(true)}
+      />
+      
+      {/* Paywall Modal */}
+      <PaywallModal
+        isOpen={showPaywall}
+        onClose={() => setShowPaywall(false)}
+        reason="Start your 7-day free trial to unlock all features"
       />
       
       <div className="fixed top-0 right-0 left-0 z-40 bg-[#0a0a0a] border-b border-[#1a1a1a] h-16 flex items-center justify-between px-6">
