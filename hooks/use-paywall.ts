@@ -45,10 +45,8 @@ export function usePaywall() {
         loading: false
       });
 
-      // If no access, show paywall
-      if (!data.hasAccess) {
-        setShowPaywall(true);
-      }
+      // Don't auto-show paywall - only show when buttons trigger it
+      // Users can view pages without subscription, just can't take actions
     } catch (error) {
       console.error('Error checking subscription:', error);
       setStatus(prev => ({ ...prev, loading: false }));

@@ -23,7 +23,8 @@ import { supabase } from '@/lib/supabase';
 import { WhopClientAuth } from '@/components/WhopClientAuth';
 import { fixFormFieldIds } from '@/lib/utils/formHelpers';
 import { triggerConfetti } from '@/components/SurveyCompletionTracker';
-import { PaywallGuard } from '@/components/PaywallGuard';
+import { usePaywall } from '@/hooks/use-paywall';
+import { PaywallModal } from '@/components/PaywallModal';
 import { 
   BarChart, 
   Bar, 
@@ -54,6 +55,9 @@ function FormsContent() {
   const [completedForms, setCompletedForms] = useState<string[]>([]);
   const [showConfetti, setShowConfetti] = useState(false);
   const [isEnriching, setIsEnriching] = useState(false);
+  
+  // Add paywall hook for button-level checks
+  const { hasAccess, showPaywall, setShowPaywall, requireSubscription } = usePaywall();
 
   useEffect(() => {
     fetchForms();
@@ -1002,14 +1006,17 @@ function FormsContent() {
           </div>
         </div>
       )}
+      
+      {/* Paywall Modal - triggered by button clicks */}
+      <PaywallModal 
+        isOpen={showPaywall} 
+        onClose={() => setShowPaywall(false)}
+        reason="Start your 7-day free trial to access this feature"
+      />
     </div>
   );
 }
 
 export default function FormsPage() {
-  return (
-    <PaywallGuard feature="Forms & Surveys">
-      <FormsContent />
-    </PaywallGuard>
-  );
+  return <FormsContent />;
 }

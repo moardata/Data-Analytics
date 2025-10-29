@@ -23,7 +23,8 @@ import StructuredAIInsights from '@/components/StructuredAIInsights';
 import ActionFeedbackLoop from '@/components/ActionFeedbackLoop';
 import ExportsReportsDashboard from '@/components/ExportsReportsDashboard';
 import SystemHealthDashboard from '@/components/SystemHealthDashboard';
-import { PaywallGuard } from '@/components/PaywallGuard';
+import { usePaywall } from '@/hooks/use-paywall';
+import { PaywallModal } from '@/components/PaywallModal';
 
 // ---------------------- THEME ----------------------
 const theme = {
@@ -45,6 +46,9 @@ function InsightsContent() {
   const [activeTab, setActiveTab] = useState('insights');
   const [showSuccess, setShowSuccess] = useState(false);
   const [timeRange, setTimeRange] = useState<'daily' | 'weekly'>('daily');
+  
+  // Add paywall hook for button-level checks
+  const { hasAccess, showPaywall, setShowPaywall, requireSubscription } = usePaywall();
 
   // Get company ID from URL (same as analytics page)
   useEffect(() => {
@@ -118,6 +122,10 @@ function InsightsContent() {
   }));
 
   const generateInsights = async () => {
+    // Check subscription before allowing action
+    if (!requireSubscription('Generate AI insights from your data')) {
+      return;
+    }
     
     if (!companyId) {
       console.error('❌ No company ID available');
@@ -159,6 +167,11 @@ function InsightsContent() {
   };
 
   const handleRefresh = async () => {
+    // Check subscription before allowing action
+    if (!requireSubscription('Refresh AI insights')) {
+      return;
+    }
+    
     if (!companyId) {
       console.error('❌ No companyId provided for refresh');
       return;
@@ -586,14 +599,17 @@ function InsightsContent() {
           </TabsContent>
         </Tabs>
       </div>
+      
+      {/* Paywall Modal - triggered by button clicks */}
+      <PaywallModal 
+        isOpen={showPaywall} 
+        onClose={() => setShowPaywall(false)}
+        reason="Start your 7-day free trial to access this feature"
+      />
     </div>
   );
 }
 
 export default function InsightsPage() {
-  return (
-    <PaywallGuard feature="AI Insights">
-      <InsightsContent />
-    </PaywallGuard>
-  );
+  return <InsightsContent />;
 }

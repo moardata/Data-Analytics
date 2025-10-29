@@ -9,7 +9,8 @@
 import { Suspense, useState, useEffect } from 'react';
 import { useSearchParams } from 'next/navigation';
 import RevenueDashboard from '@/components/RevenueDashboard';
-import { PaywallGuard } from '@/components/PaywallGuard';
+import { usePaywall } from '@/hooks/use-paywall';
+import { PaywallModal } from '@/components/PaywallModal';
 
 export const dynamic = 'force-dynamic';
 
@@ -20,6 +21,9 @@ function RevenueContent() {
   const [revenue, setRevenue] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
+  
+  // Add paywall hook for button-level checks
+  const { hasAccess, showPaywall, setShowPaywall, requireSubscription } = usePaywall();
 
   useEffect(() => {
     fetchRevenue();
@@ -50,10 +54,12 @@ function RevenueContent() {
   };
 
   const handleExport = () => {
+    if (!requireSubscription('Export revenue data to CSV')) return;
     window.open(`/api/export/csv?companyId=${clientId}&type=revenue`, '_blank');
   };
 
   const handleRefresh = async () => {
+    if (!requireSubscription('Refresh revenue data')) return;
     if (!clientId) {
       console.error('❌ No clientId provided for refresh');
       return;
@@ -84,20 +90,25 @@ function RevenueContent() {
       <div className="max-w-7xl mx-auto">
         <RevenueDashboard revenueData={revenue} onExport={handleExport} onRefresh={handleRefresh} refreshing={refreshing} />
       </div>
+      
+      {/* Paywall Modal - triggered by button clicks */}
+      <PaywallModal 
+        isOpen={showPaywall} 
+        onClose={() => setShowPaywall(false)}
+        reason="Start your 7-day free trial to access this feature"
+      />
     </div>
   );
 }
 
 export default function RevenuePage() {
   return (
-    <PaywallGuard feature="Revenue Dashboard">
-      <Suspense fallback={
-        <div className="flex items-center justify-center min-h-screen bg-gradient-to-b from-[#0a0a0a] to-[#0f0f0f]">
-          <div className="w-16 h-16 border-4 border-[#10B981] border-t-transparent rounded-full animate-spin" />
-        </div>
-      }>
-        <RevenueContent />
-      </Suspense>
-    </PaywallGuard>
+    <Suspense fallback={
+      <div className="flex items-center justify-center min-h-screen bg-gradient-to-b from-[#0a0a0a] to-[#0f0f0f]">
+        <div className="w-16 h-16 border-4 border-[#10B981] border-t-transparent rounded-full animate-spin" />
+      </div>
+    }>
+      <RevenueContent />
+    </Suspense>
   );
 }
