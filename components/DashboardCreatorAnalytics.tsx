@@ -275,46 +275,6 @@ export default function DashboardCreatorAnalytics({
     }
   };
 
-  const handleSync = async () => {
-    if (!actualClientId) {
-      console.error('❌ No clientId provided for sync');
-      return;
-    }
-    
-    try {
-      setSyncing(true);
-      setError(null);
-      
-      const response = await fetch(`/api/dashboard/metrics?clientId=${actualClientId}`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
-
-      if (!response.ok) {
-        const errorText = await response.text();
-        console.error('❌ Sync response error:', response.status, errorText);
-        throw new Error(`Sync failed: ${response.statusText}`);
-      }
-
-      const data = await response.json();
-      setMetrics(data);
-      setError(null);
-      
-      // Optional: Show success toast/notification
-    } catch (err) {
-      console.error('❌ Error syncing metrics:', err);
-      const errorMessage = err instanceof Error ? err.message : 'Failed to sync metrics';
-      setError(errorMessage);
-      
-      // Keep existing metrics if sync fails
-      console.warn('⚠️  Keeping existing metrics after sync failure');
-    } finally {
-      setSyncing(false);
-    }
-  };
-
   if (loading) {
     return (
       <div className="space-y-4">
