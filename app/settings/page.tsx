@@ -107,10 +107,13 @@ function SettingsContent() {
     <div className="min-h-screen bg-gradient-to-b from-[#0a0a0a] to-[#0f0f0f] p-6">
       <div className="max-w-5xl mx-auto space-y-6">
         <div className="mb-6">
-          <h1 className="text-4xl font-bold text-[#F8FAFC] mb-2">
-            Settings
-          </h1>
-          <p className="text-[#A1A1AA]">
+          <div className="inline-block">
+            <h1 className="text-4xl font-bold text-[#F8FAFC] mb-2">
+              Settings
+            </h1>
+            <div className="h-1 w-24 bg-gradient-to-r from-[#8B5CF6] via-[#3B82F6] to-[#10B981] rounded-full"></div>
+          </div>
+          <p className="text-[#A1A1AA] mt-2">
             Manage your app configuration
           </p>
         </div>
