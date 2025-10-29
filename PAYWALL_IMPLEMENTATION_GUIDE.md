@@ -3,7 +3,7 @@
 ## Overview
 
 This app now has a **complete paywall system** with:
-- ✅ Whop's **embedded checkout modal** (like the screenshots you shared)
+- ✅ Whop's **professional checkout flow** (like the screenshots you shared)
 - ✅ **7-day free trial** for first-time users on Starter plan
 - ✅ **One-time trial** (users can't get free trial again)
 - ✅ Automatic **subscription status checking**
@@ -13,8 +13,8 @@ This app now has a **complete paywall system** with:
 
 ## 🎯 How It Works
 
-### 1. Embedded Checkout Modal
-When users click "upgrade" or try to access features without a subscription, they see Whop's beautiful in-app checkout modal (not redirected away).
+### 1. Checkout Flow
+When users click "upgrade" or try to access features without a subscription, they're redirected to Whop's checkout page where Whop displays their professional payment modal.
 
 ### 2. Free Trial Logic
 - **First-time users**: Get 7-day free trial on Starter plan ($30/month after)
@@ -192,32 +192,26 @@ Check if user is eligible for free trial.
 
 ---
 
-## 🎨 How to Use Whop's Embedded Checkout
+## 🎨 How Checkout Works
 
-The checkout now uses `useCheckout()` from `@whop/react`:
+When users click "Upgrade" or "Start Trial", they're redirected to Whop's checkout page where Whop displays their professional payment modal.
 
 ```tsx
-import { useCheckout } from '@whop/react';
-
 function UpgradeButton() {
-  const { openCheckout } = useCheckout();
-
   const handleUpgrade = () => {
-    openCheckout({
-      planId: 'prod_Tdu9YayfFDxhc', // Your product ID
-      onSuccess: () => {
-        console.log('Payment successful!');
-        window.location.reload(); // Refresh to update status
-      },
-      onClose: () => {
-        console.log('Checkout closed');
-      }
-    });
+    // Redirect to Whop checkout page
+    window.location.href = 'https://whop.com/api-app-s-n-bw-kv-th-ikvw-n9-starter/';
   };
 
   return <button onClick={handleUpgrade}>Start Free Trial</button>;
 }
 ```
+
+**Your Checkout URLs:**
+- Starter: `https://whop.com/api-app-s-n-bw-kv-th-ikvw-n9-starter/`
+- Growth: `https://whop.com/api-app-s-n-bw-kv-th-ikvw-n9-growth/`
+- Pro: `https://whop.com/api-app-s-n-bw-kv-th-ikvw-n9-pro/`
+- Scale: `https://whop.com/api-app-s-n-bw-kv-th-ikvw-n9-scale/`
 
 **Your Product IDs:**
 - Starter: `prod_Tdu9YayfFDxhc`

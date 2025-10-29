@@ -7,7 +7,6 @@
 
 import { Suspense, useState, useEffect } from 'react';
 import { useSearchParams } from 'next/navigation';
-import { useCheckout } from '@whop/react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils/cn';
@@ -46,9 +45,6 @@ function UpgradeContent() {
     }
   };
 
-  // Use Whop's embedded checkout
-  const { openCheckout } = useCheckout();
-
   const handleUpgrade = (tierName: TierName) => {
     if (tierName === currentTier) {
       alert('You\'re already on this plan!');
@@ -57,23 +53,26 @@ function UpgradeContent() {
 
     // Get the tier info
     const tier = tiers.find(t => t.name === tierName);
-    if (!tier?.whopPlanId) {
+    if (!tier) {
       alert('Plan not available yet. Please contact support.');
       return;
     }
 
-    // Open Whop's embedded checkout modal
-    openCheckout({
-      planId: tier.whopPlanId,
-      onSuccess: () => {
-        console.log('✅ Subscription successful!');
-        // Refresh to update subscription status
-        window.location.reload();
-      },
-      onClose: () => {
-        console.log('Checkout closed');
-      }
-    });
+    // Map tier names to Whop checkout URLs
+    const checkoutUrls: Record<TierName, string> = {
+      atom: 'https://whop.com/api-app-s-n-bw-kv-th-ikvw-n9-starter/',
+      core: 'https://whop.com/api-app-s-n-bw-kv-th-ikvw-n9-growth/',
+      pulse: 'https://whop.com/api-app-s-n-bw-kv-th-ikvw-n9-pro/',
+      surge: 'https://whop.com/api-app-s-n-bw-kv-th-ikvw-n9-scale/',
+    };
+
+    const checkoutUrl = checkoutUrls[tierName];
+    if (checkoutUrl) {
+      // Open Whop checkout page (Whop will show their payment modal)
+      window.location.href = checkoutUrl;
+    } else {
+      alert('Checkout link not available. Please contact support.');
+    }
   };
 
   const tiers = getAllTiers();

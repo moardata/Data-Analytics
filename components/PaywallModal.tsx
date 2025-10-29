@@ -7,7 +7,6 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useCheckout } from '@whop/react';
 import { useSearchParams } from 'next/navigation';
 import { X } from 'lucide-react';
 
@@ -44,34 +43,24 @@ export function PaywallModal({ isOpen, onClose, reason }: PaywallModalProps) {
     checkTrialEligibility();
   }, [isOpen, companyId]);
 
-  // Use Whop's checkout hook
-  const { openCheckout } = useCheckout();
-
   const handleStartTrial = () => {
-    // Open Whop's embedded checkout for Starter plan (with 7-day trial)
-    openCheckout({
-      planId: 'prod_Tdu9YayfFDxhc', // Starter plan
-      onSuccess: () => {
-        console.log('Subscription successful!');
-        window.location.reload(); // Refresh to update subscription status
-      },
-      onClose: () => {
-        console.log('Checkout closed');
-      }
-    });
+    // Navigate to Whop checkout page for Starter plan (with 7-day trial)
+    window.location.href = 'https://whop.com/api-app-s-n-bw-kv-th-ikvw-n9-starter/';
   };
 
   const handleUpgradePlan = (planId: string) => {
-    openCheckout({
-      planId,
-      onSuccess: () => {
-        console.log('Upgrade successful!');
-        window.location.reload();
-      },
-      onClose: () => {
-        console.log('Checkout closed');
-      }
-    });
+    // Map plan IDs to checkout URLs
+    const checkoutUrls: Record<string, string> = {
+      'prod_Tdu9YayfFDxhc': 'https://whop.com/api-app-s-n-bw-kv-th-ikvw-n9-starter/',
+      'prod_UNx31yqmQcXOx': 'https://whop.com/api-app-s-n-bw-kv-th-ikvw-n9-growth/',
+      'prod_03fZxoux0PVvW': 'https://whop.com/api-app-s-n-bw-kv-th-ikvw-n9-pro/',
+      'prod_QFtQEu91TO2yh': 'https://whop.com/api-app-s-n-bw-kv-th-ikvw-n9-scale/',
+    };
+
+    const checkoutUrl = checkoutUrls[planId];
+    if (checkoutUrl) {
+      window.location.href = checkoutUrl;
+    }
   };
 
   if (!isOpen) return null;
