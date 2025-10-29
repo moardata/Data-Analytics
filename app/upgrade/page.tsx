@@ -178,17 +178,14 @@ function UpgradeContent() {
           </div>
           
           <div className="relative w-full max-w-lg mx-auto">
-            {/* Animated gradient border */}
-            <div className="absolute -inset-0.5 bg-gradient-to-r from-purple-500/50 via-blue-500/50 to-emerald-500/50 rounded-2xl blur opacity-40"></div>
+            {/* Subtle gradient glow */}
+            <div className="absolute -inset-1 bg-gradient-to-r from-purple-500/20 via-blue-500/20 to-emerald-500/20 rounded-2xl blur-xl opacity-50"></div>
             
-            <div className="relative bg-[#0a0a0a] border border-purple-500/20 rounded-2xl shadow-2xl overflow-hidden max-h-[85vh] flex flex-col">
-              {/* Colored header bar */}
-              <div className="h-1 w-full bg-gradient-to-r from-purple-500 via-blue-500 to-emerald-500"></div>
-              
+            <div className="relative bg-[#0a0a0a] border border-[#2a2a2a] rounded-2xl shadow-2xl overflow-hidden max-h-[85vh] flex flex-col">
               {/* Close button */}
               <button
                 onClick={() => setSelectedPlan(null)}
-                className="absolute top-3 right-3 p-1.5 text-gray-400 hover:text-white transition-colors rounded-lg hover:bg-purple-500/10 border border-transparent hover:border-purple-500/30 z-10"
+                className="absolute top-3 right-3 p-1.5 text-gray-400 hover:text-white transition-colors rounded-lg hover:bg-white/5 z-10"
               >
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
