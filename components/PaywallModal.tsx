@@ -8,6 +8,7 @@
 
 import { useEffect, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
+import { WhopCheckoutEmbed } from '@whop/checkout/react';
 import { X } from 'lucide-react';
 
 interface PaywallModalProps {
@@ -107,8 +108,17 @@ export function PaywallModal({ isOpen, onClose, reason }: PaywallModalProps) {
           </div>
         ) : selectedPlan ? (
           /* Show embedded checkout for selected plan */
-          <div className="p-0">
-            <div data-whop-checkout-plan-id={selectedPlan} data-whop-checkout-theme="dark"></div>
+          <div className="p-0 min-h-[600px]">
+            <WhopCheckoutEmbed
+              planId={selectedPlan}
+              theme="dark"
+              onComplete={(planId, receiptId) => {
+                console.log('✅ Checkout complete!', { planId, receiptId });
+                setTimeout(() => window.location.reload(), 1000);
+              }}
+              skipRedirect={true}
+              themeOptions={{ accentColor: 'green' }}
+            />
           </div>
         ) : (
           <div className="p-8">

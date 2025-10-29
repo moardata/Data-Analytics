@@ -7,6 +7,7 @@
 
 import { Suspense, useState, useEffect } from 'react';
 import { useSearchParams } from 'next/navigation';
+import { WhopCheckoutEmbed } from '@whop/checkout/react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils/cn';
@@ -186,7 +187,18 @@ function UpgradeContent() {
             </button>
 
             {/* Embedded Checkout */}
-            <div data-whop-checkout-plan-id={selectedPlan} data-whop-checkout-theme="dark"></div>
+            <div className="min-h-[600px]">
+              <WhopCheckoutEmbed
+                planId={selectedPlan}
+                theme="dark"
+                onComplete={(planId, receiptId) => {
+                  console.log('✅ Checkout complete!', { planId, receiptId });
+                  setTimeout(() => window.location.reload(), 1000);
+                }}
+                skipRedirect={true}
+                themeOptions={{ accentColor: 'green' }}
+              />
+            </div>
           </div>
         </div>
       )}
