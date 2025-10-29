@@ -2,6 +2,7 @@ import { WhopApp } from "@whop/react/components";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import { Suspense } from "react";
+import Script from "next/script";
 import { Sidebar } from "@/components/sidebar";
 import { TopBar } from "@/components/top-bar";
 import { WhopClientAuth } from "@/components/WhopClientAuth";
@@ -32,6 +33,12 @@ export default function RootLayout({
 	return (
 		<html lang="en" className="dark">
 			<body className={`${inter.variable} font-sans antialiased`}>
+				{/* Whop Checkout Loader Script */}
+				<Script
+					src="https://js.whop.com/static/checkout/loader.js"
+					strategy="afterInteractive"
+				/>
+				
 				<ErrorBoundary>
 					<WhopApp>
 						<WhopClientAuth>

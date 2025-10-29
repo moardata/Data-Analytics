@@ -8,6 +8,7 @@
 
 import { useEffect, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
+import { WhopCheckoutEmbed } from '@whop/checkout/react';
 import { X } from 'lucide-react';
 
 interface PaywallModalProps {
@@ -43,24 +44,16 @@ export function PaywallModal({ isOpen, onClose, reason }: PaywallModalProps) {
     checkTrialEligibility();
   }, [isOpen, companyId]);
 
-  const handleStartTrial = () => {
-    // Navigate to Whop checkout page for Starter plan (with 7-day trial)
-    window.location.href = 'https://whop.com/api-app-s-n-bw-kv-th-ikvw-n9-starter/';
+  const [selectedPlan, setSelectedPlan] = useState<string | null>(null);
+
+  const handleSelectPlan = (planId: string) => {
+    setSelectedPlan(planId);
   };
 
-  const handleUpgradePlan = (planId: string) => {
-    // Map plan IDs to checkout URLs
-    const checkoutUrls: Record<string, string> = {
-      'prod_Tdu9YayfFDxhc': 'https://whop.com/api-app-s-n-bw-kv-th-ikvw-n9-starter/',
-      'prod_UNx31yqmQcXOx': 'https://whop.com/api-app-s-n-bw-kv-th-ikvw-n9-growth/',
-      'prod_03fZxoux0PVvW': 'https://whop.com/api-app-s-n-bw-kv-th-ikvw-n9-pro/',
-      'prod_QFtQEu91TO2yh': 'https://whop.com/api-app-s-n-bw-kv-th-ikvw-n9-scale/',
-    };
-
-    const checkoutUrl = checkoutUrls[planId];
-    if (checkoutUrl) {
-      window.location.href = checkoutUrl;
-    }
+  const handleCheckoutComplete = (planId: string, receiptId?: string) => {
+    console.log('✅ Checkout complete!', { planId, receiptId });
+    // Refresh page to update subscription status
+    window.location.reload();
   };
 
   if (!isOpen) return null;
@@ -90,6 +83,17 @@ export function PaywallModal({ isOpen, onClose, reason }: PaywallModalProps) {
           <div className="p-12 text-center">
             <div className="inline-block w-8 h-8 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin" />
             <p className="mt-4 text-gray-400">Loading...</p>
+          </div>
+        ) : selectedPlan ? (
+          /* Show embedded checkout for selected plan */
+          <div className="p-0">
+            <WhopCheckoutEmbed
+              planId={selectedPlan}
+              theme="dark"
+              onComplete={handleCheckoutComplete}
+              skipRedirect={true}
+              themeOptions={{ accentColor: 'green' }}
+            />
           </div>
         ) : (
           <div className="p-8">
@@ -132,7 +136,7 @@ export function PaywallModal({ isOpen, onClose, reason }: PaywallModalProps) {
                   </ul>
 
                   <button
-                    onClick={handleStartTrial}
+                    onClick={() => handleSelectPlan('prod_Tdu9YayfFDxhc')}
                     className="w-full py-3 px-6 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white font-semibold rounded-lg transition-all duration-200 shadow-lg shadow-emerald-500/30"
                   >
                     Start 7-Day Free Trial
@@ -148,7 +152,7 @@ export function PaywallModal({ isOpen, onClose, reason }: PaywallModalProps) {
                   <p className="text-sm text-gray-400 mb-4">Or choose a different plan:</p>
                   <div className="grid grid-cols-3 gap-3">
                     <button
-                      onClick={() => handleUpgradePlan('prod_UNx31yqmQcXOx')}
+                      onClick={() => handleSelectPlan('prod_UNx31yqmQcXOx')}
                       className="p-4 bg-[#1a1a1a] hover:bg-[#252525] border border-[#2a2a2a] rounded-lg transition-colors text-left"
                     >
                       <div className="font-semibold text-white text-sm">Growth</div>
@@ -157,7 +161,7 @@ export function PaywallModal({ isOpen, onClose, reason }: PaywallModalProps) {
                     </button>
                     
                     <button
-                      onClick={() => handleUpgradePlan('prod_03fZxoux0PVvW')}
+                      onClick={() => handleSelectPlan('prod_03fZxoux0PVvW')}
                       className="p-4 bg-[#1a1a1a] hover:bg-[#252525] border border-[#2a2a2a] rounded-lg transition-colors text-left"
                     >
                       <div className="font-semibold text-white text-sm">Pro</div>
@@ -166,7 +170,7 @@ export function PaywallModal({ isOpen, onClose, reason }: PaywallModalProps) {
                     </button>
                     
                     <button
-                      onClick={() => handleUpgradePlan('prod_QFtQEu91TO2yh')}
+                      onClick={() => handleSelectPlan('prod_QFtQEu91TO2yh')}
                       className="p-4 bg-[#1a1a1a] hover:bg-[#252525] border border-[#2a2a2a] rounded-lg transition-colors text-left"
                     >
                       <div className="font-semibold text-white text-sm">Scale</div>
@@ -192,7 +196,7 @@ export function PaywallModal({ isOpen, onClose, reason }: PaywallModalProps) {
                   ].map((plan) => (
                     <button
                       key={plan.planId}
-                      onClick={() => handleUpgradePlan(plan.planId)}
+                      onClick={() => handleSelectPlan(plan.planId)}
                       className={`w-full p-5 border rounded-xl transition-all text-left ${
                         plan.popular
                           ? 'bg-gradient-to-r from-emerald-500/10 to-blue-500/10 border-emerald-500/50 hover:border-emerald-500'
