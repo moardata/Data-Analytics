@@ -231,23 +231,23 @@ function SettingsContent() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <Button
                   onClick={handleSubmitFeedback}
-                  className="justify-start h-auto p-4 bg-[#8B5CF6]/90 hover:bg-[#8B5CF6] text-white border-0"
+                  className="justify-start h-auto p-4 bg-[#8B5CF6]/10 hover:bg-[#8B5CF6]/20 border border-[#8B5CF6]/30 text-white backdrop-blur-sm transition-all"
                 >
-                  <MessageCircle className="h-5 w-5 mr-3" />
+                  <MessageCircle className="h-5 w-5 mr-3 text-[#8B5CF6]" />
                   <div className="text-left">
                     <div className="font-medium">Submit Feedback</div>
-                    <div className="text-xs opacity-90">Share your thoughts</div>
+                    <div className="text-xs text-[#A1A1AA]">Share your thoughts</div>
                   </div>
                 </Button>
 
                 <Button
                   onClick={handleContactSupport}
-                  className="justify-start h-auto p-4 bg-[#3B82F6]/90 hover:bg-[#3B82F6] text-white border-0"
+                  className="justify-start h-auto p-4 bg-[#3B82F6]/10 hover:bg-[#3B82F6]/20 border border-[#3B82F6]/30 text-white backdrop-blur-sm transition-all"
                 >
-                  <HelpCircle className="h-5 w-5 mr-3" />
+                  <HelpCircle className="h-5 w-5 mr-3 text-[#3B82F6]" />
                   <div className="text-left">
                     <div className="font-medium">Contact Support</div>
-                    <div className="text-xs opacity-90">Get help quickly</div>
+                    <div className="text-xs text-[#A1A1AA]">Get help quickly</div>
                   </div>
                 </Button>
               </div>
