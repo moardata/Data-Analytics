@@ -214,11 +214,7 @@ function InsightsContent() {
 
   // Show loading state while getting company ID
   if (!companyId) {
-    return (
-      <div className={`min-h-screen ${theme.bg}`}>
-        <LoadingScreen message="Loading AI Insights" size="lg" />
-      </div>
-    );
+    return <ModernLoadingScreen message="Loading AI Insights..." />;
   }
 
   return (
