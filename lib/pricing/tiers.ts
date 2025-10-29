@@ -214,20 +214,14 @@ export function getAllTiers(): PricingTier[] {
  * @param companyId - Optional company ID for dev bypass (client-side)
  */
 export function canAccessMetric(tier: TierName, metricId: string, companyId?: string): boolean {
-  // DEV BYPASS: Check for dev company IDs (works on both client and server)
-  const DEV_COMPANY_IDS = ['biz_3GYHNPbGkZCEky']; // Only your dev company
-  if (companyId && DEV_COMPANY_IDS.includes(companyId)) {
-    return true;
-  }
-  
   // DEV BYPASS: Always allow in 'surge' tier (highest tier unlocks everything)
   if (tier === 'surge') {
     return true;
   }
   
-  // DEV BYPASS: Server-side environment check
+  // DEV BYPASS: Server-side environment check (development mode only)
   if (typeof process !== 'undefined' && process.env) {
-    if (process.env.NODE_ENV === 'development' || process.env.ENABLE_DEV_BYPASS === 'true') {
+    if (process.env.NODE_ENV === 'development' && process.env.ENABLE_DEV_BYPASS === 'true') {
       return true;
     }
   }
@@ -248,20 +242,14 @@ export function canPerformAction(
   action: 'csvExport' | 'pdfExport' | 'apiAccess' | 'timeFilters' | 'formBranching' | 'atRiskAlerts' | 'whiteLabelForms',
   companyId?: string
 ): boolean {
-  // DEV BYPASS: Check for dev company IDs (works on both client and server)
-  const DEV_COMPANY_IDS = ['biz_3GYHNPbGkZCEky']; // Only your dev company
-  if (companyId && DEV_COMPANY_IDS.includes(companyId)) {
-    return true;
-  }
-  
   // DEV BYPASS: Always allow in 'surge' tier (highest tier unlocks everything)
   if (tier === 'surge') {
     return true;
   }
   
-  // DEV BYPASS: Server-side environment check
+  // DEV BYPASS: Server-side environment check (development mode only)
   if (typeof process !== 'undefined' && process.env) {
-    if (process.env.NODE_ENV === 'development' || process.env.ENABLE_DEV_BYPASS === 'true') {
+    if (process.env.NODE_ENV === 'development' && process.env.ENABLE_DEV_BYPASS === 'true') {
       return true;
     }
   }

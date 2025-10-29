@@ -12,7 +12,7 @@ const supabase = createClient(
 );
 
 // Dev bypass - allow these company IDs to access everything
-const DEV_COMPANY_IDS = ['biz_3GYHNPbGkZCEky'];
+// Development-only bypass removed for production security
 
 export async function GET(request: NextRequest) {
   try {
@@ -26,13 +26,13 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    // Dev bypass
-    if (DEV_COMPANY_IDS.includes(companyId)) {
+    // Dev bypass - only in development mode
+    if (process.env.NODE_ENV === 'development' && process.env.ENABLE_DEV_BYPASS === 'true') {
       return NextResponse.json({
         hasAccess: true,
-        currentTier: 'surge', // Max tier for dev
+        currentTier: 'surge',
         subscriptionStatus: 'active',
-        reason: 'dev_bypass'
+        reason: 'dev_mode'
       });
     }
 
