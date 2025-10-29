@@ -1,5 +1,5 @@
 /**
- * Paywall Modal Component
+ * Paywall Modal Component - Purple/Blue Theme
  * Shows Whop's embedded checkout when user needs to subscribe
  * Handles 7-day free trial for first-time users
  */
