@@ -216,10 +216,6 @@ export async function generateInsightsForClient(
       throw new Error('OpenAI API key not found. Check Vercel environment variables.');
     }
     
-      textCount: scrubbedTexts.length,
-      sampleText: scrubbedTexts[0]?.text?.substring(0, 100) + '...' || 'No text'
-    });
-    
     // Generate insights using OpenAI - throw error if fails
     const result = await generateWithOpenAI(scrubbedTexts);
     const isAIGenerated = true;
