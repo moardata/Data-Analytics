@@ -7,7 +7,6 @@
 
 import { Suspense, useState, useEffect } from 'react';
 import { useSearchParams } from 'next/navigation';
-import { WhopCheckoutEmbed } from '@whop/checkout/react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils/cn';
@@ -35,6 +34,23 @@ function UpgradeContent() {
     fetchCurrentTier();
   }, [clientId]);
 
+  // Listen for checkout completion from iframe
+  useEffect(() => {
+    const handleMessage = (event: MessageEvent) => {
+      // Check if message is from Whop
+      if (event.origin.includes('whop.com')) {
+        if (event.data?.type === 'checkout_complete' || event.data?.success) {
+          console.log('✅ Checkout complete!');
+          // Refresh page to update subscription
+          setTimeout(() => window.location.reload(), 1000);
+        }
+      }
+    };
+
+    window.addEventListener('message', handleMessage);
+    return () => window.removeEventListener('message', handleMessage);
+  }, []);
+
   const fetchCurrentTier = async () => {
     try {
       const res = await fetch(`/api/usage/check?companyId=${clientId}`);
@@ -60,14 +76,18 @@ function UpgradeContent() {
       return;
     }
 
-    // Open embedded checkout
-    setSelectedPlan(tier.whopPlanId);
-  };
+    // Map product IDs to actual plan IDs
+    const planIdMap: Record<string, string> = {
+      'prod_Tdu9YayfFDxhc': 'plan_Axr22QP0Sj86G',  // Starter $30
+      'prod_UNx31yqmQcXOx': 'plan_IrOqGUheWuL1x',  // Growth $99.99
+      'prod_03fZxoux0PVvW': 'plan_Jbp6KtLwdbZ0k',  // Pro $299
+      'prod_QFtQEu91TO2yh': 'plan_ioOlKM9cTtESv',  // Scale $599
+    };
 
-  const handleCheckoutComplete = (planId: string, receiptId?: string) => {
-    console.log('✅ Subscription successful!', { planId, receiptId });
-    // Refresh to update subscription status
-    window.location.reload();
+    const planId = planIdMap[tier.whopPlanId];
+    if (planId) {
+      setSelectedPlan(planId);
+    }
   };
 
   const tiers = getAllTiers();
@@ -166,13 +186,7 @@ function UpgradeContent() {
             </button>
 
             {/* Embedded Checkout */}
-            <WhopCheckoutEmbed
-              planId={selectedPlan}
-              theme="dark"
-              onComplete={handleCheckoutComplete}
-              skipRedirect={true}
-              themeOptions={{ accentColor: 'green' }}
-            />
+            <div data-whop-checkout-plan-id={selectedPlan} data-whop-checkout-theme="dark"></div>
           </div>
         </div>
       )}

@@ -8,7 +8,6 @@
 
 import { useEffect, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
-import { WhopCheckoutEmbed } from '@whop/checkout/react';
 import { X } from 'lucide-react';
 
 interface PaywallModalProps {
@@ -44,16 +43,38 @@ export function PaywallModal({ isOpen, onClose, reason }: PaywallModalProps) {
     checkTrialEligibility();
   }, [isOpen, companyId]);
 
+  // Listen for checkout completion from iframe
+  useEffect(() => {
+    const handleMessage = (event: MessageEvent) => {
+      // Check if message is from Whop
+      if (event.origin.includes('whop.com')) {
+        if (event.data?.type === 'checkout_complete' || event.data?.success) {
+          console.log('✅ Checkout complete!');
+          // Refresh page to update subscription
+          setTimeout(() => window.location.reload(), 1000);
+        }
+      }
+    };
+
+    window.addEventListener('message', handleMessage);
+    return () => window.removeEventListener('message', handleMessage);
+  }, []);
+
   const [selectedPlan, setSelectedPlan] = useState<string | null>(null);
 
-  const handleSelectPlan = (planId: string) => {
-    setSelectedPlan(planId);
-  };
-
-  const handleCheckoutComplete = (planId: string, receiptId?: string) => {
-    console.log('✅ Checkout complete!', { planId, receiptId });
-    // Refresh page to update subscription status
-    window.location.reload();
+  const handleSelectPlan = (productId: string) => {
+    // Map product IDs to actual plan IDs
+    const planIdMap: Record<string, string> = {
+      'prod_Tdu9YayfFDxhc': 'plan_Axr22QP0Sj86G',  // Starter $30
+      'prod_UNx31yqmQcXOx': 'plan_IrOqGUheWuL1x',  // Growth $99.99
+      'prod_03fZxoux0PVvW': 'plan_Jbp6KtLwdbZ0k',  // Pro $299
+      'prod_QFtQEu91TO2yh': 'plan_ioOlKM9cTtESv',  // Scale $599
+    };
+    
+    const planId = planIdMap[productId];
+    if (planId) {
+      setSelectedPlan(planId);
+    }
   };
 
   if (!isOpen) return null;
@@ -87,13 +108,7 @@ export function PaywallModal({ isOpen, onClose, reason }: PaywallModalProps) {
         ) : selectedPlan ? (
           /* Show embedded checkout for selected plan */
           <div className="p-0">
-            <WhopCheckoutEmbed
-              planId={selectedPlan}
-              theme="dark"
-              onComplete={handleCheckoutComplete}
-              skipRedirect={true}
-              themeOptions={{ accentColor: 'green' }}
-            />
+            <div data-whop-checkout-plan-id={selectedPlan} data-whop-checkout-theme="dark"></div>
           </div>
         ) : (
           <div className="p-8">
