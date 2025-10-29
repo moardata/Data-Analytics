@@ -11,7 +11,6 @@ import { useSearchParams } from 'next/navigation';
 
 export const dynamic = 'force-dynamic';
 import { Zap, RefreshCw, TrendingUp, AlertCircle, Lightbulb, Sparkles, Activity, Brain, Target, Download, HelpCircle } from 'lucide-react';
-import { ModernLoadingScreen } from '@/components/ModernLoadingScreen';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -211,11 +210,6 @@ function InsightsContent() {
       setRefreshing(false);
     }
   };
-
-  // Show loading state while getting company ID
-  if (!companyId) {
-    return <ModernLoadingScreen message="Loading AI Insights..." />;
-  }
 
   return (
     <div className={`min-h-screen ${theme.bg}`}>

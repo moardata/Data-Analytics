@@ -11,7 +11,6 @@ import { Settings as SettingsIcon, User, Bell, Key, Database, RefreshCw, Message
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { InfoModal } from '@/components/InfoModal';
-import { ModernLoadingScreen } from '@/components/ModernLoadingScreen';
 
 function SettingsContent() {
   const router = useRouter();
@@ -271,7 +270,11 @@ function SettingsContent() {
 
 export default function SettingsPage() {
   return (
-    <Suspense fallback={<ModernLoadingScreen message="Loading settings..." />}>
+    <Suspense fallback={
+      <div className="min-h-screen bg-gradient-to-b from-[#0a0a0a] to-[#0f0f0f] flex items-center justify-center">
+        <div className="text-[#A1A1AA] text-sm">Loading...</div>
+      </div>
+    }>
       <SettingsContent />
     </Suspense>
   );

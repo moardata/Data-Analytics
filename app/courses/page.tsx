@@ -10,7 +10,6 @@ import { useSearchParams } from 'next/navigation';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { BookOpen, Users, TrendingUp, CheckCircle, BarChart3, RefreshCw } from 'lucide-react';
-import { ModernLoadingScreen } from '@/components/ModernLoadingScreen';
 
 export const dynamic = 'force-dynamic';
 
@@ -287,7 +286,11 @@ function CoursesContent() {
 
 export default function CoursesPage() {
   return (
-    <Suspense fallback={<ModernLoadingScreen message="Loading courses..." />}>
+    <Suspense fallback={
+      <div className="min-h-screen bg-gradient-to-b from-[#0a0a0a] to-[#0f0f0f] flex items-center justify-center">
+        <div className="text-[#A1A1AA] text-sm">Loading...</div>
+      </div>
+    }>
       <CoursesContent />
     </Suspense>
   );

@@ -13,7 +13,6 @@ import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils/cn';
 import { getAllTiers, type TierName } from '@/lib/pricing/tiers';
 import { FeatureComparisonTable } from '@/components/FeatureComparisonTable';
-import { ModernLoadingScreen } from '@/components/ModernLoadingScreen';
 
 export const dynamic = 'force-dynamic';
 
@@ -96,13 +95,15 @@ function UpgradeContent() {
   const isPopular = (tierName: TierName) => tierName === 'pulse';
   const isCurrentTier = (tierName: TierName) => currentTier !== null && tierName === currentTier;
 
-  if (loading) {
-    return <ModernLoadingScreen message="Loading pricing plans..." />;
-  }
-
   return (
     <div className="min-h-screen bg-gradient-to-b from-[#0a0a0a] to-[#0f0f0f] py-12 px-4">
       <div className="max-w-7xl mx-auto">
+        {loading ? (
+          <div className="flex items-center justify-center py-12">
+            <div className="text-[#A1A1AA] text-sm">Loading...</div>
+          </div>
+        ) : (
+          <>
         {/* Header */}
         <div className="text-center mb-12">
           <h1 className="text-5xl font-black text-[#F8FAFC] mb-4 tracking-tight">
@@ -208,13 +209,20 @@ function UpgradeContent() {
           </div>
         </div>
       )}
+        </>
+        )}
+      </div>
     </div>
   );
 }
 
 export default function UpgradePage() {
   return (
-    <Suspense fallback={<ModernLoadingScreen message="Loading pricing plans..." />}>
+    <Suspense fallback={
+      <div className="min-h-screen bg-gradient-to-b from-[#0a0a0a] to-[#0f0f0f] flex items-center justify-center">
+        <div className="text-[#A1A1AA] text-sm">Loading...</div>
+      </div>
+    }>
       <UpgradeContent />
     </Suspense>
   );

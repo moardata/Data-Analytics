@@ -11,7 +11,6 @@ import { useSearchParams } from 'next/navigation';
 import RevenueDashboard from '@/components/RevenueDashboard';
 import { usePaywall } from '@/hooks/use-paywall';
 import { PaywallModal } from '@/components/PaywallModal';
-import { ModernLoadingScreen } from '@/components/ModernLoadingScreen';
 
 export const dynamic = 'force-dynamic';
 
@@ -78,14 +77,16 @@ function RevenueContent() {
     }
   };
 
-  if (loading) {
-    return <ModernLoadingScreen message="Loading revenue data..." />;
-  }
-
   return (
     <div className="min-h-screen bg-gradient-to-b from-[#0a0a0a] to-[#0f0f0f] p-8">
       <div className="max-w-7xl mx-auto">
-        <RevenueDashboard revenueData={revenue} onExport={handleExport} onRefresh={handleRefresh} refreshing={refreshing} />
+        {loading ? (
+          <div className="flex items-center justify-center py-12">
+            <div className="text-[#A1A1AA] text-sm">Loading...</div>
+          </div>
+        ) : (
+          <RevenueDashboard revenueData={revenue} onExport={handleExport} onRefresh={handleRefresh} refreshing={refreshing} />
+        )}
       </div>
       
       {/* Paywall Modal - triggered by button clicks */}
@@ -100,7 +101,11 @@ function RevenueContent() {
 
 export default function RevenuePage() {
   return (
-    <Suspense fallback={<ModernLoadingScreen message="Loading revenue dashboard..." />}>
+    <Suspense fallback={
+      <div className="min-h-screen bg-gradient-to-b from-[#0a0a0a] to-[#0f0f0f] flex items-center justify-center">
+        <div className="text-[#A1A1AA] text-sm">Loading...</div>
+      </div>
+    }>
       <RevenueContent />
     </Suspense>
   );
