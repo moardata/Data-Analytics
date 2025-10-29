@@ -48,12 +48,6 @@ export async function requireOwner(request: NextRequest): Promise<{
       };
     }
     
-      userId: auth.userId,
-      companyId: auth.companyId,
-      role: auth.accessLevel,
-      isOwner: auth.isOwner,
-    });
-    
     return {
       auth: {
         userId: auth.userId,
