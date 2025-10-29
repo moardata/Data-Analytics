@@ -171,29 +171,46 @@ function UpgradeContent() {
 
       {/* Embedded Checkout Modal */}
       {selectedPlan && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
-          <div className="relative w-full max-w-lg mx-auto bg-gradient-to-br from-[#0f0f0f] via-[#1a1a1a] to-[#0f0f0f] border border-[#2a2a2a] rounded-2xl shadow-2xl overflow-hidden max-h-[85vh] flex flex-col">
-            {/* Close button */}
-            <button
-              onClick={() => setSelectedPlan(null)}
-              className="absolute top-4 right-4 p-2 text-gray-400 hover:text-white transition-colors rounded-lg hover:bg-white/10 z-10"
-            >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-              </svg>
-            </button>
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+          {/* Background gradient glow */}
+          <div className="absolute inset-0 flex items-center justify-center">
+            <div className="w-[600px] h-[600px] bg-gradient-to-r from-purple-500/10 via-blue-500/10 to-emerald-500/10 rounded-full blur-3xl"></div>
+          </div>
+          
+          <div className="relative w-full max-w-lg mx-auto">
+            {/* Animated gradient border */}
+            <div className="absolute -inset-0.5 bg-gradient-to-r from-purple-500/50 via-blue-500/50 to-emerald-500/50 rounded-2xl blur opacity-40"></div>
+            
+            <div className="relative bg-[#0a0a0a] border border-purple-500/20 rounded-2xl shadow-2xl overflow-hidden max-h-[85vh] flex flex-col">
+              {/* Colored header bar */}
+              <div className="h-1 w-full bg-gradient-to-r from-purple-500 via-blue-500 to-emerald-500"></div>
+              
+              {/* Close button */}
+              <button
+                onClick={() => setSelectedPlan(null)}
+                className="absolute top-3 right-3 p-1.5 text-gray-400 hover:text-white transition-colors rounded-lg hover:bg-purple-500/10 border border-transparent hover:border-purple-500/30 z-10"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
 
-            {/* Embedded Checkout */}
-            <div className="flex-1 overflow-y-auto">
-              <WhopCheckoutEmbed
-                planId={selectedPlan}
-                theme="dark"
-                onComplete={(planId, receiptId) => {
-                  setTimeout(() => window.location.reload(), 1000);
-                }}
-                skipRedirect={true}
-                themeOptions={{ accentColor: 'green' }}
-              />
+              {/* Embedded Checkout */}
+              <div className="flex-1 overflow-y-auto">
+                <WhopCheckoutEmbed
+                  planId={selectedPlan}
+                  theme="dark"
+                  onComplete={(planId, receiptId) => {
+                    setTimeout(() => window.location.reload(), 1000);
+                  }}
+                  skipRedirect={true}
+                  themeOptions={{ 
+                    accentColor: '#8B5CF6',
+                    backgroundColor: '#0a0a0a',
+                    foregroundColor: '#ffffff'
+                  }}
+                />
+              </div>
             </div>
           </div>
         </div>
