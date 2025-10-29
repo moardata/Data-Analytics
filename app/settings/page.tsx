@@ -137,9 +137,9 @@ function SettingsContent() {
               <Button 
                 onClick={handleSyncStudents}
                 disabled={syncing}
-                className="bg-[#8B5CF6]/90 hover:bg-[#8B5CF6] text-white flex items-center gap-2"
+                className="bg-[#8B5CF6]/10 hover:bg-[#8B5CF6]/20 border border-[#8B5CF6]/30 text-white backdrop-blur-sm transition-all flex items-center gap-2"
               >
-                <RefreshCw className={`h-4 w-4 ${syncing ? 'animate-spin' : ''}`} />
+                <RefreshCw className={`h-4 w-4 text-[#8B5CF6] ${syncing ? 'animate-spin' : ''}`} />
                 {syncing ? 'Importing...' : 'Import Members from Whop'}
               </Button>
               {syncMessage && (
@@ -171,7 +171,7 @@ function SettingsContent() {
               </div>
               <Button 
                 onClick={handleUpgrade}
-                className="bg-[#3B82F6]/90 hover:bg-[#3B82F6] text-white"
+                className="bg-[#3B82F6]/10 hover:bg-[#3B82F6]/20 border border-[#3B82F6]/30 text-white backdrop-blur-sm transition-all"
               >
                 Upgrade Plan
               </Button>
@@ -208,9 +208,9 @@ function SettingsContent() {
               </div>
               <Button 
                 onClick={handleExportData}
-                className="bg-[#10B981]/90 hover:bg-[#10B981] text-white"
+                className="bg-[#10B981]/10 hover:bg-[#10B981]/20 border border-[#10B981]/30 text-white backdrop-blur-sm transition-all"
               >
-                <Download className="h-4 w-4 mr-2" />
+                <Download className="h-4 w-4 mr-2 text-[#10B981]" />
                 Export Data
               </Button>
             </CardContent>
