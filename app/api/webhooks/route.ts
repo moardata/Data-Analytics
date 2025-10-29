@@ -38,10 +38,6 @@ export async function POST(request: NextRequest): Promise<Response> {
 			});
 		}
 
-			action: webhookData.action,
-			userId: (webhookData.data as any)?.user_id,
-		});
-
 		// Log webhook event to audit table
 		const { data: webhookEvent } = await supabase
 			.from('webhook_events')

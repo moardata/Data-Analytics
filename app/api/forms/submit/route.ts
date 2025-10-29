@@ -151,12 +151,6 @@ export async function POST(request: NextRequest) {
     }
 
     // Store form submission
-      formId,
-      entityId: entityData.id,
-      clientId,
-      responsesCount: Object.keys(responses).length
-    });
-
     const { data: submission, error } = await supabase
       .from('form_submissions')
       .insert({

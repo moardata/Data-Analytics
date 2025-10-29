@@ -63,13 +63,6 @@ export interface DataStorageHistory {
  */
 export async function storeInsightWithMetadata(data: InsightStorageData): Promise<string | null> {
   try {
-      clientId: data.clientId,
-      title: data.title,
-      insightType: data.insightType,
-      model: data.metadata.model,
-      version: data.metadata.version
-    });
-
     const { data: insight, error } = await supabase
       .from('insights')
       .insert({

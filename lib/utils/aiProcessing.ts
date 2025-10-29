@@ -48,12 +48,6 @@ export async function processDataWithAI(
     // Collect comprehensive data
     const dataCollection = await collectComprehensiveData(clientId, timeRange);
     
-      hasData: dataCollection.hasData,
-      surveyCount: dataCollection.surveyResponses?.length || 0,
-      eventsCount: dataCollection.engagementEvents?.length || 0,
-      studentsCount: dataCollection.students?.length || 0
-    });
-    
     if (!dataCollection.hasData) {
       throw new Error('No student feedback data available. Please collect survey responses before generating insights.');
     }

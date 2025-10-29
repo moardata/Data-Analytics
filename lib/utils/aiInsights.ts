@@ -105,14 +105,6 @@ export async function generateInsightsForClient(
       .eq('client_id', clientId)
       .gte('created_at', startDate);
 
-      formSubmissions: formSubmissions?.length || 0,
-      events: allEvents?.length || 0,
-      subscriptions: subscriptions?.length || 0,
-      entities: entities?.length || 0,
-      startDate,
-      clientId
-    });
-
     // Check if we have ANY data at all
     const hasAnyData = (formSubmissions && formSubmissions.length > 0) ||
                        (allEvents && allEvents.length > 0) ||
