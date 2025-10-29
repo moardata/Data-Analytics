@@ -121,6 +121,8 @@ function FormsContent() {
   };
 
   const deleteForm = async (formId: string) => {
+    if (!requireSubscription('Delete survey')) return;
+    
     if (!confirm('Are you sure you want to delete this survey? This action cannot be undone.')) {
       return;
     }
