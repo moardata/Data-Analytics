@@ -326,6 +326,8 @@ export default function DashboardCreatorAnalytics({
           <DashboardToolbar 
             timeRange={timeRange}
             onTimeRangeChange={setTimeRange}
+            onSyncStudents={onSyncStudents}
+            syncing={syncingProp}
           />
         </Suspense>
         
@@ -355,6 +357,8 @@ export default function DashboardCreatorAnalytics({
           <DashboardToolbar 
             timeRange={timeRange}
             onTimeRangeChange={setTimeRange}
+            onSyncStudents={onSyncStudents}
+            syncing={syncingProp}
           />
         </Suspense>
         
@@ -383,6 +387,8 @@ export default function DashboardCreatorAnalytics({
           <DashboardToolbar 
             timeRange={timeRange}
             onTimeRangeChange={setTimeRange}
+            onSyncStudents={onSyncStudents}
+            syncing={syncingProp}
           />
         </Suspense>
         
@@ -407,6 +413,8 @@ export default function DashboardCreatorAnalytics({
         <DashboardToolbar 
           timeRange={timeRange}
           onTimeRangeChange={setTimeRange}
+          onSyncStudents={onSyncStudents}
+          syncing={syncingProp}
         />
       </Suspense>
 
