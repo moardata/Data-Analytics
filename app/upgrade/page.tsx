@@ -27,7 +27,7 @@ function UpgradeContent() {
   const searchParams = useSearchParams();
   const clientId = searchParams.get('companyId') || process.env.NEXT_PUBLIC_WHOP_COMPANY_ID;
   
-  const [currentTier, setCurrentTier] = useState<TierName>('atom');
+  const [currentTier, setCurrentTier] = useState<TierName | null>(null);
   const [loading, setLoading] = useState(true);
   const [selectedPlan, setSelectedPlan] = useState<string | null>(null);
 
@@ -56,7 +56,8 @@ function UpgradeContent() {
     try {
       const res = await fetch(`/api/usage/check?companyId=${clientId}`);
       const data = await res.json();
-      setCurrentTier(data.tier || 'atom');
+      // Don't default to 'atom' - keep it null if no subscription
+      setCurrentTier(data.tier || null);
     } catch (error) {
       console.error('Error fetching tier:', error);
     } finally {
@@ -93,7 +94,7 @@ function UpgradeContent() {
 
   const tiers = getAllTiers();
   const isPopular = (tierName: TierName) => tierName === 'pulse';
-  const isCurrentTier = (tierName: TierName) => tierName === currentTier;
+  const isCurrentTier = (tierName: TierName) => currentTier !== null && tierName === currentTier;
 
   if (loading) {
     return (

@@ -37,18 +37,31 @@ export async function GET(request: NextRequest) {
     }
 
     if (!clientData) {
-      return NextResponse.json(
-        { error: 'Client not found' },
-        { status: 404 }
-      );
+      // No client record = no subscription
+      return NextResponse.json({
+        tier: null,
+        hasAccess: false,
+        subscriptionStatus: 'none',
+        message: 'No subscription found'
+      });
     }
 
-    const tierName = (clientData.current_tier || 'atom') as TierName;
-    const tierInfo = getTier(tierName);
-    
-    // Check if trial is active
+    // Check if subscription is active or in trial
     const isOnTrial = clientData.trial_ends_at && new Date(clientData.trial_ends_at) > new Date();
-    const isActive = clientData.subscription_status === 'active' || isOnTrial;
+    const isActive = clientData.subscription_status === 'active' || clientData.subscription_status === 'trialing' || isOnTrial;
+
+    // If no active subscription, return no access
+    if (!isActive || !clientData.current_tier) {
+      return NextResponse.json({
+        tier: null,
+        hasAccess: false,
+        subscriptionStatus: clientData.subscription_status || 'none',
+        message: 'No active subscription'
+      });
+    }
+
+    const tierName = clientData.current_tier as TierName;
+    const tierInfo = getTier(tierName);
 
     // Build response
     const response: any = {

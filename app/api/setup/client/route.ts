@@ -51,11 +51,8 @@ export async function POST(request: NextRequest) {
       }, { headers: corsHeaders });
     }
 
-    // Calculate trial end date (7 days from now)
-    const trialEndsAt = new Date();
-    trialEndsAt.setDate(trialEndsAt.getDate() + 7);
-
-    // Create new client record with automatic free trial
+    // Create new client record WITHOUT trial
+    // Users MUST subscribe via Whop to get trial/access
     const { data: newClient, error } = await supabase
       .from('clients')
       .insert({
@@ -63,9 +60,9 @@ export async function POST(request: NextRequest) {
         company_id: companyId,
         email: companyEmail || `company_${companyId}@whop.com`,
         name: companyName || `Company ${companyId}`,
-        current_tier: 'atom', // Start with Starter tier during trial
-        subscription_status: 'trialing',
-        trial_ends_at: trialEndsAt.toISOString(),
+        current_tier: null, // NO tier until they subscribe
+        subscription_status: 'none', // NO subscription
+        trial_ends_at: null,
       })
       .select('id')
       .single();
@@ -79,10 +76,11 @@ export async function POST(request: NextRequest) {
     }
 
     return NextResponse.json({
-      message: 'Client created successfully with 7-day free trial',
+      message: 'Client created successfully - subscription required to access app',
       clientId: newClient.id,
-      trialEndsAt: trialEndsAt.toISOString(),
-      tier: 'atom',
+      tier: null,
+      subscriptionStatus: 'none',
+      requiresSubscription: true
     }, { headers: corsHeaders });
 
   } catch (error) {
