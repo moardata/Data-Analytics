@@ -21,7 +21,7 @@ interface FeatureRow {
 
 interface FeatureComparisonTableProps {
   onSelectTier: (tierName: TierName) => void;
-  currentTier?: TierName;
+  currentTier?: TierName | null;
 }
 
 export function FeatureComparisonTable({ onSelectTier, currentTier }: FeatureComparisonTableProps) {

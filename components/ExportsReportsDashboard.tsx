@@ -39,7 +39,7 @@ export default function ExportsReportsDashboard({ companyId }: ExportsReportsDas
   const [exporting, setExporting] = useState<string | null>(null);
   const [recentExports, setRecentExports] = useState<any[]>([]);
   const [selectedTimeRange, setSelectedTimeRange] = useState<TimeRange>('weekly');
-  const [userTier, setUserTier] = useState<TierName>('atom');
+  const [userTier, setUserTier] = useState<TierName | null>(null);
 
   // Fetch user tier on mount
   useEffect(() => {
@@ -47,7 +47,7 @@ export default function ExportsReportsDashboard({ companyId }: ExportsReportsDas
       try {
         const res = await fetch(`/api/usage/check?companyId=${companyId}`);
         const data = await res.json();
-        setUserTier(data.tier || 'atom');
+        setUserTier(data.tier || null);
       } catch (err) {
         console.error('Error fetching tier:', err);
       }
@@ -71,7 +71,7 @@ export default function ExportsReportsDashboard({ companyId }: ExportsReportsDas
       type: 'pdf',
       icon: <FileText className="h-5 w-5" />,
       color: 'bg-[#10B981]',
-      requiresTier: 'pulse',
+      requiresTier: 'pulse', // Pro plan
     },
     {
       id: 'students_csv',
@@ -80,13 +80,13 @@ export default function ExportsReportsDashboard({ companyId }: ExportsReportsDas
       type: 'csv',
       icon: <BarChart3 className="h-5 w-5" />,
       color: 'bg-[#3B82F6]',
-      requiresTier: 'core',
+      requiresTier: 'core', // Growth plan
     }
   ];
 
   const isPremium = userTier === 'pulse' || userTier === 'surge';
-  const canExportPDF = canPerformAction(userTier, 'pdfExport', companyId);
-  const canExportCSV = canPerformAction(userTier, 'csvExport', companyId);
+  const canExportPDF = userTier ? canPerformAction(userTier, 'pdfExport', companyId) : false;
+  const canExportCSV = userTier ? canPerformAction(userTier, 'csvExport', companyId) : false;
 
   const handleExport = async (option: ExportOption) => {
     // Check if user has permission
@@ -223,7 +223,13 @@ export default function ExportsReportsDashboard({ companyId }: ExportsReportsDas
                 {isLocked ? (
                   <>
                     <Lock className="h-4 w-4 mr-2" />
-                    {option.requiresTier ? `Requires ${option.requiresTier.toUpperCase()} Plan` : 'Upgrade to Unlock'}
+                    {option.requiresTier ? `Requires ${
+                      option.requiresTier === 'atom' ? 'Starter' :
+                      option.requiresTier === 'core' ? 'Growth' :
+                      option.requiresTier === 'pulse' ? 'Pro' :
+                      option.requiresTier === 'surge' ? 'Scale' : 
+                      option.requiresTier
+                    } Plan` : 'Upgrade to Unlock'}
                   </>
                 ) : exporting === option.id ? (
                   <>

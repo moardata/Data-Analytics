@@ -490,9 +490,14 @@ function InsightsContent() {
                     </div>
                   </div>
                   <InsightsGrid 
-                    items={transformedInsights}
+                    items={transformedInsights.filter(i => i.status !== 'action_taken')}
                     columns={{ base: 1, md: 2, xl: 3 }}
                     onOpen={(id) => console.log('Opened insight:', id)}
+                    onMarkActioned={(id) => {
+                      console.log('Insight marked as actioned:', id);
+                      // Refresh insights to update the lists
+                      handleRefresh();
+                    }}
                     accent="#10B981"
                   />
                 </div>

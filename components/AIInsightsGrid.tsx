@@ -24,11 +24,13 @@ export function InsightsGrid({
   items,
   columns = { base: 1, md: 2, xl: 3 },
   onOpen,
+  onMarkActioned,
   accent = '#10B981',
 }: {
   items: Insight[];
   columns?: { base: 1 | 2 | 3; md?: 1 | 2 | 3; xl?: 1 | 2 | 3 };
   onOpen?: (id: string) => void;
+  onMarkActioned?: (id: string) => void;
   accent?: string;
 }) {
   const clsCols = `grid grid-cols-${columns.base} ${
@@ -37,7 +39,7 @@ export function InsightsGrid({
   return (
     <div className={clsCols}>
       {items.map((i) => (
-        <InsightCard key={i.id} item={i} accent={accent} onOpen={onOpen} />
+        <InsightCard key={i.id} item={i} accent={accent} onOpen={onOpen} onMarkActioned={onMarkActioned} />
       ))}
     </div>
   );
@@ -46,10 +48,12 @@ export function InsightsGrid({
 export function InsightCard({
   item,
   onOpen,
+  onMarkActioned,
   accent = '#10B981',
 }: {
   item: Insight;
   onOpen?: (id: string) => void;
+  onMarkActioned?: (id: string) => void;
   accent?: string;
 }) {
   const [open, setOpen] = useState(false);
@@ -73,6 +77,10 @@ export function InsightCard({
 
       if (response.ok) {
         setActionTaken(true);
+        // Notify parent to refresh insights list
+        if (onMarkActioned) {
+          onMarkActioned(item.id);
+        }
       }
     } catch (error) {
       console.error('Error marking action:', error);
