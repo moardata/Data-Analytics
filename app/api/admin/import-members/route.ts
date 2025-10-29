@@ -74,7 +74,14 @@ export async function POST(request: NextRequest) {
     
     if (!membershipsResponse.ok) {
       const errorText = await membershipsResponse.text();
-      console.error('❌ [Import Members] Whop API error:', membershipsResponse.status, errorText);
+      console.error('❌ [Import Members] Whop API error:', {
+        status: membershipsResponse.status,
+        statusText: membershipsResponse.statusText,
+        responseBody: errorText,
+        apiKey: whopApiKey ? `${whopApiKey.substring(0, 10)}...` : 'NOT SET',
+        companyId: companyId,
+        url: `https://api.whop.com/api/v2/memberships?company_id=${companyId}&per=100`
+      });
       
       // If 404, it might mean no memberships exist yet
       if (membershipsResponse.status === 404) {
@@ -89,8 +96,16 @@ export async function POST(request: NextRequest) {
         });
       }
       
+      // Return detailed error for debugging
       return NextResponse.json(
-        { error: `Whop API error (${membershipsResponse.status}). Make sure your Whop API key is valid and has proper permissions.` },
+        { 
+          error: `Whop API error (${membershipsResponse.status}). ${errorText || 'No error details from Whop.'}`,
+          debug: {
+            status: membershipsResponse.status,
+            companyId: companyId,
+            apiKeyPrefix: whopApiKey ? whopApiKey.substring(0, 10) : 'NOT SET'
+          }
+        },
         { status: 500 }
       );
     }
