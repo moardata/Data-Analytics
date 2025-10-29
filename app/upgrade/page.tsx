@@ -168,6 +168,8 @@ function UpgradeContent() {
                 All plans include basic analytics and webhook integrations. Cancel anytime.
               </p>
             </div>
+          </>
+        )}
       </div>
 
       {/* Embedded Checkout Modal */}
@@ -209,9 +211,6 @@ function UpgradeContent() {
           </div>
         </div>
       )}
-          </>
-        )}
-      </div>
     </div>
   );
 }
