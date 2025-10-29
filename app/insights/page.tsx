@@ -301,7 +301,7 @@ function InsightsContent() {
 
         {/* Stats Cards */}
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-8">
-          <Card className={`${theme.panel} ${theme.border} rounded-xl p-4`}>
+          <Card className={`${theme.panel} ${theme.border} rounded-xl p-4 relative hover:z-[150] transition-all`}>
             <div className="flex items-center justify-between gap-2">
               <div className="flex items-center gap-3 flex-1 min-w-0">
                 <div className="w-8 h-8 rounded-lg bg-[#10B981]/20 flex items-center justify-center flex-shrink-0">
@@ -312,9 +312,9 @@ function InsightsContent() {
                   <p className="text-xs text-[#A1A1AA] truncate">Total Insights</p>
                 </div>
               </div>
-              <div className="group/info relative flex-shrink-0 z-[100]">
+              <div className="group/info relative flex-shrink-0">
                 <HelpCircle className="h-3.5 w-3.5 text-[#A1A1AA] hover:text-[#10B981] cursor-help transition-colors" />
-                <div className="invisible group-hover/info:visible absolute right-0 top-6 w-56 p-3 bg-[#0a0a0a] border border-[#10B981]/30 rounded-lg shadow-xl z-[100]">
+                <div className="invisible group-hover/info:visible absolute right-0 top-6 w-56 p-3 bg-[#0a0a0a] border border-[#10B981]/30 rounded-lg shadow-xl z-[200]">
                   <p className="text-xs text-[#F8FAFC] font-semibold mb-1">Total Insights</p>
                   <p className="text-xs text-[#A1A1AA]">All AI-generated insights for your selected time range. More insights = more actionable data!</p>
                 </div>
@@ -322,7 +322,7 @@ function InsightsContent() {
             </div>
           </Card>
 
-          <Card className={`${theme.panel} ${theme.border} rounded-xl p-4`}>
+          <Card className={`${theme.panel} ${theme.border} rounded-xl p-4 relative hover:z-[150] transition-all`}>
             <div className="flex items-center justify-between gap-2">
               <div className="flex items-center gap-3 flex-1 min-w-0">
                 <div className="w-8 h-8 rounded-lg bg-[#8B5CF6]/20 flex items-center justify-center flex-shrink-0">
@@ -335,7 +335,7 @@ function InsightsContent() {
               </div>
               <div className="group/info relative flex-shrink-0 z-[100]">
                 <HelpCircle className="h-3.5 w-3.5 text-[#A1A1AA] hover:text-[#10B981] cursor-help transition-colors" />
-                <div className="invisible group-hover/info:visible absolute right-0 top-6 w-56 p-3 bg-[#0a0a0a] border border-[#10B981]/30 rounded-lg shadow-xl z-[100]">
+                <div className="invisible group-hover/info:visible absolute right-0 top-6 w-56 p-3 bg-[#0a0a0a] border border-[#10B981]/30 rounded-lg shadow-xl z-[200]">
                   <p className="text-xs text-[#F8FAFC] font-semibold mb-1">Recommendations</p>
                   <p className="text-xs text-[#A1A1AA]">Actionable suggestions to improve your course. Implement these to boost student success!</p>
                 </div>
@@ -343,7 +343,7 @@ function InsightsContent() {
             </div>
           </Card>
 
-          <Card className={`${theme.panel} ${theme.border} rounded-xl p-4`}>
+          <Card className={`${theme.panel} ${theme.border} rounded-xl p-4 relative hover:z-[150] transition-all`}>
             <div className="flex items-center justify-between gap-2">
               <div className="flex items-center gap-3 flex-1 min-w-0">
                 <div className="w-8 h-8 rounded-lg bg-[#EF4444]/20 flex items-center justify-center flex-shrink-0">
@@ -356,7 +356,7 @@ function InsightsContent() {
               </div>
               <div className="group/info relative flex-shrink-0 z-[100]">
                 <HelpCircle className="h-3.5 w-3.5 text-[#A1A1AA] hover:text-[#10B981] cursor-help transition-colors" />
-                <div className="invisible group-hover/info:visible absolute right-0 top-6 w-56 p-3 bg-[#0a0a0a] border border-[#10B981]/30 rounded-lg shadow-xl z-[100]">
+                <div className="invisible group-hover/info:visible absolute right-0 top-6 w-56 p-3 bg-[#0a0a0a] border border-[#10B981]/30 rounded-lg shadow-xl z-[200]">
                   <p className="text-xs text-[#F8FAFC] font-semibold mb-1">High Priority</p>
                   <p className="text-xs text-[#A1A1AA]">Urgent insights needing immediate attention. Address these first for maximum impact!</p>
                 </div>
@@ -364,7 +364,7 @@ function InsightsContent() {
             </div>
           </Card>
 
-          <Card className={`${theme.panel} ${theme.border} rounded-xl p-4`}>
+          <Card className={`${theme.panel} ${theme.border} rounded-xl p-4 relative hover:z-[150] transition-all`}>
             <div className="flex items-center justify-between gap-2">
               <div className="flex items-center gap-3 flex-1 min-w-0">
                 <div className="w-8 h-8 rounded-lg bg-[#F59E0B]/20 flex items-center justify-center flex-shrink-0">
@@ -377,7 +377,7 @@ function InsightsContent() {
               </div>
               <div className="group/info relative flex-shrink-0 z-[100]">
                 <HelpCircle className="h-3.5 w-3.5 text-[#A1A1AA] hover:text-[#10B981] cursor-help transition-colors" />
-                <div className="invisible group-hover/info:visible absolute right-0 top-6 w-56 p-3 bg-[#0a0a0a] border border-[#10B981]/30 rounded-lg shadow-xl z-[100]">
+                <div className="invisible group-hover/info:visible absolute right-0 top-6 w-56 p-3 bg-[#0a0a0a] border border-[#10B981]/30 rounded-lg shadow-xl z-[200]">
                   <p className="text-xs text-[#F8FAFC] font-semibold mb-1">Issues Detected</p>
                   <p className="text-xs text-[#A1A1AA]">Problems identified in your course or student engagement. Fix these to improve outcomes!</p>
                 </div>
@@ -385,7 +385,7 @@ function InsightsContent() {
             </div>
           </Card>
 
-          <Card className={`${theme.panel} ${theme.border} rounded-xl p-4`}>
+          <Card className={`${theme.panel} ${theme.border} rounded-xl p-4 relative hover:z-[150] transition-all`}>
             <div className="flex items-center justify-between gap-2">
               <div className="flex items-center gap-3 flex-1 min-w-0">
                 <div className="w-8 h-8 rounded-lg bg-[#10B981]/20 flex items-center justify-center flex-shrink-0">
@@ -398,7 +398,7 @@ function InsightsContent() {
               </div>
               <div className="group/info relative flex-shrink-0 z-[100]">
                 <HelpCircle className="h-3.5 w-3.5 text-[#A1A1AA] hover:text-[#10B981] cursor-help transition-colors" />
-                <div className="invisible group-hover/info:visible absolute right-0 top-6 w-56 p-3 bg-[#0a0a0a] border border-[#10B981]/30 rounded-lg shadow-xl z-[100]">
+                <div className="invisible group-hover/info:visible absolute right-0 top-6 w-56 p-3 bg-[#0a0a0a] border border-[#10B981]/30 rounded-lg shadow-xl z-[200]">
                   <p className="text-xs text-[#F8FAFC] font-semibold mb-1">AI Generated</p>
                   <p className="text-xs text-[#A1A1AA]">Insights created by AI analysis of your student data. Fresh, intelligent recommendations!</p>
                 </div>
@@ -406,7 +406,7 @@ function InsightsContent() {
             </div>
           </Card>
 
-          <Card className={`${theme.panel} ${theme.border} rounded-xl p-4`}>
+          <Card className={`${theme.panel} ${theme.border} rounded-xl p-4 relative hover:z-[150] transition-all`}>
             <div className="flex items-center justify-between gap-2">
               <div className="flex items-center gap-3 flex-1 min-w-0">
                 <div className="w-8 h-8 rounded-lg bg-[#10B981]/20 flex items-center justify-center flex-shrink-0">
@@ -419,7 +419,7 @@ function InsightsContent() {
               </div>
               <div className="group/info relative flex-shrink-0 z-[100]">
                 <HelpCircle className="h-3.5 w-3.5 text-[#A1A1AA] hover:text-[#10B981] cursor-help transition-colors" />
-                <div className="invisible group-hover/info:visible absolute right-0 top-6 w-56 p-3 bg-[#0a0a0a] border border-[#10B981]/30 rounded-lg shadow-xl z-[100]">
+                <div className="invisible group-hover/info:visible absolute right-0 top-6 w-56 p-3 bg-[#0a0a0a] border border-[#10B981]/30 rounded-lg shadow-xl z-[200]">
                   <p className="text-xs text-[#F8FAFC] font-semibold mb-1">Positive Trends</p>
                   <p className="text-xs text-[#A1A1AA]">Great things happening in your community. Celebrate and amplify what's working!</p>
                 </div>
@@ -505,7 +505,7 @@ function InsightsContent() {
                     <h3 className="text-lg font-medium text-[#F8FAFC]">Structured AI Analysis</h3>
                     <div className="group/info relative z-[100]">
                       <HelpCircle className="h-4 w-4 text-[#A1A1AA] hover:text-[#8B5CF6] cursor-help transition-colors" />
-                      <div className="invisible group-hover/info:visible absolute left-0 top-6 w-64 p-3 bg-[#0a0a0a] border border-[#8B5CF6]/30 rounded-lg shadow-xl z-[100]">
+                      <div className="invisible group-hover/info:visible absolute left-0 top-6 w-64 p-3 bg-[#0a0a0a] border border-[#8B5CF6]/30 rounded-lg shadow-xl z-[200]">
                         <p className="text-xs text-[#F8FAFC] font-semibold mb-1">Structured AI Analysis</p>
                         <p className="text-xs text-[#A1A1AA]">AI-organized insights by category. Quickly scan recommendations, issues, and trends to prioritize actions.</p>
                       </div>
@@ -518,7 +518,7 @@ function InsightsContent() {
                     <h3 className="text-lg font-medium text-[#F8FAFC]">Engagement Analytics</h3>
                     <div className="group/info relative z-[100]">
                       <HelpCircle className="h-4 w-4 text-[#A1A1AA] hover:text-[#8B5CF6] cursor-help transition-colors" />
-                      <div className="invisible group-hover/info:visible absolute left-0 top-6 w-64 p-3 bg-[#0a0a0a] border border-[#8B5CF6]/30 rounded-lg shadow-xl z-[100]">
+                      <div className="invisible group-hover/info:visible absolute left-0 top-6 w-64 p-3 bg-[#0a0a0a] border border-[#8B5CF6]/30 rounded-lg shadow-xl z-[200]">
                         <p className="text-xs text-[#F8FAFC] font-semibold mb-1">Engagement Analytics</p>
                         <p className="text-xs text-[#A1A1AA]">Track student activity, content views, and participation trends. See who's engaged and who needs attention.</p>
                       </div>
@@ -537,7 +537,7 @@ function InsightsContent() {
                 <h3 className="text-lg font-medium text-[#F8FAFC]">Action Feedback Loop</h3>
                 <div className="group/info relative z-[100]">
                   <HelpCircle className="h-4 w-4 text-[#A1A1AA] hover:text-[#F59E0B] cursor-help transition-colors" />
-                  <div className="invisible group-hover/info:visible absolute left-0 top-6 w-64 p-3 bg-[#0a0a0a] border border-[#F59E0B]/30 rounded-lg shadow-xl z-[100]">
+                  <div className="invisible group-hover/info:visible absolute left-0 top-6 w-64 p-3 bg-[#0a0a0a] border border-[#F59E0B]/30 rounded-lg shadow-xl z-[200]">
                     <p className="text-xs text-[#F8FAFC] font-semibold mb-1">Action Feedback Loop</p>
                     <p className="text-xs text-[#A1A1AA]">Track which insights you've acted on and measure results. Close the loop from insight to action to impact.</p>
                   </div>
@@ -556,7 +556,7 @@ function InsightsContent() {
                     <h3 className="text-lg font-medium text-[#F8FAFC]">Data Collection Status</h3>
                     <div className="group/info relative z-[100]">
                       <HelpCircle className="h-4 w-4 text-[#A1A1AA] hover:text-[#3B82F6] cursor-help transition-colors" />
-                      <div className="invisible group-hover/info:visible absolute left-0 top-6 w-64 p-3 bg-[#0a0a0a] border border-[#3B82F6]/30 rounded-lg shadow-xl z-[100]">
+                      <div className="invisible group-hover/info:visible absolute left-0 top-6 w-64 p-3 bg-[#0a0a0a] border border-[#3B82F6]/30 rounded-lg shadow-xl z-[200]">
                         <p className="text-xs text-[#F8FAFC] font-semibold mb-1">Data Collection Status</p>
                         <p className="text-xs text-[#A1A1AA]">Monitor how much data is being collected from students. More data = better AI insights and recommendations.</p>
                       </div>
@@ -569,7 +569,7 @@ function InsightsContent() {
                     <h3 className="text-lg font-medium text-[#F8FAFC]">System Health</h3>
                     <div className="group/info relative z-[100]">
                       <HelpCircle className="h-4 w-4 text-[#A1A1AA] hover:text-[#3B82F6] cursor-help transition-colors" />
-                      <div className="invisible group-hover/info:visible absolute left-0 top-6 w-64 p-3 bg-[#0a0a0a] border border-[#3B82F6]/30 rounded-lg shadow-xl z-[100]">
+                      <div className="invisible group-hover/info:visible absolute left-0 top-6 w-64 p-3 bg-[#0a0a0a] border border-[#3B82F6]/30 rounded-lg shadow-xl z-[200]">
                         <p className="text-xs text-[#F8FAFC] font-semibold mb-1">System Health</p>
                         <p className="text-xs text-[#A1A1AA]">Check the status of AI processing, integrations, and data pipelines. Ensure everything is running smoothly.</p>
                       </div>
@@ -588,7 +588,7 @@ function InsightsContent() {
                 <h3 className="text-lg font-medium text-[#F8FAFC]">Exports & Reports</h3>
                 <div className="group/info relative z-[100]">
                   <HelpCircle className="h-4 w-4 text-[#A1A1AA] hover:text-[#10B981] cursor-help transition-colors" />
-                  <div className="invisible group-hover/info:visible absolute left-0 top-6 w-64 p-3 bg-[#0a0a0a] border border-[#10B981]/30 rounded-lg shadow-xl z-[100]">
+                  <div className="invisible group-hover/info:visible absolute left-0 top-6 w-64 p-3 bg-[#0a0a0a] border border-[#10B981]/30 rounded-lg shadow-xl z-[200]">
                     <p className="text-xs text-[#F8FAFC] font-semibold mb-1">Exports & Reports</p>
                     <p className="text-xs text-[#A1A1AA]">Download your data and insights as CSV, PDF, or Excel. Share reports with your team or analyze externally.</p>
                   </div>
