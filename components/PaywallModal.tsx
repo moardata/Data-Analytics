@@ -9,7 +9,7 @@
 import { useEffect, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { WhopCheckoutEmbed } from '@whop/checkout/react';
-import { X } from 'lucide-react';
+import { X, CheckCircle } from 'lucide-react';
 
 interface PaywallModalProps {
   isOpen: boolean;
