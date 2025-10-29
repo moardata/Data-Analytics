@@ -117,7 +117,7 @@ function SettingsContent() {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 gap-4">
           {/* Data Management Card */}
           <Card className="border border-[#1a1a1a] bg-[#0f0f0f] hover:border-[#2a2a2a] transition-all">
             <CardHeader>
@@ -129,27 +129,31 @@ function SettingsContent() {
                 Import your Whop members
               </CardDescription>
             </CardHeader>
-            <CardContent className="space-y-4">
-              <p className="text-sm text-[#A1A1AA]">
-                Import all current members from Whop to instantly populate your analytics dashboard.
-              </p>
-              <Button 
-                onClick={handleSyncStudents}
-                disabled={syncing}
-                className="bg-[#8B5CF6]/10 hover:bg-[#8B5CF6]/20 border border-[#8B5CF6]/30 text-white backdrop-blur-sm transition-all flex items-center gap-2"
-              >
-                <RefreshCw className={`h-4 w-4 text-[#8B5CF6] ${syncing ? 'animate-spin' : ''}`} />
-                {syncing ? 'Importing...' : 'Import Members from Whop'}
-              </Button>
-              {syncMessage && (
-                <div className={`text-xs p-2.5 rounded-lg border ${
-                  syncMessage.startsWith('✅') ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30' :
-                  syncMessage.startsWith('🔄') ? 'bg-blue-500/10 text-blue-400 border-blue-500/30' :
-                  'bg-red-500/10 text-red-400 border-red-500/30'
-                }`}>
-                  {syncMessage}
+            <CardContent>
+              <div className="flex flex-col md:flex-row md:items-center gap-4">
+                <p className="text-sm text-[#A1A1AA] md:flex-1">
+                  Import all current members from Whop to instantly populate your analytics dashboard.
+                </p>
+                <div className="md:w-auto">
+                  <Button 
+                    onClick={handleSyncStudents}
+                    disabled={syncing}
+                    className="w-full md:w-auto bg-[#8B5CF6]/10 hover:bg-[#8B5CF6]/20 border border-[#8B5CF6]/30 text-white backdrop-blur-sm transition-all flex items-center gap-2"
+                  >
+                    <RefreshCw className={`h-4 w-4 text-[#8B5CF6] ${syncing ? 'animate-spin' : ''}`} />
+                    {syncing ? 'Importing...' : 'Import Members from Whop'}
+                  </Button>
+                  {syncMessage && (
+                    <div className={`mt-2 text-xs p-2.5 rounded-lg border ${
+                      syncMessage.startsWith('✅') ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30' :
+                      syncMessage.startsWith('🔄') ? 'bg-blue-500/10 text-blue-400 border-blue-500/30' :
+                      'bg-red-500/10 text-red-400 border-red-500/30'
+                    }`}>
+                      {syncMessage}
+                    </div>
+                  )}
                 </div>
-              )}
+              </div>
             </CardContent>
           </Card>
 
@@ -164,16 +168,18 @@ function SettingsContent() {
                 Manage your plan
               </CardDescription>
             </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="text-sm text-[#A1A1AA]">
-                <span className="font-medium">Current Plan:</span> <span className="text-[#8B5CF6] font-semibold">Starter</span>
+            <CardContent>
+              <div className="flex flex-col md:flex-row md:items-center gap-4">
+                <div className="text-sm text-[#A1A1AA] md:flex-1">
+                  <span className="font-medium">Current Plan:</span> <span className="text-[#8B5CF6] font-semibold">Starter</span>
+                </div>
+                <Button 
+                  onClick={handleUpgrade}
+                  className="w-full md:w-auto bg-[#3B82F6]/10 hover:bg-[#3B82F6]/20 border border-[#3B82F6]/30 text-white backdrop-blur-sm transition-all"
+                >
+                  Upgrade Plan
+                </Button>
               </div>
-              <Button 
-                onClick={handleUpgrade}
-                className="bg-[#3B82F6]/10 hover:bg-[#3B82F6]/20 border border-[#3B82F6]/30 text-white backdrop-blur-sm transition-all"
-              >
-                Upgrade Plan
-              </Button>
             </CardContent>
           </Card>
 
@@ -188,35 +194,39 @@ function SettingsContent() {
                 Manage your data settings
               </CardDescription>
             </CardHeader>
-            <CardContent className="space-y-3">
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-[#A1A1AA]">Data retention</span>
-                <span className="text-sm font-semibold text-[#10B981]">14 days</span>
+            <CardContent>
+              <div className="flex flex-col md:flex-row md:items-center gap-4">
+                <div className="space-y-3 md:flex-1">
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-[#A1A1AA]">Data retention</span>
+                    <span className="text-sm font-semibold text-[#10B981]">14 days</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-[#A1A1AA]">Analytics tracking</span>
+                    <label className="relative inline-flex items-center cursor-pointer">
+                      <input 
+                        type="checkbox" 
+                        className="sr-only peer" 
+                        checked={analyticsTracking}
+                        onChange={(e) => handleToggle('analytics_tracking', e.target.checked)}
+                      />
+                      <div className="w-11 h-6 bg-[#1a1a1a] rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#8B5CF6]"></div>
+                    </label>
+                  </div>
+                </div>
+                <Button 
+                  onClick={handleExportData}
+                  className="w-full md:w-auto bg-[#10B981]/10 hover:bg-[#10B981]/20 border border-[#10B981]/30 text-white backdrop-blur-sm transition-all"
+                >
+                  <Download className="h-4 w-4 mr-2 text-[#10B981]" />
+                  Export Data
+                </Button>
               </div>
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-[#A1A1AA]">Analytics tracking</span>
-                <label className="relative inline-flex items-center cursor-pointer">
-                  <input 
-                    type="checkbox" 
-                    className="sr-only peer" 
-                    checked={analyticsTracking}
-                    onChange={(e) => handleToggle('analytics_tracking', e.target.checked)}
-                  />
-                  <div className="w-11 h-6 bg-[#1a1a1a] rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#8B5CF6]"></div>
-                </label>
-              </div>
-              <Button 
-                onClick={handleExportData}
-                className="bg-[#10B981]/10 hover:bg-[#10B981]/20 border border-[#10B981]/30 text-white backdrop-blur-sm transition-all"
-              >
-                <Download className="h-4 w-4 mr-2 text-[#10B981]" />
-                Export Data
-              </Button>
             </CardContent>
           </Card>
 
-          {/* Support Card - Spans 2 columns */}
-          <Card className="border border-[#1a1a1a] bg-[#0f0f0f] hover:border-[#2a2a2a] transition-all md:col-span-2">
+          {/* Support Card */}
+          <Card className="border border-[#1a1a1a] bg-[#0f0f0f] hover:border-[#2a2a2a] transition-all">
             <CardHeader>
               <CardTitle className="text-lg font-semibold text-[#F8FAFC] flex items-center gap-2">
                 <Bell className="h-5 w-5 text-[#F59E0B]" />
