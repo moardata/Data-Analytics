@@ -61,25 +61,28 @@ export function OnboardingFlow({ onInfoClick, onSettingsClick }: OnboardingFlowP
   if (!show) return null;
 
   return (
-    <div className="fixed inset-0 bg-black/70 z-[100] flex items-center justify-center p-4 backdrop-blur-sm">
-      <Card className="border-[#10B981] border-2 bg-[#0a0a0a] w-full max-w-md shadow-2xl animate-in fade-in zoom-in duration-300">
+    <div className="fixed inset-0 bg-black/70 z-[100] flex items-center justify-center p-4 backdrop-blur-md">
+      <Card className="border border-[#10B981]/30 bg-gradient-to-br from-[#0a0a0a] to-[#0f1a14] w-full max-w-md shadow-2xl animate-in fade-in zoom-in duration-300 relative overflow-hidden">
+        {/* Subtle sheen overlay */}
+        <div className="absolute inset-0 bg-gradient-to-br from-white/[0.03] via-transparent to-transparent pointer-events-none"></div>
+        
         <CardHeader className="relative">
           <button 
             onClick={handleSkip}
-            className="absolute right-4 top-4 p-2 hover:bg-[#1a1a1a] rounded-lg transition-colors"
+            className="absolute right-4 top-4 p-2 hover:bg-[#1a1a1a] rounded-lg transition-colors z-10"
           >
-            <X className="h-4 w-4 text-[#A1A1AA]" />
+            <X className="h-4 w-4 text-[#A1A1AA] hover:text-[#F8FAFC]" />
           </button>
           
           <div className="flex items-center gap-3 mb-2">
-            <div className="w-10 h-10 rounded-full bg-[#10B981]/20 flex items-center justify-center">
-              <Sparkles className="h-5 w-5 text-[#10B981]" />
+            <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-[#10B981] to-[#059669] flex items-center justify-center shadow-lg shadow-[#10B981]/20">
+              <Sparkles className="h-6 w-6 text-white" />
             </div>
             <div>
-              <CardTitle className="text-[#F8FAFC] text-xl">Welcome to CreatorIQ! 🎉</CardTitle>
-              <div className="flex items-center gap-2 mt-1">
-                <div className={`h-1.5 w-8 rounded-full ${step >= 1 ? 'bg-[#10B981]' : 'bg-[#1a1a1a]'}`}></div>
-                <div className={`h-1.5 w-8 rounded-full ${step >= 2 ? 'bg-[#10B981]' : 'bg-[#1a1a1a]'}`}></div>
+              <CardTitle className="text-[#F8FAFC] text-xl font-bold">Welcome to CreatorIQ! 🎉</CardTitle>
+              <div className="flex items-center gap-2 mt-1.5">
+                <div className={`h-2 w-10 rounded-full transition-all duration-300 ${step >= 1 ? 'bg-gradient-to-r from-[#10B981] to-[#059669]' : 'bg-[#1a1a1a]'}`}></div>
+                <div className={`h-2 w-10 rounded-full transition-all duration-300 ${step >= 2 ? 'bg-gradient-to-r from-[#10B981] to-[#059669]' : 'bg-[#1a1a1a]'}`}></div>
               </div>
             </div>
           </div>
@@ -100,7 +103,7 @@ export function OnboardingFlow({ onInfoClick, onSettingsClick }: OnboardingFlowP
 
               <Button 
                 onClick={handleInfoClick}
-                className="w-full bg-[#10B981] hover:bg-[#0E9F71] text-white gap-2 h-12"
+                className="w-full bg-gradient-to-r from-[#0d4d2f] to-[#0a3d26] hover:from-[#0f5836] hover:to-[#0c4a2d] text-white gap-2 h-12 shadow-lg shadow-[#10B981]/10 border border-[#10B981]/20"
               >
                 <Sparkles className="h-4 w-4" />
                 Open Information Guide
@@ -108,7 +111,7 @@ export function OnboardingFlow({ onInfoClick, onSettingsClick }: OnboardingFlowP
 
               <button 
                 onClick={handleSkip}
-                className="w-full text-[#A1A1AA] hover:text-[#F8FAFC] text-sm transition-colors"
+                className="w-full text-[#A1A1AA] hover:text-[#F8FAFC] text-sm transition-colors hover:underline"
               >
                 Skip Tutorial
               </button>
@@ -137,7 +140,7 @@ export function OnboardingFlow({ onInfoClick, onSettingsClick }: OnboardingFlowP
 
               <Button 
                 onClick={handleSettingsClick}
-                className="w-full bg-[#10B981] hover:bg-[#0E9F71] text-white gap-2 h-12"
+                className="w-full bg-gradient-to-r from-[#0d4d2f] to-[#0a3d26] hover:from-[#0f5836] hover:to-[#0c4a2d] text-white gap-2 h-12 shadow-lg shadow-[#10B981]/10 border border-[#10B981]/20"
               >
                 <RefreshCw className="h-4 w-4" />
                 Go to Settings & Sync
@@ -145,7 +148,7 @@ export function OnboardingFlow({ onInfoClick, onSettingsClick }: OnboardingFlowP
 
               <button 
                 onClick={handleSkip}
-                className="w-full text-[#A1A1AA] hover:text-[#F8FAFC] text-sm transition-colors"
+                className="w-full text-[#A1A1AA] hover:text-[#F8FAFC] text-sm transition-colors hover:underline"
               >
                 I'll do this later
               </button>

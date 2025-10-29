@@ -103,43 +103,84 @@ export function TopBar() {
                 </button>
               </div>
 
-              <Card className="border-[#1a1a1a] bg-[#0a0a0a]">
-                <CardHeader>
-                  <CardTitle className="text-[#F8FAFC] flex items-center gap-2">
-                    <Sparkles className="h-5 w-5 text-[#10B981]" />
+              <Card className="border border-[#10B981]/30 bg-gradient-to-br from-[#0a0a0a] to-[#0f1a14] relative overflow-hidden">
+                {/* Subtle sheen overlay */}
+                <div className="absolute inset-0 bg-gradient-to-br from-white/[0.03] via-transparent to-transparent pointer-events-none"></div>
+                
+                <CardHeader className="relative">
+                  <CardTitle className="text-[#F8FAFC] flex items-center gap-2 text-lg">
+                    <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#10B981] to-[#059669] flex items-center justify-center">
+                      <Sparkles className="h-4 w-4 text-white" />
+                    </div>
                     What is CreatorIQ?
                   </CardTitle>
-                  <CardDescription className="text-[#A1A1AA]">
-                    AI-powered analytics platform for Whop creators
-                  </CardDescription>
                 </CardHeader>
-                <CardContent className="space-y-4 text-[#A1A1AA] text-sm">
-                  <p className="leading-relaxed">
-                    CreatorIQ helps you grow your Whop community by understanding what your students need, what's working, and where to improve.
+                <CardContent className="space-y-4 text-[#E5E7EB] text-sm relative">
+                  <p className="leading-relaxed text-[#F8FAFC]">
+                    This is an <span className="text-[#10B981] font-semibold">all-in-one tool</span>, which utilises real-time student activity & student's raw feedback to generate actionable insights that:
                   </p>
+                  
+                  <div className="space-y-2 pl-1">
+                    <div className="flex items-center gap-2">
+                      <div className="w-1 h-1 rounded-full bg-[#10B981]"></div>
+                      <span className="text-[#E5E7EB]">Kills Churn</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <div className="w-1 h-1 rounded-full bg-[#10B981]"></div>
+                      <span className="text-[#E5E7EB]">Improves Student Experience</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <div className="w-1 h-1 rounded-full bg-[#10B981]"></div>
+                      <span className="text-[#E5E7EB]">Creates More Success Cases</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <div className="w-1 h-1 rounded-full bg-[#10B981]"></div>
+                      <span className="text-[#E5E7EB]">Generates & saves <span className="text-[#10B981] font-semibold">YOU</span> Money</span>
+                    </div>
+                  </div>
+                  
+                  <div className="pt-3 border-t border-[#10B981]/20">
+                    <p className="leading-relaxed text-[#D1D5DB] italic">
+                      Our goal is not only to save a handful of students from churning, but to find bottle necks flying under the radar which can create success in your course that <span className="text-[#10B981] font-semibold not-italic">students brag about paying for.</span>
+                    </p>
+                  </div>
                 </CardContent>
               </Card>
 
-              <Card className="border-[#1a1a1a] bg-[#0a0a0a]">
+              <Card className="border border-[#1a1a1a] bg-[#0a0a0a]">
                 <CardHeader>
-                  <CardTitle className="text-[#F8FAFC] text-sm">📊 How It Works</CardTitle>
+                  <CardTitle className="text-[#F8FAFC] text-sm flex items-center gap-2">
+                    📊 How It Works
+                  </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4 text-sm">
-                  <div>
-                    <div className="text-[#10B981] font-semibold mb-1">1. Collect Feedback</div>
-                    <p className="text-[#A1A1AA]">Use the Forms page to create surveys with 10+ niche templates (Trading, Fitness, E-commerce, etc.). Students see them in their dashboard.</p>
+                  <div className="bg-[#10B981]/5 border border-[#10B981]/20 rounded-lg p-3">
+                    <div className="text-[#10B981] font-semibold mb-1.5 flex items-center gap-2">
+                      <span className="flex items-center justify-center w-5 h-5 rounded-full bg-[#10B981] text-white text-xs font-bold">1</span>
+                      Collect Feedback
+                    </div>
+                    <p className="text-[#D1D5DB] text-xs leading-relaxed">Use the Forms page to create surveys with 10+ niche templates (Trading, Fitness, E-commerce, etc.). Students see them in their dashboard.</p>
                   </div>
-                  <div>
-                    <div className="text-[#10B981] font-semibold mb-1">2. AI Generates Insights</div>
-                    <p className="text-[#A1A1AA]">Our AI analyzes responses and generates actionable recommendations - no fake data, only real patterns from your students.</p>
+                  <div className="bg-[#10B981]/5 border border-[#10B981]/20 rounded-lg p-3">
+                    <div className="text-[#10B981] font-semibold mb-1.5 flex items-center gap-2">
+                      <span className="flex items-center justify-center w-5 h-5 rounded-full bg-[#10B981] text-white text-xs font-bold">2</span>
+                      AI Generates Insights
+                    </div>
+                    <p className="text-[#D1D5DB] text-xs leading-relaxed">Our AI analyzes responses and generates actionable recommendations - no fake data, only real patterns from your students.</p>
                   </div>
-                  <div>
-                    <div className="text-[#10B981] font-semibold mb-1">3. Take Action</div>
-                    <p className="text-[#A1A1AA]">Mark insights as "Actioned" to track improvements. See what content performs best and which students need support.</p>
+                  <div className="bg-[#10B981]/5 border border-[#10B981]/20 rounded-lg p-3">
+                    <div className="text-[#10B981] font-semibold mb-1.5 flex items-center gap-2">
+                      <span className="flex items-center justify-center w-5 h-5 rounded-full bg-[#10B981] text-white text-xs font-bold">3</span>
+                      Take Action
+                    </div>
+                    <p className="text-[#D1D5DB] text-xs leading-relaxed">Mark insights as "Actioned" to track improvements. See what content performs best and which students need support.</p>
                   </div>
-                  <div>
-                    <div className="text-[#10B981] font-semibold mb-1">4. Track Results</div>
-                    <p className="text-[#A1A1AA]">Dashboard shows student engagement, completion rates, sentiment analysis, and content performance - all in real-time.</p>
+                  <div className="bg-[#10B981]/5 border border-[#10B981]/20 rounded-lg p-3">
+                    <div className="text-[#10B981] font-semibold mb-1.5 flex items-center gap-2">
+                      <span className="flex items-center justify-center w-5 h-5 rounded-full bg-[#10B981] text-white text-xs font-bold">4</span>
+                      Track Results
+                    </div>
+                    <p className="text-[#D1D5DB] text-xs leading-relaxed">Dashboard shows student engagement, completion rates, sentiment analysis, and content performance - all in real-time.</p>
                   </div>
                 </CardContent>
               </Card>
