@@ -115,35 +115,29 @@ function SettingsContent() {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {/* Data Management Card */}
-          <Card className="border border-[#2a2a2a] bg-[#0f0f0f] shadow-lg hover:border-[#10B981]/30 transition-all">
-            <CardHeader className="pb-3">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-lg bg-[#10B981]/10 border border-[#10B981]/20 flex items-center justify-center">
-                  <Database className="h-5 w-5 text-[#10B981]" />
-                </div>
-                <div>
-                  <CardTitle className="text-base font-bold text-[#F8FAFC]">
-                    Data Management
-                  </CardTitle>
-                  <CardDescription className="text-xs text-[#A1A1AA]">
-                    Import your Whop members
-                  </CardDescription>
-                </div>
-              </div>
+          <Card className="border border-[#1a1a1a] bg-[#0f0f0f] hover:border-[#2a2a2a] transition-all">
+            <CardHeader>
+              <CardTitle className="text-lg font-semibold text-[#F8FAFC] flex items-center gap-2">
+                <Database className="h-5 w-5 text-[#10B981]" />
+                Data Management
+              </CardTitle>
+              <CardDescription className="text-[#A1A1AA]">
+                Import your Whop members
+              </CardDescription>
             </CardHeader>
-            <CardContent className="space-y-3 pt-3">
-              <div className="text-xs text-[#A1A1AA] leading-relaxed">
-                Import all current members from Whop to instantly populate your analytics dashboard with names, emails, and profile photos.
-              </div>
+            <CardContent className="space-y-4">
+              <p className="text-sm text-[#A1A1AA]">
+                Import all current members from Whop to instantly populate your analytics dashboard.
+              </p>
               <Button 
                 onClick={handleSyncStudents}
                 disabled={syncing}
-                className="w-full bg-[#10B981] hover:bg-[#0E9F71] text-white border-0 flex items-center justify-center gap-2 shadow-lg shadow-[#10B981]/20 transition-all text-sm font-semibold py-2.5"
+                className="bg-[#10B981] hover:bg-[#0E9F71] text-white flex items-center gap-2"
               >
                 <RefreshCw className={`h-4 w-4 ${syncing ? 'animate-spin' : ''}`} />
-                {syncing ? 'Importing...' : 'Import Members'}
+                {syncing ? 'Importing...' : 'Import Members from Whop'}
               </Button>
               {syncMessage && (
                 <div className={`text-xs p-2.5 rounded-lg border ${
@@ -158,30 +152,23 @@ function SettingsContent() {
           </Card>
 
           {/* Subscription Card */}
-          <Card className="border border-[#2a2a2a] bg-[#0f0f0f] shadow-lg hover:border-[#10B981]/30 transition-all">
-            <CardHeader className="pb-3">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-lg bg-[#10B981]/10 border border-[#10B981]/20 flex items-center justify-center">
-                  <User className="h-5 w-5 text-[#10B981]" />
-                </div>
-                <div>
-                  <CardTitle className="text-base font-bold text-[#F8FAFC]">
-                    Subscription
-                  </CardTitle>
-                  <CardDescription className="text-xs text-[#A1A1AA]">
-                    Manage your plan
-                  </CardDescription>
-                </div>
-              </div>
+          <Card className="border border-[#1a1a1a] bg-[#0f0f0f] hover:border-[#2a2a2a] transition-all">
+            <CardHeader>
+              <CardTitle className="text-lg font-semibold text-[#F8FAFC] flex items-center gap-2">
+                <User className="h-5 w-5 text-[#10B981]" />
+                Subscription
+              </CardTitle>
+              <CardDescription className="text-[#A1A1AA]">
+                Manage your plan
+              </CardDescription>
             </CardHeader>
-            <CardContent className="space-y-3 pt-3">
-              <div className="flex items-center justify-between p-3 rounded-lg bg-[#1a1a1a]/80 border border-[#2a2a2a]">
-                <span className="text-xs text-[#A1A1AA]">Current Plan:</span>
-                <span className="text-sm font-bold text-[#10B981]">Starter</span>
+            <CardContent className="space-y-4">
+              <div className="text-sm text-[#A1A1AA]">
+                <span className="font-medium">Current Plan:</span> <span className="text-[#10B981] font-semibold">Starter</span>
               </div>
               <Button 
                 onClick={handleUpgrade}
-                className="w-full bg-[#10B981] hover:bg-[#0E9F71] text-white border-0 shadow-lg shadow-[#10B981]/20 transition-all text-sm font-semibold py-2.5"
+                className="bg-[#10B981] hover:bg-[#0E9F71] text-white"
               >
                 Upgrade Plan
               </Button>
@@ -189,32 +176,23 @@ function SettingsContent() {
           </Card>
 
           {/* Data & Privacy Card */}
-          <Card className="border border-[#2a2a2a] bg-[#0f0f0f] shadow-lg hover:border-[#10B981]/30 transition-all">
-            <CardHeader className="pb-3">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-lg bg-[#10B981]/10 border border-[#10B981]/20 flex items-center justify-center">
-                  <Database className="h-5 w-5 text-[#10B981]" />
-                </div>
-                <div>
-                  <CardTitle className="text-base font-bold text-[#F8FAFC]">
-                    Data & Privacy
-                  </CardTitle>
-                  <CardDescription className="text-xs text-[#A1A1AA]">
-                    Manage your data settings
-                  </CardDescription>
-                </div>
-              </div>
+          <Card className="border border-[#1a1a1a] bg-[#0f0f0f] hover:border-[#2a2a2a] transition-all">
+            <CardHeader>
+              <CardTitle className="text-lg font-semibold text-[#F8FAFC] flex items-center gap-2">
+                <Database className="h-5 w-5 text-[#10B981]" />
+                Data & Privacy
+              </CardTitle>
+              <CardDescription className="text-[#A1A1AA]">
+                Manage your data settings
+              </CardDescription>
             </CardHeader>
-            <CardContent className="space-y-3 pt-3">
-              <div className="flex items-center justify-between p-2.5 rounded-lg bg-[#1a1a1a]/80 border border-[#2a2a2a]">
-                <span className="text-xs text-[#A1A1AA]">Data retention</span>
-                <div className="flex items-center gap-2">
-                  <div className="w-2 h-2 rounded-full bg-[#10B981]"></div>
-                  <span className="text-xs font-bold text-[#10B981]">14 days</span>
-                </div>
+            <CardContent className="space-y-3">
+              <div className="flex items-center justify-between">
+                <span className="text-sm text-[#A1A1AA]">Data retention</span>
+                <span className="text-sm font-semibold text-[#10B981]">14 days</span>
               </div>
-              <div className="flex items-center justify-between p-2.5 rounded-lg bg-[#1a1a1a]/80 border border-[#2a2a2a]">
-                <span className="text-xs text-[#A1A1AA]">Analytics tracking</span>
+              <div className="flex items-center justify-between">
+                <span className="text-sm text-[#A1A1AA]">Analytics tracking</span>
                 <label className="relative inline-flex items-center cursor-pointer">
                   <input 
                     type="checkbox" 
@@ -222,76 +200,55 @@ function SettingsContent() {
                     checked={analyticsTracking}
                     onChange={(e) => handleToggle('analytics_tracking', e.target.checked)}
                   />
-                  <div className="w-10 h-5 bg-[#1a1a1a] peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-[22px] peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-[#10B981]"></div>
+                  <div className="w-11 h-6 bg-[#1a1a1a] rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#10B981]"></div>
                 </label>
               </div>
               <Button 
                 onClick={handleExportData}
                 variant="outline" 
-                className="w-full border-[#2a2a2a] text-[#A1A1AA] hover:bg-[#1a1a1a] hover:text-[#F8FAFC] hover:border-[#10B981]/30 transition-all text-sm py-2.5"
+                className="border-[#1a1a1a] text-[#A1A1AA] hover:bg-[#1a1a1a] hover:text-white"
               >
-                <Download className="h-4 w-4 mr-2" />
                 Export Data
               </Button>
             </CardContent>
           </Card>
 
           {/* Support Card - Spans 2 columns */}
-          <Card className="border border-[#2a2a2a] bg-[#0f0f0f] shadow-lg hover:border-[#10B981]/30 transition-all md:col-span-2">
-            <CardHeader className="pb-3">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-lg bg-[#10B981]/10 border border-[#10B981]/20 flex items-center justify-center">
-                  <Bell className="h-5 w-5 text-[#10B981]" />
-                </div>
-                <div>
-                  <CardTitle className="text-base font-bold text-[#F8FAFC]">
-                    Support & Feedback
-                  </CardTitle>
-                  <CardDescription className="text-xs text-[#A1A1AA]">
-                    Get help and share your thoughts
-                  </CardDescription>
-                </div>
-              </div>
+          <Card className="border border-[#1a1a1a] bg-[#0f0f0f] hover:border-[#2a2a2a] transition-all md:col-span-2">
+            <CardHeader>
+              <CardTitle className="text-lg font-semibold text-[#F8FAFC] flex items-center gap-2">
+                <Bell className="h-5 w-5 text-[#10B981]" />
+                Support & Feedback
+              </CardTitle>
+              <CardDescription className="text-[#A1A1AA]">
+                Get help and share your thoughts
+              </CardDescription>
             </CardHeader>
-            <CardContent className="pt-3">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                <button 
+            <CardContent>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <Button
                   onClick={handleSubmitFeedback}
-                  className="w-full group relative overflow-hidden rounded-lg border border-[#2a2a2a] bg-[#1a1a1a]/50 p-3 text-left transition-all duration-200 hover:border-[#10B981]/30 hover:bg-[#1a1a1a]"
+                  variant="outline"
+                  className="justify-start h-auto p-4 border-[#1a1a1a] hover:bg-[#1a1a1a] hover:border-[#2a2a2a]"
                 >
-                  <div className="relative flex items-center gap-2.5">
-                    <div className="w-8 h-8 rounded-lg bg-[#10B981]/10 border border-[#10B981]/20 flex items-center justify-center">
-                      <MessageCircle className="h-4 w-4 text-[#10B981]" />
-                    </div>
-                    <div>
-                      <div className="text-sm font-semibold text-[#F8FAFC]">
-                        Submit Feedback
-                      </div>
-                      <div className="text-xs text-[#A1A1AA]">
-                        Share your thoughts
-                      </div>
-                    </div>
+                  <MessageCircle className="h-5 w-5 text-[#10B981] mr-3" />
+                  <div className="text-left">
+                    <div className="font-medium text-[#F8FAFC]">Submit Feedback</div>
+                    <div className="text-xs text-[#A1A1AA]">Share your thoughts</div>
                   </div>
-                </button>
+                </Button>
 
-                <button 
+                <Button
                   onClick={handleContactSupport}
-                  className="w-full group relative overflow-hidden rounded-lg border border-[#2a2a2a] bg-[#1a1a1a]/50 p-3 text-left transition-all duration-200 hover:border-[#10B981]/30 hover:bg-[#1a1a1a]"
+                  variant="outline"
+                  className="justify-start h-auto p-4 border-[#1a1a1a] hover:bg-[#1a1a1a] hover:border-[#2a2a2a]"
                 >
-                  <div className="relative flex items-center gap-2.5">
-                    <div className="w-8 h-8 rounded-lg bg-[#10B981]/10 border border-[#10B981]/20 flex items-center justify-center">
-                      <HelpCircle className="h-4 w-4 text-[#10B981]" />
-                    </div>
-                    <div>
-                      <div className="text-sm font-semibold text-[#F8FAFC]">
-                        Contact Support
-                      </div>
-                      <div className="text-xs text-[#A1A1AA]">
-                        Get help quickly
-                      </div>
-                    </div>
+                  <HelpCircle className="h-5 w-5 text-[#10B981] mr-3" />
+                  <div className="text-left">
+                    <div className="font-medium text-[#F8FAFC]">Contact Support</div>
+                    <div className="text-xs text-[#A1A1AA]">Get help quickly</div>
                   </div>
-                </button>
+                </Button>
               </div>
             </CardContent>
           </Card>
