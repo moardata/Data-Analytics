@@ -286,11 +286,7 @@ function CoursesContent() {
 
 export default function CoursesPage() {
   return (
-    <Suspense fallback={
-      <div className="flex items-center justify-center min-h-screen bg-gradient-to-b from-[#0d0f12] to-[#14171c]">
-        <div className="w-16 h-16 border-4 border-[#10B981] border-t-transparent rounded-full animate-spin" />
-      </div>
-    }>
+    <Suspense fallback={<ModernLoadingScreen message="Loading courses..." />}>
       <CoursesContent />
     </Suspense>
   );
