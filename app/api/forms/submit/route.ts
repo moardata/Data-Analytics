@@ -162,11 +162,6 @@ export async function POST(request: NextRequest) {
       .select()
       .single();
 
-      success: !!submission,
-      submissionId: submission?.id,
-      error: error?.message
-    });
-
     if (error) {
       console.error('❌ [Form Submit API] Database error:', error);
       throw error;

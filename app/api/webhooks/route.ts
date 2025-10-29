@@ -415,16 +415,10 @@ async function getOrCreateEntity(whopUserId: string, eventData: any) {
 	if (eventData.avatar_url) metadata.avatar_url = eventData.avatar_url;
 	if (eventData.discord_id) metadata.discord_id = eventData.discord_id;
 	if (eventData.telegram_id) metadata.telegram_id = eventData.telegram_id;
-	if (eventData.country) metadata.country = eventData.country;
-	if (eventData.social) metadata.social = eventData.social;
-	
-		whopUserId,
-		name: userName,
-		email: userEmail,
-		hasMetadata: Object.keys(metadata).length > 0
-	});
+        if (eventData.country) metadata.country = eventData.country;
+        if (eventData.social) metadata.social = eventData.social;
 
-	// CHECK STUDENT LIMIT BEFORE CREATING NEW ENTITY
+        // CHECK STUDENT LIMIT BEFORE CREATING NEW ENTITY
 	const { data: clientCheck } = await supabase
 		.from('clients')
 		.select('current_tier')

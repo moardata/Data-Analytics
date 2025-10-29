@@ -210,11 +210,6 @@ export async function generateInsightsForClient(
 
     // MUST have OpenAI configured - no bullshit fallbacks
     const apiKey = process.env.OPENAI_API_KEY;
-      hasAPIKey: !!apiKey,
-      apiKeyLength: apiKey?.length || 0,
-      apiKeyEnding: apiKey ? '...' + apiKey.substring(apiKey.length - 10) : 'NO KEY',
-      textCount: scrubbedTexts.length
-    });
     
     if (!apiKey) {
       console.error('❌ FATAL: OpenAI not configured');

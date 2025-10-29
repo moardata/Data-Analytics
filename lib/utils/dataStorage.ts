@@ -100,13 +100,6 @@ export async function storeInsightWithMetadata(data: InsightStorageData): Promis
  */
 export async function trackAIRunWithMetadata(data: AIRunStorageData): Promise<string | null> {
   try {
-      clientId: data.clientId,
-      runType: data.runType,
-      status: data.status,
-      model: data.metadata.model,
-      version: data.metadata.version
-    });
-
     const { data: aiRun, error } = await supabase
       .from('ai_runs')
       .insert({
