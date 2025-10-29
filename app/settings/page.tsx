@@ -120,7 +120,7 @@ function SettingsContent() {
           <Card className="border border-[#1a1a1a] bg-[#0f0f0f] hover:border-[#2a2a2a] transition-all">
             <CardHeader>
               <CardTitle className="text-lg font-semibold text-[#F8FAFC] flex items-center gap-2">
-                <Database className="h-5 w-5 text-[#10B981]" />
+                <Database className="h-5 w-5 text-[#8B5CF6]" />
                 Data Management
               </CardTitle>
               <CardDescription className="text-[#A1A1AA]">
@@ -134,7 +134,7 @@ function SettingsContent() {
               <Button 
                 onClick={handleSyncStudents}
                 disabled={syncing}
-                className="bg-[#10B981] hover:bg-[#0E9F71] text-white flex items-center gap-2"
+                className="bg-[#8B5CF6]/90 hover:bg-[#8B5CF6] text-white flex items-center gap-2"
               >
                 <RefreshCw className={`h-4 w-4 ${syncing ? 'animate-spin' : ''}`} />
                 {syncing ? 'Importing...' : 'Import Members from Whop'}
@@ -155,7 +155,7 @@ function SettingsContent() {
           <Card className="border border-[#1a1a1a] bg-[#0f0f0f] hover:border-[#2a2a2a] transition-all">
             <CardHeader>
               <CardTitle className="text-lg font-semibold text-[#F8FAFC] flex items-center gap-2">
-                <User className="h-5 w-5 text-[#10B981]" />
+                <User className="h-5 w-5 text-[#3B82F6]" />
                 Subscription
               </CardTitle>
               <CardDescription className="text-[#A1A1AA]">
@@ -164,11 +164,11 @@ function SettingsContent() {
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="text-sm text-[#A1A1AA]">
-                <span className="font-medium">Current Plan:</span> <span className="text-[#10B981] font-semibold">Starter</span>
+                <span className="font-medium">Current Plan:</span> <span className="text-[#8B5CF6] font-semibold">Starter</span>
               </div>
               <Button 
                 onClick={handleUpgrade}
-                className="bg-[#10B981] hover:bg-[#0E9F71] text-white"
+                className="bg-[#3B82F6]/90 hover:bg-[#3B82F6] text-white"
               >
                 Upgrade Plan
               </Button>
@@ -200,14 +200,14 @@ function SettingsContent() {
                     checked={analyticsTracking}
                     onChange={(e) => handleToggle('analytics_tracking', e.target.checked)}
                   />
-                  <div className="w-11 h-6 bg-[#1a1a1a] rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#10B981]"></div>
+                  <div className="w-11 h-6 bg-[#1a1a1a] rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#8B5CF6]"></div>
                 </label>
               </div>
               <Button 
                 onClick={handleExportData}
-                variant="outline" 
-                className="border-[#1a1a1a] text-[#A1A1AA] hover:bg-[#1a1a1a] hover:text-white"
+                className="bg-[#10B981]/90 hover:bg-[#10B981] text-white"
               >
+                <Download className="h-4 w-4 mr-2" />
                 Export Data
               </Button>
             </CardContent>
@@ -217,7 +217,7 @@ function SettingsContent() {
           <Card className="border border-[#1a1a1a] bg-[#0f0f0f] hover:border-[#2a2a2a] transition-all md:col-span-2">
             <CardHeader>
               <CardTitle className="text-lg font-semibold text-[#F8FAFC] flex items-center gap-2">
-                <Bell className="h-5 w-5 text-[#10B981]" />
+                <Bell className="h-5 w-5 text-[#F59E0B]" />
                 Support & Feedback
               </CardTitle>
               <CardDescription className="text-[#A1A1AA]">
@@ -228,25 +228,23 @@ function SettingsContent() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <Button
                   onClick={handleSubmitFeedback}
-                  variant="outline"
-                  className="justify-start h-auto p-4 border-[#1a1a1a] hover:bg-[#1a1a1a] hover:border-[#2a2a2a]"
+                  className="justify-start h-auto p-4 bg-[#8B5CF6]/90 hover:bg-[#8B5CF6] text-white border-0"
                 >
-                  <MessageCircle className="h-5 w-5 text-[#10B981] mr-3" />
+                  <MessageCircle className="h-5 w-5 mr-3" />
                   <div className="text-left">
-                    <div className="font-medium text-[#F8FAFC]">Submit Feedback</div>
-                    <div className="text-xs text-[#A1A1AA]">Share your thoughts</div>
+                    <div className="font-medium">Submit Feedback</div>
+                    <div className="text-xs opacity-90">Share your thoughts</div>
                   </div>
                 </Button>
 
                 <Button
                   onClick={handleContactSupport}
-                  variant="outline"
-                  className="justify-start h-auto p-4 border-[#1a1a1a] hover:bg-[#1a1a1a] hover:border-[#2a2a2a]"
+                  className="justify-start h-auto p-4 bg-[#3B82F6]/90 hover:bg-[#3B82F6] text-white border-0"
                 >
-                  <HelpCircle className="h-5 w-5 text-[#10B981] mr-3" />
+                  <HelpCircle className="h-5 w-5 mr-3" />
                   <div className="text-left">
-                    <div className="font-medium text-[#F8FAFC]">Contact Support</div>
-                    <div className="text-xs text-[#A1A1AA]">Get help quickly</div>
+                    <div className="font-medium">Contact Support</div>
+                    <div className="text-xs opacity-90">Get help quickly</div>
                   </div>
                 </Button>
               </div>
