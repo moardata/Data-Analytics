@@ -130,7 +130,7 @@ function UpgradeContent() {
                 {[
                   {
                     question: "Do I get a free trial?",
-                    answer: "Yes! All plans include a 7-day free trial. No credit card required to start."
+                    answer: "Yes! The Starter plan includes a 7-day free trial. Credit card required to start, but you won't be charged for 7 days. After the trial, your subscription automatically continues at $30/month."
                   },
                   {
                     question: "Can I change plans later?",
