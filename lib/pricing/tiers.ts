@@ -51,7 +51,7 @@ export const PRICING_TIERS: Record<TierName, PricingTier> = {
     whopPlanId: 'prod_Tdu9YayfFDxhc',
     limits: {
       maxStudents: 100,
-      maxResponsesPerMonth: 100, // AI-analyzed survey responses
+      maxResponsesPerMonth: 250, // AI-analyzed survey responses
       aiInsightsPerDay: 5,
       dataRetentionDays: 14,
       dashboardMetrics: ['consistency', 'popular', 'feedback'], // 3 of 6 unlocked
@@ -72,7 +72,7 @@ export const PRICING_TIERS: Record<TierName, PricingTier> = {
       'Up to 100 students',
       '3 core dashboard metrics',
       'Unlimited custom forms',
-      '100 responses analyzed/month',
+      '250 responses analyzed/month',
       '14-day data retention',
       'Email support (72hr)',
     ],
@@ -86,7 +86,7 @@ export const PRICING_TIERS: Record<TierName, PricingTier> = {
     whopPlanId: 'prod_UNx31yqmQcXOx',
     limits: {
       maxStudents: 1000,
-      maxResponsesPerMonth: 1000,
+      maxResponsesPerMonth: 2500,
       aiInsightsPerDay: 10,
       dataRetentionDays: 60,
       dashboardMetrics: ['consistency', 'popular', 'feedback', 'breakthrough', 'commitment', 'pathways'], // All 6
@@ -107,7 +107,7 @@ export const PRICING_TIERS: Record<TierName, PricingTier> = {
       'Up to 1,000 students',
       'Full dashboard (all 6 metrics)',
       'Unlimited forms + branching logic',
-      '1,000 responses analyzed/month',
+      '2,500 responses analyzed/month',
       '60-day data retention',
       'CSV exports',
       'Time range filters (1D/7D/1M)',

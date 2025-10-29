@@ -51,8 +51,8 @@ export function FeatureComparisonTable({ onSelectTier, currentTier }: FeatureCom
     { 
       label: 'Responses/Month', 
       tooltip: 'The number of survey responses you can receive per month. These are automatically analysed by AI to give you deeper insights.',
-      atom: '100', 
-      core: '1,000', 
+      atom: '250', 
+      core: '2,500', 
       pulse: '10,000', 
       surge: 'Unlimited' 
     },
