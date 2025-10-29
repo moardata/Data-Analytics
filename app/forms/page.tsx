@@ -581,6 +581,7 @@ function FormsContent() {
           </button>
           <button
             onClick={() => {
+              if (!requireSubscription('Create a new survey')) return;
               setEditingForm(null);
               setActiveTab('builder');
             }}
