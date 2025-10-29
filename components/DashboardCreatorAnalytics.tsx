@@ -61,6 +61,8 @@ interface DashboardCreatorAnalyticsProps {
   onExportEventsCsv?: () => void;
   onExportSubscriptionsCsv?: () => void;
   onExportPdf?: () => void;
+  onSyncStudents?: () => void;
+  syncing?: boolean;
 }
 
 interface DashboardMetrics {
@@ -83,12 +85,12 @@ interface DashboardMetrics {
 function DashboardToolbar({ 
   timeRange,
   onTimeRangeChange,
-  onImportMembers, 
+  onSyncStudents, 
   syncing 
 }: { 
   timeRange: string;
   onTimeRangeChange: (range: string) => void;
-  onImportMembers?: () => void; 
+  onSyncStudents?: () => void; 
   syncing?: boolean;
 }) {
   const [showInfo, setShowInfo] = React.useState(false);
@@ -133,23 +135,14 @@ function DashboardToolbar({
       </div>
       
       <div className="ml-auto flex items-center gap-2">
-        {onImportMembers && (
+        {onSyncStudents && (
           <Button 
-            onClick={onImportMembers}
+            onClick={onSyncStudents}
             disabled={syncing}
-            className="border border-[#1a1a1a] bg-[#0a0a0a] hover:bg-[#1a1a1a] text-[#F8FAFC] disabled:opacity-50"
+            className="bg-[#8B5CF6]/10 hover:bg-[#8B5CF6]/20 border border-[#8B5CF6]/30 text-white backdrop-blur-sm transition-all disabled:opacity-50"
           >
-            {syncing ? (
-              <>
-                <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
-                Importing...
-              </>
-            ) : (
-              <>
-                <RefreshCw className="h-4 w-4 mr-2" />
-                Import Members
-              </>
-            )}
+            <RefreshCw className={`h-4 w-4 mr-2 text-[#8B5CF6] ${syncing ? 'animate-spin' : ''}`} />
+            {syncing ? 'Syncing...' : 'Sync Members'}
           </Button>
         )}
       </div>
@@ -170,11 +163,17 @@ function DashboardToolbar({
 // ----------------------------------------
 // Main component
 // ----------------------------------------
-export default function DashboardCreatorAnalytics({ clientId: companyIdOrClientId, onExportEventsCsv, onExportSubscriptionsCsv, onExportPdf }: DashboardCreatorAnalyticsProps) {
+export default function DashboardCreatorAnalytics({ 
+  clientId: companyIdOrClientId, 
+  onExportEventsCsv, 
+  onExportSubscriptionsCsv, 
+  onExportPdf,
+  onSyncStudents,
+  syncing: syncingProp
+}: DashboardCreatorAnalyticsProps) {
   const [metrics, setMetrics] = useState<DashboardMetrics | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [syncing, setSyncing] = useState(false);
   const [actualClientId, setActualClientId] = useState<string | null>(null);
   const [timeRange, setTimeRange] = useState<string>('7D');
   const [activeTab, setActiveTab] = useState<string>('engagement');

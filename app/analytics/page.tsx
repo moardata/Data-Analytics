@@ -346,6 +346,8 @@ function AnalyticsContent() {
           onExportEventsCsv={handleExportEventsCsv}
           onExportSubscriptionsCsv={handleExportSubscriptionsCsv}
           onExportPdf={handleExportPdf}
+          onSyncStudents={handleSyncStudents}
+          syncing={syncing}
         />
       </div>
       
