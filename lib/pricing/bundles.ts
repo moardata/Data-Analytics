@@ -29,7 +29,7 @@ export interface BundleInfo {
  * Based on your tier features table
  */
 export const PLAN_TO_BUNDLE: Record<string, BundleInfo> = {
-  'prod_n8rHHckjTjJdD': { 
+  'prod_Tdu9YayfFDxhc': { 
     tier: 'pro', 
     bundle: 'core', 
     displayName: 'Core',
@@ -46,7 +46,7 @@ export const PLAN_TO_BUNDLE: Record<string, BundleInfo> = {
       currency: 'USD'
     }
   },
-  'prod_4ISBWlTlS81KL': { 
+  'prod_UNx31yqmQcXOx': { 
     tier: 'pro', 
     bundle: 'pulse', 
     displayName: 'Pulse',
@@ -63,7 +63,7 @@ export const PLAN_TO_BUNDLE: Record<string, BundleInfo> = {
       currency: 'USD'
     }
   },
-  'prod_6O1w6a9outgyO': { 
+  'prod_03fZxoux0PVvW': { 
     tier: 'premium', 
     bundle: 'surge', 
     displayName: 'Surge',
@@ -80,7 +80,7 @@ export const PLAN_TO_BUNDLE: Record<string, BundleInfo> = {
       currency: 'USD'
     }
   },
-  'prod_bm98P1RCFrFmF': { 
+  'prod_QFtQEu91TO2yh': { 
     tier: 'premium', 
     bundle: 'quantum', 
     displayName: 'Quantum',
