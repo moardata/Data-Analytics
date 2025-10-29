@@ -29,23 +29,18 @@ export async function GET(request: NextRequest) {
     
     if (companyId.startsWith('exp_')) {
       // This is an experience ID - we need to get the company ID from the experience
-      // For now, we'll use a mapping approach
       const experienceToCompanyMap: Record<string, string> = {
-        'exp_2BXhmdlqcnLGc5': 'biz_3GYHNPbGkZCEky', // Your experience -> your company
-        // Add more experience mappings as needed
+        // Experience mappings added dynamically in production
       };
       
-      actualCompanyId = experienceToCompanyMap[companyId] || 'biz_3GYHNPbGkZCEky'; // Default fallback
+      actualCompanyId = experienceToCompanyMap[companyId] || companyId;
     } else if (!companyId.startsWith('biz_')) {
-      // This is a company route (like "live-analytics"), we need to get the real company ID
+      // This is a company route - use the provided ID
       const routeToCompanyMap: Record<string, string> = {
-        'live-analytics': 'biz_3GYHNPbGkZCEky',
-        'creator-analytics': 'biz_3GYHNPbGkZCEky',
-        'data-analytics': 'biz_3GYHNPbGkZCEky',
-        // Add more mappings as needed
+        // Route mappings added dynamically in production
       };
       
-      actualCompanyId = routeToCompanyMap[companyId] || 'biz_3GYHNPbGkZCEky'; // Default fallback
+      actualCompanyId = routeToCompanyMap[companyId] || companyId;
     } else {
     }
     

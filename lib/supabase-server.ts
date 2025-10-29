@@ -29,20 +29,6 @@ function getSupabaseServer(): SupabaseClient | null {
     !supabaseServiceKey.includes('your_supabase');
 
   // Enhanced logging for debugging
-    hasUrl: !!supabaseUrl,
-    hasKey: !!supabaseServiceKey,
-    hasValidCredentials,
-    urlLength: supabaseUrl?.length || 0,
-    keyLength: supabaseServiceKey?.length || 0,
-    urlPreview: supabaseUrl && supabaseUrl.startsWith('https://') ? `${supabaseUrl.substring(0, 30)}...` : 'invalid/missing',
-    keyPreview: supabaseServiceKey && !supabaseServiceKey.includes('your_') ? `${supabaseServiceKey.substring(0, 15)}...` : 'invalid/missing',
-    envVars: {
-      NEXT_PUBLIC_SUPABASE_URL: !!process.env.NEXT_PUBLIC_SUPABASE_URL,
-      SUPABASE_SERVICE_ROLE_KEY: !!process.env.SUPABASE_SERVICE_ROLE_KEY,
-      SUPABASE_SECRET_KEY: !!process.env.SUPABASE_SECRET_KEY,
-      SUPABASE_KEY: !!process.env.SUPABASE_KEY,
-    }
-  });
 
   if (!hasValidCredentials) {
     console.warn('⚠️ Supabase not configured. Server client disabled. App will work in test mode.');

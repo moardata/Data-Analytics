@@ -10,7 +10,11 @@ export async function POST(request: NextRequest) {
   try {
     // Support both company IDs
     const body = await request.json().catch(() => ({}));
-    const companyId = body.companyId || 'biz_3GYHNPbGkZCEky';
+    const companyId = body.companyId;
+    
+    if (!companyId) {
+      return NextResponse.json({ error: 'Company ID required' }, { status: 400 });
+    }
     
     
     // Get or create client record

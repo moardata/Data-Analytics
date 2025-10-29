@@ -11,7 +11,7 @@ import { Card, CardContent } from '@/components/ui/card';
 
 function SetupContent() {
   const searchParams = useSearchParams();
-  const companyId = searchParams.get('companyId') || 'biz_3GYHNPbGkZCEky';
+  const companyId = searchParams.get('companyId');
   
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('');

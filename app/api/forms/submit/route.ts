@@ -111,9 +111,6 @@ export async function POST(request: NextRequest) {
 
           if (userResponse.ok) {
             const userData = await userResponse.json();
-              username: userData.username,
-              hasAvatar: !!(userData.profile_picture_url || userData.avatar)
-            });
             
             if (userData.username) userName = userData.username;
             if (userData.email) userEmail = userData.email;

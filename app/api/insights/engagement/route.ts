@@ -47,17 +47,8 @@ export async function GET(request: NextRequest) {
       .gte('created_at', thirtyDaysAgo)
       .order('created_at', { ascending: false });
 
-      count: events?.length || 0,
-      clientId,
-      error: eventsError?.message
-    });
-
     // Calculate engagement metrics
     const engagementMetrics = calculateEngagementMetrics(submissions || [], events || []);
-    
-      hasMetrics: !!engagementMetrics,
-      companyId
-    });
 
     return NextResponse.json({
       success: true,

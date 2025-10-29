@@ -120,13 +120,6 @@ export async function simpleAuth(request: Request): Promise<SimpleAuthResult> {
           isOwner = role === 'admin'; // Whop returns 'admin' for owners
           isAdmin = isOwner;
           accessLevel = isOwner ? 'owner' : role === 'customer' ? 'member' : 'test';
-          
-            role, 
-            isOwner, 
-            isAdmin, 
-            accessLevel,
-            hasAccess: accessCheck.has_access 
-          });
         } else {
           // SECURITY: Block access on timeout (fail-closed)
           accessLevel = 'member';

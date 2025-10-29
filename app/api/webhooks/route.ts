@@ -24,11 +24,6 @@ export async function POST(request: NextRequest): Promise<Response> {
 	try {
 		// Validate webhook signature and parse data
 		webhookData = await validateWebhook(request);
-		
-			action: webhookData.action,
-			timestamp: new Date().toISOString(),
-			version: 'v1.0-production'
-		});
 
 		// Validate event structure
 		if (!isValidWebhookEvent(webhookData)) {
