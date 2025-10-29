@@ -6,7 +6,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { X, Sparkles, RefreshCw, CheckCircle } from 'lucide-react';
+import { X, Info, RefreshCw, CheckCircle } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 
@@ -62,7 +62,7 @@ export function OnboardingFlow({ onInfoClick, onSettingsClick }: OnboardingFlowP
 
   return (
     <div className="fixed inset-0 bg-black/70 z-[100] flex items-center justify-center p-4 backdrop-blur-md">
-      <Card className="border border-[#10B981]/30 bg-gradient-to-br from-[#0a0a0a] to-[#0f1a14] w-full max-w-md shadow-2xl animate-in fade-in zoom-in duration-300 relative overflow-hidden">
+      <Card className="border border-[#1a1a1a] bg-gradient-to-br from-[#0a0a0a] to-[#0f0f0f] w-full max-w-md shadow-2xl animate-in fade-in zoom-in duration-300 relative overflow-hidden">
         {/* Subtle sheen overlay */}
         <div className="absolute inset-0 bg-gradient-to-br from-white/[0.03] via-transparent to-transparent pointer-events-none"></div>
         
@@ -74,16 +74,11 @@ export function OnboardingFlow({ onInfoClick, onSettingsClick }: OnboardingFlowP
             <X className="h-4 w-4 text-[#A1A1AA] hover:text-[#F8FAFC]" />
           </button>
           
-          <div className="flex items-center gap-3 mb-2">
-            <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-[#10B981] to-[#059669] flex items-center justify-center shadow-lg shadow-[#10B981]/20">
-              <Sparkles className="h-6 w-6 text-white" />
-            </div>
-            <div>
-              <CardTitle className="text-[#F8FAFC] text-xl font-bold">Welcome to CreatorIQ! 🎉</CardTitle>
-              <div className="flex items-center gap-2 mt-1.5">
-                <div className={`h-2 w-10 rounded-full transition-all duration-300 ${step >= 1 ? 'bg-gradient-to-r from-[#10B981] to-[#059669]' : 'bg-[#1a1a1a]'}`}></div>
-                <div className={`h-2 w-10 rounded-full transition-all duration-300 ${step >= 2 ? 'bg-gradient-to-r from-[#10B981] to-[#059669]' : 'bg-[#1a1a1a]'}`}></div>
-              </div>
+          <div className="mb-2">
+            <CardTitle className="text-[#F8FAFC] text-xl font-bold mb-3">Welcome to CreatorIQ! 🎉</CardTitle>
+            <div className="flex items-center gap-2">
+              <div className={`h-2 w-full rounded-full transition-all duration-300 ${step >= 1 ? 'bg-gradient-to-r from-[#8B5CF6] to-[#3B82F6]' : 'bg-[#1a1a1a]'}`}></div>
+              <div className={`h-2 w-full rounded-full transition-all duration-300 ${step >= 2 ? 'bg-gradient-to-r from-[#F59E0B] to-[#10B981]' : 'bg-[#1a1a1a]'}`}></div>
             </div>
           </div>
         </CardHeader>
@@ -91,21 +86,21 @@ export function OnboardingFlow({ onInfoClick, onSettingsClick }: OnboardingFlowP
         <CardContent className="space-y-4">
           {step === 1 && (
             <>
-              <div className="bg-[#10B981]/10 border border-[#10B981]/30 rounded-lg p-4">
+              <div className="bg-gradient-to-r from-[#8B5CF6]/5 to-[#3B82F6]/5 border border-[#8B5CF6]/20 rounded-lg p-4 border-l-2 border-l-[#8B5CF6]">
                 <h3 className="text-[#F8FAFC] font-semibold mb-2 flex items-center gap-2">
-                  <span className="flex items-center justify-center w-6 h-6 rounded-full bg-[#10B981] text-white text-sm font-bold">1</span>
+                  <span className="flex items-center justify-center w-6 h-6 rounded-full bg-gradient-to-r from-[#8B5CF6] to-[#3B82F6] text-white text-sm font-bold">1</span>
                   Learn How It Works
                 </h3>
-                <p className="text-[#A1A1AA] text-sm leading-relaxed">
-                  First, check out the <span className="text-[#10B981] font-semibold">Information panel</span> to understand how CreatorIQ helps you grow your community with AI-powered insights.
+                <p className="text-[#D1D5DB] text-sm leading-relaxed">
+                  First, check out the <span className="bg-gradient-to-r from-[#8B5CF6] to-[#3B82F6] bg-clip-text text-transparent font-semibold">Information panel</span> to understand how CreatorIQ helps you grow your community with AI-powered insights.
                 </p>
               </div>
 
               <Button 
                 onClick={handleInfoClick}
-                className="w-full bg-gradient-to-r from-[#0d4d2f] to-[#0a3d26] hover:from-[#0f5836] hover:to-[#0c4a2d] text-white gap-2 h-12 shadow-lg shadow-[#10B981]/10 border border-[#10B981]/20"
+                className="w-full bg-gradient-to-r from-[#8B5CF6] to-[#3B82F6] hover:from-[#7C3AED] hover:to-[#2563EB] text-white gap-2 h-12 shadow-lg shadow-[#8B5CF6]/20 border border-[#8B5CF6]/30"
               >
-                <Sparkles className="h-4 w-4" />
+                <Info className="h-4 w-4" />
                 Open Information Guide
               </Button>
 
@@ -120,27 +115,27 @@ export function OnboardingFlow({ onInfoClick, onSettingsClick }: OnboardingFlowP
 
           {step === 2 && (
             <>
-              <div className="bg-green-900/20 border border-green-700/50 rounded-lg p-3 flex items-center gap-2">
-                <CheckCircle className="h-5 w-5 text-green-400" />
-                <span className="text-green-400 text-sm font-medium">Step 1 Complete!</span>
+              <div className="bg-gradient-to-r from-[#10B981]/10 to-[#3B82F6]/10 border border-[#10B981]/30 rounded-lg p-3 flex items-center gap-2">
+                <CheckCircle className="h-5 w-5 text-[#10B981]" />
+                <span className="text-[#10B981] text-sm font-medium">Step 1 Complete!</span>
               </div>
 
-              <div className="bg-[#10B981]/10 border border-[#10B981]/30 rounded-lg p-4">
+              <div className="bg-gradient-to-r from-[#F59E0B]/5 to-[#10B981]/5 border border-[#F59E0B]/20 rounded-lg p-4 border-l-2 border-l-[#F59E0B]">
                 <h3 className="text-[#F8FAFC] font-semibold mb-2 flex items-center gap-2">
-                  <span className="flex items-center justify-center w-6 h-6 rounded-full bg-[#10B981] text-white text-sm font-bold">2</span>
+                  <span className="flex items-center justify-center w-6 h-6 rounded-full bg-gradient-to-r from-[#F59E0B] to-[#10B981] text-white text-sm font-bold">2</span>
                   Sync Your Students
                 </h3>
-                <p className="text-[#A1A1AA] text-sm leading-relaxed mb-3">
+                <p className="text-[#D1D5DB] text-sm leading-relaxed mb-3">
                   Import your existing students from Whop to start tracking engagement, generating insights, and collecting feedback.
                 </p>
-                <div className="bg-[#0a0a0a] border border-[#1a1a1a] rounded p-3 text-xs text-[#71717A]">
+                <div className="bg-[#0a0a0a] border border-[#1a1a1a] rounded p-3 text-xs text-[#A1A1AA]">
                   💡 This pulls all current members from your Whop group into the analytics dashboard
                 </div>
               </div>
 
               <Button 
                 onClick={handleSettingsClick}
-                className="w-full bg-gradient-to-r from-[#0d4d2f] to-[#0a3d26] hover:from-[#0f5836] hover:to-[#0c4a2d] text-white gap-2 h-12 shadow-lg shadow-[#10B981]/10 border border-[#10B981]/20"
+                className="w-full bg-gradient-to-r from-[#F59E0B] to-[#10B981] hover:from-[#EA580C] hover:to-[#059669] text-white gap-2 h-12 shadow-lg shadow-[#F59E0B]/20 border border-[#F59E0B]/30"
               >
                 <RefreshCw className="h-4 w-4" />
                 Go to Settings & Sync

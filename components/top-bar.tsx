@@ -103,45 +103,42 @@ export function TopBar() {
                 </button>
               </div>
 
-              <Card className="border border-[#10B981]/30 bg-gradient-to-br from-[#0a0a0a] to-[#0f1a14] relative overflow-hidden">
+              <Card className="border border-[#1a1a1a] bg-gradient-to-br from-[#0a0a0a] to-[#0f0f0f] relative overflow-hidden">
                 {/* Subtle sheen overlay */}
                 <div className="absolute inset-0 bg-gradient-to-br from-white/[0.03] via-transparent to-transparent pointer-events-none"></div>
                 
                 <CardHeader className="relative">
-                  <CardTitle className="text-[#F8FAFC] flex items-center gap-2 text-lg">
-                    <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#10B981] to-[#059669] flex items-center justify-center">
-                      <Sparkles className="h-4 w-4 text-white" />
-                    </div>
+                  <CardTitle className="text-[#F8FAFC] text-lg font-bold">
                     What is CreatorIQ?
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4 text-[#E5E7EB] text-sm relative">
                   <p className="leading-relaxed text-[#F8FAFC]">
-                    This is an <span className="text-[#10B981] font-semibold">all-in-one tool</span>, which utilises real-time student activity & student's raw feedback to generate actionable insights that:
+                    This is an <span className="bg-gradient-to-r from-[#8B5CF6] to-[#3B82F6] bg-clip-text text-transparent font-semibold">all-in-one tool</span>, which utilises real-time student activity & student's raw feedback to generate actionable insights that:
                   </p>
                   
-                  <div className="space-y-2 pl-1">
-                    <div className="flex items-center gap-2">
-                      <div className="w-1 h-1 rounded-full bg-[#10B981]"></div>
+                  <div className="space-y-2.5 pl-1">
+                    <div className="flex items-center gap-3">
+                      <div className="w-1.5 h-1.5 rounded-full bg-[#8B5CF6] shadow-lg shadow-[#8B5CF6]/50"></div>
                       <span className="text-[#E5E7EB]">Kills Churn</span>
                     </div>
-                    <div className="flex items-center gap-2">
-                      <div className="w-1 h-1 rounded-full bg-[#10B981]"></div>
+                    <div className="flex items-center gap-3">
+                      <div className="w-1.5 h-1.5 rounded-full bg-[#F59E0B] shadow-lg shadow-[#F59E0B]/50"></div>
                       <span className="text-[#E5E7EB]">Improves Student Experience</span>
                     </div>
-                    <div className="flex items-center gap-2">
-                      <div className="w-1 h-1 rounded-full bg-[#10B981]"></div>
+                    <div className="flex items-center gap-3">
+                      <div className="w-1.5 h-1.5 rounded-full bg-[#3B82F6] shadow-lg shadow-[#3B82F6]/50"></div>
                       <span className="text-[#E5E7EB]">Creates More Success Cases</span>
                     </div>
-                    <div className="flex items-center gap-2">
-                      <div className="w-1 h-1 rounded-full bg-[#10B981]"></div>
+                    <div className="flex items-center gap-3">
+                      <div className="w-1.5 h-1.5 rounded-full bg-[#10B981] shadow-lg shadow-[#10B981]/50"></div>
                       <span className="text-[#E5E7EB]">Generates & saves <span className="text-[#10B981] font-semibold">YOU</span> Money</span>
                     </div>
                   </div>
                   
-                  <div className="pt-3 border-t border-[#10B981]/20">
+                  <div className="pt-3 border-t border-[#1a1a1a]">
                     <p className="leading-relaxed text-[#D1D5DB] italic">
-                      Our goal is not only to save a handful of students from churning, but to find bottle necks flying under the radar which can create success in your course that <span className="text-[#10B981] font-semibold not-italic">students brag about paying for.</span>
+                      Our goal is not only to save a handful of students from churning, but to find bottle necks flying under the radar which can create success in your course that <span className="bg-gradient-to-r from-[#8B5CF6] to-[#3B82F6] bg-clip-text text-transparent font-semibold not-italic">students brag about paying for.</span>
                     </p>
                   </div>
                 </CardContent>
@@ -153,29 +150,29 @@ export function TopBar() {
                     📊 How It Works
                   </CardTitle>
                 </CardHeader>
-                <CardContent className="space-y-4 text-sm">
-                  <div className="bg-[#10B981]/5 border border-[#10B981]/20 rounded-lg p-3">
-                    <div className="text-[#10B981] font-semibold mb-1.5 flex items-center gap-2">
-                      <span className="flex items-center justify-center w-5 h-5 rounded-full bg-[#10B981] text-white text-xs font-bold">1</span>
+                <CardContent className="space-y-3 text-sm">
+                  <div className="bg-[#8B5CF6]/5 border border-[#8B5CF6]/20 rounded-lg p-3 border-l-2 border-l-[#8B5CF6]">
+                    <div className="text-[#8B5CF6] font-semibold mb-1.5 flex items-center gap-2">
+                      <span className="flex items-center justify-center w-5 h-5 rounded-full bg-[#8B5CF6] text-white text-xs font-bold">1</span>
                       Collect Feedback
                     </div>
                     <p className="text-[#D1D5DB] text-xs leading-relaxed">Use the Forms page to create surveys with 10+ niche templates (Trading, Fitness, E-commerce, etc.). Students see them in their dashboard.</p>
                   </div>
-                  <div className="bg-[#10B981]/5 border border-[#10B981]/20 rounded-lg p-3">
-                    <div className="text-[#10B981] font-semibold mb-1.5 flex items-center gap-2">
-                      <span className="flex items-center justify-center w-5 h-5 rounded-full bg-[#10B981] text-white text-xs font-bold">2</span>
+                  <div className="bg-[#F59E0B]/5 border border-[#F59E0B]/20 rounded-lg p-3 border-l-2 border-l-[#F59E0B]">
+                    <div className="text-[#F59E0B] font-semibold mb-1.5 flex items-center gap-2">
+                      <span className="flex items-center justify-center w-5 h-5 rounded-full bg-[#F59E0B] text-white text-xs font-bold">2</span>
                       AI Generates Insights
                     </div>
                     <p className="text-[#D1D5DB] text-xs leading-relaxed">Our AI analyzes responses and generates actionable recommendations - no fake data, only real patterns from your students.</p>
                   </div>
-                  <div className="bg-[#10B981]/5 border border-[#10B981]/20 rounded-lg p-3">
-                    <div className="text-[#10B981] font-semibold mb-1.5 flex items-center gap-2">
-                      <span className="flex items-center justify-center w-5 h-5 rounded-full bg-[#10B981] text-white text-xs font-bold">3</span>
+                  <div className="bg-[#3B82F6]/5 border border-[#3B82F6]/20 rounded-lg p-3 border-l-2 border-l-[#3B82F6]">
+                    <div className="text-[#3B82F6] font-semibold mb-1.5 flex items-center gap-2">
+                      <span className="flex items-center justify-center w-5 h-5 rounded-full bg-[#3B82F6] text-white text-xs font-bold">3</span>
                       Take Action
                     </div>
                     <p className="text-[#D1D5DB] text-xs leading-relaxed">Mark insights as "Actioned" to track improvements. See what content performs best and which students need support.</p>
                   </div>
-                  <div className="bg-[#10B981]/5 border border-[#10B981]/20 rounded-lg p-3">
+                  <div className="bg-[#10B981]/5 border border-[#10B981]/20 rounded-lg p-3 border-l-2 border-l-[#10B981]">
                     <div className="text-[#10B981] font-semibold mb-1.5 flex items-center gap-2">
                       <span className="flex items-center justify-center w-5 h-5 rounded-full bg-[#10B981] text-white text-xs font-bold">4</span>
                       Track Results
@@ -191,21 +188,21 @@ export function TopBar() {
                 </CardHeader>
                 <CardContent className="space-y-2 text-sm">
                   <div className="flex items-start gap-2">
-                    <span className="text-[#10B981] font-bold">→</span>
+                    <span className="text-[#8B5CF6] font-bold">→</span>
                     <div>
                       <span className="text-[#F8FAFC] font-medium">Forms:</span>
-                      <span className="text-[#A1A1AA]"> Click "Niche Templates" to create your first survey in seconds</span>
+                      <span className="text-[#A1A1AA]"> Create a survey and publish it to start collecting student feedback</span>
                     </div>
                   </div>
                   <div className="flex items-start gap-2">
-                    <span className="text-[#10B981] font-bold">→</span>
+                    <span className="text-[#F59E0B] font-bold">→</span>
                     <div>
                       <span className="text-[#F8FAFC] font-medium">AI Insights:</span>
                       <span className="text-[#A1A1AA]"> Click "Generate Insights" after collecting 3+ responses</span>
                     </div>
                   </div>
                   <div className="flex items-start gap-2">
-                    <span className="text-[#10B981] font-bold">→</span>
+                    <span className="text-[#3B82F6] font-bold">→</span>
                     <div>
                       <span className="text-[#F8FAFC] font-medium">Dashboard:</span>
                       <span className="text-[#A1A1AA]"> View student engagement and content performance metrics</span>
