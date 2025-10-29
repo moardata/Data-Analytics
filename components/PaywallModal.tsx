@@ -123,86 +123,62 @@ export function PaywallModal({ isOpen, onClose, reason }: PaywallModalProps) {
         ) : (
           <div className="p-8">
             {eligibleForTrial ? (
-              /* Free Trial Offer */
+              /* Free Trial Offer - ONLY Starter Plan */
               <div className="space-y-6">
                 <div className="bg-gradient-to-r from-emerald-500/20 to-blue-500/20 border border-emerald-500/30 rounded-xl p-6">
-                  <div className="flex items-center justify-between mb-4">
-                    <div>
-                      <h3 className="text-xl font-bold text-white">Starter Plan</h3>
-                      <p className="text-emerald-400 font-semibold">7 Days Free, then $30/month</p>
-                    </div>
-                    <div className="text-right">
-                      <div className="text-3xl font-bold text-white">$0</div>
-                      <div className="text-sm text-gray-400">for 7 days</div>
-                    </div>
+                  <div className="flex items-center justify-center w-20 h-20 mx-auto mb-4 bg-gradient-to-r from-emerald-500 to-emerald-600 rounded-full">
+                    <span className="text-4xl">🚀</span>
                   </div>
                   
-                  <ul className="space-y-2 text-sm text-gray-300 mb-6">
+                  <h3 className="text-2xl font-bold text-white text-center mb-2">Starter Plan</h3>
+                  <p className="text-center mb-4">
+                    <span className="text-emerald-400 text-xl font-bold">7 Days FREE</span>
+                    <span className="text-gray-400 text-sm block mt-1">then $30/month</span>
+                  </p>
+                  
+                  <ul className="space-y-3 text-sm text-gray-300 mb-6">
                     <li className="flex items-center">
-                      <span className="text-emerald-400 mr-2">✓</span>
-                      Up to 100 students
+                      <CheckCircle className="h-5 w-5 text-emerald-400 mr-3" />
+                      <span>Up to 100 students</span>
                     </li>
                     <li className="flex items-center">
-                      <span className="text-emerald-400 mr-2">✓</span>
-                      5 AI insights per day
+                      <CheckCircle className="h-5 w-5 text-emerald-400 mr-3" />
+                      <span>5 AI insights per day</span>
                     </li>
                     <li className="flex items-center">
-                      <span className="text-emerald-400 mr-2">✓</span>
-                      Unlimited custom forms
+                      <CheckCircle className="h-5 w-5 text-emerald-400 mr-3" />
+                      <span>Unlimited custom forms</span>
                     </li>
                     <li className="flex items-center">
-                      <span className="text-emerald-400 mr-2">✓</span>
-                      3 core dashboard metrics
+                      <CheckCircle className="h-5 w-5 text-emerald-400 mr-3" />
+                      <span>Full analytics dashboard</span>
                     </li>
                     <li className="flex items-center">
-                      <span className="text-emerald-400 mr-2">✓</span>
-                      14-day data retention
+                      <CheckCircle className="h-5 w-5 text-emerald-400 mr-3" />
+                      <span>14-day data retention</span>
                     </li>
                   </ul>
 
                   <button
                     onClick={() => handleSelectPlan('prod_Tdu9YayfFDxhc')}
-                    className="w-full py-3 px-6 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white font-semibold rounded-lg transition-all duration-200 shadow-lg shadow-emerald-500/30"
+                    className="w-full py-4 px-6 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white text-lg font-bold rounded-lg transition-all duration-200 shadow-lg shadow-emerald-500/30"
                   >
-                    Start 7-Day Free Trial
+                    🎉 Start 7-Day Free Trial
                   </button>
                   
-                  <p className="text-xs text-gray-500 text-center mt-3">
-                    Cancel anytime during trial • No charge until day 8
+                  <p className="text-xs text-gray-500 text-center mt-4">
+                    No credit card charge for 7 days • Cancel anytime • Automatically renews at $30/month
                   </p>
                 </div>
 
-                {/* Other plans */}
-                <div className="pt-4 border-t border-[#2a2a2a]">
-                  <p className="text-sm text-gray-400 mb-4">Or choose a different plan:</p>
-                  <div className="grid grid-cols-3 gap-3">
-                    <button
-                      onClick={() => handleSelectPlan('prod_UNx31yqmQcXOx')}
-                      className="p-4 bg-[#1a1a1a] hover:bg-[#252525] border border-[#2a2a2a] rounded-lg transition-colors text-left"
-                    >
-                      <div className="font-semibold text-white text-sm">Growth</div>
-                      <div className="text-emerald-400 text-lg font-bold">$99.99</div>
-                      <div className="text-xs text-gray-500">/month</div>
-                    </button>
-                    
-                    <button
-                      onClick={() => handleSelectPlan('prod_03fZxoux0PVvW')}
-                      className="p-4 bg-[#1a1a1a] hover:bg-[#252525] border border-[#2a2a2a] rounded-lg transition-colors text-left"
-                    >
-                      <div className="font-semibold text-white text-sm">Pro</div>
-                      <div className="text-emerald-400 text-lg font-bold">$299</div>
-                      <div className="text-xs text-gray-500">/month</div>
-                    </button>
-                    
-                    <button
-                      onClick={() => handleSelectPlan('prod_QFtQEu91TO2yh')}
-                      className="p-4 bg-[#1a1a1a] hover:bg-[#252525] border border-[#2a2a2a] rounded-lg transition-colors text-left"
-                    >
-                      <div className="font-semibold text-white text-sm">Scale</div>
-                      <div className="text-emerald-400 text-lg font-bold">$599</div>
-                      <div className="text-xs text-gray-500">/month</div>
-                    </button>
-                  </div>
+                {/* Link to see other plans */}
+                <div className="text-center">
+                  <a
+                    href="/upgrade"
+                    className="text-sm text-gray-400 hover:text-emerald-400 transition-colors underline"
+                  >
+                    View all plans and pricing
+                  </a>
                 </div>
               </div>
             ) : (

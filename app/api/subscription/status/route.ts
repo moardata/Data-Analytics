@@ -61,15 +61,16 @@ export async function GET(request: NextRequest) {
       });
     }
 
-    // Check if subscription is active
-    const hasAccess = client.subscription_status === 'active';
+    // Check if subscription is active OR in trial period
+    // Users MUST have an active subscription (paid or trial) to access the app
+    const hasAccess = client.subscription_status === 'active' || client.subscription_status === 'trialing';
 
     return NextResponse.json({
       hasAccess,
-      currentTier: client.current_tier || 'atom',
+      currentTier: client.current_tier || null,
       subscriptionStatus: client.subscription_status || 'none',
       planId: client.whop_plan_id,
-      reason: hasAccess ? 'active_subscription' : 'inactive_subscription'
+      reason: hasAccess ? 'active_subscription' : 'no_active_subscription'
     });
 
   } catch (error) {

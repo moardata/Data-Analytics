@@ -1,6 +1,7 @@
 /**
  * Revenue Page - Dark Emerald Theme
  * Advanced revenue dashboard with charts and insights
+ * REQUIRES ACTIVE SUBSCRIPTION
  */
 
 'use client';
@@ -8,6 +9,7 @@
 import { Suspense, useState, useEffect } from 'react';
 import { useSearchParams } from 'next/navigation';
 import RevenueDashboard from '@/components/RevenueDashboard';
+import { PaywallGuard } from '@/components/PaywallGuard';
 
 export const dynamic = 'force-dynamic';
 
@@ -94,12 +96,14 @@ function RevenueContent() {
 
 export default function RevenuePage() {
   return (
-    <Suspense fallback={
-      <div className="flex items-center justify-center min-h-screen bg-gradient-to-b from-[#0a0a0a] to-[#0f0f0f]">
-        <div className="w-16 h-16 border-4 border-[#10B981] border-t-transparent rounded-full animate-spin" />
-      </div>
-    }>
-      <RevenueContent />
-    </Suspense>
+    <PaywallGuard feature="Revenue Dashboard">
+      <Suspense fallback={
+        <div className="flex items-center justify-center min-h-screen bg-gradient-to-b from-[#0a0a0a] to-[#0f0f0f]">
+          <div className="w-16 h-16 border-4 border-[#10B981] border-t-transparent rounded-full animate-spin" />
+        </div>
+      }>
+        <RevenueContent />
+      </Suspense>
+    </PaywallGuard>
   );
 }

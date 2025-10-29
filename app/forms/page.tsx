@@ -1,6 +1,7 @@
 /**
  * Surveys Section - Comprehensive Survey Management
  * View, customize, schedule, and export survey data with clean UI
+ * REQUIRES ACTIVE SUBSCRIPTION
  */
 
 'use client';
@@ -22,6 +23,7 @@ import { supabase } from '@/lib/supabase';
 import { WhopClientAuth } from '@/components/WhopClientAuth';
 import { fixFormFieldIds } from '@/lib/utils/formHelpers';
 import { triggerConfetti } from '@/components/SurveyCompletionTracker';
+import { PaywallGuard } from '@/components/PaywallGuard';
 import { 
   BarChart, 
   Bar, 
@@ -1009,5 +1011,9 @@ function FormsContent() {
 }
 
 export default function FormsPage() {
-  return <FormsContent />;
+  return (
+    <PaywallGuard feature="Forms & Surveys">
+      <FormsContent />
+    </PaywallGuard>
+  );
 }

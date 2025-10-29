@@ -7,6 +7,7 @@
  * - User authentication via Whop SDK
  * - Access control (only admins/owners can view)
  * - Complete data isolation per company
+ * - REQUIRES ACTIVE SUBSCRIPTION (7-day trial or paid)
  */
 
 'use client';
@@ -17,6 +18,7 @@ import { adaptToCreatorAnalytics } from '@/lib/utils/adaptDashboardCreatorAnalyt
 import { PermissionsBanner } from '@/components/PermissionsBanner';
 import { useWhopAuth } from '@/lib/hooks/useWhopAuth';
 import { LoadingScreen } from '@/components/LoadingScreen';
+import { PaywallGuard } from '@/components/PaywallGuard';
 
 export const dynamic = 'force-dynamic';
 
@@ -344,5 +346,9 @@ function AnalyticsContent() {
 }
 
 export default function AnalyticsPage() {
-  return <AnalyticsContent />;
+  return (
+    <PaywallGuard feature="Analytics Dashboard">
+      <AnalyticsContent />
+    </PaywallGuard>
+  );
 }

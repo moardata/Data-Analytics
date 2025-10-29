@@ -1,6 +1,7 @@
 /**
  * AI Insights Page - Metallic Emerald Theme
  * Dedicated page for viewing and generating insights with reflective metallic design
+ * REQUIRES ACTIVE SUBSCRIPTION
  */
 
 'use client';
@@ -22,6 +23,7 @@ import StructuredAIInsights from '@/components/StructuredAIInsights';
 import ActionFeedbackLoop from '@/components/ActionFeedbackLoop';
 import ExportsReportsDashboard from '@/components/ExportsReportsDashboard';
 import SystemHealthDashboard from '@/components/SystemHealthDashboard';
+import { PaywallGuard } from '@/components/PaywallGuard';
 
 // ---------------------- THEME ----------------------
 const theme = {
@@ -606,5 +608,9 @@ function InsightsContent() {
 }
 
 export default function InsightsPage() {
-  return <InsightsContent />;
+  return (
+    <PaywallGuard feature="AI Insights">
+      <InsightsContent />
+    </PaywallGuard>
+  );
 }
