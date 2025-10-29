@@ -81,30 +81,40 @@ export function PaywallModal({ isOpen, onClose, reason }: PaywallModalProps) {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
-      <div className="relative w-full max-w-lg mx-auto bg-gradient-to-br from-[#0f0f0f] via-[#1a1a1a] to-[#0f0f0f] border border-[#2a2a2a] rounded-2xl shadow-2xl max-h-[85vh] overflow-hidden flex flex-col">
-        {/* Close button */}
-        <button
-          onClick={onClose}
-          className="absolute top-4 right-4 p-2 text-gray-400 hover:text-white transition-colors rounded-lg hover:bg-white/10"
-        >
-          <X size={20} />
-        </button>
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-in fade-in duration-200">
+      {/* Glow effect background */}
+      <div className="absolute inset-0 flex items-center justify-center">
+        <div className="w-[600px] h-[600px] bg-gradient-to-r from-emerald-500/20 to-blue-500/20 rounded-full blur-3xl opacity-50" />
+      </div>
+      
+      <div className="relative w-full max-w-lg mx-auto">
+        {/* Outer glow border */}
+        <div className="absolute -inset-0.5 bg-gradient-to-r from-emerald-500 to-blue-500 rounded-2xl blur opacity-75 animate-pulse" />
+        
+        {/* Main modal */}
+        <div className="relative bg-gradient-to-br from-[#0a0a0a] via-[#0f0f0f] to-[#0a0a0a] border border-emerald-500/30 rounded-2xl shadow-2xl max-h-[85vh] overflow-hidden flex flex-col">
+          {/* Close button */}
+          <button
+            onClick={onClose}
+            className="absolute top-4 right-4 z-10 p-2 text-gray-400 hover:text-white transition-colors rounded-lg hover:bg-emerald-500/10 border border-transparent hover:border-emerald-500/30"
+          >
+            <X size={20} />
+          </button>
 
-        {/* Header */}
-        <div className="p-6 border-b border-[#2a2a2a]">
-          <h2 className="text-2xl font-bold text-white mb-2">
-            {eligibleForTrial ? '🎉 Start Your Free Trial' : '🚀 Upgrade Required'}
-          </h2>
-          <p className="text-sm text-gray-400">
-            {reason || 'This feature requires an active subscription'}
-          </p>
-        </div>
+          {/* Header with gradient */}
+          <div className="p-6 border-b border-emerald-500/20 bg-gradient-to-r from-emerald-500/10 to-blue-500/10">
+            <h2 className="text-2xl font-bold bg-gradient-to-r from-emerald-400 to-blue-400 bg-clip-text text-transparent mb-2">
+              {eligibleForTrial ? '🎉 Start Your Free Trial' : '🚀 Upgrade Required'}
+            </h2>
+            <p className="text-sm text-gray-400">
+              {reason || 'This feature requires an active subscription'}
+            </p>
+          </div>
 
         {loading ? (
           <div className="p-12 text-center">
-            <div className="inline-block w-8 h-8 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin" />
-            <p className="mt-4 text-gray-400">Loading...</p>
+            <div className="inline-block w-8 h-8 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin shadow-lg shadow-emerald-500/50" />
+            <p className="mt-4 text-emerald-300">Loading your options...</p>
           </div>
         ) : selectedPlan ? (
           /* Show embedded checkout for selected plan */
@@ -125,57 +135,61 @@ export function PaywallModal({ isOpen, onClose, reason }: PaywallModalProps) {
             {eligibleForTrial ? (
               /* Free Trial Offer - ONLY Starter Plan */
               <div className="space-y-4">
-                <div className="bg-gradient-to-r from-emerald-500/20 to-blue-500/20 border border-emerald-500/30 rounded-xl p-5">
-                  <div className="flex items-center justify-center w-16 h-16 mx-auto mb-3 bg-gradient-to-r from-emerald-500 to-emerald-600 rounded-full">
-                    <span className="text-3xl">🚀</span>
-                  </div>
+                {/* Glow effect for the card */}
+                <div className="relative">
+                  <div className="absolute -inset-0.5 bg-gradient-to-r from-emerald-500 to-blue-500 rounded-xl blur opacity-30" />
+                  <div className="relative bg-gradient-to-br from-emerald-500/20 via-blue-500/10 to-emerald-500/20 border border-emerald-500/50 rounded-xl p-5 shadow-xl">
+                    <div className="flex items-center justify-center w-16 h-16 mx-auto mb-3 bg-gradient-to-br from-emerald-400 to-emerald-600 rounded-full shadow-lg shadow-emerald-500/50">
+                      <span className="text-3xl">🚀</span>
+                    </div>
+                    
+                    <h3 className="text-xl font-bold bg-gradient-to-r from-emerald-300 to-blue-300 bg-clip-text text-transparent text-center mb-2">Starter Plan</h3>
+                    <p className="text-center mb-3">
+                      <span className="text-emerald-300 text-lg font-bold drop-shadow-[0_0_10px_rgba(16,185,129,0.5)]">7 Days FREE</span>
+                      <span className="text-gray-400 text-xs block mt-1">then $30/month</span>
+                    </p>
                   
-                  <h3 className="text-xl font-bold text-white text-center mb-2">Starter Plan</h3>
-                  <p className="text-center mb-3">
-                    <span className="text-emerald-400 text-lg font-bold">7 Days FREE</span>
-                    <span className="text-gray-400 text-xs block mt-1">then $30/month</span>
-                  </p>
-                  
-                  <ul className="space-y-2 text-xs text-gray-300 mb-4">
-                    <li className="flex items-center">
-                      <CheckCircle className="h-4 w-4 text-emerald-400 mr-2" />
-                      <span>Up to 100 students</span>
-                    </li>
-                    <li className="flex items-center">
-                      <CheckCircle className="h-4 w-4 text-emerald-400 mr-2" />
-                      <span>5 AI insights per day</span>
-                    </li>
-                    <li className="flex items-center">
-                      <CheckCircle className="h-4 w-4 text-emerald-400 mr-2" />
-                      <span>Unlimited custom forms</span>
-                    </li>
-                    <li className="flex items-center">
-                      <CheckCircle className="h-4 w-4 text-emerald-400 mr-2" />
-                      <span>Full analytics dashboard</span>
-                    </li>
-                    <li className="flex items-center">
-                      <CheckCircle className="h-4 w-4 text-emerald-400 mr-2" />
-                      <span>14-day data retention</span>
-                    </li>
-                  </ul>
+                    <ul className="space-y-2 text-xs text-gray-200 mb-4">
+                      <li className="flex items-center">
+                        <CheckCircle className="h-4 w-4 text-emerald-400 mr-2 drop-shadow-[0_0_5px_rgba(16,185,129,0.5)]" />
+                        <span>Up to 100 students</span>
+                      </li>
+                      <li className="flex items-center">
+                        <CheckCircle className="h-4 w-4 text-emerald-400 mr-2 drop-shadow-[0_0_5px_rgba(16,185,129,0.5)]" />
+                        <span>5 AI insights per day</span>
+                      </li>
+                      <li className="flex items-center">
+                        <CheckCircle className="h-4 w-4 text-blue-400 mr-2 drop-shadow-[0_0_5px_rgba(59,130,246,0.5)]" />
+                        <span>Unlimited custom forms</span>
+                      </li>
+                      <li className="flex items-center">
+                        <CheckCircle className="h-4 w-4 text-blue-400 mr-2 drop-shadow-[0_0_5px_rgba(59,130,246,0.5)]" />
+                        <span>Full analytics dashboard</span>
+                      </li>
+                      <li className="flex items-center">
+                        <CheckCircle className="h-4 w-4 text-emerald-400 mr-2 drop-shadow-[0_0_5px_rgba(16,185,129,0.5)]" />
+                        <span>14-day data retention</span>
+                      </li>
+                    </ul>
 
-                  <button
-                    onClick={() => handleSelectPlan('prod_Tdu9YayfFDxhc')}
-                    className="w-full py-3 px-4 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white font-bold rounded-lg transition-all duration-200 shadow-lg shadow-emerald-500/30"
-                  >
-                    🎉 Start 7-Day Free Trial
-                  </button>
-                  
-                  <p className="text-xs text-gray-500 text-center mt-3">
-                    No credit card charge for 7 days • Cancel anytime • Automatically renews at $30/month
-                  </p>
+                    <button
+                      onClick={() => handleSelectPlan('prod_Tdu9YayfFDxhc')}
+                      className="w-full py-3 px-4 bg-gradient-to-r from-emerald-500 to-blue-500 hover:from-emerald-600 hover:to-blue-600 text-white font-bold rounded-lg transition-all duration-200 shadow-lg shadow-emerald-500/50 hover:shadow-emerald-500/70 hover:scale-[1.02]"
+                    >
+                      🎉 Start 7-Day Free Trial
+                    </button>
+                    
+                    <p className="text-xs text-gray-400 text-center mt-3">
+                      No credit card charge for 7 days • Cancel anytime • Automatically renews at $30/month
+                    </p>
+                  </div>
                 </div>
 
                 {/* Link to see other plans */}
                 <div className="text-center">
                   <a
                     href="/upgrade"
-                    className="text-sm text-gray-400 hover:text-emerald-400 transition-colors underline"
+                    className="text-sm text-gray-400 hover:text-emerald-400 transition-all duration-200 underline hover:drop-shadow-[0_0_8px_rgba(16,185,129,0.5)]"
                   >
                     View all plans and pricing
                   </a>
@@ -198,18 +212,18 @@ export function PaywallModal({ isOpen, onClose, reason }: PaywallModalProps) {
                     <button
                       key={plan.planId}
                       onClick={() => handleSelectPlan(plan.planId)}
-                      className={`w-full p-5 border rounded-xl transition-all text-left ${
+                      className={`w-full p-5 border rounded-xl transition-all duration-200 text-left hover:scale-[1.02] ${
                         plan.popular
-                          ? 'bg-gradient-to-r from-emerald-500/10 to-blue-500/10 border-emerald-500/50 hover:border-emerald-500'
-                          : 'bg-[#1a1a1a] border-[#2a2a2a] hover:border-[#3a3a3a]'
+                          ? 'bg-gradient-to-r from-emerald-500/20 to-blue-500/20 border-emerald-500/50 hover:border-emerald-400 hover:shadow-lg hover:shadow-emerald-500/30'
+                          : 'bg-[#1a1a1a] border-[#2a2a2a] hover:border-emerald-500/30 hover:bg-[#1f1f1f]'
                       }`}
                     >
                       <div className="flex items-center justify-between">
                         <div>
                           <div className="flex items-center gap-2">
-                            <h3 className="text-lg font-bold text-white">{plan.name}</h3>
+                            <h3 className={`text-lg font-bold ${plan.popular ? 'bg-gradient-to-r from-emerald-300 to-blue-300 bg-clip-text text-transparent' : 'text-white'}`}>{plan.name}</h3>
                             {plan.popular && (
-                              <span className="px-2 py-0.5 text-xs font-semibold text-emerald-400 bg-emerald-500/20 rounded-full">
+                              <span className="px-2 py-0.5 text-xs font-semibold text-emerald-300 bg-emerald-500/30 rounded-full border border-emerald-500/50 shadow-lg shadow-emerald-500/20">
                                 POPULAR
                               </span>
                             )}
@@ -217,7 +231,7 @@ export function PaywallModal({ isOpen, onClose, reason }: PaywallModalProps) {
                           <p className="text-sm text-gray-400 mt-1">{plan.features}</p>
                         </div>
                         <div className="text-right">
-                          <div className="text-2xl font-bold text-white">{plan.price}</div>
+                          <div className={`text-2xl font-bold ${plan.popular ? 'text-emerald-300' : 'text-white'}`}>{plan.price}</div>
                           <div className="text-xs text-gray-500">/month</div>
                         </div>
                       </div>
