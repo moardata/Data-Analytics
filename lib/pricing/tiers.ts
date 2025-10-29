@@ -48,7 +48,7 @@ export const PRICING_TIERS: Record<TierName, PricingTier> = {
     price: 30,
     currency: 'USD',
     trialDays: 7, // 7-day free trial
-    whopPlanId: 'prod_Tdu9YayfFDxhc',
+    whopPlanId: 'prod_n8rHHckjTjJdD',
     limits: {
       maxStudents: 100,
       maxResponsesPerMonth: 100, // AI-analyzed survey responses
@@ -83,7 +83,7 @@ export const PRICING_TIERS: Record<TierName, PricingTier> = {
     displayName: 'Growth',
     price: 99,
     currency: 'USD',
-    whopPlanId: 'prod_UNx31yqmQcXOx',
+    whopPlanId: 'prod_4ISBWlTlS81KL',
     limits: {
       maxStudents: 1000,
       maxResponsesPerMonth: 1000,
@@ -120,7 +120,7 @@ export const PRICING_TIERS: Record<TierName, PricingTier> = {
     displayName: 'Pro',
     price: 299,
     currency: 'USD',
-    whopPlanId: 'prod_03fZxoux0PVvW',
+    whopPlanId: 'prod_6O1w6a9outgyO',
     limits: {
       maxStudents: 2000,
       maxResponsesPerMonth: 10000,
@@ -158,7 +158,7 @@ export const PRICING_TIERS: Record<TierName, PricingTier> = {
     displayName: 'Scale',
     price: 599,
     currency: 'USD',
-    whopPlanId: 'prod_QFtQEu91TO2yh',
+    whopPlanId: 'prod_bm98P1RCFrFmF',
     limits: {
       maxStudents: 999999, // Unlimited
       maxResponsesPerMonth: 999999, // Unlimited
