@@ -1,6 +1,6 @@
 /**
- * Settings Page - Dark Emerald Theme
- * App configuration and preferences
+ * Settings Page - Purple/Blue/Emerald Gradient Theme
+ * App configuration and preferences - Version 2.0
  */
 
 'use client';
