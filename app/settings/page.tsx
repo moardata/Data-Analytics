@@ -103,50 +103,57 @@ function SettingsContent() {
     }
   };
   return (
-    <div className="min-h-screen bg-gradient-to-b from-[#0a0a0a] to-[#0f0f0f] p-8">
-      <div className="max-w-4xl mx-auto space-y-8">
-        <div>
-          <h1 className="text-5xl font-black text-[#F8FAFC] mb-2">
-            Settings
-          </h1>
-          <p className="text-xl font-bold text-[#A1A1AA]">
-            Manage your app configuration
-          </p>
+    <div className="min-h-screen bg-gradient-to-b from-[#0a0a0a] to-[#0f0f0f] p-6">
+      <div className="max-w-5xl mx-auto space-y-6">
+        <div className="flex items-center gap-4 pb-6 border-b border-purple-500/20">
+          <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-purple-500/20 to-blue-500/20 border border-purple-500/30 flex items-center justify-center shadow-lg shadow-purple-500/20">
+            <SettingsIcon className="h-6 w-6 text-purple-400" />
+          </div>
+          <div>
+            <h1 className="text-3xl font-bold bg-gradient-to-r from-purple-400 via-blue-400 to-emerald-400 bg-clip-text text-transparent">
+              Settings
+            </h1>
+            <p className="text-sm text-[#A1A1AA]">
+              Manage your app configuration
+            </p>
+          </div>
         </div>
 
-        <div className="space-y-6">
-          <Card className="border border-purple-500/20 bg-gradient-to-br from-[#0f0f0f] via-[#1a1a1a] to-[#0f0f0f] shadow-lg shadow-purple-500/10">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2 bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent">
-                <Database className="h-5 w-5 text-purple-400" />
-                Data Management
-              </CardTitle>
-              <CardDescription className="text-[#A1A1AA]">
-                Import your Whop members and populate analytics
-              </CardDescription>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {/* Data Management Card */}
+          <Card className="border border-purple-500/30 bg-[#0f0f0f]/50 backdrop-blur-sm shadow-xl shadow-purple-500/5 hover:border-purple-500/50 transition-all">
+            <CardHeader className="pb-3">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-purple-500/20 to-blue-500/20 border border-purple-500/30 flex items-center justify-center shadow-lg shadow-purple-500/20">
+                  <Database className="h-5 w-5 text-purple-400" />
+                </div>
+                <div>
+                  <CardTitle className="text-base font-bold bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent">
+                    Data Management
+                  </CardTitle>
+                  <CardDescription className="text-xs text-[#A1A1AA]">
+                    Import your Whop members
+                  </CardDescription>
+                </div>
+              </div>
             </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="text-sm text-[#A1A1AA]">
-                <p className="mb-2">
-                  Import all current members from Whop to instantly populate your analytics dashboard.
-                </p>
-                <p className="text-xs text-[#A1A1AA]">
-                  This fetches member data including names, emails, and profile photos.
-                </p>
+            <CardContent className="space-y-3 pt-3">
+              <div className="text-xs text-[#A1A1AA] leading-relaxed">
+                Import all current members from Whop to instantly populate your analytics dashboard with names, emails, and profile photos.
               </div>
               <Button 
                 onClick={handleSyncStudents}
                 disabled={syncing}
-                className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-500 hover:to-blue-500 text-white border-0 flex items-center gap-2 shadow-lg shadow-purple-500/30 transition-all hover:scale-[1.02]"
+                className="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-500 hover:to-blue-500 text-white border-0 flex items-center justify-center gap-2 shadow-lg shadow-purple-500/30 transition-all hover:scale-[1.02] text-sm font-semibold py-2.5"
               >
                 <RefreshCw className={`h-4 w-4 ${syncing ? 'animate-spin' : ''}`} />
-                {syncing ? 'Importing...' : 'Import Members from Whop'}
+                {syncing ? 'Importing...' : 'Import Members'}
               </Button>
               {syncMessage && (
-                <div className={`text-sm p-3 rounded ${
-                  syncMessage.startsWith('✅') ? 'bg-green-900/20 text-green-400' :
-                  syncMessage.startsWith('🔄') ? 'bg-blue-900/20 text-blue-400' :
-                  'bg-red-900/20 text-red-400'
+                <div className={`text-xs p-2.5 rounded-lg border ${
+                  syncMessage.startsWith('✅') ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30' :
+                  syncMessage.startsWith('🔄') ? 'bg-blue-500/10 text-blue-400 border-blue-500/30' :
+                  'bg-red-500/10 text-red-400 border-red-500/30'
                 }`}>
                   {syncMessage}
                 </div>
@@ -154,49 +161,64 @@ function SettingsContent() {
             </CardContent>
           </Card>
 
-          <Card className="border border-blue-500/20 bg-gradient-to-br from-[#0f0f0f] via-[#1a1a1a] to-[#0f0f0f] shadow-lg shadow-blue-500/10">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2 bg-gradient-to-r from-blue-400 to-emerald-400 bg-clip-text text-transparent">
-                <User className="h-5 w-5 text-blue-400" />
-                Analytics Settings
-              </CardTitle>
-              <CardDescription className="text-[#A1A1AA]">
-                Configure your analytics preferences
-              </CardDescription>
+          {/* Subscription Card */}
+          <Card className="border border-blue-500/30 bg-[#0f0f0f]/50 backdrop-blur-sm shadow-xl shadow-blue-500/5 hover:border-blue-500/50 transition-all">
+            <CardHeader className="pb-3">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-blue-500/20 to-emerald-500/20 border border-blue-500/30 flex items-center justify-center shadow-lg shadow-blue-500/20">
+                  <User className="h-5 w-5 text-blue-400" />
+                </div>
+                <div>
+                  <CardTitle className="text-base font-bold bg-gradient-to-r from-blue-400 to-emerald-400 bg-clip-text text-transparent">
+                    Subscription
+                  </CardTitle>
+                  <CardDescription className="text-xs text-[#A1A1AA]">
+                    Manage your plan
+                  </CardDescription>
+                </div>
+              </div>
             </CardHeader>
-            <CardContent className="space-y-3">
-              <div className="text-sm text-[#A1A1AA]">
-                <span className="font-bold">Current Plan:</span> <span className="text-purple-400 font-bold">Starter (Free Trial)</span>
+            <CardContent className="space-y-3 pt-3">
+              <div className="flex items-center justify-between p-3 rounded-lg bg-purple-500/10 border border-purple-500/30">
+                <span className="text-xs text-[#A1A1AA]">Current Plan:</span>
+                <span className="text-sm font-bold bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent">Starter</span>
               </div>
               <Button 
                 onClick={handleUpgrade}
-                className="bg-gradient-to-r from-blue-600 to-emerald-600 hover:from-blue-500 hover:to-emerald-500 text-white border-0 shadow-lg shadow-blue-500/30 transition-all hover:scale-[1.02]"
+                className="w-full bg-gradient-to-r from-blue-600 to-emerald-600 hover:from-blue-500 hover:to-emerald-500 text-white border-0 shadow-lg shadow-blue-500/30 transition-all hover:scale-[1.02] text-sm font-semibold py-2.5"
               >
                 Upgrade Plan
               </Button>
             </CardContent>
           </Card>
 
-          <Card className="border border-emerald-500/20 bg-gradient-to-br from-[#0f0f0f] via-[#1a1a1a] to-[#0f0f0f] shadow-lg shadow-emerald-500/10">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2 bg-gradient-to-r from-emerald-400 to-blue-400 bg-clip-text text-transparent">
-                <Database className="h-5 w-5 text-emerald-400" />
-                Data & Privacy
-              </CardTitle>
-              <CardDescription className="text-[#A1A1AA]">
-                Manage your data and privacy settings
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-3">
-              <div className="flex items-center justify-between">
-                <span className="text-[#A1A1AA]">Data retention</span>
-                <div className="flex items-center gap-2">
-                  <div className="w-2 h-2 rounded-full bg-emerald-400 shadow-lg shadow-emerald-400/50"></div>
-                  <span className="text-emerald-400 font-bold">7 days</span>
+          {/* Data & Privacy Card */}
+          <Card className="border border-emerald-500/30 bg-[#0f0f0f]/50 backdrop-blur-sm shadow-xl shadow-emerald-500/5 hover:border-emerald-500/50 transition-all">
+            <CardHeader className="pb-3">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-emerald-500/20 to-blue-500/20 border border-emerald-500/30 flex items-center justify-center shadow-lg shadow-emerald-500/20">
+                  <Database className="h-5 w-5 text-emerald-400" />
+                </div>
+                <div>
+                  <CardTitle className="text-base font-bold bg-gradient-to-r from-emerald-400 to-blue-400 bg-clip-text text-transparent">
+                    Data & Privacy
+                  </CardTitle>
+                  <CardDescription className="text-xs text-[#A1A1AA]">
+                    Manage your data settings
+                  </CardDescription>
                 </div>
               </div>
-              <div className="flex items-center justify-between">
-                <span className="text-[#A1A1AA]">Analytics tracking</span>
+            </CardHeader>
+            <CardContent className="space-y-3 pt-3">
+              <div className="flex items-center justify-between p-2.5 rounded-lg bg-[#1a1a1a]/50 border border-emerald-500/20">
+                <span className="text-xs text-[#A1A1AA]">Data retention</span>
+                <div className="flex items-center gap-2">
+                  <div className="w-2 h-2 rounded-full bg-emerald-400 shadow-lg shadow-emerald-400/50 animate-pulse"></div>
+                  <span className="text-xs font-bold text-emerald-400">14 days</span>
+                </div>
+              </div>
+              <div className="flex items-center justify-between p-2.5 rounded-lg bg-[#1a1a1a]/50 border border-purple-500/20">
+                <span className="text-xs text-[#A1A1AA]">Analytics tracking</span>
                 <label className="relative inline-flex items-center cursor-pointer">
                   <input 
                     type="checkbox" 
@@ -204,69 +226,79 @@ function SettingsContent() {
                     checked={analyticsTracking}
                     onChange={(e) => handleToggle('analytics_tracking', e.target.checked)}
                   />
-                  <div className="w-11 h-6 bg-[#1a1a1a] peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-purple-500/50 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-gradient-to-r peer-checked:from-purple-500 peer-checked:to-blue-500 shadow-lg"></div>
+                  <div className="w-10 h-5 bg-[#1a1a1a] peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-purple-500/50 rounded-full peer peer-checked:after:translate-x-[22px] peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-gradient-to-r peer-checked:from-purple-500 peer-checked:to-blue-500 shadow-lg"></div>
                 </label>
               </div>
               <Button 
                 onClick={handleExportData}
                 variant="outline" 
-                className="border-emerald-500/30 text-emerald-400 hover:bg-emerald-500/10 hover:border-emerald-500/50 transition-all"
+                className="w-full border-emerald-500/40 text-emerald-400 hover:bg-emerald-500/10 hover:border-emerald-500/60 transition-all text-sm py-2.5 shadow-lg shadow-emerald-500/10"
               >
+                <Download className="h-4 w-4 mr-2" />
                 Export Data
               </Button>
             </CardContent>
           </Card>
 
-          <Card className="border border-pink-500/20 bg-gradient-to-br from-[#0f0f0f] via-[#1a1a1a] to-[#0f0f0f] shadow-lg shadow-pink-500/10">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2 bg-gradient-to-r from-pink-400 to-purple-400 bg-clip-text text-transparent">
-                <Bell className="h-5 w-5 text-pink-400" />
-                Support
-              </CardTitle>
-              <CardDescription className="text-[#A1A1AA]">
-                Get help and provide feedback
-              </CardDescription>
+          {/* Support Card - Spans 2 columns */}
+          <Card className="border border-pink-500/30 bg-[#0f0f0f]/50 backdrop-blur-sm shadow-xl shadow-pink-500/5 hover:border-pink-500/50 transition-all md:col-span-2">
+            <CardHeader className="pb-3">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-pink-500/20 to-purple-500/20 border border-pink-500/30 flex items-center justify-center shadow-lg shadow-pink-500/20">
+                  <Bell className="h-5 w-5 text-pink-400" />
+                </div>
+                <div>
+                  <CardTitle className="text-base font-bold bg-gradient-to-r from-pink-400 to-purple-400 bg-clip-text text-transparent">
+                    Support & Feedback
+                  </CardTitle>
+                  <CardDescription className="text-xs text-[#A1A1AA]">
+                    Get help and share your thoughts
+                  </CardDescription>
+                </div>
+              </div>
             </CardHeader>
-            <CardContent className="space-y-3">
-              <button 
-                onClick={handleSubmitFeedback}
-                className="w-full group relative overflow-hidden rounded-xl border border-purple-500/30 bg-gradient-to-br from-[#0a0a0a] via-[#0f0f0f] to-[#0a0a0a] p-4 text-left transition-all duration-200 hover:border-purple-500/50 hover:shadow-lg hover:shadow-purple-500/30 hover:scale-[1.01]"
-              >
-                <div className="absolute inset-0 bg-gradient-to-r from-purple-500/5 via-blue-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-                <div className="relative flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-purple-500/10 to-blue-500/10 border border-purple-500/30 flex items-center justify-center group-hover:bg-purple-500/20 transition-colors shadow-lg shadow-purple-500/20">
-                    <MessageCircle className="h-5 w-5 text-purple-400" />
-                  </div>
-                  <div>
-                    <div className="font-semibold text-[#F8FAFC] group-hover:bg-gradient-to-r group-hover:from-purple-300 group-hover:to-blue-300 group-hover:bg-clip-text group-hover:text-transparent transition-all">
-                      Submit Feedback
+            <CardContent className="pt-3">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                <button 
+                  onClick={handleSubmitFeedback}
+                  className="w-full group relative overflow-hidden rounded-lg border border-purple-500/30 bg-[#0a0a0a]/50 p-3 text-left transition-all duration-200 hover:border-purple-500/50 hover:shadow-lg hover:shadow-purple-500/30 hover:scale-[1.01]"
+                >
+                  <div className="absolute inset-0 bg-gradient-to-r from-purple-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                  <div className="relative flex items-center gap-2.5">
+                    <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-purple-500/20 to-blue-500/20 border border-purple-500/40 flex items-center justify-center shadow-md shadow-purple-500/20">
+                      <MessageCircle className="h-4 w-4 text-purple-400" />
                     </div>
-                    <div className="text-xs text-[#A1A1AA]">
-                      Share your thoughts
+                    <div>
+                      <div className="text-sm font-semibold text-[#F8FAFC] group-hover:text-purple-300 transition-colors">
+                        Submit Feedback
+                      </div>
+                      <div className="text-xs text-[#A1A1AA]">
+                        Share your thoughts
+                      </div>
                     </div>
                   </div>
-                </div>
-              </button>
+                </button>
 
-              <button 
-                onClick={handleContactSupport}
-                className="w-full group relative overflow-hidden rounded-xl border border-blue-500/30 bg-gradient-to-br from-[#0a0a0a] via-[#0f0f0f] to-[#0a0a0a] p-4 text-left transition-all duration-200 hover:border-blue-500/50 hover:shadow-lg hover:shadow-blue-500/30 hover:scale-[1.01]"
-              >
-                <div className="absolute inset-0 bg-gradient-to-r from-blue-500/5 via-emerald-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-                <div className="relative flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-blue-500/10 to-emerald-500/10 border border-blue-500/30 flex items-center justify-center group-hover:bg-blue-500/20 transition-colors shadow-lg shadow-blue-500/20">
-                    <HelpCircle className="h-5 w-5 text-blue-400" />
-                  </div>
-                  <div>
-                    <div className="font-semibold text-[#F8FAFC] group-hover:bg-gradient-to-r group-hover:from-blue-300 group-hover:to-emerald-300 group-hover:bg-clip-text group-hover:text-transparent transition-all">
-                      Contact Support
+                <button 
+                  onClick={handleContactSupport}
+                  className="w-full group relative overflow-hidden rounded-lg border border-blue-500/30 bg-[#0a0a0a]/50 p-3 text-left transition-all duration-200 hover:border-blue-500/50 hover:shadow-lg hover:shadow-blue-500/30 hover:scale-[1.01]"
+                >
+                  <div className="absolute inset-0 bg-gradient-to-r from-blue-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                  <div className="relative flex items-center gap-2.5">
+                    <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500/20 to-emerald-500/20 border border-blue-500/40 flex items-center justify-center shadow-md shadow-blue-500/20">
+                      <HelpCircle className="h-4 w-4 text-blue-400" />
                     </div>
-                    <div className="text-xs text-[#A1A1AA]">
-                      Get help quickly
+                    <div>
+                      <div className="text-sm font-semibold text-[#F8FAFC] group-hover:text-blue-300 transition-colors">
+                        Contact Support
+                      </div>
+                      <div className="text-xs text-[#A1A1AA]">
+                        Get help quickly
+                      </div>
                     </div>
                   </div>
-                </div>
-              </button>
+                </button>
+              </div>
             </CardContent>
           </Card>
 
