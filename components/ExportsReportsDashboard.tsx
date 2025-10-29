@@ -146,7 +146,12 @@ export default function ExportsReportsDashboard({ companyId }: ExportsReportsDas
           <p className="text-sm text-[#A1A1AA]">Download analytics for different time ranges</p>
         </div>
         <Badge variant="outline" className="border-[#1a1a1a] text-[#A1A1AA]">
-          {userTier.toUpperCase()}
+          {userTier ? (
+            userTier === 'atom' ? 'STARTER' :
+            userTier === 'core' ? 'GROWTH' :
+            userTier === 'pulse' ? 'PRO' :
+            userTier === 'surge' ? 'SCALE' : userTier.toUpperCase()
+          ) : 'NO SUBSCRIPTION'}
         </Badge>
       </div>
 
