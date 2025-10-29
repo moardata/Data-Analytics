@@ -34,11 +34,6 @@ export async function POST(request: NextRequest) {
       .eq('company_id', companyId)
       .single();
 
-      found: !!clientData,
-      clientId: clientData?.id,
-      error: clientError?.message
-    });
-
     if (clientError || !clientData) {
       console.error('❌ [Form Submit API] Client not found:', clientError);
       return NextResponse.json(

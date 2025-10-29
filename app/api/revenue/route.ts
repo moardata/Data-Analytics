@@ -69,12 +69,6 @@ export async function GET(request: NextRequest) {
       .eq('client_id', clientId)
       .order('created_at', { ascending: false });
 
-      events: events?.length || 0,
-      subscriptions: subscriptions?.length || 0,
-      eventsError: eventsError?.message,
-      subsError: subsError?.message
-    });
-
     if (eventsError) {
       console.error('Error fetching revenue events:', eventsError);
     }

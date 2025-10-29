@@ -58,11 +58,6 @@ export async function GET(request: NextRequest) {
       .eq('is_active', true)
       .order('created_at', { ascending: false });
 
-      found: forms?.length || 0,
-      forms: forms?.map(f => ({ id: f.id, name: f.name, is_active: f.is_active })),
-      error: formsError?.message
-    });
-
     if (formsError) {
       console.error('Error fetching forms:', formsError);
       return NextResponse.json(

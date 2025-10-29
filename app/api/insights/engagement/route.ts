@@ -39,11 +39,6 @@ export async function GET(request: NextRequest) {
       .gte('submitted_at', thirtyDaysAgo)
       .order('submitted_at', { ascending: false });
 
-      count: submissions?.length || 0,
-      clientId,
-      error: submissionsError?.message
-    });
-
     // Get events for activity tracking
     const { data: events, error: eventsError } = await supabase
       .from('events')

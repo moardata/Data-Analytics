@@ -123,18 +123,8 @@ export async function GET(request: NextRequest) {
     const courses = coursesResult.data || [];
     const enrollments = enrollmentsResult.data || [];
 
-      eventsLength: events.length,
-      subscriptionsLength: subscriptions.length,
-      entitiesLength: entities.length,
-    });
-
     // Calculate metrics
     const metrics = calculateMetrics(events, subscriptions, entities, courses, enrollments, days);
-
-      totalStudents: metrics.totalStudents,
-      activeSubscriptions: metrics.activeSubscriptions,
-      totalEvents: events.length,
-    });
 
     return NextResponse.json(metrics, { headers: corsHeaders });
 
