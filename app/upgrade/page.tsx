@@ -204,11 +204,7 @@ function UpgradeContent() {
                     setTimeout(() => window.location.reload(), 1000);
                   }}
                   skipRedirect={true}
-                  themeOptions={{ 
-                    accentColor: '#8B5CF6',
-                    backgroundColor: '#0a0a0a',
-                    foregroundColor: '#ffffff'
-                  }}
+                  themeOptions={{ accentColor: 'purple' }}
                 />
               </div>
             </div>
