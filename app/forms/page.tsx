@@ -765,6 +765,7 @@ function FormsContent() {
             <FormBuilderEnhanced 
               existingForm={editingForm}
               companyId={clientId || undefined}
+              requireSubscription={requireSubscription}
               onSaveComplete={() => {
                 // Refresh forms list and go back to surveys tab
                 fetchForms();

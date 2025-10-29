@@ -123,9 +123,10 @@ interface FormBuilderEnhancedProps {
   } | null;
   onSaveComplete?: () => void;
   companyId?: string;
+  requireSubscription?: (reason?: string) => boolean;
 }
 
-export default function FormBuilderEnhanced({ existingForm, onSaveComplete, companyId }: FormBuilderEnhancedProps = {}) {
+export default function FormBuilderEnhanced({ existingForm, onSaveComplete, companyId, requireSubscription }: FormBuilderEnhancedProps = {}) {
   const [draft, setDraft] = React.useState<FormDraft>({
     name: "",
     description: "",
@@ -264,6 +265,11 @@ export default function FormBuilderEnhanced({ existingForm, onSaveComplete, comp
 
   // Save handler with Supabase integration
   async function handleSave() {
+    // Check subscription before saving
+    if (requireSubscription && !requireSubscription(isEditMode ? 'Update survey' : 'Create survey')) {
+      return;
+    }
+    
     try {
       // Get companyId from URL params or use default
       const urlParams = new URLSearchParams(window.location.search);
