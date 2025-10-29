@@ -41,9 +41,6 @@ export async function POST(request: NextRequest) {
 
     // Check current student count
     const currentUsage = await getClientUsage(companyId);
-      students: currentUsage.studentCount,
-      tier
-    });
 
     // Fetch members from Whop API
     const whopApiKey = process.env.WHOP_API_KEY;

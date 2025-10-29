@@ -96,13 +96,6 @@ export default function StudentSurveysInterface({ companyId }: StudentSurveysInt
         responses,
       };
 
-        formId: selectedSurvey.id,
-        entityId: submissionData.entityId,
-        companyId: companyId,
-        responsesCount: Object.keys(responses).length,
-        responses: responses
-      });
-
       const response = await fetch('/api/forms/submit', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },

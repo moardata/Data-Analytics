@@ -54,13 +54,6 @@ export async function GET(request: NextRequest) {
       }
     }
 
-      userId: auth.userId,
-      companyId: auth.companyId,
-      isOwner,
-      role,
-      isTestMode: auth.isTestMode
-    });
-
     return NextResponse.json({
       success: true,
       isOwner,

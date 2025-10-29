@@ -77,10 +77,6 @@ export async function GET(request: NextRequest) {
         // Whop returns 'admin' for owners, 'customer' for students
         const isOwner = accessLevel === 'admin';
         
-          ? '✅ [Check Owner] User is ADMIN/OWNER' 
-          : '❌ [Check Owner] User is CUSTOMER/STUDENT'
-        );
-        
         return NextResponse.json({ 
           isOwner,
           userId: userId.substring(0, 10) + '...',

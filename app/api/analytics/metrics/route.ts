@@ -63,11 +63,6 @@ export async function GET(request: NextRequest) {
     
     clientData = result.data;
     clientError = result.error;
-    
-      found: !!clientData,
-      clientId: clientData?.id,
-      error: clientError?.message,
-    });
 
     if (clientError) {
       console.error('Error fetching client:', clientError);
