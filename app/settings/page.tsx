@@ -115,10 +115,10 @@ function SettingsContent() {
         </div>
 
         <div className="space-y-6">
-          <Card className="border border-[#1a1a1a] bg-[#0f0f0f] shadow-lg">
+          <Card className="border border-purple-500/20 bg-gradient-to-br from-[#0f0f0f] via-[#1a1a1a] to-[#0f0f0f] shadow-lg shadow-purple-500/10">
             <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-[#F8FAFC]">
-                <Database className="h-5 w-5 text-[#10B981]" />
+              <CardTitle className="flex items-center gap-2 bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent">
+                <Database className="h-5 w-5 text-purple-400" />
                 Data Management
               </CardTitle>
               <CardDescription className="text-[#A1A1AA]">
@@ -137,7 +137,7 @@ function SettingsContent() {
               <Button 
                 onClick={handleSyncStudents}
                 disabled={syncing}
-                className="bg-[#0a0a0a] hover:bg-[#1a1a1a] text-white border border-[#1a1a1a] flex items-center gap-2"
+                className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-500 hover:to-blue-500 text-white border-0 flex items-center gap-2 shadow-lg shadow-purple-500/30 transition-all hover:scale-[1.02]"
               >
                 <RefreshCw className={`h-4 w-4 ${syncing ? 'animate-spin' : ''}`} />
                 {syncing ? 'Importing...' : 'Import Members from Whop'}
@@ -154,10 +154,10 @@ function SettingsContent() {
             </CardContent>
           </Card>
 
-          <Card className="border border-[#1a1a1a] bg-[#0f0f0f] shadow-lg">
+          <Card className="border border-blue-500/20 bg-gradient-to-br from-[#0f0f0f] via-[#1a1a1a] to-[#0f0f0f] shadow-lg shadow-blue-500/10">
             <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-[#F8FAFC]">
-                <User className="h-5 w-5 text-[#10B981]" />
+              <CardTitle className="flex items-center gap-2 bg-gradient-to-r from-blue-400 to-emerald-400 bg-clip-text text-transparent">
+                <User className="h-5 w-5 text-blue-400" />
                 Analytics Settings
               </CardTitle>
               <CardDescription className="text-[#A1A1AA]">
@@ -166,21 +166,21 @@ function SettingsContent() {
             </CardHeader>
             <CardContent className="space-y-3">
               <div className="text-sm text-[#A1A1AA]">
-                <span className="font-bold">Current Plan:</span> <span className="text-[#10B981] font-bold">Atom (Free)</span>
+                <span className="font-bold">Current Plan:</span> <span className="text-purple-400 font-bold">Starter (Free Trial)</span>
               </div>
               <Button 
                 onClick={handleUpgrade}
-                className="bg-[#0a0a0a] hover:bg-[#1a1a1a] text-white border border-[#1a1a1a]"
+                className="bg-gradient-to-r from-blue-600 to-emerald-600 hover:from-blue-500 hover:to-emerald-500 text-white border-0 shadow-lg shadow-blue-500/30 transition-all hover:scale-[1.02]"
               >
                 Upgrade Plan
               </Button>
             </CardContent>
           </Card>
 
-          <Card className="border border-[#1a1a1a] bg-[#0f0f0f] shadow-lg">
+          <Card className="border border-emerald-500/20 bg-gradient-to-br from-[#0f0f0f] via-[#1a1a1a] to-[#0f0f0f] shadow-lg shadow-emerald-500/10">
             <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-[#F8FAFC]">
-                <Database className="h-5 w-5 text-[#10B981]" />
+              <CardTitle className="flex items-center gap-2 bg-gradient-to-r from-emerald-400 to-blue-400 bg-clip-text text-transparent">
+                <Database className="h-5 w-5 text-emerald-400" />
                 Data & Privacy
               </CardTitle>
               <CardDescription className="text-[#A1A1AA]">
@@ -191,8 +191,8 @@ function SettingsContent() {
               <div className="flex items-center justify-between">
                 <span className="text-[#A1A1AA]">Data retention</span>
                 <div className="flex items-center gap-2">
-                  <div className="w-2 h-2 rounded-full bg-[#10B981]"></div>
-                  <span className="text-[#10B981] font-bold">7 days</span>
+                  <div className="w-2 h-2 rounded-full bg-emerald-400 shadow-lg shadow-emerald-400/50"></div>
+                  <span className="text-emerald-400 font-bold">7 days</span>
                 </div>
               </div>
               <div className="flex items-center justify-between">
@@ -204,23 +204,23 @@ function SettingsContent() {
                     checked={analyticsTracking}
                     onChange={(e) => handleToggle('analytics_tracking', e.target.checked)}
                   />
-                  <div className="w-11 h-6 bg-[#1a1a1a] peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#10B981]"></div>
+                  <div className="w-11 h-6 bg-[#1a1a1a] peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-purple-500/50 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-gradient-to-r peer-checked:from-purple-500 peer-checked:to-blue-500 shadow-lg"></div>
                 </label>
               </div>
               <Button 
                 onClick={handleExportData}
                 variant="outline" 
-                className="border-[#1a1a1a] text-[#A1A1AA] hover:bg-[#1a1a1a]"
+                className="border-emerald-500/30 text-emerald-400 hover:bg-emerald-500/10 hover:border-emerald-500/50 transition-all"
               >
                 Export Data
               </Button>
             </CardContent>
           </Card>
 
-          <Card className="border border-[#1a1a1a] bg-[#0f0f0f] shadow-lg">
+          <Card className="border border-pink-500/20 bg-gradient-to-br from-[#0f0f0f] via-[#1a1a1a] to-[#0f0f0f] shadow-lg shadow-pink-500/10">
             <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-[#F8FAFC]">
-                <Bell className="h-5 w-5 text-[#10B981]" />
+              <CardTitle className="flex items-center gap-2 bg-gradient-to-r from-pink-400 to-purple-400 bg-clip-text text-transparent">
+                <Bell className="h-5 w-5 text-pink-400" />
                 Support
               </CardTitle>
               <CardDescription className="text-[#A1A1AA]">
@@ -230,15 +230,15 @@ function SettingsContent() {
             <CardContent className="space-y-3">
               <button 
                 onClick={handleSubmitFeedback}
-                className="w-full group relative overflow-hidden rounded-xl border border-[#10B981]/30 bg-gradient-to-br from-[#0a0a0a] via-[#0f0f0f] to-[#0a0a0a] p-4 text-left transition-all duration-200 hover:border-[#10B981]/50 hover:shadow-lg hover:shadow-[#10B981]/20"
+                className="w-full group relative overflow-hidden rounded-xl border border-purple-500/30 bg-gradient-to-br from-[#0a0a0a] via-[#0f0f0f] to-[#0a0a0a] p-4 text-left transition-all duration-200 hover:border-purple-500/50 hover:shadow-lg hover:shadow-purple-500/30 hover:scale-[1.01]"
               >
-                <div className="absolute inset-0 bg-gradient-to-r from-[#10B981]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                <div className="absolute inset-0 bg-gradient-to-r from-purple-500/5 via-blue-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
                 <div className="relative flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-lg bg-[#10B981]/10 border border-[#10B981]/30 flex items-center justify-center group-hover:bg-[#10B981]/20 transition-colors">
-                    <MessageCircle className="h-5 w-5 text-[#10B981]" />
+                  <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-purple-500/10 to-blue-500/10 border border-purple-500/30 flex items-center justify-center group-hover:bg-purple-500/20 transition-colors shadow-lg shadow-purple-500/20">
+                    <MessageCircle className="h-5 w-5 text-purple-400" />
                   </div>
                   <div>
-                    <div className="font-semibold text-[#F8FAFC] group-hover:text-[#10B981] transition-colors">
+                    <div className="font-semibold text-[#F8FAFC] group-hover:bg-gradient-to-r group-hover:from-purple-300 group-hover:to-blue-300 group-hover:bg-clip-text group-hover:text-transparent transition-all">
                       Submit Feedback
                     </div>
                     <div className="text-xs text-[#A1A1AA]">
@@ -250,15 +250,15 @@ function SettingsContent() {
 
               <button 
                 onClick={handleContactSupport}
-                className="w-full group relative overflow-hidden rounded-xl border border-[#10B981]/30 bg-gradient-to-br from-[#0a0a0a] via-[#0f0f0f] to-[#0a0a0a] p-4 text-left transition-all duration-200 hover:border-[#10B981]/50 hover:shadow-lg hover:shadow-[#10B981]/20"
+                className="w-full group relative overflow-hidden rounded-xl border border-blue-500/30 bg-gradient-to-br from-[#0a0a0a] via-[#0f0f0f] to-[#0a0a0a] p-4 text-left transition-all duration-200 hover:border-blue-500/50 hover:shadow-lg hover:shadow-blue-500/30 hover:scale-[1.01]"
               >
-                <div className="absolute inset-0 bg-gradient-to-r from-[#10B981]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                <div className="absolute inset-0 bg-gradient-to-r from-blue-500/5 via-emerald-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
                 <div className="relative flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-lg bg-[#10B981]/10 border border-[#10B981]/30 flex items-center justify-center group-hover:bg-[#10B981]/20 transition-colors">
-                    <HelpCircle className="h-5 w-5 text-[#10B981]" />
+                  <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-blue-500/10 to-emerald-500/10 border border-blue-500/30 flex items-center justify-center group-hover:bg-blue-500/20 transition-colors shadow-lg shadow-blue-500/20">
+                    <HelpCircle className="h-5 w-5 text-blue-400" />
                   </div>
                   <div>
-                    <div className="font-semibold text-[#F8FAFC] group-hover:text-[#10B981] transition-colors">
+                    <div className="font-semibold text-[#F8FAFC] group-hover:bg-gradient-to-r group-hover:from-blue-300 group-hover:to-emerald-300 group-hover:bg-clip-text group-hover:text-transparent transition-all">
                       Contact Support
                     </div>
                     <div className="text-xs text-[#A1A1AA]">

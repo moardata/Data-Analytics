@@ -637,7 +637,10 @@ function FormsContent() {
                     Create your first survey to start collecting valuable student feedback
                   </p>
                   <Button 
-                    onClick={() => setActiveTab('builder')}
+                    onClick={() => {
+                      if (!requireSubscription('Create a survey')) return;
+                      setActiveTab('builder');
+                    }}
                     className="gap-2 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white font-semibold px-8 py-3 rounded-xl transition-all shadow-lg shadow-emerald-500/20"
                   >
                     <Plus className="h-5 w-5" />
@@ -687,6 +690,7 @@ function FormsContent() {
                           </Button>
                           <Button 
                             onClick={() => {
+                              if (!requireSubscription('Edit survey')) return;
                               setEditingForm(form);
                               setActiveTab('builder');
                             }}
@@ -707,6 +711,7 @@ function FormsContent() {
                         {/* Publish to Students Button */}
                         <Button 
                           onClick={async () => {
+                            if (!requireSubscription('Publish survey to students')) return;
                             try {
                               const newStatus = !form.is_active;
                               
