@@ -52,11 +52,6 @@ export async function POST(request: NextRequest) {
       .select()
       .single();
 
-      success: !!updatedForm,
-      form: updatedForm ? { id: updatedForm.id, name: updatedForm.name, is_active: updatedForm.is_active } : null,
-      error: updateError?.message
-    });
-
     if (updateError || !updatedForm) {
       console.error('❌ [Toggle Status API] Update failed:', updateError);
       return NextResponse.json(

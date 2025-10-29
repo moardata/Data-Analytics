@@ -14,13 +14,6 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const { formId, entityId, companyId, responses } = body;
 
-      formId,
-      entityId,
-      companyId,
-      responsesCount: Object.keys(responses || {}).length,
-      hasResponses: !!responses
-    });
-
     if (!formId || !entityId || !companyId || !responses) {
       console.error('❌ [Form Submit API] Missing required fields:', {
         formId: !!formId,

@@ -110,15 +110,6 @@ export async function GET(request: NextRequest) {
         .eq('client_id', clientId),
     ]);
 
-      events: eventsResult.data?.length || 0,
-      subscriptions: subscriptionsResult.data?.length || 0,
-      entities: entitiesResult.data?.length || 0,
-      courses: coursesResult.data?.length || 0,
-      enrollments: enrollmentsResult.data?.length || 0,
-      clientId: clientId,
-      companyId: companyId,
-    });
-
     // Log any errors
     if (eventsResult.error) console.error('Events error:', eventsResult.error);
     if (subscriptionsResult.error) console.error('Subscriptions error:', subscriptionsResult.error);

@@ -250,12 +250,6 @@ export async function POST(request: NextRequest) {
       }
     }
 
-      imported,
-      updated,
-      enriched,
-      errors: errors.length
-    });
-
     return NextResponse.json({
       success: true,
       imported,

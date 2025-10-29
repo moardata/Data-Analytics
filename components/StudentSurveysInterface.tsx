@@ -102,11 +102,6 @@ export default function StudentSurveysInterface({ companyId }: StudentSurveysInt
         body: JSON.stringify(submissionData),
       });
 
-        ok: response.ok,
-        status: response.status,
-        statusText: response.statusText
-      });
-
       if (response.ok) {
         const result = await response.json();
         
