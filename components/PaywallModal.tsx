@@ -81,7 +81,7 @@ export function PaywallModal({ isOpen, onClose, reason }: PaywallModalProps) {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-in fade-in duration-200">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-fade-in">
       {/* Glow effect background */}
       <div className="absolute inset-0 flex items-center justify-center">
         <div className="w-[600px] h-[600px] bg-gradient-to-r from-emerald-500/20 to-blue-500/20 rounded-full blur-3xl opacity-50" />
