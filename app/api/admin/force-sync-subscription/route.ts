@@ -79,11 +79,27 @@ export async function POST(request: NextRequest) {
     // 3. Update or create client record
     const { data: existing } = await supabase
       .from('clients')
-      .select('id')
+      .select('id, trial_ends_at')
       .eq('company_id', companyId)
       .maybeSingle();
 
     if (existing) {
+      // DON'T overwrite if they have an active trial
+      const hasActiveTrial = existing.trial_ends_at && new Date(existing.trial_ends_at) > new Date();
+      
+      if (hasActiveTrial) {
+        console.log(`⏭️ [Force Sync] Skipping - user has active trial until ${existing.trial_ends_at}`);
+        return NextResponse.json({
+          success: true,
+          message: 'Skipped - user has active trial',
+          data: {
+            companyId,
+            reason: 'active_trial',
+            trialEndsAt: existing.trial_ends_at,
+          }
+        });
+      }
+      
       // Update existing client
       const { error: updateError } = await supabase
         .from('clients')

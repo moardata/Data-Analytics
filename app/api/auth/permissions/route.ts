@@ -136,21 +136,35 @@ export async function POST(request: NextRequest) {
     const auth = await simpleAuth(mockRequest);
     
     // AUTO-SYNC: Fetch latest subscription from Whop on every login
-    // This ensures the database always has the latest subscription info
+    // BUT: Skip if user already has an active trial (don't overwrite it!)
     if (companyId && !auth.isTestMode) {
       try {
-        console.log(`🔄 [Auth] Auto-syncing subscription for ${companyId}...`);
-        const syncResponse = await fetch(`${request.headers.get('origin') || 'https://app.com'}/api/admin/force-sync-subscription`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ companyId }),
-        });
+        // First check if they have an active trial
+        const { supabaseServer } = await import('@/lib/supabase-server');
+        const { data: client } = await supabaseServer
+          .from('clients')
+          .select('trial_ends_at, subscription_status')
+          .eq('company_id', companyId)
+          .single();
         
-        if (syncResponse.ok) {
-          const syncData = await syncResponse.json();
-          console.log(`✅ [Auth] Auto-sync complete: tier=${syncData.data?.tier || 'unknown'}`);
+        const hasActiveTrial = client?.trial_ends_at && new Date(client.trial_ends_at) > new Date();
+        
+        if (hasActiveTrial) {
+          console.log(`⏭️ [Auth] Skipping auto-sync - user has active trial until ${client.trial_ends_at}`);
         } else {
-          console.log(`⚠️  [Auth] Auto-sync failed: ${syncResponse.status}`);
+          console.log(`🔄 [Auth] Auto-syncing subscription for ${companyId}...`);
+          const syncResponse = await fetch(`${request.headers.get('origin') || 'https://app.com'}/api/admin/force-sync-subscription`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ companyId }),
+          });
+          
+          if (syncResponse.ok) {
+            const syncData = await syncResponse.json();
+            console.log(`✅ [Auth] Auto-sync complete: tier=${syncData.data?.tier || 'unknown'}`);
+          } else {
+            console.log(`⚠️  [Auth] Auto-sync failed: ${syncResponse.status}`);
+          }
         }
       } catch (syncError: any) {
         console.error(`❌ [Auth] Auto-sync error:`, syncError.message);
