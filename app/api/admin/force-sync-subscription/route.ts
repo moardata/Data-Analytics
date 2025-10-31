@@ -84,16 +84,18 @@ export async function POST(request: NextRequest) {
       .maybeSingle();
 
     if (existing) {
-      // DON'T overwrite if they have an active trial
+      // DON'T overwrite if they have an active trial UNLESS we found a better subscription
       const hasActiveTrial = existing.trial_ends_at && new Date(existing.trial_ends_at) > new Date();
+      const foundBetterSubscription = activeMemberships.length > 0;
       
-      if (hasActiveTrial) {
+      if (hasActiveTrial && !foundBetterSubscription) {
         console.log(`⏭️ [Force Sync] Skipping - user has active trial until ${existing.trial_ends_at}`);
         return NextResponse.json({
           success: true,
-          message: 'Skipped - user has active trial',
+          message: 'User has active trial',
           data: {
             companyId,
+            tier: existing.current_tier || 'atom',
             reason: 'active_trial',
             trialEndsAt: existing.trial_ends_at,
           }

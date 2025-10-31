@@ -30,9 +30,9 @@ export async function POST(request: NextRequest) {
       );
     }
     
-    const companyId = membership.company_id;
-    const userId = membership.user_id;
-    const planId = membership.plan_id;
+    const companyId = (membership as any).company_id || (membership as any).company;
+    const userId = (membership as any).user_id || (membership as any).user;
+    const planId = (membership as any).plan_id || (membership as any).plan;
     
     console.log(`✅ Found membership: Company ${companyId}, User ${userId}, Plan ${planId}`);
     
