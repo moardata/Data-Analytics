@@ -79,7 +79,7 @@ export async function POST(request: NextRequest) {
     // 3. Update or create client record
     const { data: existing } = await supabase
       .from('clients')
-      .select('id, trial_ends_at')
+      .select('id, trial_ends_at, current_tier')
       .eq('company_id', companyId)
       .maybeSingle();
 
