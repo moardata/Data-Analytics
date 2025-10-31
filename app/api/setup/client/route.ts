@@ -6,9 +6,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabaseServer as supabase } from '@/lib/supabase-server';
 
-// CORS headers restricted to Whop domain for security
+// Add CORS headers for iframe compatibility
 const corsHeaders = {
-  'Access-Control-Allow-Origin': 'https://whop.com',
+  'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
   'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-Requested-With',
   'Access-Control-Allow-Credentials': 'true',

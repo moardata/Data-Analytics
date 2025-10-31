@@ -135,6 +135,29 @@ export async function POST(request: NextRequest) {
     // Use simple auth (never hangs, max 1s timeout)
     const auth = await simpleAuth(mockRequest);
     
+    // AUTO-SYNC: Fetch latest subscription from Whop on every login
+    // This ensures the database always has the latest subscription info
+    if (companyId && !auth.isTestMode) {
+      try {
+        console.log(`🔄 [Auth] Auto-syncing subscription for ${companyId}...`);
+        const syncResponse = await fetch(`${request.headers.get('origin') || 'https://app.com'}/api/admin/force-sync-subscription`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ companyId }),
+        });
+        
+        if (syncResponse.ok) {
+          const syncData = await syncResponse.json();
+          console.log(`✅ [Auth] Auto-sync complete: tier=${syncData.data?.tier || 'unknown'}`);
+        } else {
+          console.log(`⚠️  [Auth] Auto-sync failed: ${syncResponse.status}`);
+        }
+      } catch (syncError: any) {
+        console.error(`❌ [Auth] Auto-sync error:`, syncError.message);
+        // Don't block auth if sync fails
+      }
+    }
+    
     const elapsed = Date.now() - startTime;
 
     return NextResponse.json({

@@ -23,6 +23,8 @@ export function PaywallModal({ isOpen, onClose, reason }: PaywallModalProps) {
   
   const [eligibleForTrial, setEligibleForTrial] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
+  const [refreshMessage, setRefreshMessage] = useState('');
 
   // Check if user is eligible for free trial
   useEffect(() => {
@@ -51,8 +53,8 @@ export function PaywallModal({ isOpen, onClose, reason }: PaywallModalProps) {
       if (event.origin.includes('whop.com')) {
         if (event.data?.type === 'checkout_complete' || event.data?.success) {
           console.log('✅ Checkout complete!');
-          // Refresh page to update subscription
-          setTimeout(() => window.location.reload(), 1000);
+          // Refresh subscription from Whop API
+          handleRefreshSubscription();
         }
       }
     };
@@ -60,6 +62,41 @@ export function PaywallModal({ isOpen, onClose, reason }: PaywallModalProps) {
     window.addEventListener('message', handleMessage);
     return () => window.removeEventListener('message', handleMessage);
   }, []);
+
+  // Manually refresh subscription from Whop
+  const handleRefreshSubscription = async () => {
+    setRefreshing(true);
+    setRefreshMessage('');
+    
+    try {
+      const response = await fetch('/api/subscription/refresh', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ companyId }),
+      });
+      
+      const data = await response.json();
+      
+      if (data.success) {
+        if (data.upgraded) {
+          setRefreshMessage('🎉 Subscription activated! Reloading...');
+          setTimeout(() => window.location.reload(), 1500);
+        } else if (data.currentTier && data.currentTier !== 'none') {
+          setRefreshMessage('✅ Subscription verified! Reloading...');
+          setTimeout(() => window.location.reload(), 1500);
+        } else {
+          setRefreshMessage('ℹ️ No active subscription found yet. Please complete your purchase first.');
+        }
+      } else {
+        setRefreshMessage('❌ ' + (data.error || 'Failed to refresh subscription'));
+      }
+    } catch (error) {
+      console.error('Refresh error:', error);
+      setRefreshMessage('❌ Failed to check subscription. Please try again.');
+    } finally {
+      setRefreshing(false);
+    }
+  };
 
   const [selectedPlan, setSelectedPlan] = useState<string | null>(null);
 
@@ -182,6 +219,20 @@ export function PaywallModal({ isOpen, onClose, reason }: PaywallModalProps) {
                     View all plans and pricing
                   </a>
                 </div>
+
+                {/* Just Subscribed Button */}
+                <div className="border-t border-[#1a1a1a]/70 pt-4 mt-4">
+                  <button
+                    onClick={handleRefreshSubscription}
+                    disabled={refreshing}
+                    className="w-full py-2 px-4 text-sm bg-[#1a1a1a] hover:bg-[#2a2a2a] border border-[#2a2a2a] text-[#A1A1AA] hover:text-[#F8FAFC] transition-colors rounded-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {refreshing ? '⏳ Checking...' : '✅ Just Subscribed? Click to Refresh'}
+                  </button>
+                  {refreshMessage && (
+                    <p className="text-xs text-center mt-2 text-[#A1A1AA]">{refreshMessage}</p>
+                  )}
+                </div>
               </div>
             ) : (
               /* No Free Trial - Show Plans */
@@ -225,6 +276,20 @@ export function PaywallModal({ isOpen, onClose, reason }: PaywallModalProps) {
                       </div>
                     </button>
                   ))}
+                </div>
+
+                {/* Just Subscribed Button */}
+                <div className="border-t border-[#1a1a1a]/70 pt-4 mt-4">
+                  <button
+                    onClick={handleRefreshSubscription}
+                    disabled={refreshing}
+                    className="w-full py-2 px-4 text-sm bg-[#1a1a1a] hover:bg-[#2a2a2a] border border-[#2a2a2a] text-[#A1A1AA] hover:text-[#F8FAFC] transition-colors rounded-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {refreshing ? '⏳ Checking...' : '✅ Just Subscribed? Click to Refresh'}
+                  </button>
+                  {refreshMessage && (
+                    <p className="text-xs text-center mt-2 text-[#A1A1AA]">{refreshMessage}</p>
+                  )}
                 </div>
               </div>
             )}

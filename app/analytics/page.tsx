@@ -17,8 +17,8 @@ import DashboardCreatorAnalytics from '@/components/DashboardCreatorAnalytics';
 import { adaptToCreatorAnalytics } from '@/lib/utils/adaptDashboardCreatorAnalytics';
 import { PermissionsBanner } from '@/components/PermissionsBanner';
 import { useWhopAuth } from '@/lib/hooks/useWhopAuth';
-import { usePaywall } from '@/hooks/use-paywall';
-import { PaywallModal } from '@/components/PaywallModal';
+import { LoadingScreen } from '@/components/LoadingScreen';
+import { PaywallGuard } from '@/components/PaywallGuard';
 
 export const dynamic = 'force-dynamic';
 
@@ -37,9 +37,6 @@ function AnalyticsContent() {
   const [isInIframe, setIsInIframe] = useState(false);
   const [syncing, setSyncing] = useState(false);
   const [syncMessage, setSyncMessage] = useState('');
-  
-  // Add paywall hook for button-level checks
-  const { hasAccess, showPaywall, setShowPaywall, requireSubscription } = usePaywall();
 
   useEffect(() => {
     // Get company ID from URL
@@ -48,10 +45,12 @@ function AnalyticsContent() {
                             window.location.pathname.split('/').find(part => part.startsWith('biz_')) || 
                             null;
     setCompanyId(companyIdFromUrl);
+    console.log('✅ Company ID from URL:', companyIdFromUrl);
     
     // Detect if running in iframe
     const inIframe = window !== window.parent;
     setIsInIframe(inIframe);
+    console.log('🔍 Iframe detection:', inIframe);
   }, []);
   
   useEffect(() => {
@@ -90,11 +89,6 @@ function AnalyticsContent() {
   };
 
   const handleSyncStudents = async () => {
-    // Check subscription before allowing action
-    if (!requireSubscription('Sync students from Whop')) {
-      return;
-    }
-    
     if (!companyId) {
       setSyncMessage('❌ No company ID found');
       return;
@@ -144,6 +138,7 @@ function AnalyticsContent() {
       return;
     }
     
+    console.log('📊 Fetching data for company:', companyId);
     
     setLoading(true);
     setError(null);
@@ -205,24 +200,22 @@ function AnalyticsContent() {
   };
 
   const handleExportEventsCsv = () => {
-    if (!requireSubscription('Export events to CSV')) return;
     if (!companyId) return;
     window.open(`/api/export/csv?companyId=${companyId}&type=events`, '_blank');
   };
 
   const handleExportSubscriptionsCsv = () => {
-    if (!requireSubscription('Export subscriptions to CSV')) return;
     if (!companyId) return;
     window.open(`/api/export/csv?companyId=${companyId}&type=subscriptions`, '_blank');
   };
 
   const handleExportPdf = () => {
-    if (!requireSubscription('Export PDF report')) return;
     if (!companyId) return;
     window.open(`/api/export/pdf?companyId=${companyId}`, '_blank');
   };
 
   const handleLogEvent = (evt: { name: string; sellerId: string; meta?: Record<string, any> }) => {
+    console.log('📊 Analytics event:', evt);
     // In production, send to your analytics service (e.g., PostHog, Mixpanel, etc.)
   };
 
@@ -346,21 +339,16 @@ function AnalyticsContent() {
           onExportEventsCsv={handleExportEventsCsv}
           onExportSubscriptionsCsv={handleExportSubscriptionsCsv}
           onExportPdf={handleExportPdf}
-          onSyncStudents={handleSyncStudents}
-          syncing={syncing}
         />
       </div>
-      
-      {/* Paywall Modal - triggered by button clicks */}
-      <PaywallModal 
-        isOpen={showPaywall} 
-        onClose={() => setShowPaywall(false)}
-        reason="Start your 7-day free trial to access this feature"
-      />
     </div>
   );
 }
 
 export default function AnalyticsPage() {
-  return <AnalyticsContent />;
+  return (
+    <PaywallGuard feature="Analytics Dashboard">
+      <AnalyticsContent />
+    </PaywallGuard>
+  );
 }

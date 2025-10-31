@@ -41,6 +41,7 @@ function UpgradeContent() {
       // Check if message is from Whop
       if (event.origin.includes('whop.com')) {
         if (event.data?.type === 'checkout_complete' || event.data?.success) {
+          console.log('✅ Checkout complete!');
           // Refresh page to update subscription
           setTimeout(() => window.location.reload(), 1000);
         }
@@ -95,15 +96,17 @@ function UpgradeContent() {
   const isPopular = (tierName: TierName) => tierName === 'pulse';
   const isCurrentTier = (tierName: TierName) => currentTier !== null && tierName === currentTier;
 
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-b from-[#0d0f12] to-[#14171c] flex items-center justify-center">
+        <div className="text-[#E1E4EA]">Loading...</div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-[#0a0a0a] to-[#0f0f0f] py-12 px-4">
       <div className="max-w-7xl mx-auto">
-        {loading ? (
-          <div className="flex items-center justify-center py-12">
-            <div className="text-[#A1A1AA] text-sm">Loading...</div>
-          </div>
-        ) : (
-          <>
         {/* Header */}
         <div className="text-center mb-12">
           <h1 className="text-5xl font-black text-[#F8FAFC] mb-4 tracking-tight">
@@ -168,45 +171,34 @@ function UpgradeContent() {
                 All plans include basic analytics and webhook integrations. Cancel anytime.
               </p>
             </div>
-          </>
-        )}
       </div>
 
       {/* Embedded Checkout Modal */}
       {selectedPlan && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
-          {/* Background gradient glow */}
-          <div className="absolute inset-0 flex items-center justify-center">
-            <div className="w-[600px] h-[600px] bg-gradient-to-r from-purple-500/10 via-blue-500/10 to-emerald-500/10 rounded-full blur-3xl"></div>
-          </div>
-          
-          <div className="relative w-full max-w-lg mx-auto">
-            {/* Subtle gradient glow */}
-            <div className="absolute -inset-1 bg-gradient-to-r from-purple-500/20 via-blue-500/20 to-emerald-500/20 rounded-2xl blur-xl opacity-50"></div>
-            
-            <div className="relative bg-[#0a0a0a] border border-[#2a2a2a] rounded-2xl shadow-2xl overflow-hidden max-h-[85vh] flex flex-col">
-              {/* Close button */}
-              <button
-                onClick={() => setSelectedPlan(null)}
-                className="absolute top-3 right-3 p-1.5 text-gray-400 hover:text-white transition-colors rounded-lg hover:bg-white/5 z-10"
-              >
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                </svg>
-              </button>
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm">
+          <div className="relative w-full max-w-2xl mx-4 bg-gradient-to-br from-[#0f0f0f] via-[#1a1a1a] to-[#0f0f0f] border border-[#2a2a2a] rounded-2xl shadow-2xl overflow-hidden">
+            {/* Close button */}
+            <button
+              onClick={() => setSelectedPlan(null)}
+              className="absolute top-4 right-4 p-2 text-gray-400 hover:text-white transition-colors rounded-lg hover:bg-white/10 z-10"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
 
-              {/* Embedded Checkout */}
-              <div className="flex-1 overflow-y-auto">
-                <WhopCheckoutEmbed
-                  planId={selectedPlan}
-                  theme="dark"
-                  onComplete={(planId, receiptId) => {
-                    setTimeout(() => window.location.reload(), 1000);
-                  }}
-                  skipRedirect={true}
-                  themeOptions={{ accentColor: 'purple' }}
-                />
-              </div>
+            {/* Embedded Checkout */}
+            <div className="min-h-[600px]">
+              <WhopCheckoutEmbed
+                planId={selectedPlan}
+                theme="dark"
+                onComplete={(planId, receiptId) => {
+                  console.log('✅ Checkout complete!', { planId, receiptId });
+                  setTimeout(() => window.location.reload(), 1000);
+                }}
+                skipRedirect={true}
+                themeOptions={{ accentColor: 'green' }}
+              />
             </div>
           </div>
         </div>
@@ -218,8 +210,8 @@ function UpgradeContent() {
 export default function UpgradePage() {
   return (
     <Suspense fallback={
-      <div className="min-h-screen bg-gradient-to-b from-[#0a0a0a] to-[#0f0f0f] flex items-center justify-center">
-        <div className="text-[#A1A1AA] text-sm">Loading...</div>
+      <div className="flex items-center justify-center min-h-screen bg-gradient-to-b from-[#0d0f12] to-[#14171c]">
+        <div className="w-16 h-16 border-4 border-[#10B981] border-t-transparent rounded-full animate-spin" />
       </div>
     }>
       <UpgradeContent />

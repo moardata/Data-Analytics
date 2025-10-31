@@ -463,13 +463,42 @@ async function getOrCreateEntity(whopUserId: string, eventData: any) {
  */
 async function getOrCreateClient(whopCompanyId: string, eventData: any): Promise<string | null> {
 	// Determine tier and bundle from plan_id (if provided)
-	const planId = eventData.plan_id || eventData.membership_plan_id;
-	const { tier, bundle } = planId ? getBundleInfo(planId) : { tier: 'pro' as const, bundle: 'core' };
+	let planId = eventData.plan_id || eventData.membership_plan_id;
+	
+	console.log(`📦 [Webhook] Processing client: ${whopCompanyId}`);
+	console.log(`📦 [Webhook] Event data keys:`, Object.keys(eventData));
+	console.log(`📦 [Webhook] Plan ID from webhook: ${planId || 'MISSING'}`);
+	
+	// If no plan_id in webhook, try to fetch from Whop API directly
+	if (!planId) {
+		console.log(`⚠️  [Webhook] No plan_id in webhook data, fetching from Whop API...`);
+		try {
+			const { whopSdk } = await import('@/lib/whop-sdk');
+			const membershipsResult = await whopSdk.client.memberships.list({
+				company_id: whopCompanyId,
+				valid: true,
+			});
+			
+			if (membershipsResult.data && membershipsResult.data.length > 0) {
+				// Get the first active membership's plan_id
+				planId = membershipsResult.data[0].plan_id;
+				console.log(`✅ [Webhook] Fetched plan_id from Whop API: ${planId}`);
+			} else {
+				console.log(`⚠️  [Webhook] No active memberships found in Whop API`);
+			}
+		} catch (apiError: any) {
+			console.error(`❌ [Webhook] Failed to fetch from Whop API:`, apiError.message);
+		}
+	}
+	
+	const { tier, bundle } = planId ? getBundleInfo(planId) : { tier: null as any, bundle: 'atom' };
+	
+	console.log(`📊 [Webhook] Determined tier: ${tier || 'none'}, bundle: ${bundle}, plan: ${planId || 'none'}`);
 
 	// Try to find existing client
 	const { data: existing } = await supabase
 		.from('clients')
-		.select('id')
+		.select('id, current_tier, whop_plan_id')
 		.eq('company_id', whopCompanyId)
 		.single();
 
@@ -482,9 +511,13 @@ async function getOrCreateClient(whopCompanyId: string, eventData: any): Promise
 					current_tier: tier,
 					whop_plan_id: planId,
 					subscription_status: eventData.status || 'active',
+					updated_at: new Date().toISOString(),
 				})
 				.eq('id', existing.id);
 			
+			console.log(`✅ [Webhook] Updated client ${whopCompanyId}: ${existing.current_tier || 'none'} → ${tier || 'none'}`);
+		} else {
+			console.log(`⚠️  [Webhook] Skipping tier update - no plan_id available`);
 		}
 		return existing.id;
 	}
@@ -505,10 +538,11 @@ async function getOrCreateClient(whopCompanyId: string, eventData: any): Promise
 		.single();
 
 	if (error) {
-		console.error('Error creating client:', error);
+		console.error('❌ [Webhook] Error creating client:', error);
 		return null;
 	}
 
+	console.log(`✅ [Webhook] Created new client ${whopCompanyId} with tier: ${tier || 'none'} (bundle: ${bundle})`);
 	return newClient.id;
 }
 
