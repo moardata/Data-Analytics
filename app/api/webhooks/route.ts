@@ -480,8 +480,9 @@ async function getOrCreateClient(whopCompanyId: string, eventData: any): Promise
 			
 			if (membershipsResult.data && membershipsResult.data.length > 0) {
 				// Get the first active membership's plan_id
-				const activeMembership = membershipsResult.data.find((m: any) => m.status === 'active' || m.valid === true);
-				planId = activeMembership?.plan_id || membershipsResult.data[0].plan_id;
+				const memberships = membershipsResult.data as any[];
+				const activeMembership = memberships.find((m: any) => m.status === 'active' || m.valid === true);
+				planId = activeMembership?.plan_id || memberships[0]?.plan_id;
 				console.log(`✅ [Webhook] Fetched plan_id from Whop API: ${planId}`);
 			} else {
 				console.log(`⚠️  [Webhook] No active memberships found in Whop API`);
