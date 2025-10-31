@@ -27,9 +27,12 @@ export async function POST(request: NextRequest) {
     try {
       const membershipsResult = await whopSdk.client.memberships.list({
         company_id: companyId,
-        valid: true, // Only active/valid subscriptions
       });
-      activeMemberships = membershipsResult.data || [];
+      const allMemberships = membershipsResult.data || [];
+      // Filter for active memberships only
+      activeMemberships = allMemberships.filter((m: any) => 
+        m.status === 'active' || m.valid === true
+      );
       console.log(`📦 [Refresh] Found ${activeMemberships.length} active memberships`);
     } catch (whopError: any) {
       console.error('❌ [Refresh] Whop API error:', whopError);

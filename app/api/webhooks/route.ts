@@ -476,12 +476,12 @@ async function getOrCreateClient(whopCompanyId: string, eventData: any): Promise
 			const { whopSdk } = await import('@/lib/whop-sdk');
 			const membershipsResult = await whopSdk.client.memberships.list({
 				company_id: whopCompanyId,
-				valid: true,
 			});
 			
 			if (membershipsResult.data && membershipsResult.data.length > 0) {
 				// Get the first active membership's plan_id
-				planId = membershipsResult.data[0].plan_id;
+				const activeMembership = membershipsResult.data.find((m: any) => m.status === 'active' || m.valid === true);
+				planId = activeMembership?.plan_id || membershipsResult.data[0].plan_id;
 				console.log(`✅ [Webhook] Fetched plan_id from Whop API: ${planId}`);
 			} else {
 				console.log(`⚠️  [Webhook] No active memberships found in Whop API`);
