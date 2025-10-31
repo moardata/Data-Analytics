@@ -39,7 +39,7 @@ export async function GET(request: NextRequest) {
     // Check client subscription status
     const { data: client, error } = await supabase
       .from('clients')
-      .select('id, current_tier, subscription_status, whop_plan_id')
+      .select('id, current_tier, subscription_status, whop_plan_id, trial_ends_at')
       .eq('company_id', companyId)
       .single();
 
@@ -63,13 +63,20 @@ export async function GET(request: NextRequest) {
 
     // Check if subscription is active OR in trial period
     // Users MUST have an active subscription (paid or trial) to access the app
-    const hasAccess = client.subscription_status === 'active' || client.subscription_status === 'trialing';
+    const hasActiveTrial = client.trial_ends_at && new Date(client.trial_ends_at) > new Date();
+    const hasAccess = 
+      client.subscription_status === 'active' || 
+      client.subscription_status === 'trialing' ||
+      hasActiveTrial;  // ✅ ALSO check trial_ends_at date!
+
+    console.log(`🔍 [Subscription Check] Company: ${companyId}, Status: ${client.subscription_status}, Trial: ${client.trial_ends_at}, HasAccess: ${hasAccess}`);
 
     return NextResponse.json({
       hasAccess,
       currentTier: client.current_tier || null,
-      subscriptionStatus: client.subscription_status || 'none',
+      subscriptionStatus: client.subscription_status || (hasActiveTrial ? 'trial' : 'none'),
       planId: client.whop_plan_id,
+      trialEndsAt: client.trial_ends_at,
       reason: hasAccess ? 'active_subscription' : 'no_active_subscription'
     });
 
