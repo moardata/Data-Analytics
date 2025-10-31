@@ -506,17 +506,21 @@ async function getOrCreateClient(whopCompanyId: string, eventData: any): Promise
 	if (existing) {
 		// Update tier if they purchased a plan
 		if (planId) {
+			const trialEndsAt = eventData.trial_end_date || eventData.trial_ends_at || eventData.valid_until || null;
+			const isTrialing = eventData.status === 'trialing' || (trialEndsAt && new Date(trialEndsAt) > new Date());
+			
 			await supabase
 				.from('clients')
 				.update({
 					current_tier: tier,
 					whop_plan_id: planId,
-					subscription_status: eventData.status || 'active',
+					subscription_status: isTrialing ? 'trialing' : (eventData.status || 'active'),
+					trial_ends_at: trialEndsAt,  // ✅ NOW UPDATES TRIAL DATE!
 					updated_at: new Date().toISOString(),
 				})
 				.eq('id', existing.id);
 			
-			console.log(`✅ [Webhook] Updated client ${whopCompanyId}: ${existing.current_tier || 'none'} → ${tier || 'none'}`);
+			console.log(`✅ [Webhook] Updated client ${whopCompanyId}: ${existing.current_tier || 'none'} → ${tier || 'none'}, Trial: ${isTrialing}`);
 		} else {
 			console.log(`⚠️  [Webhook] Skipping tier update - no plan_id available`);
 		}
@@ -524,6 +528,12 @@ async function getOrCreateClient(whopCompanyId: string, eventData: any): Promise
 	}
 
 	// Create new client for this company
+	// Extract trial info from Whop webhook
+	const trialEndsAt = eventData.trial_end_date || eventData.trial_ends_at || eventData.valid_until || null;
+	const isTrialing = eventData.status === 'trialing' || (trialEndsAt && new Date(trialEndsAt) > new Date());
+	
+	console.log(`🆕 [Webhook] Creating client - Trial: ${isTrialing}, Ends: ${trialEndsAt}`);
+	
 	const { data: newClient, error } = await supabase
 		.from('clients')
 		.insert({
@@ -533,7 +543,8 @@ async function getOrCreateClient(whopCompanyId: string, eventData: any): Promise
 			name: eventData.company_name || `Company ${whopCompanyId}`,
 			current_tier: tier, // Use standardized tier system
 			whop_plan_id: planId,
-			subscription_status: eventData.status || 'active',
+			subscription_status: isTrialing ? 'trialing' : (eventData.status || 'active'),
+			trial_ends_at: trialEndsAt,  // ✅ NOW SAVES TRIAL DATE!
 		})
 		.select('id')
 		.single();
