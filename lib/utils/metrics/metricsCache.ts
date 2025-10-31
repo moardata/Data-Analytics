@@ -172,20 +172,37 @@ export async function cleanupExpiredMetrics(): Promise<number> {
 
 /**
  * Get all active clients for batch processing
+ * Includes both paid subscribers AND trial users
  */
 export async function getActiveClients(): Promise<string[]> {
   try {
-    const { data, error } = await supabase
+    const now = new Date().toISOString();
+    
+    const { data, error} = await supabase
       .from('clients')
-      .select('id')
-      .eq('subscription_status', 'active');
+      .select('id, subscription_status, trial_ends_at')
+      .or(`subscription_status.eq.active,subscription_status.eq.trialing,and(subscription_status.is.null,trial_ends_at.gte.${now})`);
 
     if (error || !data) {
       console.error('Error fetching active clients:', error);
       return [];
     }
+    
+    // Filter to only include truly active clients (paid OR active trial)
+    const activeClients = data.filter((client: any) => {
+      if (client.subscription_status === 'active') return true;
+      if (client.subscription_status === 'trialing') return true;
+      if (client.trial_ends_at && new Date(client.trial_ends_at) > new Date()) return true;
+      return false;
+    });
 
-    return data.map(c => c.id);
+    console.log(`📊 Found ${activeClients.length} active clients (paid + trial users)`);
+
+    if (activeClients.length === 0) {
+      console.warn('⚠️ [ALERT] No active clients found - cron will do nothing');
+    }
+
+    return activeClients.map((c: any) => c.id);
   } catch (error) {
     console.error('Error fetching active clients:', error);
     return [];
