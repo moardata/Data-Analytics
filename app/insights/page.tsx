@@ -47,7 +47,7 @@ function InsightsContent() {
   const [timeRange, setTimeRange] = useState<'daily' | 'weekly'>('daily');
   
   // Add paywall hook for button-level checks
-  const { hasAccess, showPaywall, setShowPaywall, requireSubscription } = usePaywall();
+  const { hasAccess, currentTier, loading: paywallLoading, showPaywall, setShowPaywall, requireSubscription } = usePaywall();
 
   // Get company ID from URL (same as analytics page)
   useEffect(() => {
@@ -121,9 +121,12 @@ function InsightsContent() {
   }));
 
   const generateInsights = async () => {
-    // Check subscription before allowing action
-    if (!requireSubscription('Generate AI insights from your data')) {
-      return;
+    // Only block users with NO tier at all (free users)
+    // Starter tier+ can generate (API enforces their daily limits)
+    if (!currentTier && !paywallLoading) {
+      if (!requireSubscription('Generate AI insights from your data')) {
+        return;
+      }
     }
     
     if (!companyId) {
