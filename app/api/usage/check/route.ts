@@ -4,8 +4,13 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { supabaseServer as supabase } from '@/lib/supabase-server';
+import { createClient } from '@supabase/supabase-js';
 import { getTier, canPerformAction, canAccessMetric, type TierName } from '@/lib/pricing/tiers';
+
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+);
 
 export async function GET(request: NextRequest) {
   try {
@@ -20,15 +25,6 @@ export async function GET(request: NextRequest) {
       return NextResponse.json(
         { error: 'Missing companyId parameter' },
         { status: 400 }
-      );
-    }
-
-    // Check if supabase is configured
-    if (!supabase) {
-      console.error('❌ Supabase server client not configured');
-      return NextResponse.json(
-        { error: 'Database not configured' },
-        { status: 500 }
       );
     }
 
