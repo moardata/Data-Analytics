@@ -18,7 +18,7 @@ import { adaptToCreatorAnalytics } from '@/lib/utils/adaptDashboardCreatorAnalyt
 import { PermissionsBanner } from '@/components/PermissionsBanner';
 import { useWhopAuth } from '@/lib/hooks/useWhopAuth';
 import { LoadingScreen } from '@/components/LoadingScreen';
-import { PaywallGuard } from '@/components/PaywallGuard';
+// PaywallGuard removed - trial users get full access
 
 export const dynamic = 'force-dynamic';
 
@@ -372,9 +372,5 @@ function AnalyticsContent() {
 }
 
 export default function AnalyticsPage() {
-  return (
-    <PaywallGuard feature="Analytics Dashboard">
-      <AnalyticsContent />
-    </PaywallGuard>
-  );
+  return <AnalyticsContent />;
 }
