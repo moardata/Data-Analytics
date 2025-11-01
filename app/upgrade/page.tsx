@@ -54,8 +54,11 @@ function UpgradeContent() {
 
   const fetchCurrentTier = async () => {
     try {
+      console.log('🔍 Fetching tier for companyId:', clientId);
       const res = await fetch(`/api/usage/check?companyId=${clientId}`);
       const data = await res.json();
+      console.log('📊 API Response:', data);
+      console.log('🎯 Setting currentTier to:', data.tier || null);
       // Don't default to 'atom' - keep it null if no subscription
       setCurrentTier(data.tier || null);
     } catch (error) {
