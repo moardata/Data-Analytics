@@ -14,6 +14,8 @@ export async function GET(request: NextRequest) {
     const action = searchParams.get('action'); // e.g., 'csvExport', 'pdfExport'
     const metric = searchParams.get('metric'); // e.g., 'consistency', 'popular'
 
+    console.log('🔍 [Usage Check] companyId:', companyId);
+
     if (!companyId) {
       return NextResponse.json(
         { error: 'Missing companyId parameter' },
@@ -21,12 +23,25 @@ export async function GET(request: NextRequest) {
       );
     }
 
+    // Check if supabase is configured
+    if (!supabase) {
+      console.error('❌ Supabase server client not configured');
+      return NextResponse.json(
+        { error: 'Database not configured' },
+        { status: 500 }
+      );
+    }
+
+    console.log('📡 [Usage Check] Querying database for client...');
+
     // Get client record
     const { data: clientData, error: clientError } = await supabase
       .from('clients')
       .select('id, current_tier, trial_ends_at, subscription_status')
       .eq('company_id', companyId)
       .maybeSingle();
+    
+    console.log('📊 [Usage Check] Database response:', { clientData, clientError });
 
     if (clientError) {
       console.error('Error fetching client:', clientError);
@@ -93,9 +108,13 @@ export async function GET(request: NextRequest) {
     return NextResponse.json(response);
 
   } catch (error) {
-    console.error('Usage check error:', error);
+    console.error('❌ [Usage Check] Unexpected error:', error);
+    console.error('❌ [Usage Check] Error stack:', error instanceof Error ? error.stack : 'No stack trace');
     return NextResponse.json(
-      { error: 'Internal server error' },
+      { 
+        error: 'Internal server error',
+        details: error instanceof Error ? error.message : String(error)
+      },
       { status: 500 }
     );
   }
