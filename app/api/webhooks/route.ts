@@ -22,8 +22,14 @@ export async function POST(request: NextRequest): Promise<Response> {
 	let webhookData: any = null;
 	
 	try {
+		console.log('🔔 [Webhook] Received webhook request');
+		
 		// Validate webhook signature and parse data
 		webhookData = await validateWebhook(request);
+		
+		console.log('✅ [Webhook] Signature validated');
+		console.log('📦 [Webhook] Action:', webhookData?.action);
+		console.log('📦 [Webhook] Data keys:', Object.keys(webhookData?.data || {}));
 
 		// Validate event structure
 		if (!isValidWebhookEvent(webhookData)) {
@@ -504,23 +510,37 @@ async function getOrCreateClient(whopCompanyId: string, eventData: any): Promise
 		.single();
 
 	if (existing) {
+		console.log(`📌 [Webhook] Found existing client:`, {
+			id: existing.id,
+			current_tier: existing.current_tier,
+			whop_plan_id: existing.whop_plan_id
+		});
+		
 		// Update tier if they purchased a plan
 		if (planId) {
 			const trialEndsAt = eventData.trial_end_date || eventData.trial_ends_at || eventData.valid_until || null;
 			const isTrialing = eventData.status === 'trialing' || (trialEndsAt && new Date(trialEndsAt) > new Date());
 			
-			await supabase
+			const updateData = {
+				current_tier: tier,
+				whop_plan_id: planId,
+				subscription_status: isTrialing ? 'trialing' : (eventData.status || 'active'),
+				trial_ends_at: trialEndsAt,
+				updated_at: new Date().toISOString(),
+			};
+			
+			console.log(`🔄 [Webhook] Updating client with:`, updateData);
+			
+			const { error: updateError } = await supabase
 				.from('clients')
-				.update({
-					current_tier: tier,
-					whop_plan_id: planId,
-					subscription_status: isTrialing ? 'trialing' : (eventData.status || 'active'),
-					trial_ends_at: trialEndsAt,  // ✅ NOW UPDATES TRIAL DATE!
-					updated_at: new Date().toISOString(),
-				})
+				.update(updateData)
 				.eq('id', existing.id);
 			
-			console.log(`✅ [Webhook] Updated client ${whopCompanyId}: ${existing.current_tier || 'none'} → ${tier || 'none'}, Trial: ${isTrialing}`);
+			if (updateError) {
+				console.error(`❌ [Webhook] Failed to update client:`, updateError);
+			} else {
+				console.log(`✅ [Webhook] Updated client ${whopCompanyId}: ${existing.current_tier || 'none'} → ${tier || 'none'}, Trial: ${isTrialing}`);
+			}
 		} else {
 			console.log(`⚠️  [Webhook] Skipping tier update - no plan_id available`);
 		}
