@@ -175,25 +175,24 @@ function UpgradeContent() {
 
       {/* Embedded Checkout Modal */}
       {selectedPlan && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm">
-          <div className="relative w-full max-w-2xl mx-4 bg-gradient-to-br from-[#0f0f0f] via-[#1a1a1a] to-[#0f0f0f] border border-[#2a2a2a] rounded-2xl shadow-2xl overflow-hidden">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
+          <div className="relative w-full max-w-md bg-[#0a0a0a] border border-[#1a1a1a]/50 rounded-xl shadow-2xl overflow-hidden">
             {/* Close button */}
             <button
               onClick={() => setSelectedPlan(null)}
-              className="absolute top-4 right-4 p-2 text-gray-400 hover:text-white transition-colors rounded-lg hover:bg-white/10 z-10"
+              className="absolute top-3 right-3 p-1.5 text-gray-500 hover:text-white transition-colors rounded-lg hover:bg-white/5 z-10"
             >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
               </svg>
             </button>
 
             {/* Embedded Checkout */}
-            <div className="min-h-[600px]">
+            <div className="min-h-[500px]">
               <WhopCheckoutEmbed
                 planId={selectedPlan}
                 theme="dark"
                 onComplete={(planId, receiptId) => {
-                  console.log('✅ Checkout complete!', { planId, receiptId });
                   setTimeout(() => window.location.reload(), 1000);
                 }}
                 skipRedirect={true}
