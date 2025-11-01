@@ -6,9 +6,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabaseServer as supabase } from '@/lib/supabase-server';
 
-// Add CORS headers for iframe compatibility
+// CORS headers restricted to Whop domain for security
 const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Origin': 'https://whop.com',
   'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
   'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-Requested-With',
   'Access-Control-Allow-Credentials': 'true',
@@ -51,8 +51,11 @@ export async function POST(request: NextRequest) {
       }, { headers: corsHeaders });
     }
 
-    // Create new client record WITHOUT trial
-    // Users MUST subscribe via Whop to get trial/access
+    // Create new client with 7-day trial
+    // This allows new users to test the app before subscribing
+    const trialEndsAt = new Date();
+    trialEndsAt.setDate(trialEndsAt.getDate() + 7);
+    
     const { data: newClient, error } = await supabase
       .from('clients')
       .insert({
@@ -60,9 +63,9 @@ export async function POST(request: NextRequest) {
         company_id: companyId,
         email: companyEmail || `company_${companyId}@whop.com`,
         name: companyName || `Company ${companyId}`,
-        current_tier: null, // NO tier until they subscribe
-        subscription_status: 'none', // NO subscription
-        trial_ends_at: null,
+        current_tier: 'starter', // Start with Starter tier for trial
+        subscription_status: 'trial', // 7-day trial
+        trial_ends_at: trialEndsAt.toISOString(),
       })
       .select('id')
       .single();
@@ -76,11 +79,11 @@ export async function POST(request: NextRequest) {
     }
 
     return NextResponse.json({
-      message: 'Client created successfully - subscription required to access app',
+      message: 'Client created successfully with 7-day trial',
       clientId: newClient.id,
-      tier: null,
-      subscriptionStatus: 'none',
-      requiresSubscription: true
+      tier: 'starter',
+      subscriptionStatus: 'trial',
+      trialEndsAt: trialEndsAt.toISOString(),
     }, { headers: corsHeaders });
 
   } catch (error) {

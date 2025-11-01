@@ -54,11 +54,37 @@ function AnalyticsContent() {
   }, []);
   
   useEffect(() => {
-    // Fetch data when company ID is available
+    // Auto-initialize client and fetch data when company ID is available
     if (companyId) {
-      fetchData();
+      initializeAndFetchData();
     }
   }, [range, companyId]);
+
+  const initializeAndFetchData = async () => {
+    try {
+      // First, ensure client record exists
+      const setupResponse = await fetch('/api/setup/client', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          companyId: companyId,
+          companyName: `Company ${companyId}`,
+          companyEmail: `company@${companyId}.com`,
+        }),
+      });
+
+      if (!setupResponse.ok) {
+        console.error('Failed to initialize client');
+      }
+
+      // Then fetch dashboard data
+      await fetchData();
+    } catch (err) {
+      console.error('Initialization error:', err);
+      // Still try to fetch data even if setup fails
+      await fetchData();
+    }
+  };
 
   const createClientRecord = async () => {
     if (!companyId) return;
