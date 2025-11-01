@@ -51,11 +51,8 @@ export async function POST(request: NextRequest) {
       }, { headers: corsHeaders });
     }
 
-    // Create new client with 7-day trial
-    // This allows new users to test the app before subscribing
-    const trialEndsAt = new Date();
-    trialEndsAt.setDate(trialEndsAt.getDate() + 7);
-    
+    // Create new client without subscription
+    // They can browse the dashboard but need to subscribe to use features
     const { data: newClient, error } = await supabase
       .from('clients')
       .insert({
@@ -63,9 +60,9 @@ export async function POST(request: NextRequest) {
         company_id: companyId,
         email: companyEmail || `company_${companyId}@whop.com`,
         name: companyName || `Company ${companyId}`,
-        current_tier: 'starter', // Start with Starter tier for trial
-        subscription_status: 'trial', // 7-day trial
-        trial_ends_at: trialEndsAt.toISOString(),
+        current_tier: null, // No tier until they subscribe/start trial
+        subscription_status: 'none', // No active subscription
+        trial_ends_at: null,
       })
       .select('id')
       .single();
@@ -79,11 +76,11 @@ export async function POST(request: NextRequest) {
     }
 
     return NextResponse.json({
-      message: 'Client created successfully with 7-day trial',
+      message: 'Client created successfully',
       clientId: newClient.id,
-      tier: 'starter',
-      subscriptionStatus: 'trial',
-      trialEndsAt: trialEndsAt.toISOString(),
+      tier: null,
+      subscriptionStatus: 'none',
+      requiresSubscription: true,
     }, { headers: corsHeaders });
 
   } catch (error) {
