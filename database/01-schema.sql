@@ -22,6 +22,8 @@ CREATE TABLE IF NOT EXISTS clients (
   subscription_tier TEXT NOT NULL DEFAULT 'free' CHECK (subscription_tier IN ('free', 'pro', 'premium')),
   current_tier TEXT DEFAULT 'atom',
   subscription_status TEXT DEFAULT 'active',
+  trial_ends_at TIMESTAMP WITH TIME ZONE,
+  whop_plan_id TEXT,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
