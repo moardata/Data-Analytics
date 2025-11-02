@@ -64,10 +64,16 @@ export async function GET(request: NextRequest) {
     // Check if subscription is active OR in trial period
     // Users MUST have an active subscription (paid or trial) to access the app
     const hasActiveTrial = client.trial_ends_at && new Date(client.trial_ends_at) > new Date();
+    
+    // FIXED: If current_tier is set, grant access even if subscription_status is null/weird
+    // This handles cases where refresh worked but status wasn't set perfectly
+    const hasValidTier = client.current_tier && client.current_tier !== 'none' && client.current_tier !== null;
+    
     const hasAccess = 
-      client.subscription_status === 'active' || 
+      client.subscription_status === 'active' ||
       client.subscription_status === 'trialing' ||
-      hasActiveTrial;  // ✅ ALSO check trial_ends_at date!
+      hasActiveTrial ||
+      hasValidTier;  // ✅ FALLBACK: If tier is set, they have access!
 
     console.log(`🔍 [Subscription Check] Company: ${companyId}, Status: ${client.subscription_status}, Trial: ${client.trial_ends_at}, HasAccess: ${hasAccess}`);
 

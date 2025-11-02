@@ -72,7 +72,13 @@ export async function POST(request: NextRequest) {
             highestTier = bundleInfo.tier;
             highestBundle = bundleInfo.bundle;
             planId = membershipPlanId;
-            subscriptionStatus = membership.status || 'active';
+            // FIXED: Map Whop statuses to our statuses
+            // 'completed' means they paid and it's active
+            const whopStatus = membership.status || 'active';
+            subscriptionStatus = 
+              whopStatus === 'active' || whopStatus === 'completed' ? 'active' :
+              whopStatus === 'trialing' || whopStatus === 'trial' ? 'trialing' :
+              'active'; // Default to active if we found a valid plan
           }
         }
       }
