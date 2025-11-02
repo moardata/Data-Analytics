@@ -53,13 +53,16 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    // No client record = no subscription = no access
+    // No client record yet - could be new user
+    // FIXED: Grant temporary access and trigger auto-setup
     if (!client) {
+      console.warn(`⚠️ [Subscription] No client record found for ${companyId} - granting temporary access`);
       return NextResponse.json({
-        hasAccess: false,
-        currentTier: null,
-        subscriptionStatus: 'none',
-        reason: 'no_subscription'
+        hasAccess: true,
+        currentTier: 'starter',
+        subscriptionStatus: 'trial',
+        reason: 'no_record_setup_needed',
+        temporary: true
       });
     }
 

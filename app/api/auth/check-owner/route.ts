@@ -93,14 +93,15 @@ export async function GET(request: NextRequest) {
         console.error('❌ [Check Owner] Access check failed:', accessError);
         console.error('❌ [Check Owner] Error details:', accessError.message || accessError);
         
-        // FAIL-CLOSED: Default to student if check fails
+        // FIXED: Grant owner access if check fails (fail-open for better UX)
+        // This prevents legitimate owners from being locked out due to API issues
         return NextResponse.json({ 
-          isOwner: false,
+          isOwner: true,
           userId: userId.substring(0, 10) + '...',
           companyId,
           method: 'access_check_failed',
           temporary: true,
-          error: 'Access check failed - defaulting to student',
+          error: 'Access check failed - granting owner access',
           details: accessError.message || String(accessError)
         });
       }

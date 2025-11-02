@@ -49,12 +49,22 @@ export async function GET(request: NextRequest) {
     }
 
     if (!clientData) {
-      // No client record = no subscription
+      // No client record yet - grant temporary starter access
+      // FIXED: Don't block new users, grant trial access
+      console.warn(`⚠️ [Usage Check] No client record for ${companyId} - granting temporary starter access`);
       return NextResponse.json({
-        tier: null,
-        hasAccess: false,
-        subscriptionStatus: 'none',
-        message: 'No subscription found'
+        tier: 'starter',
+        hasAccess: true,
+        subscriptionStatus: 'trial',
+        message: 'Temporary trial access granted',
+        temporary: true,
+        tierInfo: {
+          displayName: 'Starter (Trial)',
+          limits: {
+            maxStudents: 100,
+            aiInsightsPerDay: 5
+          }
+        }
       });
     }
 
