@@ -59,9 +59,17 @@ export async function GET(request: NextRequest) {
 
     // Check if subscription is active or in trial
     const isOnTrial = clientData.trial_ends_at && new Date(clientData.trial_ends_at) > new Date();
-    const isActive = clientData.subscription_status === 'active' || clientData.subscription_status === 'trialing' || isOnTrial;
+    
+    // FIXED: Also check if tier is set (fallback for edge cases)
+    const hasValidTier = clientData.current_tier && clientData.current_tier !== 'none' && clientData.current_tier !== null;
+    
+    const isActive = 
+      clientData.subscription_status === 'active' || 
+      clientData.subscription_status === 'trialing' || 
+      isOnTrial ||
+      hasValidTier;  // ✅ FALLBACK: If tier is set, they have access!
 
-    // If no active subscription, return no access
+    // If no active subscription AND no valid tier, return no access
     if (!isActive || !clientData.current_tier) {
       return NextResponse.json({
         tier: null,
