@@ -202,7 +202,7 @@ function UpgradeContent() {
                   setTimeout(() => window.location.reload(), 1000);
                 }}
                 skipRedirect={true}
-                themeOptions={{ accentColor: '#10B981' }}
+                themeOptions={{ accentColor: 'green' }}
               />
             </div>
           </div>
