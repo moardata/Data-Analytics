@@ -177,7 +177,7 @@ export default function DashboardCreatorAnalytics({
   const [actualClientId, setActualClientId] = useState<string | null>(null);
   const [timeRange, setTimeRange] = useState<string>('7D');
   const [activeTab, setActiveTab] = useState<string>('engagement');
-  const [userTier, setUserTier] = useState<TierName>('atom');
+  const [userTier, setUserTier] = useState<TierName>('starter');
 
   // Fetch user tier
   useEffect(() => {
@@ -186,7 +186,7 @@ export default function DashboardCreatorAnalytics({
       try {
         const res = await fetch(`/api/usage/check?companyId=${companyIdOrClientId}`);
         const data = await res.json();
-        setUserTier(data.tier || 'atom');
+        setUserTier(data.tier || 'starter');
       } catch (err) {
         console.error('Error fetching tier:', err);
       }
