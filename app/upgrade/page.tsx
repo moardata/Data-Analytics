@@ -11,7 +11,6 @@ import { Zap } from 'lucide-react';
 import { WhopCheckoutEmbed } from '@whop/checkout/react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils/cn';
 import { getAllTiers, type TierName } from '@/lib/pricing/tiers';
 import { FeatureComparisonTable } from '@/components/FeatureComparisonTable';
@@ -95,27 +94,11 @@ function UpgradeContent() {
     <div className="min-h-screen bg-gradient-to-b from-[#0a0a0a] to-[#0f0f0f] py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
-        <div className="rounded-2xl border border-[#1a1a1a]/70 bg-gradient-to-br from-[#0f0f0f] via-[#1a1a1a] to-[#0f0f0f] p-8 mb-12 relative overflow-hidden">
-          {/* Metallic sheen overlay */}
-          <div className="pointer-events-none absolute inset-0 opacity-40">
-            <div className="absolute inset-0 bg-gradient-to-b from-white/4 via-transparent to-transparent" />
-          </div>
-          <div className="relative z-10 text-center">
-            <h1 className="text-4xl md:text-5xl font-black text-[#F8FAFC] mb-4 tracking-tight">
-              Choose Your Plan
-            </h1>
-            <div className="w-24 h-1 bg-gradient-to-r from-[#8B5CF6] via-[#3B82F6] to-[#10B981] rounded-full mx-auto mb-4"></div>
-            <p className="text-[#A1A1AA] text-lg max-w-2xl mx-auto">
-              Start FREE for 7 days - See what's working in your course
-            </p>
-            {!loading && currentTier && (
-              <div className="mt-4">
-                <Badge className="bg-[#10B981]/20 border border-[#10B981]/40 text-[#10B981] px-4 py-1.5">
-                  Current Plan: {currentTier.charAt(0).toUpperCase() + currentTier.slice(1)}
-                </Badge>
-              </div>
-            )}
-          </div>
+        <div className="text-center mb-12">
+          <h1 className="text-4xl md:text-5xl font-black text-[#F8FAFC] mb-4 tracking-tight">
+            Choose Your Plan
+          </h1>
+          <div className="w-24 h-1 bg-gradient-to-r from-[#F59E0B] to-[#FBBF24] rounded-full mx-auto"></div>
         </div>
 
             {/* Feature Comparison Table */}
