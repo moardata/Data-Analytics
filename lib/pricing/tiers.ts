@@ -48,7 +48,7 @@ export const PRICING_TIERS: Record<TierName, PricingTier> = {
     price: 30,
     currency: 'USD',
     trialDays: 7, // 7-day free trial
-    whopPlanId: 'plan_Axr22QP0Sj86G',  // FIXED: Correct plan ID
+    whopPlanId: 'plan_s6HjlvFf74KE0',  // FIXED: Actual correct plan ID (verified from logs)
     limits: {
       maxStudents: 100,
       maxResponsesPerMonth: 250, // AI-analyzed survey responses

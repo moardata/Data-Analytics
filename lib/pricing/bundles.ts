@@ -29,7 +29,7 @@ export interface BundleInfo {
  * Based on your tier features table
  */
 export const PLAN_TO_BUNDLE: Record<string, BundleInfo> = {
-  'plan_Axr22QP0Sj86G': {  // FIXED: Correct plan ID
+  'plan_s6HjlvFf74KE0': {  // FIXED: Actual correct Starter plan ID (verified from logs)
     tier: 'starter',
     bundle: 'starter',
     displayName: 'Starter',
@@ -94,25 +94,6 @@ export const PLAN_TO_BUNDLE: Record<string, BundleInfo> = {
     },
     pricing: {
       monthly: 599,
-      currency: 'USD'
-    }
-  },
-  
-  // TEMPORARY: Unknown plan found in logs - needs to be mapped to correct tier
-  'plan_s6HjlvFf74KE0': {
-    tier: 'starter',  // TODO: Verify which tier this plan should be
-    bundle: 'starter',
-    displayName: 'Starter',
-    description: 'Starter tier (plan needs verification)',
-    features: {
-      aiFeatures: ['5 daily AI insights'],
-      dataCollection: ['Unlimited custom forms'],
-      exportIntegration: ['None'],
-      retentionWindow: '14 days',
-      support: 'Email (72hr)'
-    },
-    pricing: {
-      monthly: 30,
       currency: 'USD'
     }
   },

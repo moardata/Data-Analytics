@@ -221,7 +221,7 @@ export function PaywallModal({ isOpen, onClose, reason }: PaywallModalProps) {
                   </ul>
 
                   <button
-                    onClick={() => handleSelectPlan('plan_Axr22QP0Sj86G')}
+                    onClick={() => handleSelectPlan('plan_s6HjlvFf74KE0')}
                     className="w-full py-2.5 px-4 bg-[#8B5CF6]/10 hover:bg-[#8B5CF6]/20 border border-[#8B5CF6]/30 text-white backdrop-blur-sm transition-all rounded-lg"
                   >
                     Start 7-Day Free Trial
