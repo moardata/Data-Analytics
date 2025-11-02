@@ -71,11 +71,30 @@ export function PaywallModal({ isOpen, onClose, reason }: PaywallModalProps) {
     console.log('🔄 [PaywallModal] Refreshing subscription for companyId:', companyId);
     
     try {
+      if (!companyId) {
+        setRefreshMessage('❌ Company ID is missing. Please refresh the page.');
+        return;
+      }
+
       const response = await fetch('/api/subscription/refresh', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ companyId }),
       });
+      
+      console.log('📡 [PaywallModal] Response status:', response.status);
+      
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('❌ [PaywallModal] API error response:', errorText);
+        try {
+          const errorData = JSON.parse(errorText);
+          setRefreshMessage(`❌ ${errorData.error || 'Failed to check subscription'}`);
+        } catch {
+          setRefreshMessage(`❌ API error (${response.status}): ${errorText.substring(0, 100)}`);
+        }
+        return;
+      }
       
       const data = await response.json();
       console.log('📦 [PaywallModal] Refresh response:', data);
@@ -94,8 +113,18 @@ export function PaywallModal({ isOpen, onClose, reason }: PaywallModalProps) {
         setRefreshMessage('❌ ' + (data.error || 'Failed to refresh subscription'));
       }
     } catch (error) {
-      console.error('Refresh error:', error);
-      setRefreshMessage('❌ Failed to check subscription. Please try again.');
+      console.error('❌ [PaywallModal] Refresh error:', error);
+      console.error('❌ [PaywallModal] Error details:', {
+        message: error instanceof Error ? error.message : String(error),
+        stack: error instanceof Error ? error.stack : undefined,
+        companyId,
+      });
+      
+      // Show more helpful error message
+      const errorMessage = error instanceof Error 
+        ? `Failed: ${error.message}` 
+        : 'Failed to check subscription. Please try again.';
+      setRefreshMessage(`❌ ${errorMessage}`);
     } finally {
       setRefreshing(false);
     }
