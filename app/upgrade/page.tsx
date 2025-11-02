@@ -7,6 +7,7 @@
 
 import { useState, useEffect } from 'react';
 import { useSearchParams } from 'next/navigation';
+import { Zap } from 'lucide-react';
 import { WhopCheckoutEmbed } from '@whop/checkout/react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -184,20 +185,33 @@ function UpgradeContent() {
 
       {/* Embedded Checkout Modal */}
       {selectedPlan && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
-          <div className="relative w-full max-w-md bg-[#0a0a0a] border border-[#1a1a1a]/50 rounded-xl shadow-2xl overflow-hidden">
-            {/* Close button */}
-            <button
-              onClick={() => setSelectedPlan(null)}
-              className="absolute top-3 right-3 p-1.5 text-gray-500 hover:text-white transition-colors rounded-lg hover:bg-white/5 z-10"
-            >
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-              </svg>
-            </button>
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md p-4 overflow-y-auto">
+          <div className="relative w-full max-w-lg my-8 bg-gradient-to-br from-[#0f0f0f] via-[#1a1a1a] to-[#0f0f0f] border border-[#1a1a1a]/70 rounded-2xl shadow-2xl shadow-[#10B981]/10 overflow-hidden">
+            {/* Metallic sheen overlay */}
+            <div className="pointer-events-none absolute inset-0 opacity-30">
+              <div className="absolute inset-0 bg-gradient-to-b from-white/5 via-transparent to-transparent" />
+            </div>
+            
+            {/* Header */}
+            <div className="relative z-10 flex items-center justify-between p-4 border-b border-[#1a1a1a]/50 bg-[#0a0a0a]/50">
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-emerald-500/20 to-emerald-500/5 flex items-center justify-center">
+                  <Zap className="h-4 w-4 text-emerald-400" />
+                </div>
+                <h3 className="text-lg font-bold text-[#F8FAFC]">Complete Your Subscription</h3>
+              </div>
+              <button
+                onClick={() => setSelectedPlan(null)}
+                className="p-2 text-[#A1A1AA] hover:text-[#F8FAFC] hover:bg-[#1a1a1a] rounded-lg transition-all"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
 
-            {/* Embedded Checkout */}
-            <div className="min-h-[500px]">
+            {/* Embedded Checkout - Compact */}
+            <div className="relative z-10 max-h-[calc(100vh-200px)] overflow-y-auto">
               <WhopCheckoutEmbed
                 planId={selectedPlan}
                 theme="dark"
@@ -205,7 +219,7 @@ function UpgradeContent() {
                   setTimeout(() => window.location.reload(), 1000);
                 }}
                 skipRedirect={true}
-                themeOptions={{ accentColor: 'green' }}
+                themeOptions={{ accentColor: '#10B981' }}
               />
             </div>
           </div>
