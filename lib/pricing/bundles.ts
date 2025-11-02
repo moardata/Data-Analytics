@@ -97,6 +97,25 @@ export const PLAN_TO_BUNDLE: Record<string, BundleInfo> = {
       currency: 'USD'
     }
   },
+  
+  // TEMPORARY: Unknown plan found in logs - needs to be mapped to correct tier
+  'plan_s6HjlvFf74KE0': {
+    tier: 'starter',  // TODO: Verify which tier this plan should be
+    bundle: 'starter',
+    displayName: 'Starter',
+    description: 'Starter tier (plan needs verification)',
+    features: {
+      aiFeatures: ['5 daily AI insights'],
+      dataCollection: ['Unlimited custom forms'],
+      exportIntegration: ['None'],
+      retentionWindow: '14 days',
+      support: 'Email (72hr)'
+    },
+    pricing: {
+      monthly: 30,
+      currency: 'USD'
+    }
+  },
 };
 
 /**
