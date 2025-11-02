@@ -1,13 +1,13 @@
 /**
  * Bundle and Tier Mapping System
  * 
- * This file maps your preferred bundle names to internal tier system
- * Database uses: 'free', 'pro', 'premium'
- * Your bundles: 'atom', 'core', 'pulse', 'surge', 'quantum'
+ * Maps Whop plan IDs to tier names used throughout the application
+ * Tier names: 'atom', 'core', 'pulse', 'surge'
+ * These match the TierName type in tiers.ts for consistency
  */
 
 export interface BundleInfo {
-  tier: 'free' | 'pro' | 'premium';
+  tier: 'atom' | 'core' | 'pulse' | 'surge';  // FIXED: Use actual tier names from tiers.ts
   bundle: string;
   displayName: string;
   description: string;
@@ -30,10 +30,10 @@ export interface BundleInfo {
  */
 export const PLAN_TO_BUNDLE: Record<string, BundleInfo> = {
   'prod_Tdu9YayfFDxhc': { 
-    tier: 'pro', 
-    bundle: 'core', 
-    displayName: 'Core',
-    description: 'Core tier for growing creators',
+    tier: 'atom',  // FIXED: Matches tiers.ts
+    bundle: 'atom',  // FIXED: Tier and bundle are the same
+    displayName: 'Starter',  // FIXED: Matches tiers.ts displayName
+    description: 'Starter tier for new creators',
     features: {
       aiFeatures: ['5 daily AI insights'],
       dataCollection: ['Unlimited custom forms'],
@@ -47,10 +47,10 @@ export const PLAN_TO_BUNDLE: Record<string, BundleInfo> = {
     }
   },
   'prod_UNx31yqmQcXOx': { 
-    tier: 'pro', 
-    bundle: 'pulse', 
-    displayName: 'Pulse',
-    description: 'Pulse tier with advanced analytics',
+    tier: 'core',  // FIXED: Matches tiers.ts
+    bundle: 'core',  // FIXED: Tier and bundle are the same
+    displayName: 'Growth',  // FIXED: Matches tiers.ts displayName
+    description: 'Growth tier with advanced analytics',
     features: {
       aiFeatures: ['10 daily AI insights', 'Full dashboard (all 6 metrics)'],
       dataCollection: ['Unlimited forms + branching logic', 'Time range filters'],
@@ -64,10 +64,10 @@ export const PLAN_TO_BUNDLE: Record<string, BundleInfo> = {
     }
   },
   'prod_03fZxoux0PVvW': { 
-    tier: 'premium', 
-    bundle: 'surge', 
-    displayName: 'Surge',
-    description: 'Surge tier with alerts and white-label',
+    tier: 'pulse',  // FIXED: Matches tiers.ts
+    bundle: 'pulse',  // FIXED: Tier and bundle are the same
+    displayName: 'Pro',  // FIXED: Matches tiers.ts displayName
+    description: 'Pro tier with alerts and white-label',
     features: {
       aiFeatures: ['15 daily AI insights', 'At-risk student alerts', 'Cohort analysis'],
       dataCollection: ['Unlimited forms + white-label'],
@@ -81,10 +81,10 @@ export const PLAN_TO_BUNDLE: Record<string, BundleInfo> = {
     }
   },
   'prod_QFtQEu91TO2yh': { 
-    tier: 'premium', 
-    bundle: 'quantum', 
-    displayName: 'Quantum',
-    description: 'Quantum tier with custom AI and dedicated support',
+    tier: 'surge',  // FIXED: Matches tiers.ts
+    bundle: 'surge',  // FIXED: Tier and bundle are the same
+    displayName: 'Scale',  // FIXED: Matches tiers.ts displayName
+    description: 'Scale tier with custom AI and dedicated support',
     features: {
       aiFeatures: ['20 daily AI insights + custom on-demand', 'Custom AI fine-tuning', 'Multi-account management'],
       dataCollection: ['Unlimited forms', 'White-label everything'],
@@ -104,10 +104,10 @@ export const PLAN_TO_BUNDLE: Record<string, BundleInfo> = {
  */
 export function getBundleInfo(planId: string): BundleInfo {
   return PLAN_TO_BUNDLE[planId] || {
-    tier: 'pro',
-    bundle: 'core',
-    displayName: 'Core',
-    description: 'Core tier for growing creators',
+    tier: 'atom',  // FIXED: Default to 'atom' (starter tier)
+    bundle: 'atom',
+    displayName: 'Starter',
+    description: 'Starter tier for new creators',
     features: {
       aiFeatures: ['5 daily AI insights'],
       dataCollection: ['Unlimited custom forms'],
@@ -125,7 +125,7 @@ export function getBundleInfo(planId: string): BundleInfo {
 /**
  * Get tier for a plan ID (for database compatibility)
  */
-export function getTierForPlan(planId: string): 'free' | 'pro' | 'premium' {
+export function getTierForPlan(planId: string): 'atom' | 'core' | 'pulse' | 'surge' {
   return getBundleInfo(planId).tier;
 }
 
@@ -153,7 +153,7 @@ export function getAllBundles(): BundleInfo[] {
 /**
  * Get bundles by tier
  */
-export function getBundlesByTier(tier: 'free' | 'pro' | 'premium'): BundleInfo[] {
+export function getBundlesByTier(tier: 'atom' | 'core' | 'pulse' | 'surge'): BundleInfo[] {
   return getAllBundles().filter(bundle => bundle.tier === tier);
 }
 

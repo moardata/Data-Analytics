@@ -46,14 +46,14 @@ export async function POST(request: NextRequest) {
     }
 
     // 2. Find the highest tier membership
-    let highestTier: 'free' | 'pro' | 'premium' = 'free';
+    let highestTier: 'atom' | 'core' | 'pulse' | 'surge' = 'atom';  // FIXED: Use actual tier names
     let highestBundle = 'atom';
     let planId: string | null = null;
     let subscriptionStatus = 'none';
 
     if (activeMemberships.length > 0) {
-      // Sort by tier priority (premium > pro > free)
-      const tierPriority = { premium: 3, pro: 2, free: 1 };
+      // Sort by tier priority (surge > pulse > core > atom)
+      const tierPriority = { surge: 4, pulse: 3, core: 2, atom: 1 };  // FIXED: Use actual tier names
       
       for (const membership of activeMemberships) {
         const membershipPlanId = membership.plan_id;
@@ -106,7 +106,7 @@ export async function POST(request: NextRequest) {
       const { error: updateError } = await supabase
         .from('clients')
         .update({
-          current_tier: highestTier === 'free' ? null : highestTier,
+          current_tier: highestTier === 'atom' ? highestTier : highestTier,  // FIXED: Keep tier, don't set to null
           whop_plan_id: planId,
           subscription_status: subscriptionStatus === 'none' ? null : subscriptionStatus,
           updated_at: new Date().toISOString(),
@@ -131,7 +131,7 @@ export async function POST(request: NextRequest) {
           company_id: companyId,
           email: `company_${companyId}@whop.com`,
           name: `Company ${companyId}`,
-          current_tier: highestTier === 'free' ? null : highestTier,
+          current_tier: highestTier,  // FIXED: Always set tier (including 'atom')
           whop_plan_id: planId,
           subscription_status: subscriptionStatus === 'none' ? null : subscriptionStatus,
         });

@@ -29,8 +29,8 @@ export async function POST(request: NextRequest) {
         .insert({
           company_id: companyId,
           whop_user_id: `whop_${companyId}`,
-          current_tier: 'free',
-          subscription_status: 'active',
+          current_tier: null,  // FIXED: No subscription yet, set to null
+          subscription_status: 'none',  // FIXED: No subscription yet
         })
         .select()
         .single();
