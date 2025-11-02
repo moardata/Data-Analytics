@@ -652,7 +652,7 @@ function FormsContent() {
                 </CardContent>
               </Card>
             ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              <div className="space-y-4">
                 {forms
                   .filter(form => userRole === 'owner' || form.is_active)
                   .map((form) => (
@@ -662,33 +662,46 @@ function FormsContent() {
                       <div className="absolute inset-0 bg-gradient-to-b from-white/4 via-transparent to-transparent" />
                     </div>
                     
-                    <CardHeader className="pb-3 relative z-10">
-                      <CardTitle className="text-[#F8FAFC] flex items-center gap-2 group-hover:text-[#10B981] transition-colors">
-                        <FileText className="h-5 w-5 text-[#10B981]" />
-                        {form.name}
-                      </CardTitle>
-                      <CardDescription className="text-[#A1A1AA] group-hover:text-[#E2E8F0] transition-colors">
-                        {form.description || 'No description'}
-                      </CardDescription>
-                    </CardHeader>
-                    <CardContent className="space-y-4 relative z-10">
-                      <div className="flex items-center gap-2 text-sm text-[#A1A1AA] group-hover:text-[#E2E8F0] transition-colors">
-                        <CheckCircle className="h-4 w-4 text-[#10B981]" />
-                        {form.fields?.length || 0} fields
-                        {userRole === 'owner' && (
-                          <Badge className={`ml-2 ${form.is_active ? 'bg-[#0B2C24] border border-[#10B981]/40 text-[#10B981]' : 'bg-[#3F3F46] text-[#A1A1AA]'}`}>
-                            {form.is_active ? 'Published' : 'Draft'}
-                          </Badge>
-                        )}
+                    <div className="flex flex-col md:flex-row md:items-center gap-6 p-6 relative z-10">
+                      {/* Left Section - Survey Info */}
+                      <div className="flex-1 space-y-3">
+                        <div>
+                          <div className="flex items-center gap-3 mb-2">
+                            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-purple-500/20 to-purple-500/5 flex items-center justify-center shadow-lg shadow-purple-500/10">
+                              <FileText className="h-5 w-5 text-[#10B981]" />
+                            </div>
+                            <div className="flex-1">
+                              <h3 className="text-lg font-bold text-[#F8FAFC] group-hover:text-[#10B981] transition-colors">
+                                {form.name}
+                              </h3>
+                              <div className="flex items-center gap-2 mt-1">
+                                <span className="text-sm text-[#A1A1AA] group-hover:text-[#E2E8F0] transition-colors flex items-center gap-1">
+                                  <CheckCircle className="h-3.5 w-3.5 text-[#10B981]" />
+                                  {form.fields?.length || 0} fields
+                                </span>
+                                {userRole === 'owner' && (
+                                  <Badge className={`${form.is_active ? 'bg-[#0B2C24] border border-[#10B981]/40 text-[#10B981]' : 'bg-[#3F3F46] text-[#A1A1AA]'}`}>
+                                    {form.is_active ? 'Published' : 'Draft'}
+                                  </Badge>
+                                )}
+                              </div>
+                            </div>
+                          </div>
+                          <p className="text-sm text-[#A1A1AA] group-hover:text-[#E2E8F0] transition-colors ml-[52px]">
+                            {form.description || 'No description'}
+                          </p>
+                        </div>
                       </div>
-                      <div className="space-y-2">
-                        {/* Admin Action Buttons */}
-                      <div className="flex gap-2">
-                        <Button 
-                          onClick={() => setSelectedForm(form)}
-                          className="flex-1 gap-2 border border-[#1a1a1a] bg-[#0f0f0f]/80 hover:bg-[#1a1a1a] text-[#F8FAFC] hover:text-white transition-all rounded-lg"
-                        >
-                          <Eye className="h-4 w-4" />
+                      
+                      {/* Right Section - Action Buttons */}
+                      <div className="flex flex-col gap-3 md:w-auto md:min-w-[400px]">
+                        {/* Row 1: Preview, Manage, Delete */}
+                        <div className="flex gap-3">
+                          <Button 
+                            onClick={() => setSelectedForm(form)}
+                            className="flex-1 gap-2 border border-[#1a1a1a] bg-[#0f0f0f]/80 hover:bg-[#1a1a1a] text-[#F8FAFC] hover:text-white transition-all rounded-lg px-4 py-2.5"
+                          >
+                            <Eye className="h-4 w-4" />
                             Preview
                           </Button>
                           <Button 
@@ -697,21 +710,21 @@ function FormsContent() {
                               setEditingForm(form);
                               setActiveTab('builder');
                             }}
-                            className="flex-1 gap-2 border border-[#1a1a1a] bg-[#0f0f0f]/80 hover:bg-[#1a1a1a] text-[#F8FAFC] hover:text-white transition-all rounded-lg"
+                            className="flex-1 gap-2 border border-[#1a1a1a] bg-[#0f0f0f]/80 hover:bg-[#1a1a1a] text-[#F8FAFC] hover:text-white transition-all rounded-lg px-4 py-2.5"
                           >
                             <Settings className="h-4 w-4" />
                             Manage
                           </Button>
                           <Button 
                             onClick={() => deleteForm(form.id)}
-                            className="gap-2 border border-[#EF4444]/30 bg-[#EF4444]/10 hover:bg-[#EF4444]/20 text-[#EF4444] hover:text-[#FF5555] transition-all rounded-lg"
+                            className="gap-2 border border-[#EF4444]/30 bg-[#EF4444]/10 hover:bg-[#EF4444]/20 text-[#EF4444] hover:text-[#FF5555] transition-all rounded-lg px-4 py-2.5"
                             title="Delete Survey"
                           >
                             <Trash2 className="h-4 w-4" />
                           </Button>
                         </div>
                         
-                        {/* Publish to Students Button */}
+                        {/* Row 2: Publish/Unpublish Button */}
                         <Button 
                           onClick={async () => {
                             if (!requireSubscription('Publish survey to students')) return;
@@ -745,14 +758,13 @@ function FormsContent() {
                               alert('Failed to update survey status. Please try again.');
                             }
                           }}
-                          className="w-full gap-2 border border-[#10B981]/30 bg-[#0B2C24] hover:bg-[#0E3A2F] text-[#10B981] hover:text-[#34D399] font-medium py-3 px-6 rounded-lg transition-all duration-200"
+                          className="w-full gap-2 border border-[#10B981]/30 bg-[#0B2C24] hover:bg-[#0E3A2F] text-[#10B981] hover:text-[#34D399] font-medium py-2.5 px-6 rounded-lg transition-all duration-200"
                         >
-                          <FileText className="h-5 w-5" />
+                          <FileText className="h-4 w-4" />
                           {form.is_active ? 'Unpublish from Students' : 'Publish to Students'}
                         </Button>
-                        
                       </div>
-                    </CardContent>
+                    </div>
                   </Card>
                 ))}
               </div>
