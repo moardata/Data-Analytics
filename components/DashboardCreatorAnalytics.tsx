@@ -404,15 +404,15 @@ export default function DashboardCreatorAnalytics({
           </div>
         </Card>
         
-        <Card className="relative overflow-hidden border border-[#1a1a1a]/70 bg-gradient-to-br from-[#0f0f0f] via-[#1a1a1a] to-[#0f0f0f] rounded-2xl shadow-lg hover:shadow-xl hover:shadow-green-500/10 transition-all group">
+        <Card className="relative overflow-hidden border border-[#1a1a1a]/70 bg-gradient-to-br from-[#0f0f0f] via-[#1a1a1a] to-[#0f0f0f] rounded-2xl shadow-lg hover:shadow-xl hover:shadow-amber-500/10 transition-all group">
           {/* Metallic sheen */}
           <div className="pointer-events-none absolute inset-0 opacity-30">
             <div className="absolute inset-0 bg-gradient-to-b from-white/5 via-transparent to-transparent" />
           </div>
           <div className="relative z-10 p-5">
             <div className="flex items-center gap-3 mb-2">
-              <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-green-500/20 to-green-500/5 flex items-center justify-center shadow-lg shadow-green-500/10">
-                <TrendingUp className="h-6 w-6 text-green-400" />
+              <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-amber-500/20 to-amber-500/5 flex items-center justify-center shadow-lg shadow-amber-500/10">
+                <TrendingUp className="h-6 w-6 text-amber-400" />
               </div>
             </div>
             <p className="text-3xl font-black text-[#F8FAFC] mb-1 truncate">{metrics.engagementConsistency.averageScore.toFixed(1)}</p>
