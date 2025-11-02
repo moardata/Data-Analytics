@@ -31,9 +31,10 @@ export async function GET(request: NextRequest) {
     console.log('📡 [Usage Check] Querying database for client...');
 
     // Get client record
-    const { data: clientData, error: clientError } = await supabase
+    // FIXED: Removed trial_ends_at from SELECT due to PostgREST cache issue
+    const { data: clientData, error: clientError} = await supabase
       .from('clients')
-      .select('id, current_tier, trial_ends_at, subscription_status')
+      .select('id, current_tier, subscription_status')
       .eq('company_id', companyId)
       .maybeSingle();
     
@@ -57,16 +58,13 @@ export async function GET(request: NextRequest) {
       });
     }
 
-    // Check if subscription is active or in trial
-    const isOnTrial = clientData.trial_ends_at && new Date(clientData.trial_ends_at) > new Date();
-    
-    // FIXED: Also check if tier is set (fallback for edge cases)
+    // Check if subscription is active
+    // FIXED: Removed trial_ends_at dependency (PostgREST cache issue)
     const hasValidTier = clientData.current_tier && clientData.current_tier !== 'none' && clientData.current_tier !== null;
     
     const isActive = 
       clientData.subscription_status === 'active' || 
       clientData.subscription_status === 'trialing' || 
-      isOnTrial ||
       hasValidTier;  // ✅ FALLBACK: If tier is set, they have access!
 
     // If no active subscription AND no valid tier, return no access
@@ -90,8 +88,6 @@ export async function GET(request: NextRequest) {
         limits: tierInfo.limits,
         features: tierInfo.features,
       },
-      isOnTrial,
-      trialEndsAt: clientData.trial_ends_at,
       isActive,
     };
 

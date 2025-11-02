@@ -37,9 +37,11 @@ export async function GET(request: NextRequest) {
     }
 
     // Check client subscription status
+    // FIXED: Removed trial_ends_at from SELECT due to PostgREST cache issue
+    // We don't need it since we use tier-based access fallback
     const { data: client, error } = await supabase
       .from('clients')
-      .select('id, current_tier, subscription_status, whop_plan_id, trial_ends_at')
+      .select('id, current_tier, subscription_status, whop_plan_id')
       .eq('company_id', companyId)
       .single();
 
@@ -61,28 +63,23 @@ export async function GET(request: NextRequest) {
       });
     }
 
-    // Check if subscription is active OR in trial period
-    // Users MUST have an active subscription (paid or trial) to access the app
-    const hasActiveTrial = client.trial_ends_at && new Date(client.trial_ends_at) > new Date();
-    
-    // FIXED: If current_tier is set, grant access even if subscription_status is null/weird
-    // This handles cases where refresh worked but status wasn't set perfectly
+    // Check if subscription is active OR has valid tier
+    // FIXED: Removed trial_ends_at dependency (PostgREST cache issue)
+    // We rely on tier-based access and subscription_status instead
     const hasValidTier = client.current_tier && client.current_tier !== 'none' && client.current_tier !== null;
     
     const hasAccess = 
       client.subscription_status === 'active' ||
       client.subscription_status === 'trialing' ||
-      hasActiveTrial ||
       hasValidTier;  // ✅ FALLBACK: If tier is set, they have access!
 
-    console.log(`🔍 [Subscription Check] Company: ${companyId}, Status: ${client.subscription_status}, Tier: ${client.current_tier}, Trial: ${client.trial_ends_at}, HasAccess: ${hasAccess}, hasValidTier: ${hasValidTier}`);
+    console.log(`🔍 [Subscription Check] Company: ${companyId}, Status: ${client.subscription_status}, Tier: ${client.current_tier}, HasAccess: ${hasAccess}, hasValidTier: ${hasValidTier}`);
 
     return NextResponse.json({
       hasAccess,
       currentTier: client.current_tier || null,
-      subscriptionStatus: client.subscription_status || (hasActiveTrial ? 'trial' : 'none'),
+      subscriptionStatus: client.subscription_status || 'none',
       planId: client.whop_plan_id,
-      trialEndsAt: client.trial_ends_at,
       reason: hasAccess ? 'active_subscription' : 'no_active_subscription'
     });
 
