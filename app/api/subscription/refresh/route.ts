@@ -72,9 +72,20 @@ export async function POST(request: NextRequest) {
       const tierPriority = { scale: 4, pro: 3, growth: 2, starter: 1 };
       
       for (const membership of activeMemberships) {
-        const membershipPlanId = membership.plan_id;
+        // FIXED: Plan ID is nested under membership.plan.id, not membership.plan_id
+        const membershipPlanId = membership.plan?.id || membership.plan_id;
+        
+        console.log(`🔍 [Refresh] Processing membership:`, {
+          id: membership.id,
+          status: membership.status,
+          plan_id: membershipPlanId,
+          plan_object: membership.plan
+        });
+        
         if (membershipPlanId) {
           const bundleInfo = getBundleInfo(membershipPlanId);
+          console.log(`📊 [Refresh] Plan ${membershipPlanId} → tier: ${bundleInfo.tier}, bundle: ${bundleInfo.bundle}`);
+          
           const currentPriority = tierPriority[bundleInfo.tier] || 0;
           const highestPriority = highestTier ? tierPriority[highestTier] : 0;
           

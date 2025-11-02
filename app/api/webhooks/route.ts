@@ -493,7 +493,8 @@ async function getOrCreateClient(whopCompanyId: string, eventData: any): Promise
 					m.status === 'trial' ||
 					m.valid === true
 				);
-				planId = validMembership?.plan_id || memberships[0]?.plan_id;
+				// FIXED: Plan ID is nested under plan.id
+				planId = validMembership?.plan?.id || validMembership?.plan_id || memberships[0]?.plan?.id || memberships[0]?.plan_id;
 				console.log(`✅ [Webhook] Fetched plan_id from Whop API: ${planId}`);
 			} else {
 				console.log(`⚠️  [Webhook] No valid memberships found in Whop API`);
