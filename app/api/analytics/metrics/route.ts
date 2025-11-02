@@ -73,10 +73,13 @@ export async function GET(request: NextRequest) {
     }
 
     if (!clientData) {
-      return NextResponse.json(
-        { error: 'Client not found - needs initialization' },
-        { status: 404, headers: corsHeaders }
-      );
+      // Return empty metrics so dashboard loads
+      // User will see paywall for features
+      console.warn(`⚠️ [Analytics] No client record for ${companyId} - returning empty metrics`);
+      return NextResponse.json({
+        ...getEmptyMetrics(),
+        message: 'No data available'
+      }, { headers: corsHeaders });
     }
 
     const clientId = clientData.id;

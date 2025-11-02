@@ -25,10 +25,13 @@ export async function GET(request: NextRequest) {
       .single();
 
     if (clientError || !clientData) {
-      return NextResponse.json(
-        { error: 'Client not found for this company' },
-        { status: 404 }
-      );
+      // Return 200 with null clientId so dashboard doesn't crash
+      return NextResponse.json({
+        success: true,
+        clientId: null,
+        companyId,
+        message: 'No client record found'
+      });
     }
 
     return NextResponse.json({
