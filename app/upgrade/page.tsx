@@ -5,11 +5,12 @@
 
 'use client';
 
-import { Suspense, useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { WhopCheckoutEmbed } from '@whop/checkout/react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils/cn';
 import { getAllTiers, type TierName } from '@/lib/pricing/tiers';
 import { FeatureComparisonTable } from '@/components/FeatureComparisonTable';
@@ -99,25 +100,31 @@ function UpgradeContent() {
   const isPopular = (tierName: TierName) => tierName === 'pro';
   const isCurrentTier = (tierName: TierName) => currentTier !== null && tierName === currentTier;
 
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-gradient-to-b from-[#0d0f12] to-[#14171c] flex items-center justify-center">
-        <div className="text-[#E1E4EA]">Loading...</div>
-      </div>
-    );
-  }
-
   return (
-    <div className="min-h-screen bg-gradient-to-b from-[#0a0a0a] to-[#0f0f0f] py-12 px-4">
+    <div className="min-h-screen bg-gradient-to-b from-[#0a0a0a] to-[#0f0f0f] py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
-        <div className="text-center mb-12">
-          <h1 className="text-5xl font-black text-[#F8FAFC] mb-4 tracking-tight">
-            Choose Your Plan
-          </h1>
-          <p className="text-[#A1A1AA] text-lg max-w-2xl mx-auto">
-            Start FREE for 7 days - See what's working in your course
-          </p>
+        <div className="rounded-2xl border border-[#1a1a1a]/70 bg-gradient-to-br from-[#0f0f0f] via-[#1a1a1a] to-[#0f0f0f] p-8 mb-12 relative overflow-hidden">
+          {/* Metallic sheen overlay */}
+          <div className="pointer-events-none absolute inset-0 opacity-40">
+            <div className="absolute inset-0 bg-gradient-to-b from-white/4 via-transparent to-transparent" />
+          </div>
+          <div className="relative z-10 text-center">
+            <h1 className="text-4xl md:text-5xl font-black text-[#F8FAFC] mb-4 tracking-tight">
+              Choose Your Plan
+            </h1>
+            <div className="w-24 h-1 bg-gradient-to-r from-[#8B5CF6] via-[#3B82F6] to-[#10B981] rounded-full mx-auto mb-4"></div>
+            <p className="text-[#A1A1AA] text-lg max-w-2xl mx-auto">
+              Start FREE for 7 days - See what's working in your course
+            </p>
+            {!loading && currentTier && (
+              <div className="mt-4">
+                <Badge className="bg-[#10B981]/20 border border-[#10B981]/40 text-[#10B981] px-4 py-1.5">
+                  Current Plan: {currentTier.charAt(0).toUpperCase() + currentTier.slice(1)}
+                </Badge>
+              </div>
+            )}
+          </div>
         </div>
 
             {/* Feature Comparison Table */}
@@ -127,9 +134,12 @@ function UpgradeContent() {
 
             {/* FAQ Section */}
             <div className="mb-16">
-              <h2 className="text-3xl font-bold text-[#F8FAFC] mb-8 text-center">
-                Frequently Asked Questions
-              </h2>
+              <div className="text-center mb-8">
+                <h2 className="text-3xl font-bold text-[#F8FAFC] mb-2">
+                  Frequently Asked Questions
+                </h2>
+                <div className="w-16 h-1 bg-gradient-to-r from-[#10B981] to-[#10B981]/50 rounded-full mx-auto"></div>
+              </div>
               <div className="max-w-3xl mx-auto space-y-4">
                 {[
                   {
@@ -155,14 +165,20 @@ function UpgradeContent() {
                 ].map((faq, index) => (
                   <div 
                     key={index}
-                    className="rounded-2xl border border-[#1a1a1a] bg-gradient-to-br from-[#0f0f0f] via-[#1a1a1a] to-[#0f0f0f] p-6 transition-all duration-300 hover:border-[#10B981]/30"
+                    className="relative overflow-hidden rounded-2xl border border-[#1a1a1a]/70 bg-gradient-to-br from-[#0f0f0f] via-[#1a1a1a] to-[#0f0f0f] p-6 transition-all duration-300 hover:border-[#10B981]/30 hover:shadow-lg hover:shadow-[#10B981]/10 group"
                   >
-                    <h3 className="text-lg font-semibold text-[#F8FAFC] mb-3">
-                      {faq.question}
-                    </h3>
-                    <p className="text-[#A1A1AA] text-sm leading-relaxed">
-                      {faq.answer}
-                    </p>
+                    {/* Metallic sheen overlay */}
+                    <div className="pointer-events-none absolute inset-0 opacity-30">
+                      <div className="absolute inset-0 bg-gradient-to-b from-white/5 via-transparent to-transparent" />
+                    </div>
+                    <div className="relative z-10">
+                      <h3 className="text-lg font-semibold text-[#F8FAFC] mb-3 group-hover:text-[#10B981] transition-colors">
+                        {faq.question}
+                      </h3>
+                      <p className="text-[#A1A1AA] text-sm leading-relaxed group-hover:text-[#E2E8F0] transition-colors">
+                        {faq.answer}
+                      </p>
+                    </div>
                   </div>
                 ))}
               </div>
@@ -210,13 +226,5 @@ function UpgradeContent() {
 }
 
 export default function UpgradePage() {
-  return (
-    <Suspense fallback={
-      <div className="flex items-center justify-center min-h-screen bg-gradient-to-b from-[#0d0f12] to-[#14171c]">
-        <div className="w-16 h-16 border-4 border-[#10B981] border-t-transparent rounded-full animate-spin" />
-      </div>
-    }>
-      <UpgradeContent />
-    </Suspense>
-  );
+  return <UpgradeContent />;
 }

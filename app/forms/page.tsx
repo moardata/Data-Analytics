@@ -11,7 +11,6 @@ import { useSearchParams } from 'next/navigation';
 
 export const dynamic = 'force-dynamic';
 import { Plus, FileText, Eye, CheckCircle, Share2, Copy, BookOpen, Code, Download, Settings, BarChart3, Clock, Users, X, Trash2, Sparkles } from 'lucide-react';
-import { LoadingScreen } from '@/components/LoadingScreen';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -307,15 +306,6 @@ function FormsContent() {
             description={selectedForm.description}
           />
         </div>
-      </div>
-    );
-  }
-
-  // Show loading state
-  if (userRole === 'loading') {
-    return (
-      <div className="min-h-screen bg-gradient-to-b from-[#0a0a0a] to-[#0f0f0f]">
-        <LoadingScreen message="Loading your surveys" size="lg" />
       </div>
     );
   }
