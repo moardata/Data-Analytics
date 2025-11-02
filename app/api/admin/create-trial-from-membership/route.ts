@@ -88,7 +88,7 @@ export async function POST(request: NextRequest) {
         company_id: companyId,
         email: `${companyId}@whop.com`,
         name: `Company ${companyId}`,
-        current_tier: 'atom',
+        current_tier: 'starter',
         subscription_status: 'trialing',
         trial_ends_at: trialEndsAt.toISOString(),
         whop_plan_id: planId,
