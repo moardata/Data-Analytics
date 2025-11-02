@@ -34,7 +34,7 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    const tierName = (clientData.current_tier || 'atom') as TierName;
+    const tierName = (clientData.current_tier || 'starter') as TierName;
     const tierInfo = getTier(tierName);
     
     // Get current usage

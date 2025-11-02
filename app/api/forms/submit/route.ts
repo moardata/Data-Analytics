@@ -43,7 +43,7 @@ export async function POST(request: NextRequest) {
     }
 
     const clientId = clientData.id; // This is the actual UUID
-    const tier = (clientData.current_tier || 'atom') as TierName;
+    const tier = (clientData.current_tier || 'starter') as TierName;
 
     // CHECK RESPONSE LIMIT BEFORE ACCEPTING SUBMISSION
     const limitCheck = await checkLimit(companyId, tier, 'analyzeResponse');
@@ -72,7 +72,7 @@ export async function POST(request: NextRequest) {
           upgrade: { 
             message: 'Upgrade to analyze more responses per month',
             url: `/upgrade?companyId=${companyId}`,
-            recommendedTier: tier === 'atom' ? 'core' : 'pulse'
+            recommendedTier: tier === 'starter' ? 'growth' : 'pro'
           },
         },
         { status: 429 } // Too Many Requests

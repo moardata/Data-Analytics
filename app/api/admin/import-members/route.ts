@@ -37,7 +37,7 @@ export async function POST(request: NextRequest) {
     }
 
     const clientId = clientData.id;
-    const tier = (clientData.current_tier || 'atom') as TierName;
+    const tier = (clientData.current_tier || 'starter') as TierName;
 
     // Check current student count
     const currentUsage = await getClientUsage(companyId);

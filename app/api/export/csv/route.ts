@@ -32,7 +32,7 @@ export async function GET(request: NextRequest) {
     }
 
     // Check if user can export CSV
-    const tier = (clientData.current_tier || 'atom') as TierName;
+    const tier = (clientData.current_tier || 'starter') as TierName;
     if (!canPerformAction(tier, 'csvExport')) {
       return NextResponse.json(
         { 
@@ -41,13 +41,13 @@ export async function GET(request: NextRequest) {
           details: {
             tier: tier,
             feature: 'CSV Export',
-            requiredTier: 'core',
+            requiredTier: 'growth',
             requiredTierName: 'Growth'
           },
           upgrade: {
             message: 'Upgrade to Growth plan to unlock CSV exports',
             url: `/upgrade?companyId=${companyId}`,
-            recommendedTier: 'core'
+            recommendedTier: 'growth'
           }
         },
         { status: 403 }

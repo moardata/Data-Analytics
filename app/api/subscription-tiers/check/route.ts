@@ -28,7 +28,7 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    const tier = (client.current_tier || 'atom') as any;
+    const tier = (client.current_tier || 'starter') as any;
     const tierData = getTier(tier);
     const usage = await getClientUsage(companyId);
 

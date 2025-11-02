@@ -53,7 +53,7 @@ export async function POST(request: NextRequest) {
         .update({
           subscription_status: 'trialing',
           trial_ends_at: trialEndsAt.toISOString(),
-          current_tier: 'atom',
+          current_tier: 'starter',
           updated_at: new Date().toISOString(),
         })
         .eq('id', existing.id);

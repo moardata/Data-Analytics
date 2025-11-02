@@ -56,7 +56,7 @@ export async function POST(request: NextRequest) {
     }
 
     const clientId = clientData.id; // This is the actual UUID
-    const tier = (clientData.current_tier || 'atom') as any;
+    const tier = (clientData.current_tier || 'starter') as any;
 
     // Check usage limits before generating insights
     const { checkLimit, trackAction } = await import('@/lib/pricing/usage-tracker');
@@ -78,7 +78,7 @@ export async function POST(request: NextRequest) {
           upgrade: { 
             message: 'Upgrade to get more AI insights per day',
             url: `/upgrade?companyId=${companyId}`,
-            recommendedTier: tier === 'atom' ? 'core' : 'pulse'
+            recommendedTier: tier === 'starter' ? 'growth' : 'pro'
           },
         },
         { status: 429, headers: corsHeaders } // Too Many Requests

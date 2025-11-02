@@ -30,7 +30,7 @@ export async function POST(request: NextRequest) {
         whop_user_id: companyId,
         email: `${companyId}@dev.test`,
         name: 'Premium Dev Account',
-        current_tier: 'surge', // Top tier (Scale - $599/mo equivalent)
+        current_tier: 'scale', // Top tier (Scale - $599/mo equivalent)
         subscription_tier: 'premium', // For RLS compatibility
         subscription_status: 'active',
         trial_ends_at: trialEndsAt.toISOString(),
@@ -55,7 +55,7 @@ export async function POST(request: NextRequest) {
       success: true,
       message: 'Premium access granted successfully',
       companyId,
-      tier: 'surge',
+      tier: 'scale',
       tierName: 'Scale',
       limits: {
         students: 'Unlimited',

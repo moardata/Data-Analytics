@@ -71,7 +71,7 @@ export async function POST(request: NextRequest) {
         company_id: companyId,
         email: `${companyId}@whop.com`,
         name: `Company ${companyId}`,
-        current_tier: 'atom',  // Starter tier
+        current_tier: 'starter',  // Starter tier
         subscription_status: 'trialing',
         trial_ends_at: trialEndsAt.toISOString(),
       })

@@ -432,7 +432,7 @@ async function getOrCreateEntity(whopUserId: string, eventData: any) {
 		.single();
 	
 	if (clientCheck) {
-		const tier = (clientCheck.current_tier || 'atom') as TierName;
+		const tier = (clientCheck.current_tier || 'starter') as TierName;
 		const limitCheck = await checkLimit(companyId, tier, 'addStudent');
 		
 		if (!limitCheck.allowed) {
@@ -503,7 +503,7 @@ async function getOrCreateClient(whopCompanyId: string, eventData: any): Promise
 		}
 	}
 	
-	const { tier, bundle } = planId ? getBundleInfo(planId) : { tier: null as any, bundle: 'atom' };
+	const { tier, bundle } = planId ? getBundleInfo(planId) : { tier: null as any, bundle: 'starter' };
 	
 	console.log(`📊 [Webhook] Determined tier: ${tier || 'none'}, bundle: ${bundle}, plan: ${planId || 'none'}`);
 

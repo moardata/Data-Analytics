@@ -74,7 +74,7 @@ export async function GET(request: NextRequest) {
           whopPlanId: client?.whop_plan_id || 'none',
           webhooksReceived: webhooks?.length || 0,
           issue: !client ? 'Client not found in database' :
-                 !client.current_tier || client.current_tier === 'atom' ? 'No paid tier detected' :
+                 !client.current_tier || client.current_tier === 'starter' ? 'No paid tier detected' :
                  'Client exists with tier: ' + client.current_tier
         }
       }
