@@ -24,6 +24,7 @@ import ExportsReportsDashboard from '@/components/ExportsReportsDashboard';
 import SystemHealthDashboard from '@/components/SystemHealthDashboard';
 import { usePaywall } from '@/hooks/use-paywall';
 import { PaywallModal } from '@/components/PaywallModal';
+import { UsageLimitModal } from '@/components/UsageLimitModal';
 
 // ---------------------- THEME ----------------------
 const theme = {
@@ -45,6 +46,8 @@ function InsightsContent() {
   const [activeTab, setActiveTab] = useState('insights');
   const [showSuccess, setShowSuccess] = useState(false);
   const [timeRange, setTimeRange] = useState<'daily' | 'weekly'>('daily');
+  const [showUsageLimit, setShowUsageLimit] = useState(false);
+  const [usageLimitError, setUsageLimitError] = useState<{error: string; details?: any}>({error: ''});
   
   // Add paywall hook for button-level checks
   const { hasAccess, currentTier, loading: paywallLoading, showPaywall, setShowPaywall, requireSubscription, refreshStatus } = usePaywall();
@@ -164,8 +167,19 @@ function InsightsContent() {
       } else {
         const errorData = await response.json();
         console.error('❌ API Error:', errorData);
-        console.error('❌ Full error object:', JSON.stringify(errorData, null, 2));
-        alert(`Error: ${errorData.error || 'Failed to generate insights'}\n\nFull error: ${JSON.stringify(errorData, null, 2)}`);
+        
+        // Check if it's a usage limit error
+        if (errorData.limitReached || errorData.error?.includes('limit reached')) {
+          setUsageLimitError({
+            error: errorData.error || 'Daily limit reached',
+            details: errorData.details || {}
+          });
+          setShowUsageLimit(true);
+        } else {
+          // For other errors, still use alert for now
+          console.error('❌ Full error object:', JSON.stringify(errorData, null, 2));
+          alert(`Error: ${errorData.error || 'Failed to generate insights'}`);
+        }
       }
     } catch (error) {
       console.error('❌ Error generating insights:', error);
@@ -605,6 +619,14 @@ function InsightsContent() {
         isOpen={showPaywall} 
         onClose={() => setShowPaywall(false)}
         reason="Start your 7-day free trial to access this feature"
+      />
+      
+      {/* Usage Limit Modal - modern styled error modal */}
+      <UsageLimitModal
+        isOpen={showUsageLimit}
+        onClose={() => setShowUsageLimit(false)}
+        error={usageLimitError.error}
+        details={usageLimitError.details}
       />
     </div>
   );
