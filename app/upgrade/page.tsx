@@ -17,10 +17,10 @@ import { FeatureComparisonTable } from '@/components/FeatureComparisonTable';
 export const dynamic = 'force-dynamic';
 
 const planEmojis: Record<TierName, string> = {
-  atom: '⚛️',
-  core: '🚀',
-  pulse: '🏆',
-  surge: '💼',
+  starter: '⚛️',
+  growth: '🚀',
+  pro: '🏆',
+  scale: '💼',
 };
 
 function UpgradeContent() {
@@ -59,7 +59,7 @@ function UpgradeContent() {
       const data = await res.json();
       console.log('📊 API Response:', data);
       console.log('🎯 Setting currentTier to:', data.tier || null);
-      // Don't default to 'atom' - keep it null if no subscription
+      // Don't default to 'starter' - keep it null if no subscription
       setCurrentTier(data.tier || null);
     } catch (error) {
       console.error('Error fetching tier:', error);
@@ -96,7 +96,7 @@ function UpgradeContent() {
   };
 
   const tiers = getAllTiers();
-  const isPopular = (tierName: TierName) => tierName === 'pulse';
+  const isPopular = (tierName: TierName) => tierName === 'pro';
   const isCurrentTier = (tierName: TierName) => currentTier !== null && tierName === currentTier;
 
   if (loading) {
