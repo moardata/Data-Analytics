@@ -71,7 +71,7 @@ export default function ExportsReportsDashboard({ companyId }: ExportsReportsDas
       type: 'pdf',
       icon: <FileText className="h-5 w-5" />,
       color: 'bg-[#10B981]',
-      requiresTier: 'pulse', // Pro plan
+      requiresTier: 'pro', // Pro plan
     },
     {
       id: 'students_csv',
@@ -80,11 +80,11 @@ export default function ExportsReportsDashboard({ companyId }: ExportsReportsDas
       type: 'csv',
       icon: <BarChart3 className="h-5 w-5" />,
       color: 'bg-[#3B82F6]',
-      requiresTier: 'core', // Growth plan
+      requiresTier: 'growth', // Growth plan
     }
   ];
 
-  const isPremium = userTier === 'pulse' || userTier === 'surge';
+  const isPremium = userTier === 'pro' || userTier === 'scale';
   const canExportPDF = userTier ? canPerformAction(userTier, 'pdfExport', companyId) : false;
   const canExportCSV = userTier ? canPerformAction(userTier, 'csvExport', companyId) : false;
 
@@ -147,9 +147,9 @@ export default function ExportsReportsDashboard({ companyId }: ExportsReportsDas
         </div>
         <Badge variant="outline" className="border-[#1a1a1a] text-[#A1A1AA]">
           {!userTier ? 'NO SUBSCRIPTION' :
-           userTier === 'atom' ? 'STARTER' :
-           userTier === 'core' ? 'GROWTH' :
-           userTier === 'pulse' ? 'PRO' :
+           userTier === 'starter' ? 'STARTER' :
+           userTier === 'growth' ? 'GROWTH' :
+           userTier === 'pro' ? 'PRO' :
            'SCALE'}
         </Badge>
       </div>
@@ -228,10 +228,10 @@ export default function ExportsReportsDashboard({ companyId }: ExportsReportsDas
                   <>
                     <Lock className="h-4 w-4 mr-2" />
                     {option.requiresTier ? `Requires ${
-                      option.requiresTier === 'atom' ? 'Starter' :
-                      option.requiresTier === 'core' ? 'Growth' :
-                      option.requiresTier === 'pulse' ? 'Pro' :
-                      option.requiresTier === 'surge' ? 'Scale' : 
+                      option.requiresTier === 'starter' ? 'Starter' :
+                      option.requiresTier === 'growth' ? 'Growth' :
+                      option.requiresTier === 'pro' ? 'Pro' :
+                      option.requiresTier === 'scale' ? 'Scale' : 
                       option.requiresTier
                     } Plan` : 'Upgrade to Unlock'}
                   </>

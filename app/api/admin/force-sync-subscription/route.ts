@@ -50,14 +50,14 @@ export async function POST(request: NextRequest) {
     }
 
     // 2. Find the highest tier membership
-    let highestTier: 'atom' | 'core' | 'pulse' | 'surge' = 'atom';  // FIXED: Use actual tier names
-    let highestBundle = 'atom';
+    let highestTier: 'starter' | 'growth' | 'pro' | 'scale' = 'starter';
+    let highestBundle = 'starter';
     let planId: string | null = null;
     let subscriptionStatus = 'none';
 
     if (activeMemberships.length > 0) {
-      // Sort by tier priority (surge > pulse > core > atom)
-      const tierPriority = { surge: 4, pulse: 3, core: 2, atom: 1 };  // FIXED: Use actual tier names
+      // Sort by tier priority (scale > pro > growth > starter)
+      const tierPriority = { scale: 4, pro: 3, growth: 2, starter: 1 };
       
       for (const membership of activeMemberships) {
         const membershipPlanId = membership.plan_id;
@@ -99,7 +99,7 @@ export async function POST(request: NextRequest) {
           message: 'User has active trial',
           data: {
             companyId,
-            tier: existing.current_tier || 'atom',
+            tier: existing.current_tier || 'starter',
             reason: 'active_trial',
             trialEndsAt: existing.trial_ends_at,
           }
@@ -110,7 +110,7 @@ export async function POST(request: NextRequest) {
       const { error: updateError } = await supabase
         .from('clients')
         .update({
-          current_tier: highestTier === 'atom' ? highestTier : highestTier,  // FIXED: Keep tier, don't set to null
+          current_tier: highestTier,
           whop_plan_id: planId,
           subscription_status: subscriptionStatus === 'none' ? null : subscriptionStatus,
           updated_at: new Date().toISOString(),

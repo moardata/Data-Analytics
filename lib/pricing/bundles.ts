@@ -2,12 +2,12 @@
  * Bundle and Tier Mapping System
  * 
  * Maps Whop plan IDs to tier names used throughout the application
- * Tier names: 'atom', 'core', 'pulse', 'surge'
+ * Tier names: 'starter', 'growth', 'pro', 'scale'
  * These match the TierName type in tiers.ts for consistency
  */
 
 export interface BundleInfo {
-  tier: 'atom' | 'core' | 'pulse' | 'surge';  // FIXED: Use actual tier names from tiers.ts
+  tier: 'starter' | 'growth' | 'pro' | 'scale';  // FIXED: Use actual tier names
   bundle: string;
   displayName: string;
   description: string;
@@ -29,10 +29,10 @@ export interface BundleInfo {
  * Based on your tier features table
  */
 export const PLAN_TO_BUNDLE: Record<string, BundleInfo> = {
-  'prod_Tdu9YayfFDxhc': { 
-    tier: 'atom',  // FIXED: Matches tiers.ts
-    bundle: 'atom',  // FIXED: Tier and bundle are the same
-    displayName: 'Starter',  // FIXED: Matches tiers.ts displayName
+  'plan_Axr22QP0Sj86G': {  // FIXED: Correct plan ID
+    tier: 'starter',
+    bundle: 'starter',
+    displayName: 'Starter',
     description: 'Starter tier for new creators',
     features: {
       aiFeatures: ['5 daily AI insights'],
@@ -46,10 +46,10 @@ export const PLAN_TO_BUNDLE: Record<string, BundleInfo> = {
       currency: 'USD'
     }
   },
-  'prod_UNx31yqmQcXOx': { 
-    tier: 'core',  // FIXED: Matches tiers.ts
-    bundle: 'core',  // FIXED: Tier and bundle are the same
-    displayName: 'Growth',  // FIXED: Matches tiers.ts displayName
+  'plan_IrOqGUheWuL1x': {  // FIXED: Correct plan ID
+    tier: 'growth',
+    bundle: 'growth',
+    displayName: 'Growth',
     description: 'Growth tier with advanced analytics',
     features: {
       aiFeatures: ['10 daily AI insights', 'Full dashboard (all 6 metrics)'],
@@ -63,10 +63,10 @@ export const PLAN_TO_BUNDLE: Record<string, BundleInfo> = {
       currency: 'USD'
     }
   },
-  'prod_03fZxoux0PVvW': { 
-    tier: 'pulse',  // FIXED: Matches tiers.ts
-    bundle: 'pulse',  // FIXED: Tier and bundle are the same
-    displayName: 'Pro',  // FIXED: Matches tiers.ts displayName
+  'plan_Jbp6KtLwdbZ0k': {  // FIXED: Correct plan ID
+    tier: 'pro',
+    bundle: 'pro',
+    displayName: 'Pro',
     description: 'Pro tier with alerts and white-label',
     features: {
       aiFeatures: ['15 daily AI insights', 'At-risk student alerts', 'Cohort analysis'],
@@ -80,10 +80,10 @@ export const PLAN_TO_BUNDLE: Record<string, BundleInfo> = {
       currency: 'USD'
     }
   },
-  'prod_QFtQEu91TO2yh': { 
-    tier: 'surge',  // FIXED: Matches tiers.ts
-    bundle: 'surge',  // FIXED: Tier and bundle are the same
-    displayName: 'Scale',  // FIXED: Matches tiers.ts displayName
+  'plan_ioOlKM9cTtESv': {  // FIXED: Correct plan ID
+    tier: 'scale',
+    bundle: 'scale',
+    displayName: 'Scale',
     description: 'Scale tier with custom AI and dedicated support',
     features: {
       aiFeatures: ['20 daily AI insights + custom on-demand', 'Custom AI fine-tuning', 'Multi-account management'],
@@ -104,8 +104,8 @@ export const PLAN_TO_BUNDLE: Record<string, BundleInfo> = {
  */
 export function getBundleInfo(planId: string): BundleInfo {
   return PLAN_TO_BUNDLE[planId] || {
-    tier: 'atom',  // FIXED: Default to 'atom' (starter tier)
-    bundle: 'atom',
+    tier: 'starter',  // FIXED: Default to 'starter'
+    bundle: 'starter',
     displayName: 'Starter',
     description: 'Starter tier for new creators',
     features: {
@@ -125,7 +125,7 @@ export function getBundleInfo(planId: string): BundleInfo {
 /**
  * Get tier for a plan ID (for database compatibility)
  */
-export function getTierForPlan(planId: string): 'atom' | 'core' | 'pulse' | 'surge' {
+export function getTierForPlan(planId: string): 'starter' | 'growth' | 'pro' | 'scale' {
   return getBundleInfo(planId).tier;
 }
 
@@ -153,7 +153,7 @@ export function getAllBundles(): BundleInfo[] {
 /**
  * Get bundles by tier
  */
-export function getBundlesByTier(tier: 'atom' | 'core' | 'pulse' | 'surge'): BundleInfo[] {
+export function getBundlesByTier(tier: 'starter' | 'growth' | 'pro' | 'scale'): BundleInfo[] {
   return getAllBundles().filter(bundle => bundle.tier === tier);
 }
 

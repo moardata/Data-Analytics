@@ -63,13 +63,13 @@ export async function POST(request: NextRequest) {
     }
 
     // Determine highest tier
-    let highestTier: 'atom' | 'core' | 'pulse' | 'surge' | null = null;  // FIXED: Use actual tier names
+    let highestTier: 'starter' | 'growth' | 'pro' | 'scale' | null = null;
     let highestBundle = 'none';
     let planId: string | null = null;
     let subscriptionStatus = 'none';
 
     if (activeMemberships.length > 0) {
-      const tierPriority = { surge: 4, pulse: 3, core: 2, atom: 1 };  // FIXED: Use actual tier names
+      const tierPriority = { scale: 4, pro: 3, growth: 2, starter: 1 };
       
       for (const membership of activeMemberships) {
         const membershipPlanId = membership.plan_id;

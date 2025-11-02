@@ -93,7 +93,7 @@ export function FeatureComparisonTable({ onSelectTier, currentTier }: FeatureCom
               <div key={tier.name} className="text-center space-y-2 flex flex-col h-full">
                 <div className="flex-1">
                   <div className="text-sm font-bold text-[#F8FAFC]">{tier.displayName}</div>
-                {tier.name === 'pulse' && (
+                {tier.name === 'pro' && (
                   <div className="mt-0.5 text-[10px] font-semibold text-[#10B981]">POPULAR</div>
                 )}
                   {tier.trialDays && (

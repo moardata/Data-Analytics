@@ -30,7 +30,7 @@ export async function GET(request: NextRequest) {
     if (process.env.NODE_ENV === 'development' && process.env.ENABLE_DEV_BYPASS === 'true') {
       return NextResponse.json({
         hasAccess: true,
-        currentTier: 'surge',
+        currentTier: 'scale',
         subscriptionStatus: 'active',
         reason: 'dev_mode'
       });

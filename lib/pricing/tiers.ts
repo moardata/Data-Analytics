@@ -3,7 +3,7 @@
  * Based on Whop group sizes and realistic creator needs
  */
 
-export type TierName = 'atom' | 'core' | 'pulse' | 'surge';
+export type TierName = 'starter' | 'growth' | 'pro' | 'scale';
 
 export interface PricingTier {
   name: TierName;
@@ -42,13 +42,13 @@ export interface PricingTier {
  * - Progressive unlocking of dashboard metrics and features
  */
 export const PRICING_TIERS: Record<TierName, PricingTier> = {
-  atom: {
-    name: 'atom',
+  starter: {
+    name: 'starter',
     displayName: 'Starter',
     price: 30,
     currency: 'USD',
     trialDays: 7, // 7-day free trial
-    whopPlanId: 'prod_Tdu9YayfFDxhc',
+    whopPlanId: 'plan_Axr22QP0Sj86G',  // FIXED: Correct plan ID
     limits: {
       maxStudents: 100,
       maxResponsesPerMonth: 250, // AI-analyzed survey responses
@@ -78,12 +78,12 @@ export const PRICING_TIERS: Record<TierName, PricingTier> = {
     ],
   },
 
-  core: {
-    name: 'core',
+  growth: {
+    name: 'growth',
     displayName: 'Growth',
     price: 99,
     currency: 'USD',
-    whopPlanId: 'prod_UNx31yqmQcXOx',
+    whopPlanId: 'plan_IrOqGUheWuL1x',  // FIXED: Correct plan ID
     limits: {
       maxStudents: 1000,
       maxResponsesPerMonth: 2500,
@@ -115,12 +115,12 @@ export const PRICING_TIERS: Record<TierName, PricingTier> = {
     ],
   },
 
-  pulse: {
-    name: 'pulse',
+  pro: {
+    name: 'pro',
     displayName: 'Pro',
     price: 299,
     currency: 'USD',
-    whopPlanId: 'prod_03fZxoux0PVvW',
+    whopPlanId: 'plan_Jbp6KtLwdbZ0k',  // FIXED: Correct plan ID
     limits: {
       maxStudents: 2000,
       maxResponsesPerMonth: 10000,
@@ -153,12 +153,12 @@ export const PRICING_TIERS: Record<TierName, PricingTier> = {
     ],
   },
 
-  surge: {
-    name: 'surge',
+  scale: {
+    name: 'scale',
     displayName: 'Scale',
     price: 599,
     currency: 'USD',
-    whopPlanId: 'prod_QFtQEu91TO2yh',
+    whopPlanId: 'plan_ioOlKM9cTtESv',  // FIXED: Correct plan ID
     limits: {
       maxStudents: 999999, // Unlimited
       maxResponsesPerMonth: 999999, // Unlimited
@@ -196,7 +196,7 @@ export const PRICING_TIERS: Record<TierName, PricingTier> = {
  * Get tier by name
  */
 export function getTier(tierName: TierName): PricingTier {
-  return PRICING_TIERS[tierName] || PRICING_TIERS.atom;
+  return PRICING_TIERS[tierName] || PRICING_TIERS.starter;
 }
 
 /**
@@ -214,8 +214,8 @@ export function getAllTiers(): PricingTier[] {
  * @param companyId - Optional company ID for dev bypass (client-side)
  */
 export function canAccessMetric(tier: TierName, metricId: string, companyId?: string): boolean {
-  // DEV BYPASS: Always allow in 'surge' tier (highest tier unlocks everything)
-  if (tier === 'surge') {
+  // DEV BYPASS: Always allow in 'scale' tier (highest tier unlocks everything)
+  if (tier === 'scale') {
     return true;
   }
   
@@ -242,8 +242,8 @@ export function canPerformAction(
   action: 'csvExport' | 'pdfExport' | 'apiAccess' | 'timeFilters' | 'formBranching' | 'atRiskAlerts' | 'whiteLabelForms',
   companyId?: string
 ): boolean {
-  // DEV BYPASS: Always allow in 'surge' tier (highest tier unlocks everything)
-  if (tier === 'surge') {
+  // DEV BYPASS: Always allow in 'scale' tier (highest tier unlocks everything)
+  if (tier === 'scale') {
     return true;
   }
   
