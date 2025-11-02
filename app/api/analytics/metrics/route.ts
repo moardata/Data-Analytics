@@ -73,14 +73,10 @@ export async function GET(request: NextRequest) {
     }
 
     if (!clientData) {
-      // FIXED: Return empty metrics for new users instead of 404
-      // This allows the dashboard to load even before client record is created
-      console.warn(`⚠️ [Analytics] No client record for ${companyId} - returning empty metrics`);
-      return NextResponse.json({
-        ...getEmptyMetrics(),
-        message: 'New user - no data yet. Try importing members to get started.',
-        temporary: true
-      }, { headers: corsHeaders });
+      return NextResponse.json(
+        { error: 'Client not found - needs initialization' },
+        { status: 404, headers: corsHeaders }
+      );
     }
 
     const clientId = clientData.id;
