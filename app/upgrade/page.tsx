@@ -82,18 +82,8 @@ function UpgradeContent() {
       return;
     }
 
-    // Map product IDs to actual plan IDs
-    const planIdMap: Record<string, string> = {
-      'prod_Tdu9YayfFDxhc': 'plan_Axr22QP0Sj86G',  // Starter $30
-      'prod_UNx31yqmQcXOx': 'plan_IrOqGUheWuL1x',  // Growth $99.99
-      'prod_03fZxoux0PVvW': 'plan_Jbp6KtLwdbZ0k',  // Pro $299
-      'prod_QFtQEu91TO2yh': 'plan_ioOlKM9cTtESv',  // Scale $599
-    };
-
-    const planId = planIdMap[tier.whopPlanId];
-    if (planId) {
-      setSelectedPlan(planId);
-    }
+    // Use the plan ID directly from the tier configuration
+    setSelectedPlan(tier.whopPlanId);
   };
 
   const tiers = getAllTiers();
