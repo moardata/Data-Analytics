@@ -64,7 +64,7 @@ export async function POST(request: NextRequest) {
         email: companyEmail || `company_${companyId}@whop.com`,
         name: companyName || `Company ${companyId}`,
         current_tier: 'starter', // Give them Starter tier
-        subscription_tier: 'pro', // Required field (legacy, maps to 'starter')
+        subscription_tier: 'free', // Required field (legacy)
         subscription_status: 'trialing', // 7-day trial
         trial_ends_at: trialEndsAt.toISOString(),
         whop_plan_id: 'plan_Axr22QP0Sj86G', // Starter plan
