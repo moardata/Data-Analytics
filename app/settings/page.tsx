@@ -103,42 +103,116 @@ function SettingsContent() {
     }
   };
   return (
-    <div className="min-h-screen bg-gradient-to-b from-[#0a0a0a] to-[#0f0f0f] p-6">
+    <div className="min-h-screen bg-gradient-to-b from-[#0a0a0a] to-[#0f0f0f] p-8">
       <div className="max-w-5xl mx-auto space-y-6">
-        <div className="mb-6">
-          <div className="inline-block">
-            <h1 className="text-4xl font-bold text-[#F8FAFC] mb-2">
-              Settings
-            </h1>
-            <div className="h-1 w-24 bg-gradient-to-r from-[#8B5CF6] via-[#3B82F6] to-[#10B981] rounded-full"></div>
+        {/* Header */}
+        <div className="rounded-2xl border border-[#1a1a1a]/70 bg-gradient-to-br from-[#0f0f0f] via-[#1a1a1a] to-[#0f0f0f] p-6 relative overflow-hidden">
+          {/* Metallic sheen overlay */}
+          <div className="pointer-events-none absolute inset-0 opacity-40">
+            <div className="absolute inset-0 bg-gradient-to-b from-white/4 via-transparent to-transparent" />
           </div>
-          <p className="text-[#A1A1AA] mt-2">
-            Manage your app configuration
+          <div className="relative z-10">
+            <h2 className="text-2xl font-bold text-[#F8FAFC] mb-2">Settings</h2>
+            <div className="w-16 h-1 bg-gradient-to-r from-[#10B981] to-[#10B981]/50 rounded-full mb-3"></div>
+          </div>
+          <p className="text-[#A1A1AA] text-sm relative z-10">
+            Manage your app configuration and preferences
           </p>
         </div>
 
-        <div className="grid grid-cols-1 gap-4">
+        {/* Stats Cards */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <Card className="relative overflow-hidden border border-[#1a1a1a]/70 bg-gradient-to-br from-[#0f0f0f] via-[#1a1a1a] to-[#0f0f0f] rounded-2xl shadow-lg hover:shadow-xl hover:shadow-purple-500/10 transition-all group">
+            {/* Metallic sheen */}
+            <div className="pointer-events-none absolute inset-0 opacity-30">
+              <div className="absolute inset-0 bg-gradient-to-b from-white/5 via-transparent to-transparent" />
+            </div>
+            <div className="relative z-10 p-5">
+              <div className="flex items-center gap-3 mb-2">
+                <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-purple-500/20 to-purple-500/5 flex items-center justify-center shadow-lg shadow-purple-500/10">
+                  <Database className="h-6 w-6 text-purple-400" />
+                </div>
+              </div>
+              <p className="text-3xl font-black text-[#F8FAFC] mb-1">Active</p>
+              <p className="text-sm font-medium text-[#A1A1AA]">Data Sync</p>
+            </div>
+          </Card>
+
+          <Card className="relative overflow-hidden border border-[#1a1a1a]/70 bg-gradient-to-br from-[#0f0f0f] via-[#1a1a1a] to-[#0f0f0f] rounded-2xl shadow-lg hover:shadow-xl hover:shadow-blue-500/10 transition-all group">
+            {/* Metallic sheen */}
+            <div className="pointer-events-none absolute inset-0 opacity-30">
+              <div className="absolute inset-0 bg-gradient-to-b from-white/5 via-transparent to-transparent" />
+            </div>
+            <div className="relative z-10 p-5">
+              <div className="flex items-center gap-3 mb-2">
+                <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-blue-500/20 to-blue-500/5 flex items-center justify-center shadow-lg shadow-blue-500/10">
+                  <User className="h-6 w-6 text-blue-400" />
+                </div>
+              </div>
+              <p className="text-3xl font-black text-[#F8FAFC] mb-1">Starter</p>
+              <p className="text-sm font-medium text-[#A1A1AA]">Current Plan</p>
+            </div>
+          </Card>
+
+          <Card className="relative overflow-hidden border border-[#1a1a1a]/70 bg-gradient-to-br from-[#0f0f0f] via-[#1a1a1a] to-[#0f0f0f] rounded-2xl shadow-lg hover:shadow-xl hover:shadow-emerald-500/10 transition-all group">
+            {/* Metallic sheen */}
+            <div className="pointer-events-none absolute inset-0 opacity-30">
+              <div className="absolute inset-0 bg-gradient-to-b from-white/5 via-transparent to-transparent" />
+            </div>
+            <div className="relative z-10 p-5">
+              <div className="flex items-center gap-3 mb-2">
+                <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-emerald-500/20 to-emerald-500/5 flex items-center justify-center shadow-lg shadow-emerald-500/10">
+                  <Key className="h-6 w-6 text-emerald-400" />
+                </div>
+              </div>
+              <p className="text-3xl font-black text-[#F8FAFC] mb-1">Secure</p>
+              <p className="text-sm font-medium text-[#A1A1AA]">Privacy</p>
+            </div>
+          </Card>
+
+          <Card className="relative overflow-hidden border border-[#1a1a1a]/70 bg-gradient-to-br from-[#0f0f0f] via-[#1a1a1a] to-[#0f0f0f] rounded-2xl shadow-lg hover:shadow-xl hover:shadow-orange-500/10 transition-all group">
+            {/* Metallic sheen */}
+            <div className="pointer-events-none absolute inset-0 opacity-30">
+              <div className="absolute inset-0 bg-gradient-to-b from-white/5 via-transparent to-transparent" />
+            </div>
+            <div className="relative z-10 p-5">
+              <div className="flex items-center gap-3 mb-2">
+                <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-orange-500/20 to-orange-500/5 flex items-center justify-center shadow-lg shadow-orange-500/10">
+                  <Bell className="h-6 w-6 text-orange-400" />
+                </div>
+              </div>
+              <p className="text-3xl font-black text-[#F8FAFC] mb-1">24/7</p>
+              <p className="text-sm font-medium text-[#A1A1AA]">Support</p>
+            </div>
+          </Card>
+        </div>
+
+        <div className="grid grid-cols-1 gap-6">
           {/* Data Management Card */}
-          <Card className="border border-[#1a1a1a] bg-[#0f0f0f] hover:border-[#2a2a2a] transition-all">
-            <CardHeader>
-              <CardTitle className="text-lg font-semibold text-[#F8FAFC] flex items-center gap-2">
+          <Card className="relative overflow-hidden border border-[#1a1a1a]/70 bg-gradient-to-br from-[#0f0f0f] via-[#1a1a1a] to-[#0f0f0f] shadow-lg hover:shadow-xl hover:shadow-purple-500/10 transition-all duration-300 rounded-2xl group">
+            {/* Metallic sheen overlay */}
+            <div className="pointer-events-none absolute inset-0 opacity-40">
+              <div className="absolute inset-0 bg-gradient-to-b from-white/4 via-transparent to-transparent" />
+            </div>
+            <CardHeader className="relative z-10">
+              <CardTitle className="text-lg font-semibold text-[#F8FAFC] flex items-center gap-2 group-hover:text-[#8B5CF6] transition-colors">
                 <Database className="h-5 w-5 text-[#8B5CF6]" />
                 Data Management
               </CardTitle>
-              <CardDescription className="text-[#A1A1AA]">
+              <CardDescription className="text-[#A1A1AA] group-hover:text-[#E2E8F0] transition-colors">
                 Import your Whop members
               </CardDescription>
             </CardHeader>
-            <CardContent>
+            <CardContent className="relative z-10">
               <div className="flex flex-col md:flex-row md:items-center gap-4">
-                <p className="text-sm text-[#A1A1AA] md:flex-1">
+                <p className="text-sm text-[#A1A1AA] md:flex-1 group-hover:text-[#E2E8F0] transition-colors">
                   Import all current members from Whop to instantly populate your analytics dashboard.
                 </p>
                 <div className="md:w-auto">
                   <Button 
                     onClick={handleSyncStudents}
                     disabled={syncing}
-                    className="w-full md:w-auto bg-[#8B5CF6]/10 hover:bg-[#8B5CF6]/20 border border-[#8B5CF6]/30 text-white backdrop-blur-sm transition-all flex items-center gap-2"
+                    className="w-full md:w-auto bg-[#8B5CF6]/10 hover:bg-[#8B5CF6]/20 border border-[#8B5CF6]/30 text-white backdrop-blur-sm transition-all flex items-center gap-2 rounded-xl"
                   >
                     <RefreshCw className={`h-4 w-4 text-[#8B5CF6] ${syncing ? 'animate-spin' : ''}`} />
                     {syncing ? 'Importing...' : 'Import Members from Whop'}
@@ -158,24 +232,28 @@ function SettingsContent() {
           </Card>
 
           {/* Subscription Card */}
-          <Card className="border border-[#1a1a1a] bg-[#0f0f0f] hover:border-[#2a2a2a] transition-all">
-            <CardHeader>
-              <CardTitle className="text-lg font-semibold text-[#F8FAFC] flex items-center gap-2">
+          <Card className="relative overflow-hidden border border-[#1a1a1a]/70 bg-gradient-to-br from-[#0f0f0f] via-[#1a1a1a] to-[#0f0f0f] shadow-lg hover:shadow-xl hover:shadow-blue-500/10 transition-all duration-300 rounded-2xl group">
+            {/* Metallic sheen overlay */}
+            <div className="pointer-events-none absolute inset-0 opacity-40">
+              <div className="absolute inset-0 bg-gradient-to-b from-white/4 via-transparent to-transparent" />
+            </div>
+            <CardHeader className="relative z-10">
+              <CardTitle className="text-lg font-semibold text-[#F8FAFC] flex items-center gap-2 group-hover:text-[#3B82F6] transition-colors">
                 <User className="h-5 w-5 text-[#3B82F6]" />
                 Subscription
               </CardTitle>
-              <CardDescription className="text-[#A1A1AA]">
+              <CardDescription className="text-[#A1A1AA] group-hover:text-[#E2E8F0] transition-colors">
                 Manage your plan
               </CardDescription>
             </CardHeader>
-            <CardContent>
+            <CardContent className="relative z-10">
               <div className="flex flex-col md:flex-row md:items-center gap-4">
-                <div className="text-sm text-[#A1A1AA] md:flex-1">
+                <div className="text-sm text-[#A1A1AA] md:flex-1 group-hover:text-[#E2E8F0] transition-colors">
                   <span className="font-medium">Current Plan:</span> <span className="text-[#8B5CF6] font-semibold">Starter</span>
                 </div>
                 <Button 
                   onClick={handleUpgrade}
-                  className="w-full md:w-auto bg-[#3B82F6]/10 hover:bg-[#3B82F6]/20 border border-[#3B82F6]/30 text-white backdrop-blur-sm transition-all"
+                  className="w-full md:w-auto bg-[#3B82F6]/10 hover:bg-[#3B82F6]/20 border border-[#3B82F6]/30 text-white backdrop-blur-sm transition-all rounded-xl"
                 >
                   Upgrade Plan
                 </Button>
@@ -184,25 +262,29 @@ function SettingsContent() {
           </Card>
 
           {/* Data & Privacy Card */}
-          <Card className="border border-[#1a1a1a] bg-[#0f0f0f] hover:border-[#2a2a2a] transition-all">
-            <CardHeader>
-              <CardTitle className="text-lg font-semibold text-[#F8FAFC] flex items-center gap-2">
+          <Card className="relative overflow-hidden border border-[#1a1a1a]/70 bg-gradient-to-br from-[#0f0f0f] via-[#1a1a1a] to-[#0f0f0f] shadow-lg hover:shadow-xl hover:shadow-emerald-500/10 transition-all duration-300 rounded-2xl group">
+            {/* Metallic sheen overlay */}
+            <div className="pointer-events-none absolute inset-0 opacity-40">
+              <div className="absolute inset-0 bg-gradient-to-b from-white/4 via-transparent to-transparent" />
+            </div>
+            <CardHeader className="relative z-10">
+              <CardTitle className="text-lg font-semibold text-[#F8FAFC] flex items-center gap-2 group-hover:text-[#10B981] transition-colors">
                 <Database className="h-5 w-5 text-[#10B981]" />
                 Data & Privacy
               </CardTitle>
-              <CardDescription className="text-[#A1A1AA]">
+              <CardDescription className="text-[#A1A1AA] group-hover:text-[#E2E8F0] transition-colors">
                 Manage your data settings
               </CardDescription>
             </CardHeader>
-            <CardContent>
+            <CardContent className="relative z-10">
               <div className="flex flex-col md:flex-row md:items-center gap-4">
                 <div className="space-y-3 md:flex-1">
                   <div className="flex items-center justify-between">
-                    <span className="text-sm text-[#A1A1AA]">Data retention</span>
+                    <span className="text-sm text-[#A1A1AA] group-hover:text-[#E2E8F0] transition-colors">Data retention</span>
                     <span className="text-sm font-semibold text-[#10B981]">14 days</span>
                   </div>
                   <div className="flex items-center justify-between">
-                    <span className="text-sm text-[#A1A1AA]">Analytics tracking</span>
+                    <span className="text-sm text-[#A1A1AA] group-hover:text-[#E2E8F0] transition-colors">Analytics tracking</span>
                     <label className="relative inline-flex items-center cursor-pointer">
                       <input 
                         type="checkbox" 
@@ -210,13 +292,13 @@ function SettingsContent() {
                         checked={analyticsTracking}
                         onChange={(e) => handleToggle('analytics_tracking', e.target.checked)}
                       />
-                      <div className="w-11 h-6 bg-[#1a1a1a] rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#8B5CF6]"></div>
+                      <div className="w-11 h-6 bg-[#1a1a1a] rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#10B981]"></div>
                     </label>
                   </div>
                 </div>
                 <Button 
                   onClick={handleExportData}
-                  className="w-full md:w-auto bg-[#10B981]/10 hover:bg-[#10B981]/20 border border-[#10B981]/30 text-white backdrop-blur-sm transition-all"
+                  className="w-full md:w-auto bg-[#10B981]/10 hover:bg-[#10B981]/20 border border-[#10B981]/30 text-white backdrop-blur-sm transition-all rounded-xl"
                 >
                   <Download className="h-4 w-4 mr-2 text-[#10B981]" />
                   Export Data
@@ -226,21 +308,25 @@ function SettingsContent() {
           </Card>
 
           {/* Support Card */}
-          <Card className="border border-[#1a1a1a] bg-[#0f0f0f] hover:border-[#2a2a2a] transition-all">
-            <CardHeader>
-              <CardTitle className="text-lg font-semibold text-[#F8FAFC] flex items-center gap-2">
+          <Card className="relative overflow-hidden border border-[#1a1a1a]/70 bg-gradient-to-br from-[#0f0f0f] via-[#1a1a1a] to-[#0f0f0f] shadow-lg hover:shadow-xl hover:shadow-orange-500/10 transition-all duration-300 rounded-2xl group">
+            {/* Metallic sheen overlay */}
+            <div className="pointer-events-none absolute inset-0 opacity-40">
+              <div className="absolute inset-0 bg-gradient-to-b from-white/4 via-transparent to-transparent" />
+            </div>
+            <CardHeader className="relative z-10">
+              <CardTitle className="text-lg font-semibold text-[#F8FAFC] flex items-center gap-2 group-hover:text-[#F59E0B] transition-colors">
                 <Bell className="h-5 w-5 text-[#F59E0B]" />
                 Support & Feedback
               </CardTitle>
-              <CardDescription className="text-[#A1A1AA]">
+              <CardDescription className="text-[#A1A1AA] group-hover:text-[#E2E8F0] transition-colors">
                 Get help and share your thoughts
               </CardDescription>
             </CardHeader>
-            <CardContent>
+            <CardContent className="relative z-10">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <Button
                   onClick={handleSubmitFeedback}
-                  className="justify-start h-auto p-4 bg-[#8B5CF6]/10 hover:bg-[#8B5CF6]/20 border border-[#8B5CF6]/30 text-white backdrop-blur-sm transition-all"
+                  className="justify-start h-auto p-4 bg-[#8B5CF6]/10 hover:bg-[#8B5CF6]/20 border border-[#8B5CF6]/30 text-white backdrop-blur-sm transition-all rounded-xl"
                 >
                   <MessageCircle className="h-5 w-5 mr-3 text-[#8B5CF6]" />
                   <div className="text-left">
@@ -251,7 +337,7 @@ function SettingsContent() {
 
                 <Button
                   onClick={handleContactSupport}
-                  className="justify-start h-auto p-4 bg-[#3B82F6]/10 hover:bg-[#3B82F6]/20 border border-[#3B82F6]/30 text-white backdrop-blur-sm transition-all"
+                  className="justify-start h-auto p-4 bg-[#3B82F6]/10 hover:bg-[#3B82F6]/20 border border-[#3B82F6]/30 text-white backdrop-blur-sm transition-all rounded-xl"
                 >
                   <HelpCircle className="h-5 w-5 mr-3 text-[#3B82F6]" />
                   <div className="text-left">
