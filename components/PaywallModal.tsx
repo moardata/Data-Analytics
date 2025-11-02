@@ -68,6 +68,8 @@ export function PaywallModal({ isOpen, onClose, reason }: PaywallModalProps) {
     setRefreshing(true);
     setRefreshMessage('');
     
+    console.log('🔄 [PaywallModal] Refreshing subscription for companyId:', companyId);
+    
     try {
       const response = await fetch('/api/subscription/refresh', {
         method: 'POST',
@@ -76,6 +78,7 @@ export function PaywallModal({ isOpen, onClose, reason }: PaywallModalProps) {
       });
       
       const data = await response.json();
+      console.log('📦 [PaywallModal] Refresh response:', data);
       
       if (data.success) {
         if (data.upgraded) {

@@ -29,13 +29,25 @@ export async function POST(request: NextRequest) {
         company_id: companyId,
       });
       const allMemberships = membershipsResult.data || [];
+      
+      console.log(`📊 [Refresh] Whop API returned ${allMemberships.length} total memberships`);
+      if (allMemberships.length > 0) {
+        console.log(`📦 [Refresh] First membership:`, JSON.stringify(allMemberships[0], null, 2));
+      }
+      
       // Filter for active memberships only
       activeMemberships = allMemberships.filter((m: any) => 
         m.status === 'active' || m.valid === true
       );
-      console.log(`📦 [Refresh] Found ${activeMemberships.length} active memberships`);
+      console.log(`✅ [Refresh] Found ${activeMemberships.length} active memberships (filtered from ${allMemberships.length} total)`);
+      
+      if (activeMemberships.length > 0) {
+        console.log(`📦 [Refresh] Active membership plan_id:`, activeMemberships[0]?.plan_id);
+        console.log(`📦 [Refresh] Active membership status:`, activeMemberships[0]?.status);
+      }
     } catch (whopError: any) {
       console.error('❌ [Refresh] Whop API error:', whopError);
+      console.error('❌ [Refresh] Error details:', JSON.stringify(whopError, null, 2));
       return NextResponse.json(
         { 
           success: false,
