@@ -29,11 +29,30 @@ export interface BundleInfo {
  * Based on your tier features table
  */
 export const PLAN_TO_BUNDLE: Record<string, BundleInfo> = {
-  'plan_s6HjlvFf74KE0': {  // FIXED: Actual correct Starter plan ID (verified from logs)
+  'plan_Axr22QP0Sj86G': {  // FIXED: Correct NEW Starter product plan ID
     tier: 'starter',
     bundle: 'starter',
     displayName: 'Starter',
     description: 'Starter tier for new creators',
+    features: {
+      aiFeatures: ['5 daily AI insights'],
+      dataCollection: ['Unlimited custom forms'],
+      exportIntegration: ['None'],
+      retentionWindow: '14 days',
+      support: 'Email (72hr)'
+    },
+    pricing: {
+      monthly: 30,
+      currency: 'USD'
+    }
+  },
+  
+  // LEGACY: Old "Data Analytics" product plan ID (for existing customers)
+  'plan_s6HjlvFf74KE0': {
+    tier: 'starter',
+    bundle: 'starter',
+    displayName: 'Starter (Legacy)',
+    description: 'Legacy Starter tier from old product',
     features: {
       aiFeatures: ['5 daily AI insights'],
       dataCollection: ['Unlimited custom forms'],

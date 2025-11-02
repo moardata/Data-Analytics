@@ -221,7 +221,7 @@ export function PaywallModal({ isOpen, onClose, reason }: PaywallModalProps) {
                   </ul>
 
                   <button
-                    onClick={() => handleSelectPlan('plan_s6HjlvFf74KE0')}
+                    onClick={() => handleSelectPlan('plan_Axr22QP0Sj86G')}
                     className="w-full py-2.5 px-4 bg-[#8B5CF6]/10 hover:bg-[#8B5CF6]/20 border border-[#8B5CF6]/30 text-white backdrop-blur-sm transition-all rounded-lg"
                   >
                     Start 7-Day Free Trial
@@ -265,7 +265,7 @@ export function PaywallModal({ isOpen, onClose, reason }: PaywallModalProps) {
                 
                 <div className="space-y-2">
                   {[
-                    { name: 'Starter', price: '$30', planId: 'plan_s6HjlvFf74KE0', features: '100 students • 5 AI insights/day' },
+                    { name: 'Starter', price: '$30', planId: 'plan_Axr22QP0Sj86G', features: '100 students • 5 AI insights/day' },
                     { name: 'Growth', price: '$99.99', planId: 'plan_IrOqGUheWuL1x', features: '1,000 students • 10 AI insights/day', popular: true },
                     { name: 'Pro', price: '$299', planId: 'plan_Jbp6KtLwdbZ0k', features: '2,000 students • 15 AI insights/day' },
                     { name: 'Scale', price: '$599', planId: 'plan_ioOlKM9cTtESv', features: 'Unlimited • 20 AI insights/day' },
