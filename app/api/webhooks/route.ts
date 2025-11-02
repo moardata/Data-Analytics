@@ -485,13 +485,18 @@ async function getOrCreateClient(whopCompanyId: string, eventData: any): Promise
 			});
 			
 			if (membershipsResult.data && membershipsResult.data.length > 0) {
-				// Get the first active membership's plan_id
+				// Get the first valid membership's plan_id (active OR trialing)
 				const memberships = membershipsResult.data as any[];
-				const activeMembership = memberships.find((m: any) => m.status === 'active' || m.valid === true);
-				planId = activeMembership?.plan_id || memberships[0]?.plan_id;
+				const validMembership = memberships.find((m: any) => 
+					m.status === 'active' || 
+					m.status === 'trialing' || 
+					m.status === 'trial' ||
+					m.valid === true
+				);
+				planId = validMembership?.plan_id || memberships[0]?.plan_id;
 				console.log(`✅ [Webhook] Fetched plan_id from Whop API: ${planId}`);
 			} else {
-				console.log(`⚠️  [Webhook] No active memberships found in Whop API`);
+				console.log(`⚠️  [Webhook] No valid memberships found in Whop API`);
 			}
 		} catch (apiError: any) {
 			console.error(`❌ [Webhook] Failed to fetch from Whop API:`, apiError.message);

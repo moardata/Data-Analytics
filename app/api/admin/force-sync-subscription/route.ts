@@ -29,11 +29,15 @@ export async function POST(request: NextRequest) {
         company_id: companyId,
       });
       const allMemberships = membershipsResult.data || [];
-      // Filter for active memberships only
+      // Filter for valid memberships (active OR trialing)
+      // Trial users should also get access!
       activeMemberships = allMemberships.filter((m: any) => 
-        m.status === 'active' || m.valid === true
+        m.status === 'active' || 
+        m.status === 'trialing' || 
+        m.status === 'trial' ||
+        m.valid === true
       );
-      console.log(`📦 Found ${activeMemberships.length} active memberships from Whop`);
+      console.log(`📦 Found ${activeMemberships.length} valid memberships from Whop (including trials)`);
     } catch (whopError: any) {
       console.error('❌ Error fetching from Whop:', whopError);
       return NextResponse.json(

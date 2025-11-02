@@ -35,11 +35,15 @@ export async function POST(request: NextRequest) {
         console.log(`📦 [Refresh] First membership:`, JSON.stringify(allMemberships[0], null, 2));
       }
       
-      // Filter for active memberships only
+      // Filter for valid memberships (active OR trialing)
+      // Trial users should also get access!
       activeMemberships = allMemberships.filter((m: any) => 
-        m.status === 'active' || m.valid === true
+        m.status === 'active' || 
+        m.status === 'trialing' || 
+        m.status === 'trial' ||
+        m.valid === true
       );
-      console.log(`✅ [Refresh] Found ${activeMemberships.length} active memberships (filtered from ${allMemberships.length} total)`);
+      console.log(`✅ [Refresh] Found ${activeMemberships.length} valid memberships (filtered from ${allMemberships.length} total)`);
       
       if (activeMemberships.length > 0) {
         console.log(`📦 [Refresh] Active membership plan_id:`, activeMemberships[0]?.plan_id);
