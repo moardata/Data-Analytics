@@ -36,6 +36,16 @@ export function usePaywall() {
   const checkSubscription = async () => {
     try {
       const response = await fetch(`/api/subscription/status?companyId=${companyId}`);
+      
+      if (!response.ok) {
+        // FIXED: If subscription status API fails (500), don't block access
+        // The user might still have access (as proven by successful API calls)
+        // Just log the error and keep existing status
+        console.warn('⚠️ Subscription status check failed:', response.status);
+        setStatus(prev => ({ ...prev, loading: false }));
+        return;
+      }
+      
       const data = await response.json();
 
       setStatus({
@@ -49,6 +59,7 @@ export function usePaywall() {
       // Users can view pages without subscription, just can't take actions
     } catch (error) {
       console.error('Error checking subscription:', error);
+      // FIXED: On error, don't assume no access - might be temporary API issue
       setStatus(prev => ({ ...prev, loading: false }));
     }
   };

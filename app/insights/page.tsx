@@ -47,7 +47,7 @@ function InsightsContent() {
   const [timeRange, setTimeRange] = useState<'daily' | 'weekly'>('daily');
   
   // Add paywall hook for button-level checks
-  const { hasAccess, currentTier, loading: paywallLoading, showPaywall, setShowPaywall, requireSubscription } = usePaywall();
+  const { hasAccess, currentTier, loading: paywallLoading, showPaywall, setShowPaywall, requireSubscription, refreshStatus } = usePaywall();
 
   // Get company ID from URL (same as analytics page)
   useEffect(() => {
@@ -150,6 +150,13 @@ function InsightsContent() {
       if (response.ok) {
         const data = await response.json();
         setInsights(data.insights || []);
+        
+        // FIXED: Refresh subscription status after successful generation
+        // If insights generated, we know they have access - update frontend state
+        // This prevents paywall from showing after successful generation
+        setTimeout(() => {
+          refreshStatus?.();
+        }, 500);
         
         // Show success popup
         setShowSuccess(true);
