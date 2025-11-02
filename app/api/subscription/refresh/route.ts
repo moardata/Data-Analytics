@@ -114,6 +114,15 @@ export async function POST(request: NextRequest) {
 
     const oldTier = existing?.current_tier || 'none';
     const newTier = highestTier || null;
+    
+    console.log(`📊 [Refresh] Tier determination:`, {
+      oldTier,
+      newTier,
+      highestTier,
+      planId,
+      activeMembershipsCount: activeMemberships.length,
+      subscriptionStatus
+    });
 
     if (existing) {
       const { error: updateError } = await supabase

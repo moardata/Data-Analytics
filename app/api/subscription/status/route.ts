@@ -75,7 +75,7 @@ export async function GET(request: NextRequest) {
       hasActiveTrial ||
       hasValidTier;  // ✅ FALLBACK: If tier is set, they have access!
 
-    console.log(`🔍 [Subscription Check] Company: ${companyId}, Status: ${client.subscription_status}, Trial: ${client.trial_ends_at}, HasAccess: ${hasAccess}`);
+    console.log(`🔍 [Subscription Check] Company: ${companyId}, Status: ${client.subscription_status}, Tier: ${client.current_tier}, Trial: ${client.trial_ends_at}, HasAccess: ${hasAccess}, hasValidTier: ${hasValidTier}`);
 
     return NextResponse.json({
       hasAccess,
