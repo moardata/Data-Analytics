@@ -39,11 +39,14 @@ export async function GET(request: NextRequest) {
     // Check client subscription status
     // FIXED: Removed trial_ends_at from SELECT due to PostgREST cache issue
     // We don't need it since we use tier-based access fallback
+    console.log('🔍 [Subscription Status] Querying for companyId:', companyId);
     const { data: client, error } = await supabase
       .from('clients')
       .select('id, current_tier, subscription_status, whop_plan_id')
       .eq('company_id', companyId)
       .single();
+
+    console.log('📊 [Subscription Status] Database response:', { client, error });
 
     if (error && error.code !== 'PGRST116') {
       console.error('Error checking client:', error);
@@ -55,6 +58,7 @@ export async function GET(request: NextRequest) {
 
     // No client record = no subscription = no access
     if (!client) {
+      console.log('❌ [Subscription Status] No client found - returning no access');
       return NextResponse.json({
         hasAccess: false,
         currentTier: null,
@@ -73,7 +77,7 @@ export async function GET(request: NextRequest) {
       client.subscription_status === 'trialing' ||
       hasValidTier;  // ✅ FALLBACK: If tier is set, they have access!
 
-    console.log(`🔍 [Subscription Check] Company: ${companyId}, Status: ${client.subscription_status}, Tier: ${client.current_tier}, HasAccess: ${hasAccess}, hasValidTier: ${hasValidTier}`);
+    console.log(`🔍 [Subscription Status] Company: ${companyId}, Status: ${client.subscription_status}, Tier: ${client.current_tier}, HasAccess: ${hasAccess}, hasValidTier: ${hasValidTier}`);
 
     return NextResponse.json({
       hasAccess,
