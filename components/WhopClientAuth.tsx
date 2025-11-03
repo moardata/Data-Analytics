@@ -10,6 +10,7 @@ interface AccessState {
   isStudent: boolean;
   role: string;
   companyId: string;
+  error?: 'app_not_installed' | null;
 }
 
 export function WhopClientAuth({ children }: { children: React.ReactNode }) {
@@ -19,6 +20,7 @@ export function WhopClientAuth({ children }: { children: React.ReactNode }) {
     isStudent: false,
     role: 'unknown',
     companyId: '',
+    error: null,
   });
 
   useEffect(() => {
@@ -96,6 +98,15 @@ export function WhopClientAuth({ children }: { children: React.ReactNode }) {
               companyId: companyId,
             });
           } else {
+            // Check if the error is about app not being installed
+            const errorMessage = data.details || data.error || '';
+            const isAppNotInstalled = errorMessage.includes('install the app on this company');
+            
+            if (isAppNotInstalled) {
+              console.error('❌ [WhopClientAuth] APP NOT INSTALLED on this company!');
+              console.error('❌ [WhopClientAuth] Please install the app on company:', companyId);
+            }
+            
             console.log('👤 [WhopClientAuth] Setting STUDENT access for company:', companyId);
             setAccessState({
               loading: false,
