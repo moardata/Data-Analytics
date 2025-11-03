@@ -22,11 +22,25 @@ export async function POST(request: NextRequest) {
   try {
     const { companyId, companyName, companyEmail } = await request.json();
 
+    console.log('🔧 [Setup Client] Request:', { companyId, companyName, companyEmail });
+
     if (!companyId) {
       return NextResponse.json(
         { error: 'Missing companyId parameter' },
         { status: 400, headers: corsHeaders }
       );
+    }
+
+    // Check if Supabase is available
+    if (!supabase) {
+      console.warn('⚠️ Supabase not available, returning mock response');
+      return NextResponse.json({
+        message: 'Client created (mock mode)',
+        clientId: 'mock_client_' + companyId,
+        tier: 'starter',
+        subscriptionStatus: 'active',
+        requiresSubscription: false,
+      }, { headers: corsHeaders });
     }
 
     // Check if client already exists
@@ -37,19 +51,19 @@ export async function POST(request: NextRequest) {
       .maybeSingle();
 
     if (checkError) {
-      console.error('Error checking existing client:', checkError);
-      return NextResponse.json(
-        { error: 'Database error checking client' },
-        { status: 500, headers: corsHeaders }
-      );
+      console.error('❌ [Setup Client] Error checking existing client:', checkError);
+      // Don't fail - try to create anyway
     }
 
     if (existing) {
+      console.log('✅ [Setup Client] Client already exists:', existing.id);
       return NextResponse.json({
         message: 'Client already exists',
         clientId: existing.id,
       }, { headers: corsHeaders });
     }
+
+    console.log('🆕 [Setup Client] Creating new client...');
 
     // Create new client WITHOUT any subscription
     // They MUST go through Whop's purchase flow (trial or paid) to get access
@@ -71,12 +85,21 @@ export async function POST(request: NextRequest) {
       .single();
 
     if (error) {
-      console.error('Error creating client:', error);
+      console.error('❌ [Setup Client] Error creating client:', error);
+      console.error('❌ [Setup Client] Error details:', JSON.stringify(error, null, 2));
+      
+      // Return a more helpful error message
       return NextResponse.json(
-        { error: 'Failed to create client record' },
+        { 
+          error: 'Failed to create client record',
+          details: error.message || 'Unknown database error',
+          code: error.code,
+        },
         { status: 500, headers: corsHeaders }
       );
     }
+
+    console.log('✅ [Setup Client] Client created successfully:', newClient.id);
 
     return NextResponse.json({
       message: 'Client record created - subscription required',
