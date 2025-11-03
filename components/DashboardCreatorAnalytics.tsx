@@ -211,7 +211,8 @@ export default function DashboardCreatorAnalytics({
         
         if (response.ok) {
           const data = await response.json();
-          setActualClientId(data.clientId);
+          // If no clientId found, use companyId as fallback
+          setActualClientId(data.clientId || companyIdOrClientId);
         } else {
           console.error('❌ Failed to lookup client ID');
           // Fallback: try using the companyId directly

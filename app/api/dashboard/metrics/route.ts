@@ -39,6 +39,20 @@ export async function GET(request: NextRequest) {
       );
     }
 
+    // If clientId is not a UUID (it's a companyId like biz_xxx), return empty metrics
+    // This happens when there's no client record yet
+    if (!clientId.includes('-')) {
+      console.warn(`⚠️ [Dashboard] Non-UUID clientId received (${clientId}) - returning empty metrics`);
+      return NextResponse.json({
+        engagementConsistency: { averageScore: 0, distribution: { high: 0, medium: 0, low: 0 }, trend: '0%', studentScores: [] },
+        ahaMoments: { topExperiences: [], avgTimeToFirstBreakthrough: 'N/A', stagnantStudents: 0, stagnantStudentsList: [] },
+        contentPathways: { topPathways: [], deadEnds: [], powerCombinations: [] },
+        popularContent: { content: [], totalEngagements: 0, totalUniqueStudents: 0, lastUpdated: new Date().toISOString() },
+        feedbackThemes: { hasData: false, themes: [], totalSubmissions: 0, lastUpdated: new Date().toISOString(), ctaMessage: 'No feedback data available' },
+        commitmentScores: { averageScore: 0, distribution: { high: 0, medium: 0, atRisk: 0 }, atRiskStudents: [], totalStudents: 0 },
+        metadata: { clientId, generatedAt: new Date().toISOString(), cacheStatus: {} }
+      });
+    }
 
     const days = getTimeRangeDays(timeRange);
 
