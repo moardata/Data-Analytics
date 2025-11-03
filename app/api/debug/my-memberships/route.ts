@@ -58,7 +58,6 @@ export async function GET(request: NextRequest) {
         user_id: m.user?.id || m.user_id,
         is_you: (m.user?.id === userId || m.user_id === userId),
         status: m.status,
-        valid: m.valid,
         plan_id: m.plan?.id || m.plan_id,
         plan_name: m.plan?.name || 'Unknown',
         created_at: m.created_at,
@@ -72,7 +71,6 @@ export async function GET(request: NextRequest) {
         yourMembership: userMembership ? {
           id: userMembership.id,
           status: userMembership.status,
-          valid: userMembership.valid,
           plan_id: userMembership.plan?.id || userMembership.plan_id,
           plan_name: userMembership.plan?.name || 'Unknown',
         } : null,
