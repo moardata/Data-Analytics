@@ -30,6 +30,24 @@ export function WhopClientAuth({ children }: { children: React.ReactNode }) {
           return;
         }
 
+        // Check if we're on a public route (accessible to everyone)
+        const publicRoutes = ['/upgrade', '/setup'];
+        const currentPath = window.location.pathname;
+        const isPublicRoute = publicRoutes.some(route => currentPath.startsWith(route));
+        
+        if (isPublicRoute) {
+          console.log('🌍 [WhopClientAuth] Public route detected:', currentPath);
+          console.log('🌍 [WhopClientAuth] Skipping auth check - allowing access to everyone');
+          setAccessState({
+            loading: false,
+            isOwner: true, // Grant owner access for public routes
+            isStudent: false,
+            role: 'public',
+            companyId: '',
+          });
+          return;
+        }
+
         // Get company ID from URL with multiple extraction methods
         const params = new URLSearchParams(window.location.search);
         const companyId = params.get('companyId') || 
