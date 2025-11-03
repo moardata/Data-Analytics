@@ -310,6 +310,18 @@ function FormsContent() {
     );
   }
 
+  // Loading State
+  if (userRole === 'loading') {
+    return (
+      <div className="min-h-screen bg-gradient-to-b from-[#0a0a0a] to-[#0f0f0f] flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#10B981] mx-auto mb-4"></div>
+          <p className="text-[#A1A1AA]">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
   // Student Interface
   if (userRole === 'student') {
     const totalSurveys = forms.length;
