@@ -116,6 +116,34 @@ export async function GET(request: NextRequest) {
         console.error('❌ [Check Owner] Error message:', errorMessage);
         console.error('❌ [Check Owner] Full error:', errorDetails);
         
+        // Check if this is the "app not installed" error
+        // This happens when the API key doesn't have permission to query that company
+        // OR when the app permissions haven't been granted on that company
+        const isAppPermissionError = errorMessage.includes('install the app on this company') ||
+                                     errorMessage.includes('cannot check access');
+        
+        if (isAppPermissionError) {
+          console.error('⚠️ [Check Owner] App permission issue detected for company:', companyId);
+          console.error('⚠️ [Check Owner] This usually means:');
+          console.error('   1. App permissions need to be granted on this company in Whop dashboard');
+          console.error('   2. API key may not have permissions for this company');
+          console.error('   3. There may be a delay in Whop recognizing the installation');
+          
+          // For this specific error, we'll be more lenient in production
+          // since it's likely a configuration issue, not an authentication failure
+          // But we'll still default to student mode for security
+          return NextResponse.json({ 
+            isOwner: false,
+            userId: userId.substring(0, 10) + '...',
+            companyId,
+            method: 'app_permission_error',
+            temporary: true,
+            error: 'App permissions issue',
+            details: 'The app may not have proper permissions on this company. Please check app permissions in Whop dashboard.',
+            needsPermissions: true
+          });
+        }
+        
         // SECURITY FIX: Default to DENY (student mode) if we can't verify ownership
         // Only grant access in development mode for easier testing
         const isDev = process.env.NODE_ENV === 'development';
