@@ -163,12 +163,12 @@ export default function SystemHealthDashboard({ companyId }: SystemHealthDashboa
           <div>
             <h3 className="text-lg font-medium text-[#F8FAFC] mb-2">System Running Smoothly</h3>
             <p className="text-[#A1A1AA] mb-2">
-              Your analytics system is active and collecting data. Health metrics will display once you have:
+              Your analytics system is ready. Import your members from Whop to start collecting data.
             </p>
             <ul className="text-left text-sm text-[#A1A1AA] max-w-md mx-auto space-y-1">
-              <li>✓ Form submissions (You have 27 ✅)</li>
-              <li>✓ Student activity (You have 43 students ✅)</li>
-              <li>• AI insights generated (Generate these first)</li>
+              <li>• Import members from Whop</li>
+              <li>• Create custom forms for feedback</li>
+              <li>• Generate AI insights from collected data</li>
             </ul>
           </div>
           <Button 
