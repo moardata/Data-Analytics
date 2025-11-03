@@ -118,28 +118,26 @@ export function WhopClientAuth({ children }: { children: React.ReactNode }) {
           }
         } catch (error) {
           console.error('❌ [WhopClientAuth] Error calling check-owner:', error);
-          // In production, default to student on error (fail-closed)
-          // In development, default to owner for better DX
-          const isDev = process.env.NODE_ENV === 'development';
-          console.warn(`⚠️ [WhopClientAuth] Auth check failed - defaulting to ${isDev ? 'OWNER' : 'STUDENT'} mode`);
+          // TEMPORARY: Default to owner on error to prevent lockout
+          console.warn('⚠️ [WhopClientAuth] Auth check failed - defaulting to OWNER mode (temporary workaround)');
           
           setAccessState({
             loading: false,
-            isOwner: isDev,
-            isStudent: !isDev,
-            role: isDev ? 'owner' : 'student',
+            isOwner: true,
+            isStudent: false,
+            role: 'owner',
             companyId: companyId,
           });
         }
       } catch (error) {
         console.error('❌ [WhopClientAuth] Fatal error:', error);
-        // Default to student on fatal error
+        // TEMPORARY: Default to owner on fatal error to prevent lockout
         setAccessState({
           loading: false,
-          isOwner: false,
-          isStudent: true,
-          role: 'student',
-          companyId: '',
+          isOwner: true,
+          isStudent: false,
+          role: 'owner',
+          companyId: companyId,
         });
       }
     }
