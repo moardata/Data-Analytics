@@ -56,7 +56,7 @@ export function WhopClientAuth({ children }: { children: React.ReactNode }) {
         try {
           const debugResponse = await fetch('/api/debug/headers');
           const debugData = await debugResponse.json();
-          console.log('🔧 [WhopClientAuth] Debug headers:', debugData);
+          console.log('🔧 [WhopClientAuth] Debug headers:', JSON.stringify(debugData, null, 2));
         } catch (debugError) {
           console.error('⚠️ [WhopClientAuth] Debug endpoint error:', debugError);
         }
@@ -65,7 +65,8 @@ export function WhopClientAuth({ children }: { children: React.ReactNode }) {
         try {
           const diagnosticResponse = await fetch(`/api/auth/diagnose?companyId=${companyId}`);
           const diagnosticData = await diagnosticResponse.json();
-          console.log('🔬 [WhopClientAuth] Full diagnostics:', diagnosticData);
+          console.log('🔬 [WhopClientAuth] Full diagnostics:');
+          console.log(JSON.stringify(diagnosticData, null, 2));
         } catch (diagError) {
           console.error('⚠️ [WhopClientAuth] Diagnostic endpoint error:', diagError);
         }
@@ -76,7 +77,8 @@ export function WhopClientAuth({ children }: { children: React.ReactNode }) {
           const response = await fetch(`/api/auth/check-owner?companyId=${companyId}`);
           const data = await response.json();
           
-          console.log('📋 [WhopClientAuth] Check-owner response:', data);
+          console.log('📋 [WhopClientAuth] Check-owner response:');
+          console.log(JSON.stringify(data, null, 2));
           
           // Check if this is a temporary/fallback response
           if (data.temporary) {
