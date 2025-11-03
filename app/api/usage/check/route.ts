@@ -39,6 +39,7 @@ export async function GET(request: NextRequest) {
       .maybeSingle();
     
     console.log('📊 [Usage Check] Database response:', { clientData, clientError });
+    console.log('📊 [Usage Check] clientData details:', JSON.stringify(clientData, null, 2));
 
     if (clientError) {
       console.error('Error fetching client:', clientError);
@@ -50,6 +51,7 @@ export async function GET(request: NextRequest) {
 
     if (!clientData) {
       // No client record = no subscription
+      console.log('❌ [Usage Check] No clientData found - returning null tier');
       return NextResponse.json({
         tier: null,
         hasAccess: false,
@@ -67,8 +69,11 @@ export async function GET(request: NextRequest) {
       clientData.subscription_status === 'trialing' || 
       hasValidTier;  // ✅ FALLBACK: If tier is set, they have access!
 
+    console.log('🔍 [Usage Check] hasValidTier:', hasValidTier, 'isActive:', isActive, 'current_tier:', clientData.current_tier);
+
     // If no active subscription AND no valid tier, return no access
     if (!isActive || !clientData.current_tier) {
+      console.log('❌ [Usage Check] Returning null - isActive:', isActive, 'current_tier:', clientData.current_tier);
       return NextResponse.json({
         tier: null,
         hasAccess: false,
@@ -79,6 +84,8 @@ export async function GET(request: NextRequest) {
 
     const tierName = clientData.current_tier as TierName;
     const tierInfo = getTier(tierName);
+
+    console.log('✅ [Usage Check] Returning tier:', tierName, 'isActive:', isActive);
 
     // Build response
     const response: any = {
