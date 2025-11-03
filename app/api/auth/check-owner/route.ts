@@ -76,6 +76,8 @@ export async function GET(request: NextRequest) {
       try {
         console.log('🔐 [Check Owner] Calling whopClient.users.checkAccess...');
         console.log('🔐 [Check Owner] Parameters:', { companyId, userId });
+        console.log('🔐 [Check Owner] Using App ID:', process.env.NEXT_PUBLIC_WHOP_APP_ID);
+        console.log('🔐 [Check Owner] API Key present:', !!process.env.WHOP_API_KEY);
         
         const accessCheck = await whopClient.users.checkAccess(companyId, {
           id: userId,
