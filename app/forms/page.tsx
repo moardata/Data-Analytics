@@ -318,31 +318,43 @@ function FormsContent() {
 
     return (
       <div className="min-h-screen bg-gradient-to-b from-[#0a0a0a] to-[#0f0f0f] p-8">
-        <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-8">
-            <h1 className="text-3xl font-bold text-[#F8FAFC] mb-2">
-              Available Surveys
-            </h1>
-            <p className="text-[#A1A1AA]">
-              Complete surveys to share your feedback and help improve the experience.
-            </p>
+        <div className="max-w-6xl mx-auto space-y-6">
+          {/* Header */}
+          <div className="rounded-2xl border border-[#1a1a1a]/70 bg-gradient-to-br from-[#0f0f0f] via-[#1a1a1a] to-[#0f0f0f] p-6 relative overflow-hidden">
+            {/* Metallic sheen overlay */}
+            <div className="pointer-events-none absolute inset-0 opacity-40">
+              <div className="absolute inset-0 bg-gradient-to-b from-white/4 via-transparent to-transparent" />
+            </div>
+            <div className="relative z-10 text-center">
+              <h1 className="text-3xl font-bold text-[#F8FAFC] mb-2">
+                Available Surveys
+              </h1>
+              <div className="w-16 h-1 bg-gradient-to-r from-[#10B981] to-[#10B981]/50 rounded-full mx-auto mb-3"></div>
+              <p className="text-[#A1A1AA]">
+                Complete surveys to share your feedback and help improve the experience.
+              </p>
+            </div>
           </div>
 
           {/* Completion Progress Bar */}
           {totalSurveys > 0 && (
-            <Card className="border border-[#1a1a1a] bg-[#0f0f0f] shadow-lg mb-8">
-              <CardContent className="p-6">
+            <Card className="relative overflow-hidden border border-[#1a1a1a]/70 bg-gradient-to-br from-[#0f0f0f] via-[#1a1a1a] to-[#0f0f0f] shadow-lg">
+              {/* Metallic sheen overlay */}
+              <div className="pointer-events-none absolute inset-0 opacity-30">
+                <div className="absolute inset-0 bg-gradient-to-b from-white/5 via-transparent to-transparent" />
+              </div>
+              <CardContent className="p-6 relative z-10">
                 <div className="flex items-center justify-between mb-3">
                   <div className="flex items-center gap-3">
-                    <div className={`w-12 h-12 rounded-full flex items-center justify-center ${
+                    <div className={`w-12 h-12 rounded-2xl flex items-center justify-center shadow-lg ${
                       completedCount === totalSurveys 
-                        ? 'bg-[#10B981] shadow-[0_0_20px_rgba(16,185,129,0.4)]' 
-                        : 'bg-[#10B981]/20'
+                        ? 'bg-gradient-to-br from-emerald-500 to-emerald-600 shadow-[#10B981]/30' 
+                        : 'bg-gradient-to-br from-emerald-500/20 to-emerald-500/5 shadow-emerald-500/10'
                     }`}>
                       {completedCount === totalSurveys ? (
                         <CheckCircle className="h-6 w-6 text-white" />
                       ) : (
-                        <FileText className="h-6 w-6 text-[#10B981]" />
+                        <FileText className="h-6 w-6 text-emerald-400" />
                       )}
                     </div>
                     <div>
@@ -374,7 +386,7 @@ function FormsContent() {
 
                 {/* Completion Message */}
                 {completedCount === totalSurveys && totalSurveys > 0 && (
-                  <div className="mt-4 bg-[#10B981]/10 border border-[#10B981]/30 rounded-lg p-4 text-center">
+                  <div className="mt-4 bg-gradient-to-br from-[#10B981]/10 to-[#0E9F71]/5 border border-[#10B981]/30 rounded-xl p-4 text-center shadow-lg shadow-[#10B981]/5">
                     <p className="text-[#10B981] font-bold text-lg">
                       🎊 Amazing! You've completed all available surveys! 🎊
                     </p>
@@ -388,28 +400,38 @@ function FormsContent() {
           )}
 
           {forms.length === 0 ? (
-            <div className="bg-[#0f0f0f] border border-[#1a1a1a] rounded-2xl p-8 text-center">
-              <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-[#0B2C24] flex items-center justify-center">
-                <FileText className="h-8 w-8 text-[#A1A1AA]" />
+            <div className="relative overflow-hidden bg-gradient-to-br from-[#0f0f0f] via-[#1a1a1a] to-[#0f0f0f] border border-[#1a1a1a]/70 rounded-2xl p-8 text-center">
+              {/* Metallic sheen overlay */}
+              <div className="pointer-events-none absolute inset-0 opacity-30">
+                <div className="absolute inset-0 bg-gradient-to-b from-white/5 via-transparent to-transparent" />
               </div>
-              <h3 className="text-lg font-semibold text-[#F8FAFC] mb-2">
-                No Surveys Available
-              </h3>
-              <p className="text-[#A1A1AA] text-sm">
-                There are currently no surveys available. Check back later!
-              </p>
+              <div className="relative z-10">
+                <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-gradient-to-br from-emerald-500/20 to-emerald-500/5 flex items-center justify-center shadow-lg shadow-emerald-500/10">
+                  <FileText className="h-8 w-8 text-emerald-400" />
+                </div>
+                <h3 className="text-lg font-semibold text-[#F8FAFC] mb-2">
+                  No Surveys Available
+                </h3>
+                <p className="text-[#A1A1AA] text-sm">
+                  There are currently no surveys available. Check back later!
+                </p>
+              </div>
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {forms.map((form) => {
                 const isCompleted = completedForms.includes(form.id);
                 return (
-                <Card key={form.id} className={`border shadow-lg hover:shadow-xl transition-all duration-300 group ${
+                <Card key={form.id} className={`relative overflow-hidden border shadow-lg hover:shadow-xl transition-all duration-300 group ${
                   isCompleted 
-                    ? 'border-[#10B981] bg-[#10B981]/5' 
-                    : 'border-[#1a1a1a] bg-[#0f0f0f] hover:border-[#10B981]/30'
+                    ? 'border-[#10B981] bg-gradient-to-br from-[#10B981]/10 via-[#1a1a1a] to-[#0f0f0f]' 
+                    : 'border-[#1a1a1a]/70 bg-gradient-to-br from-[#0f0f0f] via-[#1a1a1a] to-[#0f0f0f] hover:border-[#10B981]/30 hover:shadow-[#10B981]/10'
                 }`}>
-                  <CardHeader className="pb-3">
+                  {/* Metallic sheen overlay */}
+                  <div className="pointer-events-none absolute inset-0 opacity-30">
+                    <div className="absolute inset-0 bg-gradient-to-b from-white/5 via-transparent to-transparent" />
+                  </div>
+                  <CardHeader className="pb-3 relative z-10">
                     <div className="flex items-center justify-between mb-2">
                       <CardTitle className="text-[#F8FAFC] flex items-center gap-2 group-hover:text-[#10B981] transition-colors">
                         <FileText className="h-5 w-5 text-[#10B981]" />
@@ -422,12 +444,12 @@ function FormsContent() {
                         </Badge>
                       )}
                     </div>
-                    <CardDescription className="text-[#A1A1AA] group-hover:text-[#F8FAFC] transition-colors">
+                    <CardDescription className="text-[#A1A1AA] group-hover:text-[#E2E8F0] transition-colors">
                       {form.description || 'No description'}
                     </CardDescription>
                   </CardHeader>
-                  <CardContent className="space-y-4">
-                    <div className="flex items-center gap-2 text-sm text-[#A1A1AA] group-hover:text-[#F8FAFC] transition-colors">
+                  <CardContent className="space-y-4 relative z-10">
+                    <div className="flex items-center gap-2 text-sm text-[#A1A1AA] group-hover:text-[#E2E8F0] transition-colors">
                       <CheckCircle className="h-4 w-4 text-[#10B981]" />
                       {form.fields?.length || 0} fields
                     </div>
@@ -445,7 +467,7 @@ function FormsContent() {
                       <Button 
                         onClick={() => setSelectedForm(form)}
                         disabled={isCompleted}
-                        className={`w-full gap-2 font-medium py-3 px-6 rounded-lg transition-all duration-200 ${
+                        className={`w-full gap-2 font-medium py-3 px-6 rounded-xl transition-all duration-200 ${
                           isCompleted
                             ? 'bg-[#3F3F46] text-[#A1A1AA] opacity-60 cursor-not-allowed'
                             : 'border border-[#10B981]/30 bg-[#0B2C24] hover:bg-[#0E3A2F] text-[#10B981] hover:text-[#34D399]'
@@ -461,7 +483,7 @@ function FormsContent() {
                           window.open(`/forms/public/${form.id}?companyId=${clientId}`, '_blank');
                         }}
                         variant="outline"
-                        className="w-full gap-2 bg-transparent hover:bg-[#0B2C24] text-[#A1A1AA] hover:text-white border border-[#3A4047] hover:border-[#10B981]/30 transition-all duration-200"
+                        className="w-full gap-2 bg-[#0a0a0a]/80 hover:bg-[#1a1a1a] text-[#A1A1AA] hover:text-white border border-[#1a1a1a] hover:border-[#10B981]/30 transition-all duration-200 rounded-xl"
                       >
                         <Eye className="h-4 w-4" />
                         Preview Form
