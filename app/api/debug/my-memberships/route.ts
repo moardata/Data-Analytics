@@ -25,36 +25,58 @@ export async function GET(request: NextRequest) {
 
     console.log('🔍 [Debug Memberships] Checking memberships for user:', userId);
 
-    // Try to fetch user's memberships
+    // Get the company ID from query params
+    const { searchParams } = new URL(request.url);
+    const companyId = searchParams.get('companyId');
+
+    if (!companyId) {
+      return NextResponse.json({
+        error: 'companyId required',
+        usage: 'Call with ?companyId=biz_XXX'
+      }, { status: 400 });
+    }
+
+    // Try to fetch memberships for this company
     try {
-      // Get all memberships for this user
+      // Get all memberships for this company
       const membershipsResult = await whopClient.memberships.list({
-        user_id: userId,
+        company_id: companyId,
       });
 
       const memberships = membershipsResult.data || [];
       
-      console.log(`📊 [Debug Memberships] Found ${memberships.length} memberships`);
+      console.log(`📊 [Debug Memberships] Found ${memberships.length} memberships for company ${companyId}`);
       
-      // Format the response
+      // Filter to find this user's membership
+      const userMembership = memberships.find((m: any) => 
+        m.user?.id === userId || m.user_id === userId
+      );
+      
+      // Format all memberships
       const formattedMemberships = memberships.map((m: any) => ({
         id: m.id,
+        user_id: m.user?.id || m.user_id,
+        is_you: (m.user?.id === userId || m.user_id === userId),
         status: m.status,
         valid: m.valid,
         plan_id: m.plan?.id || m.plan_id,
         plan_name: m.plan?.name || 'Unknown',
-        company_id: m.company?.id || m.company_id,
-        company_name: m.company?.name || 'Unknown',
         created_at: m.created_at,
         expires_at: m.expires_at,
-        access_pass: m.access_pass,
       }));
 
       return NextResponse.json({
         userId,
+        companyId,
         totalMemberships: memberships.length,
-        memberships: formattedMemberships,
-        raw: memberships, // Include raw data for debugging
+        yourMembership: userMembership ? {
+          id: userMembership.id,
+          status: userMembership.status,
+          valid: userMembership.valid,
+          plan_id: userMembership.plan?.id || userMembership.plan_id,
+          plan_name: userMembership.plan?.name || 'Unknown',
+        } : null,
+        allMemberships: formattedMemberships,
       });
 
     } catch (apiError: any) {
