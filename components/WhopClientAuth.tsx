@@ -25,6 +25,9 @@ export function WhopClientAuth({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     async function checkAccess() {
+      // Declare companyId outside try block so it's available in catch blocks
+      let companyId = '';
+      
       try {
         // Safety check for window object
         if (typeof window === 'undefined') {
@@ -34,10 +37,10 @@ export function WhopClientAuth({ children }: { children: React.ReactNode }) {
 
         // Get company ID from URL with multiple extraction methods
         const params = new URLSearchParams(window.location.search);
-        const companyId = params.get('companyId') || 
-                         params.get('company_id') ||
-                         window.location.pathname.split('/').find(part => part.startsWith('biz_')) || 
-                         '';
+        companyId = params.get('companyId') || 
+                    params.get('company_id') ||
+                    window.location.pathname.split('/').find(part => part.startsWith('biz_')) || 
+                    '';
 
         console.log('🔍 [WhopClientAuth] Extracted company ID:', companyId);
         console.log('🔍 [WhopClientAuth] Full URL:', window.location.href);
