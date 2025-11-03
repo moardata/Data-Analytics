@@ -69,12 +69,13 @@ export async function GET(request: NextRequest) {
         companyId,
         totalMemberships: memberships.length,
         yourMembership: userMembership ? {
-          id: userMembership.id,
-          status: userMembership.status,
-          plan_id: userMembership.plan?.id || userMembership.plan_id,
-          plan_name: userMembership.plan?.name || 'Unknown',
+          id: (userMembership as any).id,
+          status: (userMembership as any).status,
+          plan_id: (userMembership as any).plan?.id,
+          plan_name: (userMembership as any).plan?.name || 'Unknown',
         } : null,
         allMemberships: formattedMemberships,
+        rawMemberships: memberships, // Include raw data for complete info
       });
 
     } catch (apiError: any) {
