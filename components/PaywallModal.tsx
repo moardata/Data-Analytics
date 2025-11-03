@@ -235,7 +235,7 @@ export function PaywallModal({ isOpen, onClose, reason }: PaywallModalProps) {
                 {/* Link to see other plans */}
                 <div className="text-center">
                   <a
-                    href="/upgrade"
+                    href={companyId ? `/upgrade?companyId=${companyId}` : '/upgrade'}
                     className="text-xs text-[#A1A1AA] hover:text-[#F8FAFC] transition-colors underline"
                   >
                     View all plans and pricing
