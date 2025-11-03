@@ -339,10 +339,7 @@ function AnalyticsContent() {
     );
   }
 
-  if (!dashboardData) {
-    return null;
-  }
-
+  // Always render dashboard, even with empty data
   return (
     <div className="min-h-screen bg-gradient-to-b from-[#0a0a0a] to-[#0f0f0f]">
       <div className="max-w-[1600px] mx-auto p-6">
