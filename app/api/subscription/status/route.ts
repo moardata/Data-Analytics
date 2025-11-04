@@ -67,24 +67,20 @@ export async function GET(request: NextRequest) {
       });
     }
 
-    // Check if subscription is active OR has valid tier
-    // FIXED: Removed trial_ends_at dependency (PostgREST cache issue)
-    // We rely on tier-based access and subscription_status instead
+    // FIXED: If they have ANY tier (including 'starter'), they have access!
     const hasValidTier = client.current_tier && client.current_tier !== 'none' && client.current_tier !== null;
     
-    const hasAccess = 
-      client.subscription_status === 'active' ||
-      client.subscription_status === 'trialing' ||
-      hasValidTier;  // ✅ FALLBACK: If tier is set, they have access!
+    console.log(`🔍 [Subscription Status] Company: ${companyId}, Status: ${client.subscription_status}, Tier: ${client.current_tier}, HasValidTier: ${hasValidTier}`);
 
-    console.log(`🔍 [Subscription Status] Company: ${companyId}, Status: ${client.subscription_status}, Tier: ${client.current_tier}, HasAccess: ${hasAccess}, hasValidTier: ${hasValidTier}`);
+    // Grant access if they have a valid tier
+    const hasAccess = hasValidTier;
 
     return NextResponse.json({
       hasAccess,
       currentTier: client.current_tier || null,
       subscriptionStatus: client.subscription_status || 'none',
       planId: client.whop_plan_id,
-      reason: hasAccess ? 'active_subscription' : 'no_active_subscription'
+      reason: hasAccess ? 'has_tier' : 'no_tier'
     });
 
   } catch (error) {

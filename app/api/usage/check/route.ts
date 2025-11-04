@@ -61,41 +61,37 @@ export async function GET(request: NextRequest) {
     }
 
     // Check if subscription is active
-    // FIXED: Removed trial_ends_at dependency (PostgREST cache issue)
+    // FIXED: If they have ANY tier (including 'starter'), they have access!
     const hasValidTier = clientData.current_tier && clientData.current_tier !== 'none' && clientData.current_tier !== null;
     
-    const isActive = 
-      clientData.subscription_status === 'active' || 
-      clientData.subscription_status === 'trialing' || 
-      hasValidTier;  // ✅ FALLBACK: If tier is set, they have access!
+    console.log('🔍 [Usage Check] hasValidTier:', hasValidTier, 'current_tier:', clientData.current_tier, 'subscription_status:', clientData.subscription_status);
 
-    console.log('🔍 [Usage Check] hasValidTier:', hasValidTier, 'isActive:', isActive, 'current_tier:', clientData.current_tier);
-
-    // If no active subscription AND no valid tier, return no access
-    if (!isActive || !clientData.current_tier) {
-      console.log('❌ [Usage Check] Returning null - isActive:', isActive, 'current_tier:', clientData.current_tier);
+    // FIXED: If they have a valid tier, grant access regardless of subscription_status
+    if (!hasValidTier) {
+      console.log('❌ [Usage Check] No valid tier - BLOCKING ACCESS');
       return NextResponse.json({
         tier: null,
         hasAccess: false,
         subscriptionStatus: clientData.subscription_status || 'none',
-        message: 'No active subscription'
+        message: 'No subscription found'
       });
     }
 
     const tierName = clientData.current_tier as TierName;
     const tierInfo = getTier(tierName);
 
-    console.log('✅ [Usage Check] Returning tier:', tierName, 'isActive:', isActive);
+    console.log('✅ [Usage Check] GRANTING ACCESS - Tier:', tierName);
 
     // Build response
     const response: any = {
       tier: tierName,
+      hasAccess: true,
       tierInfo: {
         displayName: tierInfo.displayName,
         limits: tierInfo.limits,
         features: tierInfo.features,
       },
-      isActive,
+      isActive: true,
     };
 
     // If specific action requested, check if allowed
