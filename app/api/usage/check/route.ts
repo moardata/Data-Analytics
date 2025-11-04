@@ -30,6 +30,16 @@ export async function GET(request: NextRequest) {
 
     console.log('📡 [Usage Check] Querying database for client...');
 
+    // Set RLS session variables so the query can bypass RLS policies
+    await supabase.rpc('set_config', { 
+      setting_name: 'app.tenant_id', 
+      setting_value: companyId 
+    });
+    await supabase.rpc('set_config', { 
+      setting_name: 'app.role', 
+      setting_value: 'owner' 
+    });
+
     // Get client record
     // FIXED: Removed trial_ends_at from SELECT due to PostgREST cache issue
     const { data: clientData, error: clientError} = await supabase

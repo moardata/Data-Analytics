@@ -40,6 +40,17 @@ export async function GET(request: NextRequest) {
     // FIXED: Removed trial_ends_at from SELECT due to PostgREST cache issue
     // We don't need it since we use tier-based access fallback
     console.log('🔍 [Subscription Status] Querying for companyId:', companyId);
+    
+    // Set RLS session variables so the query can bypass RLS policies
+    await supabase.rpc('set_config', { 
+      setting_name: 'app.tenant_id', 
+      setting_value: companyId 
+    });
+    await supabase.rpc('set_config', { 
+      setting_name: 'app.role', 
+      setting_value: 'owner' 
+    });
+    
     const { data: client, error } = await supabase
       .from('clients')
       .select('id, current_tier, subscription_status, whop_plan_id')
