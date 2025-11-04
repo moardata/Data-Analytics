@@ -4,8 +4,13 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
+import { createClient } from '@supabase/supabase-js';
 import { getTier, canPerformAction, canAccessMetric, type TierName } from '@/lib/pricing/tiers';
-import { supabaseServer as supabase } from '@/lib/supabase-server';
+
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+);
 
 export async function GET(request: NextRequest) {
   try {
