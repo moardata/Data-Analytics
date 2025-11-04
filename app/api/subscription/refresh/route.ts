@@ -22,13 +22,49 @@ export async function POST(request: NextRequest) {
 
     console.log(`🔄 [Refresh] Manually refreshing subscription for: ${companyId}`);
 
+    // Get user token to also check their personal memberships
+    const userToken = request.headers.get('x-whop-user-token');
+
     // Fetch active memberships from Whop
     let activeMemberships: any[] = [];
     try {
+      // First, check company memberships
       const membershipsResult = await whopSdk.client.memberships.list({
         company_id: companyId,
       });
-      const allMemberships = membershipsResult.data || [];
+      let allMemberships = membershipsResult.data || [];
+      
+      console.log(`📊 [Refresh] Company ${companyId}: ${allMemberships.length} memberships`);
+      
+      // ALSO check authenticated user's personal memberships using /me/memberships endpoint
+      if (userToken) {
+        try {
+          const userMembershipsResponse = await fetch('https://api.whop.com/api/v5/me/memberships', {
+            headers: {
+              'Authorization': `Bearer ${userToken}`,
+              'Content-Type': 'application/json',
+            }
+          });
+          
+          if (userMembershipsResponse.ok) {
+            const userMembershipsData = await userMembershipsResponse.json();
+            const userMemberships = userMembershipsData.data || [];
+            console.log(`👤 [Refresh] User personal memberships: ${userMemberships.length}`);
+            
+            if (userMemberships.length > 0) {
+              console.log(`📦 [Refresh] First user membership:`, JSON.stringify(userMemberships[0], null, 2));
+            }
+            
+            // Combine company and user memberships
+            allMemberships = [...allMemberships, ...userMemberships];
+            console.log(`📦 [Refresh] Total combined: ${allMemberships.length} memberships`);
+          } else {
+            console.warn(`⚠️ [Refresh] User memberships API returned ${userMembershipsResponse.status}`);
+          }
+        } catch (userErr) {
+          console.warn(`⚠️ [Refresh] Could not fetch user memberships:`, userErr);
+        }
+      }
       
       console.log(`📊 [Refresh] Whop API returned ${allMemberships.length} total memberships`);
       if (allMemberships.length > 0) {
