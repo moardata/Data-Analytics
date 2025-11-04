@@ -29,8 +29,10 @@ export async function POST(request: NextRequest) {
     if (userToken) {
       try {
         const decoded = await whopSdk.verifyUserToken(userToken);
-        userId = decoded.userId;
-        console.log(`👤 [Refresh] Authenticated user: ${userId}`);
+        userId = decoded.userId || null;
+        if (userId) {
+          console.log(`👤 [Refresh] Authenticated user: ${userId}`);
+        }
       } catch (e) {
         console.warn(`⚠️ [Refresh] Could not decode user token`);
       }
