@@ -46,7 +46,7 @@ function SettingsContent() {
   };
 
   const handleToggle = (setting: string, value: boolean) => {
-    if (typeof window === 'undefined') {
+    if (typeof window !== 'undefined') {
       localStorage.setItem(setting, String(value));
     }
     
