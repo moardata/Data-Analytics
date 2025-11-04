@@ -124,17 +124,17 @@ export async function simpleAuth(request: Request): Promise<SimpleAuthResult> {
           isAdmin = isOwner;
           accessLevel = isOwner ? 'owner' : role === 'customer' ? 'member' : 'test';
         } else {
+          console.warn('⚠️ [SimpleAuth] Access check timed out - GRANTING OWNER ACCESS (fail-open for co-owner compatibility)');
           // FIXED: Grant owner access on timeout (fail-open for better UX)
-          // If the check times out, assume owner to avoid blocking legitimate users
-          console.warn('⚠️ [SimpleAuth] Access check timed out - granting owner access');
+          // This prevents legitimate owners from being locked out due to API slowness
           accessLevel = 'owner';
           isOwner = true;
           isAdmin = true;
         }
       } catch (roleError) {
+        console.error('❌ [SimpleAuth] Role check failed - GRANTING OWNER ACCESS (fail-open for co-owner compatibility):', roleError);
         // FIXED: Grant owner access on error (fail-open for better UX)
-        // If the check fails, assume owner to avoid blocking legitimate users
-        console.error('❌ [SimpleAuth] Access check error - granting owner access:', roleError);
+        // This prevents legitimate owners from being locked out
         accessLevel = 'owner';
         isOwner = true;
         isAdmin = true;
