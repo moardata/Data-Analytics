@@ -103,6 +103,7 @@ export async function POST(request: NextRequest) {
     let highestBundle = 'none';
     let planId: string | null = null;
     let subscriptionStatus = 'none';
+    let trialEndsAt: string | null = null;
 
     if (activeMemberships.length > 0) {
       const tierPriority = { scale: 4, pro: 3, growth: 2, starter: 1 };
@@ -115,7 +116,10 @@ export async function POST(request: NextRequest) {
           id: membership.id,
           status: membership.status,
           plan_id: membershipPlanId,
-          plan_object: membership.plan
+          plan_object: membership.plan,
+          expires_at: membership.expires_at,
+          valid_until: membership.valid_until,
+          renewal_period_end: membership.renewal_period_end
         });
         
         if (membershipPlanId) {
@@ -129,6 +133,10 @@ export async function POST(request: NextRequest) {
               highestTier = bundleInfo.tier;
               highestBundle = bundleInfo.bundle;
               planId = membershipPlanId;
+              
+              // Extract trial end date
+              trialEndsAt = membership.expires_at || membership.valid_until || membership.renewal_period_end || null;
+              
               // FIXED: Map Whop statuses to our statuses
               // 'completed' means they paid and it's active
               const whopStatus = membership.status || 'active';
@@ -167,6 +175,7 @@ export async function POST(request: NextRequest) {
           current_tier: newTier,
           whop_plan_id: planId,
           subscription_status: subscriptionStatus === 'none' ? null : subscriptionStatus,
+          trial_ends_at: trialEndsAt,
           updated_at: new Date().toISOString(),
         })
         .eq('id', existing.id);
@@ -190,6 +199,7 @@ export async function POST(request: NextRequest) {
           current_tier: newTier,
           whop_plan_id: planId,
           subscription_status: subscriptionStatus === 'none' ? null : subscriptionStatus,
+          trial_ends_at: trialEndsAt,
         });
 
       if (createError) {
