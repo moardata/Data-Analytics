@@ -22,49 +22,13 @@ export async function POST(request: NextRequest) {
 
     console.log(`🔄 [Refresh] Manually refreshing subscription for: ${companyId}`);
 
-    // Get user token to also check their personal memberships
-    const userToken = request.headers.get('x-whop-user-token');
-    let userId: string | null = null;
-    
-    if (userToken) {
-      try {
-        const decoded = await whopSdk.verifyUserToken(userToken);
-        userId = decoded.userId || null;
-        if (userId) {
-          console.log(`👤 [Refresh] Authenticated user: ${userId}`);
-        }
-      } catch (e) {
-        console.warn(`⚠️ [Refresh] Could not decode user token`);
-      }
-    }
-
-    // Fetch active memberships from Whop (check both company AND user)
+    // Fetch active memberships from Whop
     let activeMemberships: any[] = [];
     try {
-      // Check company memberships
       const membershipsResult = await whopSdk.client.memberships.list({
         company_id: companyId,
       });
-      let allMemberships = membershipsResult.data || [];
-      
-      console.log(`📊 [Refresh] Company ${companyId}: ${allMemberships.length} memberships`);
-      
-      // ALSO check user's personal memberships (if they bought personally)
-      if (userId) {
-        try {
-          const userMembershipsResult = await whopSdk.client.memberships.list({
-            user_id: userId,
-          });
-          const userMemberships = userMembershipsResult.data || [];
-          console.log(`👤 [Refresh] User ${userId}: ${userMemberships.length} personal memberships`);
-          
-          // Combine both
-          allMemberships = [...allMemberships, ...userMemberships];
-          console.log(`📦 [Refresh] Total combined: ${allMemberships.length} memberships`);
-        } catch (userErr) {
-          console.warn(`⚠️ [Refresh] Could not fetch user memberships:`, userErr);
-        }
-      }
+      const allMemberships = membershipsResult.data || [];
       
       console.log(`📊 [Refresh] Whop API returned ${allMemberships.length} total memberships`);
       if (allMemberships.length > 0) {
