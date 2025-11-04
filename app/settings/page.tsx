@@ -21,6 +21,7 @@ function SettingsContent() {
   const [syncMessage, setSyncMessage] = useState('');
   const [showInfoModal, setShowInfoModal] = useState(false);
   const [infoModalData, setInfoModalData] = useState({ title: '', message: '', icon: 'feedback' as 'feedback' | 'support' });
+  const [currentTier, setCurrentTier] = useState<string | null>('Loading...');
   
   const [analyticsTracking, setAnalyticsTracking] = useState(() => {
     if (typeof window === 'undefined') return true;
@@ -28,8 +29,24 @@ function SettingsContent() {
     return saved === null ? true : saved === 'true';
   });
 
+  useEffect(() => {
+    if (companyId) {
+      fetchCurrentTier();
+    }
+  }, [companyId]);
+
+  const fetchCurrentTier = async () => {
+    try {
+      const res = await fetch(`/api/usage/check?companyId=${companyId}`);
+      const data = await res.json();
+      setCurrentTier(data.tier || 'Free');
+    } catch (error) {
+      setCurrentTier('Free');
+    }
+  };
+
   const handleToggle = (setting: string, value: boolean) => {
-    if (typeof window !== 'undefined') {
+    if (typeof window === 'undefined') {
       localStorage.setItem(setting, String(value));
     }
     
@@ -182,7 +199,7 @@ function SettingsContent() {
             <CardContent className="relative z-10">
               <div className="flex flex-col md:flex-row md:items-center gap-4">
                 <div className="text-sm text-[#A1A1AA] md:flex-1 group-hover:text-[#E2E8F0] transition-colors">
-                  <span className="font-medium">Current Plan:</span> <span className="text-[#8B5CF6] font-semibold">Starter</span>
+                  <span className="font-medium">Current Plan:</span> <span className="text-[#8B5CF6] font-semibold capitalize">{currentTier}</span>
                 </div>
                 <Button 
                   onClick={handleUpgrade}

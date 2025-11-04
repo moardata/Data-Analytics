@@ -969,8 +969,10 @@ function FormsContent() {
                     <Button 
                       className="gap-2 bg-[#0a0a0a] hover:bg-[#1a1a1a] text-white border border-[#1a1a1a] h-12"
                       onClick={() => {
-                        // Export survey templates as CSV
-                        window.open(`/api/export/csv?type=surveys&companyId=${clientId}`, '_blank');
+                        const canExport = requireSubscription('csvExport', 'Export survey data to CSV format');
+                        if (canExport) {
+                          window.open(`/api/export/csv?type=surveys&companyId=${clientId}`, '_blank');
+                        }
                       }}
                     >
                       <Download className="h-4 w-4" />
@@ -979,8 +981,10 @@ function FormsContent() {
                     <Button 
                       className="gap-2 bg-[#0a0a0a] hover:bg-[#1a1a1a] text-white border border-[#1a1a1a] h-12"
                       onClick={() => {
-                        // Export survey responses as CSV
-                        window.open(`/api/export/csv?type=survey_responses&companyId=${clientId}`, '_blank');
+                        const canExport = requireSubscription('csvExport', 'Export survey responses to CSV format');
+                        if (canExport) {
+                          window.open(`/api/export/csv?type=survey_responses&companyId=${clientId}`, '_blank');
+                        }
                       }}
                     >
                       <Download className="h-4 w-4" />
