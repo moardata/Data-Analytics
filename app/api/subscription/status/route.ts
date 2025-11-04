@@ -4,12 +4,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '@supabase/supabase-js';
-
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-);
+import { supabaseServer as supabase } from '@/lib/supabase-server';
 
 // Dev bypass - allow these company IDs to access everything
 // Development-only bypass removed for production security
