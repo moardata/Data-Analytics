@@ -140,7 +140,7 @@ async function processWebhookEvent(webhookData: any, webhookEventId: string | nu
 		}
 
 		// Get or create the entity (student/user)
-		const entity = await getOrCreateEntity(userId, webhookData.data);
+		const entity = await getOrCreateEntity(userId, webhookData.data, webhookData.action);
 		if (!entity) {
 			console.error('Failed to get or create entity for user:', userId);
 			
@@ -338,7 +338,7 @@ async function handleSpecificEventType(webhookData: any, entityId: string, clien
  * Gets an existing entity or creates a new one
  * Also ensures the client (company) exists
  */
-async function getOrCreateEntity(whopUserId: string, eventData: any) {
+async function getOrCreateEntity(whopUserId: string, eventData: any, webhookAction?: string) {
 	// First, try to find the entity
 	const { data: existing } = await supabase
 		.from('entities')
@@ -396,7 +396,8 @@ async function getOrCreateEntity(whopUserId: string, eventData: any) {
 	}
 
 	// Get or create the client (company/creator)
-	let clientId = await getOrCreateClient(companyId, eventData);
+	// Pass the webhook action so we can better extract plan_id for membership events
+	let clientId = await getOrCreateClient(companyId, eventData, webhookAction);
 	
 	if (!clientId) {
 		console.error('Failed to get or create client');
@@ -467,17 +468,56 @@ async function getOrCreateEntity(whopUserId: string, eventData: any) {
 /**
  * Gets or creates a client (company/creator) record
  */
-async function getOrCreateClient(whopCompanyId: string, eventData: any): Promise<string | null> {
+async function getOrCreateClient(whopCompanyId: string, eventData: any, webhookAction?: string): Promise<string | null> {
 	// Determine tier and bundle from plan_id (if provided)
-	let planId = eventData.plan_id || eventData.membership_plan_id;
+	// Check multiple possible locations for plan_id in webhook data
+	let planId = eventData.plan_id || 
+	             eventData.membership_plan_id || 
+	             eventData.plan?.id ||  // Nested plan object
+	             eventData.membership?.plan?.id ||  // Nested membership.plan
+	             (typeof eventData.plan === 'string' ? eventData.plan : null);  // Plan as string ID
+	
+	// Track whether planId came from webhook (reliable) or API fallback (less reliable)
+	let planIdFromWebhook = !!planId;
 	
 	console.log(`📦 [Webhook] Processing client: ${whopCompanyId}`);
 	console.log(`📦 [Webhook] Event data keys:`, Object.keys(eventData));
 	console.log(`📦 [Webhook] Plan ID from webhook: ${planId || 'MISSING'}`);
+	console.log(`📦 [Webhook] Webhook action: ${webhookAction || 'unknown'}`);
 	
-	// If no plan_id in webhook, try to fetch from Whop API directly
+	// For membership events, try to get plan_id from the membership object if available
+	if (!planId && webhookAction?.startsWith('membership.')) {
+		// If this is a membership event, the plan_id should be in the membership data
+		// Check if we have a membership ID to fetch the specific membership
+		const membershipId = eventData.id || eventData.membership_id;
+		if (membershipId) {
+			console.log(`🔍 [Webhook] Membership event detected, trying to fetch specific membership ${membershipId}...`);
+			try {
+				const { whopSdk } = await import('@/lib/whop-sdk');
+				// Try to get the specific membership from the webhook
+				try {
+					const membershipResult = await whopSdk.client.memberships.retrieveMembership({
+						membership_id: membershipId,
+					});
+					if (membershipResult.data) {
+						planId = (membershipResult.data as any).plan?.id || (membershipResult.data as any).plan_id;
+						// This is reliable because we matched by membership ID from the webhook
+						planIdFromWebhook = true;
+						console.log(`✅ [Webhook] Fetched plan_id from specific membership: ${planId}`);
+					}
+				} catch (retrieveError: any) {
+					console.log(`⚠️  [Webhook] Could not retrieve specific membership, will try list API: ${retrieveError.message}`);
+				}
+			} catch (apiError: any) {
+				console.error(`❌ [Webhook] Failed to fetch membership:`, apiError.message);
+			}
+		}
+	}
+	
+	// If still no plan_id, try to fetch from Whop API directly (last resort)
+	// This should be avoided when possible as it may return a different plan
 	if (!planId) {
-		console.log(`⚠️  [Webhook] No plan_id in webhook data, fetching from Whop API...`);
+		console.log(`⚠️  [Webhook] No plan_id in webhook data, fetching from Whop API (this may return a different plan)...`);
 		try {
 			const { whopSdk } = await import('@/lib/whop-sdk');
 			const membershipsResult = await whopSdk.client.memberships.list({
@@ -485,17 +525,38 @@ async function getOrCreateClient(whopCompanyId: string, eventData: any): Promise
 			});
 			
 			if (membershipsResult.data && membershipsResult.data.length > 0) {
-				// Get the first valid membership's plan_id (active OR trialing)
-				const memberships = membershipsResult.data as any[];
-				const validMembership = memberships.find((m: any) => 
-					m.status === 'active' || 
-					m.status === 'trialing' || 
-					m.status === 'trial' ||
-					m.valid === true
-				);
+				// For membership events, try to match by membership ID first
+				const membershipId = eventData.id || eventData.membership_id;
+				let matchedMembership = null;
+				
+				if (membershipId) {
+					matchedMembership = (membershipsResult.data as any[]).find((m: any) => 
+						m.id === membershipId || m.membership_id === membershipId
+					);
+					if (matchedMembership) {
+						console.log(`✅ [Webhook] Found matching membership by ID in API results`);
+						// This is reliable because we matched by membership ID from the webhook
+						planIdFromWebhook = true;
+					}
+				}
+				
+				// If no match, get the first valid membership's plan_id (active OR trialing)
+				if (!matchedMembership) {
+					const memberships = membershipsResult.data as any[];
+					matchedMembership = memberships.find((m: any) => 
+						m.status === 'active' || 
+						m.status === 'trialing' || 
+						m.status === 'trial' ||
+						m.valid === true
+					) || memberships[0];
+					// This is NOT reliable - it's a fallback and may not match the current webhook
+					planIdFromWebhook = false;
+					console.log(`⚠️  [Webhook] Using first valid membership (may not match current webhook event) - NOT updating whop_plan_id`);
+				}
+				
 				// FIXED: Plan ID is nested under plan.id
-				planId = validMembership?.plan?.id || validMembership?.plan_id || memberships[0]?.plan?.id || memberships[0]?.plan_id;
-				console.log(`✅ [Webhook] Fetched plan_id from Whop API: ${planId}`);
+				planId = matchedMembership?.plan?.id || matchedMembership?.plan_id;
+				console.log(`✅ [Webhook] Fetched plan_id from Whop API: ${planId} (from webhook: ${planIdFromWebhook})`);
 			} else {
 				console.log(`⚠️  [Webhook] No valid memberships found in Whop API`);
 			}
@@ -523,17 +584,26 @@ async function getOrCreateClient(whopCompanyId: string, eventData: any): Promise
 		});
 		
 		// Update tier if they purchased a plan
+		// Only update whop_plan_id if we got it reliably from the webhook (not from API fallback)
 		if (planId) {
 			const trialEndsAt = eventData.trial_end_date || eventData.trial_ends_at || eventData.valid_until || null;
 			const isTrialing = eventData.status === 'trialing' || (trialEndsAt && new Date(trialEndsAt) > new Date());
 			
-			const updateData = {
+			const updateData: any = {
 				current_tier: tier,
-				whop_plan_id: planId,
 				subscription_status: isTrialing ? 'trialing' : (eventData.status || 'active'),
 				trial_ends_at: trialEndsAt,
 				updated_at: new Date().toISOString(),
 			};
+			
+			// Only update whop_plan_id if we got it from the webhook or matched membership
+			// This prevents overwriting with a different plan from API fallback
+			if (planIdFromWebhook) {
+				updateData.whop_plan_id = planId;
+				console.log(`✅ [Webhook] Updating whop_plan_id to ${planId} (from webhook)`);
+			} else {
+				console.log(`⚠️  [Webhook] NOT updating whop_plan_id - planId came from API fallback and may not match current webhook`);
+			}
 			
 			console.log(`🔄 [Webhook] Updating client with:`, updateData);
 			
@@ -559,6 +629,9 @@ async function getOrCreateClient(whopCompanyId: string, eventData: any): Promise
 	const isTrialing = eventData.status === 'trialing' || (trialEndsAt && new Date(trialEndsAt) > new Date());
 	
 	console.log(`🆕 [Webhook] Creating client - Trial: ${isTrialing}, Ends: ${trialEndsAt}`);
+	if (planId && !planIdFromWebhook) {
+		console.log(`⚠️  [Webhook] Creating new client with planId from API fallback - may not match webhook event`);
+	}
 	
 	const { data: newClient, error } = await supabase
 		.from('clients')
@@ -568,7 +641,7 @@ async function getOrCreateClient(whopCompanyId: string, eventData: any): Promise
 			email: eventData.company_email || `company_${whopCompanyId}@whop.com`,
 			name: eventData.company_name || `Company ${whopCompanyId}`,
 			current_tier: tier, // Use standardized tier system
-			whop_plan_id: planId,
+			whop_plan_id: planId, // For new clients, we use planId even if from fallback
 			subscription_status: isTrialing ? 'trialing' : (eventData.status || 'active'),
 			trial_ends_at: trialEndsAt,  // ✅ NOW SAVES TRIAL DATE!
 		})
