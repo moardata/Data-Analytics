@@ -496,11 +496,9 @@ async function getOrCreateClient(whopCompanyId: string, eventData: any, webhookA
 				const { whopSdk } = await import('@/lib/whop-sdk');
 				// Try to get the specific membership from the webhook
 				try {
-					const membershipResult = await whopSdk.client.memberships.retrieveMembership({
-						membership_id: membershipId,
-					});
-					if (membershipResult.data) {
-						planId = (membershipResult.data as any).plan?.id || (membershipResult.data as any).plan_id;
+					const membership = await whopSdk.client.memberships.retrieve(membershipId);
+					if (membership) {
+						planId = (membership as any).plan?.id || (membership as any).plan_id;
 						// This is reliable because we matched by membership ID from the webhook
 						planIdFromWebhook = true;
 						console.log(`✅ [Webhook] Fetched plan_id from specific membership: ${planId}`);
