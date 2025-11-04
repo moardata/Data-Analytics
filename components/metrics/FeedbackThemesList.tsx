@@ -71,12 +71,9 @@ export default function FeedbackThemesList({ data }: FeedbackThemesListProps) {
             <div className="text-xs text-[#71717A] mb-4">
               {totalSubmissions} submissions collected
             </div>
-            <Link href="/forms">
-              <button className="inline-flex items-center space-x-2 px-4 py-2 rounded-lg border border-[#10B981]/30 bg-[#0B2C24] hover:bg-[#0E3A2F] text-[#10B981] hover:text-[#34D399] text-sm font-medium transition-all">
-                <Plus className="w-4 h-4" />
-                <span>Create Survey</span>
-              </button>
-            </Link>
+            <div className="text-xs text-[#71717A]">
+              Create surveys from the Forms page to start collecting feedback
+            </div>
           </div>
         </CardContent>
       </Card>

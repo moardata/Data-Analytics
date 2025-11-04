@@ -60,9 +60,9 @@ export async function simpleAuth(request: Request): Promise<SimpleAuthResult> {
         }
       });
       
-      // Create timeout promise (1 second)
+      // Create timeout promise (10 seconds for token verification)
       const timeoutPromise = new Promise<never>((_, reject) => {
-        setTimeout(() => reject(new Error('Timeout')), 1000);
+        setTimeout(() => reject(new Error('Timeout')), 10000);
       });
       
       // Race between SDK call and timeout
@@ -109,7 +109,7 @@ export async function simpleAuth(request: Request): Promise<SimpleAuthResult> {
           id: userId,
         });
         const accessTimeout = new Promise<null>((resolve) => 
-          setTimeout(() => resolve(null), 2000) // 2 second timeout (increased)
+          setTimeout(() => resolve(null), 15000) // 15 second timeout (Whop can be slow)
         );
         
         const accessCheck = await Promise.race([accessPromise, accessTimeout]);
@@ -119,7 +119,8 @@ export async function simpleAuth(request: Request): Promise<SimpleAuthResult> {
           const role = accessCheck.access_level || 'no_access';
           
           // Determine access level based on role
-          isOwner = role === 'admin'; // Whop returns 'admin' for owners
+          // IMPORTANT: Whop returns 'admin' for ALL company owners (primary and co-owners)
+          isOwner = role === 'admin';
           isAdmin = isOwner;
           accessLevel = isOwner ? 'owner' : role === 'customer' ? 'member' : 'test';
         } else {
