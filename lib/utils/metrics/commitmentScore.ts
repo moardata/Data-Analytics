@@ -47,7 +47,13 @@ export async function calculateCommitmentScore(clientId: string): Promise<Commit
   const activeStudents = studentScores.filter(s => s.score > 0);
 
   if (activeStudents.length === 0) {
-    return getEmptyCommitmentScore();
+    // FIXED: Still return total student count even if no scores calculated yet
+    return {
+      averageScore: 0,
+      distribution: { high: 0, medium: 0, atRisk: 0 },
+      atRiskStudents: [],
+      totalStudents: entities.length // Count ALL students, not just those with scores
+    };
   }
 
   // Calculate aggregate metrics
@@ -69,7 +75,7 @@ export async function calculateCommitmentScore(clientId: string): Promise<Commit
     averageScore: Math.round(averageScore * 10) / 10,
     distribution,
     atRiskStudents,
-    totalStudents: activeStudents.length
+    totalStudents: entities.length // FIXED: Count ALL students, not just active ones
   };
 }
 
