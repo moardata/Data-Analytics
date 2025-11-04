@@ -102,9 +102,9 @@ async function getSystemHealth(clientId: string) {
     status: 'outdated'
   }));
 
-  // Check for missing data
+  // Check for missing data (exclude subscriptions - not relevant for Whop memberships)
   const missingData = Object.entries(dataFreshness).filter(([key, age]) => 
-    age === null
+    age === null && key !== 'subscriptions'
   ).map(([key, age]) => ({
     type: key,
     age: null,
