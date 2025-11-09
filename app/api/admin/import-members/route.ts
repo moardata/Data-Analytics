@@ -7,18 +7,13 @@ import { NextRequest, NextResponse } from 'next/server';
 import { supabaseServer as supabase } from '@/lib/supabase-server';
 import { checkLimit, getClientUsage } from '@/lib/pricing/usage-tracker';
 import { type TierName } from '@/lib/pricing/tiers';
+import { requireOwner } from '@/lib/auth/auth-helpers';
 
 export async function POST(request: NextRequest) {
   try {
-    const { searchParams } = new URL(request.url);
-    const companyId = searchParams.get('companyId');
-
-    if (!companyId) {
-      return NextResponse.json(
-        { error: 'Company ID is required' },
-        { status: 400 }
-      );
-    }
+    // Require owner/admin access
+    const auth = await requireOwner(request);
+    const companyId = auth.companyId;
 
 
     // Get or create client record

@@ -1,11 +1,20 @@
 /**
  * Debug Headers Endpoint
  * Shows what headers Whop is sending to help diagnose authentication issues
+ * 
+ * PROTECTED: Only available in development mode
  */
 
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(request: NextRequest) {
+  // Only allow in development
+  if (process.env.NODE_ENV === 'production') {
+    return NextResponse.json(
+      { error: 'Debug endpoints are not available in production' },
+      { status: 404 }
+    );
+  }
   // Get all headers that might be relevant from Whop
   const headers: Record<string, string> = {};
   

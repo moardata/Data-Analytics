@@ -5,13 +5,18 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { supabaseServer as supabase } from '@/lib/supabase-server';
+import { requireOwner } from '@/lib/auth/auth-helpers';
 
 export async function POST(request: NextRequest) {
   try {
+    // Require owner/admin access
+    const auth = await requireOwner(request);
+    const companyId = auth.companyId;
+    
     const body = await request.json();
-    const { formId, companyId, formData } = body;
+    const { formId, formData } = body;
 
-    if (!formId || !companyId || !formData) {
+    if (!formId || !formData) {
       return NextResponse.json(
         { error: 'Missing required fields' },
         { status: 400 }

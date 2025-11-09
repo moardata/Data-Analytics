@@ -1,12 +1,21 @@
 /**
  * Authentication Diagnostic Endpoint
  * Helps debug why owner recognition is failing
+ * 
+ * PROTECTED: Only available in development mode
  */
 
 import { NextRequest, NextResponse } from 'next/server';
 import whopClient from '@/lib/whop-client';
 
 export async function GET(request: NextRequest) {
+  // Only allow in development
+  if (process.env.NODE_ENV === 'production') {
+    return NextResponse.json(
+      { error: 'Debug endpoints are not available in production' },
+      { status: 404 }
+    );
+  }
   const diagnostics: any = {
     timestamp: new Date().toISOString(),
     environment: process.env.NODE_ENV,

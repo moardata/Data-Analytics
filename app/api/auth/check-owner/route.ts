@@ -1,11 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
-import whopClient from '@/lib/whop-client';
+import { requireOwnerAccess } from '@/lib/auth/whop-auth';
 
 /**
  * Check if current user is the owner of a company
  * 
- * Uses the x-whop-user-token header that Whop provides
- * Decodes the JWT to get user ID, then checks ownership
+ * Uses proper Whop authentication system
  */
 export async function GET(request: NextRequest) {
   try {
@@ -16,142 +15,46 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ 
         isOwner: false,
         error: 'No company ID provided'
-      });
+      }, { status: 400 });
     }
 
-    
-    // Get the Whop user token from headers
-    const userToken = request.headers.get('x-whop-user-token');
-    
-    if (!userToken) {
-      // Production: Deny access without valid token
-      if (process.env.NODE_ENV === 'production') {
-        return NextResponse.json({ 
-          isOwner: false,
-          error: 'Authentication token required'
-        }, { status: 401 });
-      }
-      
-      // Development fallback
-      return NextResponse.json({ 
-        isOwner: true,
-        development: true
-      });
-    }
-
-
-    // Decode the JWT to get user ID (JWT structure: header.payload.signature)
+    // Use proper Whop authentication
     try {
-      const tokenParts = userToken.split('.');
-      if (tokenParts.length !== 3) {
-        console.error('❌ [Check Owner] Invalid JWT structure - expected 3 parts, got:', tokenParts.length);
-        throw new Error('Invalid JWT structure');
-      }
-
-      // Decode the payload (middle part)
-      const payload = JSON.parse(Buffer.from(tokenParts[1], 'base64').toString());
+      const auth = await requireOwnerAccess(request);
       
-      console.log('🔍 [Check Owner] JWT Payload keys:', Object.keys(payload));
-      console.log('🔍 [Check Owner] JWT Payload:', JSON.stringify(payload, null, 2));
-      
-      // Get user ID from token (could be 'sub', 'user_id', 'userId', etc.)
-      const userId = payload.sub || payload.user_id || payload.userId || payload.id;
-      
-      console.log('👤 [Check Owner] Extracted User ID:', userId);
-      console.log('🏢 [Check Owner] Company ID:', companyId);
-      
-      if (!userId) {
-        console.warn('⚠️ [Check Owner] No user ID found in token - granting owner access');
-        return NextResponse.json({ 
-          isOwner: true,
-          temporary: true,
-          reason: 'No user ID in token',
-          availableFields: Object.keys(payload)
-        });
-      }
-
-
-      // OFFICIAL WHOP METHOD: Use users.checkAccess
-      // Returns access_level: 'no_access' | 'admin' | 'customer'
-      try {
-        console.log('🔐 [Check Owner] Calling whopClient.users.checkAccess...');
-        console.log('🔐 [Check Owner] Parameters:', { companyId, userId });
-        console.log('🔐 [Check Owner] Using App ID:', process.env.NEXT_PUBLIC_WHOP_APP_ID);
-        console.log('🔐 [Check Owner] API Key present:', !!process.env.WHOP_API_KEY);
-        
-        const accessCheck = await whopClient.users.checkAccess(companyId, {
-          id: userId,
-        });
-        
-        console.log('✅ [Check Owner] Access check response:', JSON.stringify(accessCheck, null, 2));
-        
-        const accessLevel = accessCheck.access_level || 'no_access';
-        
-        // Whop returns 'admin' for owners, 'customer' for students
-        const isOwner = accessLevel === 'admin';
-        
-        console.log(`🎯 [Check Owner] Result: ${isOwner ? 'OWNER' : 'STUDENT'} (access_level: ${accessLevel})`);
-        
-        return NextResponse.json({ 
-          isOwner,
-          userId: userId.substring(0, 10) + '...',
-          companyId,
-          method: 'whop_sdk_users_check_access',
-          debug: {
-            user_id: userId,
-            access_level: accessLevel,
-            has_access: accessCheck.has_access,
-          }
-        });
-        
-      } catch (accessError: any) {
-        console.error('❌ [Check Owner] Access check failed:', accessError);
-        console.error('❌ [Check Owner] Error type:', typeof accessError);
-        console.error('❌ [Check Owner] Error stack:', accessError.stack);
-        
-        // Parse the error to see if it's a permissions issue
-        const errorMessage = accessError.message || String(accessError);
-        const errorDetails = JSON.stringify(accessError, null, 2);
-        
-        console.error('❌ [Check Owner] Error message:', errorMessage);
-        console.error('❌ [Check Owner] Full error:', errorDetails);
-        
-        // TEMPORARY FIX: Grant owner access when check fails
-        // This prevents legitimate owners from being locked out
-        // TODO: Fix the underlying permission issue with Whop API
-        console.warn('⚠️ [Check Owner] Granting OWNER access despite error (temporary workaround)');
-        
-        return NextResponse.json({ 
-          isOwner: true,
-          userId: userId.substring(0, 10) + '...',
-          companyId,
-          method: 'access_check_failed_granting_access',
-          temporary: true,
-          error: 'Access check failed - granting owner access',
-          details: errorMessage
-        });
-      }
-
-    } catch (decodeError: any) {
-      console.error('❌ [Check Owner] JWT decode error:', decodeError.message);
-      
-      // TEMPORARY: Grant access on JWT errors to prevent lockout
       return NextResponse.json({ 
         isOwner: true,
-        temporary: true,
-        error: 'JWT decode failed - granting access',
-        details: decodeError.message
+        userId: auth.userId.substring(0, 10) + '...',
+        companyId: auth.companyId,
+        accessLevel: auth.accessLevel,
       });
+    } catch (authError: any) {
+      // In development only: Allow fallback for testing
+      if (process.env.NODE_ENV === 'development' && authError.message.includes('No user ID')) {
+        console.warn('⚠️ [Check Owner] Development mode: Using fallback auth');
+        return NextResponse.json({ 
+          isOwner: true,
+          userId: 'dev_user',
+          companyId,
+          temporary: true,
+          reason: 'development_fallback'
+        });
+      }
+      
+      // Production: Fail securely
+      return NextResponse.json({ 
+        isOwner: false,
+        error: authError.message || 'Authentication failed'
+      }, { status: 401 });
     }
 
   } catch (error: any) {
     console.error('❌ [Check Owner] Fatal error:', error);
     
-    // TEMPORARY: Grant access on fatal errors to prevent lockout
+    // Fail securely - deny access on error
     return NextResponse.json({ 
-      isOwner: true,
-      temporary: true,
-      error: error.message
-    });
+      isOwner: false,
+      error: error.message || 'Authentication failed'
+    }, { status: 401 });
   }
 }

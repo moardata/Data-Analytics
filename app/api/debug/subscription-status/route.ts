@@ -8,6 +8,13 @@ import { supabaseServer as supabase } from '@/lib/supabase-server';
 import { whopSdk } from '@/lib/whop-sdk';
 
 export async function GET(request: NextRequest) {
+  // Only allow in development
+  if (process.env.NODE_ENV === 'production') {
+    return NextResponse.json(
+      { error: 'Debug endpoints are not available in production' },
+      { status: 404 }
+    );
+  }
   try {
     const { searchParams } = new URL(request.url);
     const companyId = searchParams.get('companyId');

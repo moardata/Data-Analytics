@@ -4,7 +4,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { simpleAuth } from '@/lib/auth/simple-auth';
+import { requireOwner as requireOwnerAuth } from '@/lib/auth/auth-helpers';
 
 export interface AuthContext {
   userId: string;
@@ -23,30 +23,7 @@ export async function requireOwner(request: NextRequest): Promise<{
   error: NextResponse | null 
 }> {
   try {
-    const auth = await simpleAuth(request);
-    
-    // Check if user is owner or admin
-    if (!auth.isOwner && !auth.isAdmin) {
-      console.error('❌ [requireOwner] Access denied - user is not owner/admin:', {
-        userId: auth.userId,
-        role: auth.accessLevel,
-        isOwner: auth.isOwner,
-        isAdmin: auth.isAdmin,
-      });
-      
-      return {
-        auth: null,
-        error: NextResponse.json(
-          { 
-            error: 'Forbidden',
-            message: 'This endpoint requires owner or admin access',
-            requiredRole: 'owner or admin',
-            yourRole: auth.accessLevel,
-          },
-          { status: 403 }
-        ),
-      };
-    }
+    const auth = await requireOwnerAuth(request);
     
     return {
       auth: {
@@ -67,7 +44,8 @@ export async function requireOwner(request: NextRequest): Promise<{
       error: NextResponse.json(
         { 
           error: 'Unauthorized',
-          message: 'Authentication failed',
+          message: error.message || 'Authentication failed',
+          requiredRole: 'owner or admin',
         },
         { status: 401 }
       ),

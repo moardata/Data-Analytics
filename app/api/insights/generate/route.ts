@@ -6,7 +6,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { generateInsightsForClient, detectAnomalies } from '@/lib/utils/aiInsights';
 import { supabaseServer as supabase } from '@/lib/supabase-server';
-import { simpleAuth } from '@/lib/auth/simple-auth';
+import { authenticateRequest } from '@/lib/auth/auth-helpers';
 
 // Force Node.js runtime (not Edge) to ensure env vars work properly
 export const runtime = 'nodejs';
@@ -37,7 +37,7 @@ export async function POST(request: NextRequest) {
     const directCompanyId = url.searchParams.get('companyId');
     
     // Use simple auth (never hangs)
-    const auth = await simpleAuth(request);
+    const auth = await authenticateRequest(request);
     const companyId = auth.companyId;
     
 
@@ -139,7 +139,7 @@ export async function POST(request: NextRequest) {
 export async function GET(request: NextRequest) {
   try {
     // Use simple auth (never hangs)
-    const auth = await simpleAuth(request);
+    const auth = await authenticateRequest(request);
     const companyId = auth.companyId;
 
     // Get search params from URL

@@ -5,12 +5,12 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { supabaseServer as supabase } from '@/lib/supabase-server';
-import { simpleAuth } from '@/lib/auth/simple-auth';
+import { requireOwner } from '@/lib/auth/auth-helpers';
 import whopClient from '@/lib/whop-client';
 
 export async function POST(request: NextRequest) {
   try {
-    const auth = await simpleAuth(request);
+    const auth = await requireOwner(request);
     const companyId = auth.companyId;
 
     // Get client

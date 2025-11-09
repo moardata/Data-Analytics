@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { simpleAuth } from '@/lib/auth/simple-auth';
+import { authenticateWhopUser, requireAuth } from '@/lib/auth/whop-auth';
 
 /**
  * Permissions API Endpoint
@@ -53,8 +53,30 @@ export async function GET(request: NextRequest) {
       body: request.body,
     });
     
-    // Use simple auth (never hangs, max 1s timeout)
-    const auth = await simpleAuth(modifiedRequest);
+    // Use proper Whop authentication
+    // In development, allow fallback if headers aren't present
+    let auth;
+    try {
+      auth = await authenticateWhopUser(modifiedRequest);
+    } catch (authError: any) {
+      // In development only: Allow fallback for testing
+      if (process.env.NODE_ENV === 'development' && authError.message.includes('No user ID')) {
+        console.warn('⚠️ [Permissions] Development mode: Using fallback auth');
+        return NextResponse.json({
+          success: true,
+          isOwner: true,
+          isStudent: false,
+          isAdmin: true,
+          accessLevel: 'owner',
+          userId: 'dev_user',
+          companyId: actualCompanyId,
+          isTestMode: true,
+          temporary: true,
+          reason: 'development_fallback'
+        });
+      }
+      throw authError;
+    }
     
     const elapsed = Date.now() - startTime;
 
@@ -94,25 +116,42 @@ export async function GET(request: NextRequest) {
       accessLevel: isOwner ? 'owner' : 'student',
       userId: auth.userId,
       companyId: auth.companyId,
-      isTestMode: auth.isTestMode,
+      isTestMode: false, // Production auth - no test mode
     });
 
   } catch (error: any) {
     const elapsed = Date.now() - startTime;
     console.error(`❌ [Permissions API GET] Failed in ${elapsed}ms:`, error);
     
-    // FIXED: Grant owner access on complete failure (fail-open for better UX)
-    // This prevents legitimate owners from being locked out
+    // SECURITY: Fail-closed - deny access on error
+    // In development only: Allow fallback for testing
+    if (process.env.NODE_ENV === 'development' && error.message.includes('No user ID')) {
+      console.warn('⚠️ [Permissions GET] Development mode: Using fallback auth');
+      return NextResponse.json({
+        success: true,
+        isOwner: true,
+        isStudent: false,
+        isAdmin: true,
+        accessLevel: 'owner',
+        userId: 'dev_user',
+        companyId: actualCompanyId || '',
+        isTestMode: true,
+        temporary: true,
+        reason: 'development_fallback'
+      });
+    }
+    
+    // PRODUCTION: Deny access on error
     return NextResponse.json({
-      success: true,
+      success: false,
       error: error.message || 'Failed to check permissions',
-      isOwner: true,
+      isOwner: false,
       isStudent: false,
-      isAdmin: true,
-      accessLevel: 'owner',
-      temporary: true,
-      reason: 'fallback_on_error'
-    });
+      isAdmin: false,
+      accessLevel: 'none',
+      userId: null,
+      companyId: null,
+    }, { status: 401 });
   }
 }
 
@@ -132,18 +171,46 @@ export async function POST(request: NextRequest) {
     }
 
     
-    // Create a mock request with the companyId
-    const mockUrl = `https://app.com?companyId=${companyId}`;
-    const mockRequest = new Request(mockUrl, {
-      headers: request.headers
+    // Create a request URL with companyId
+    const requestUrl = new URL(request.url);
+    requestUrl.searchParams.set('companyId', companyId);
+    const modifiedRequest = new Request(requestUrl.toString(), {
+      method: request.method,
+      headers: request.headers,
+      body: request.body,
     });
     
-    // Use simple auth (never hangs, max 1s timeout)
-    const auth = await simpleAuth(mockRequest);
+    // Use proper Whop authentication
+    // In development, allow fallback if headers aren't present
+    let auth;
+    try {
+      auth = await authenticateWhopUser(modifiedRequest);
+    } catch (authError: any) {
+      // In development only: Allow fallback for testing
+      if (process.env.NODE_ENV === 'development' && authError.message.includes('No user ID')) {
+        console.warn('⚠️ [Permissions POST] Development mode: Using fallback auth');
+        return NextResponse.json({
+          success: true,
+          permissions: {
+            userId: 'dev_user',
+            isAuthorized: true,
+            userRole: 'owner',
+            canViewAnalytics: true,
+            canManageData: true,
+            canSyncStudents: true,
+            canAccessSettings: true,
+            isTestMode: true
+          },
+          message: 'Development mode: Access granted for testing',
+          temporary: true
+        });
+      }
+      throw authError;
+    }
     
     // AUTO-SYNC: Fetch latest subscription from Whop on EVERY login
     // Creates DB record if missing, updates if exists
-    if (companyId && !auth.isTestMode) {
+    if (companyId && auth.isAuthenticated) {
       try {
         console.log(`🔄 [Auth] Auto-syncing subscription for ${companyId}...`);
         
@@ -174,55 +241,34 @@ export async function POST(request: NextRequest) {
         userId: auth.userId,
         isAuthorized: true,
         userRole: auth.accessLevel,
-        canViewAnalytics: true,
-        canManageData: true,
-        canSyncStudents: true,
-        canAccessSettings: true,
-        isTestMode: auth.isTestMode
+        canViewAnalytics: auth.isOwner || auth.isAdmin,
+        canManageData: auth.isOwner || auth.isAdmin,
+        canSyncStudents: auth.isOwner || auth.isAdmin,
+        canAccessSettings: auth.isOwner || auth.isAdmin,
+        isTestMode: false // Production auth - no test mode
       },
-      message: auth.isTestMode 
-        ? 'Test mode: Access granted for testing' 
-        : 'User is authorized to access analytics'
+      message: 'User is authorized to access analytics'
     });
 
   } catch (error: any) {
     const elapsed = Date.now() - startTime;
-    console.error(`❌ [Permissions API] Failed in ${elapsed}ms:`, error);
+    console.error(`❌ [Permissions API POST] Failed in ${elapsed}ms:`, error);
     
-    // SECURITY: Fail-closed in production (deny access on error)
-    const isDevelopment = process.env.NODE_ENV === 'development';
-    
-    if (isDevelopment) {
-      return NextResponse.json({
-        success: true,
-        permissions: {
-          userId: 'test_user',
-          isAuthorized: true,
-          userRole: 'owner',
-          canViewAnalytics: true,
-          canManageData: true,
-          canSyncStudents: true,
-          canAccessSettings: true,
-          isTestMode: true
-        },
-        message: 'Development mode: Access granted for testing'
-      });
-    } else {
-      // PRODUCTION: Deny access on authentication failure
-      return NextResponse.json({
-        success: false,
-        error: 'Authentication failed',
-        permissions: {
-          userId: null,
-          isAuthorized: false,
-          userRole: 'none',
-          canViewAnalytics: false,
-          canManageData: false,
-          canSyncStudents: false,
-          canAccessSettings: false,
-          isTestMode: false
-        }
-      }, { status: 401 });
-    }
+    // SECURITY: Fail-closed - deny access on error
+    return NextResponse.json({
+      success: false,
+      error: 'Authentication failed',
+      message: error.message || 'Unable to authenticate user',
+      permissions: {
+        userId: null,
+        isAuthorized: false,
+        userRole: 'none',
+        canViewAnalytics: false,
+        canManageData: false,
+        canSyncStudents: false,
+        canAccessSettings: false,
+        isTestMode: false
+      }
+    }, { status: 401 });
   }
 }

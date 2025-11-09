@@ -8,7 +8,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { simpleAuth } from '@/lib/auth/simple-auth';
+import { authenticateRequest } from '@/lib/auth/auth-helpers';
 import whopClient from '@/lib/whop-client';
 
 export async function GET(request: NextRequest) {
@@ -26,32 +26,24 @@ export async function GET(request: NextRequest) {
     }
 
     // Get auth info
-    const auth = await simpleAuth(request);
+    const auth = await authenticateRequest(request);
     
     
     let isOwner = false;
     let role = 'student';
 
-    // If test mode (no Whop headers), grant owner access
-    if (auth.isTestMode) {
+    // Use access level from auth
+    // KEY LOGIC FROM WHOP:
+    // - accessLevel 'owner' = Company owner (ALLOW)
+    // - accessLevel 'admin' = Company admin (ALLOW) 
+    // - accessLevel 'member' = Regular member/student (BLOCK)
+    
+    if (auth.accessLevel === 'owner' || auth.accessLevel === 'admin') {
       isOwner = true;
       role = 'owner';
     } else {
-      // Real Whop auth - use the access level from simpleAuth
-      // simpleAuth already checks company ownership via SDK
-      
-      // KEY LOGIC FROM WHOP:
-      // - accessLevel 'owner' = Company owner (ALLOW)
-      // - accessLevel 'admin' = Company admin (ALLOW) 
-      // - accessLevel 'member' = Regular member/student (BLOCK)
-      
-      if (auth.accessLevel === 'owner' || auth.accessLevel === 'admin') {
-        isOwner = true;
-        role = 'owner';
-      } else {
-        isOwner = false;
-        role = 'student';
-      }
+      isOwner = false;
+      role = 'student';
     }
 
     return NextResponse.json({
@@ -60,7 +52,6 @@ export async function GET(request: NextRequest) {
       role,
       userId: auth.userId,
       companyId: auth.companyId,
-      isTestMode: auth.isTestMode
     });
 
   } catch (error: any) {

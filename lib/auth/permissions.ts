@@ -5,7 +5,7 @@
  * NOW USES: Unified Whop Authentication System (whop-auth-unified.ts)
  */
 
-import { authenticateWhopUser, checkPermission, WhopRequestContext } from './whop-auth-unified';
+import { authenticateWhopUser } from './whop-auth';
 
 export interface UserPermissions {
   userId?: string;
@@ -26,16 +26,19 @@ export async function getUserPermissions(
   userId?: string
 ): Promise<UserPermissions> {
   try {
+    // Create a mock request for authentication
+    const mockUrl = `https://app.com?companyId=${companyId}`;
+    const mockRequest = new Request(mockUrl);
     
-    // Use the unified authentication system
-    const auth = await authenticateWhopUser({ companyId, userId });
+    // Use the new authentication system
+    const auth = await authenticateWhopUser(mockRequest);
     
     // Determine permissions based on access level
-    const isAuthorized = auth.hasCompanyAccess && (auth.isAdmin || auth.isOwner);
+    const isAuthorized = auth.isOwner || auth.isAdmin;
     
     return {
       userId: auth.userId,
-      canViewAnalytics: auth.hasCompanyAccess, // All members can view
+      canViewAnalytics: auth.isAuthenticated, // All authenticated users can view
       canManageData: isAuthorized, // Only admins/owners
       canSyncStudents: isAuthorized, // Only admins/owners
       canAccessSettings: isAuthorized, // Only admins/owners

@@ -5,15 +5,15 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { supabaseServer as supabase } from '@/lib/supabase-server';
-import { simpleAuth } from '@/lib/auth/simple-auth';
+import { authenticateRequest } from '@/lib/auth/auth-helpers';
 import { canPerformAction, type TierName } from '@/lib/pricing/tiers';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 
 export async function GET(request: NextRequest) {
   try {
-    // Use simple auth (never hangs)
-    const auth = await simpleAuth(request);
+    // Authenticate request
+    const auth = await authenticateRequest(request);
     const companyId = auth.companyId;
 
     // First, get the client record for this company

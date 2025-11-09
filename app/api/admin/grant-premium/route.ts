@@ -7,6 +7,14 @@ import { NextRequest, NextResponse } from 'next/server';
 import { supabaseServer as supabase } from '@/lib/supabase-server';
 
 export async function POST(request: NextRequest) {
+  // Only allow in development
+  if (process.env.NODE_ENV === 'production') {
+    return NextResponse.json(
+      { error: 'Admin endpoints are not available in production' },
+      { status: 404 }
+    );
+  }
+  
   try {
     const { companyId } = await request.json();
 

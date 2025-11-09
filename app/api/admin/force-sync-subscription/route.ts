@@ -8,15 +8,34 @@ import { NextRequest, NextResponse } from 'next/server';
 import { supabaseServer as supabase } from '@/lib/supabase-server';
 import { whopSdk } from '@/lib/whop-sdk';
 import { getBundleInfo } from '@/lib/pricing/bundles';
+import { requireOwner } from '@/lib/auth/auth-helpers';
 
 export async function POST(request: NextRequest) {
   try {
-    const { companyId, userId } = await request.json();
+    // Require owner/admin access
+    const auth = await requireOwner(request);
+    
+    // Get companyId from body or use authenticated companyId
+    let companyId: string;
+    try {
+      const body = await request.json();
+      companyId = body.companyId || auth.companyId;
+    } catch {
+      companyId = auth.companyId;
+    }
 
     if (!companyId) {
       return NextResponse.json(
         { error: 'companyId required' },
         { status: 400 }
+      );
+    }
+    
+    // Verify user has access to this company
+    if (companyId !== auth.companyId) {
+      return NextResponse.json(
+        { error: 'Access denied: Company ID mismatch' },
+        { status: 403 }
       );
     }
 

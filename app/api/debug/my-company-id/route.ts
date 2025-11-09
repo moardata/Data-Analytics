@@ -6,6 +6,13 @@ import { NextRequest, NextResponse } from 'next/server';
 import { headers } from 'next/headers';
 
 export async function GET(request: NextRequest) {
+  // Only allow in development
+  if (process.env.NODE_ENV === 'production') {
+    return NextResponse.json(
+      { error: 'Debug endpoints are not available in production' },
+      { status: 404 }
+    );
+  }
   const headersList = await headers();
   
   // Get ALL possible company IDs from ALL sources

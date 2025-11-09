@@ -5,7 +5,7 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { supabaseServer as supabase } from '@/lib/supabase-server';
-import { simpleAuth } from '@/lib/auth/simple-auth';
+import { authenticateRequest } from '@/lib/auth/auth-helpers';
 
 // Plan pricing lookup (for mock data and fallbacks)
 const PLAN_PRICING: Record<string, number> = {
@@ -33,7 +33,7 @@ export async function OPTIONS() {
 export async function GET(request: NextRequest) {
   try {
     // Use simple auth (never hangs)
-    const auth = await simpleAuth(request);
+    const auth = await authenticateRequest(request);
     const companyId = auth.companyId;
 
     // Get client record

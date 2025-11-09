@@ -5,14 +5,18 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { supabaseServer as supabase } from '@/lib/supabase-server';
+import { requireOwner } from '@/lib/auth/auth-helpers';
 
 export async function DELETE(request: NextRequest) {
   try {
+    // Require owner/admin access
+    const auth = await requireOwner(request);
+    const companyId = auth.companyId;
+    
     const { searchParams } = new URL(request.url);
     const formId = searchParams.get('formId');
-    const companyId = searchParams.get('companyId');
 
-    if (!formId || !companyId) {
+    if (!formId) {
       return NextResponse.json(
         { error: 'Missing required parameters' },
         { status: 400 }

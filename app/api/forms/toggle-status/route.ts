@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabaseServer as supabase } from '@/lib/supabase-server';
+import { requireOwner } from '@/lib/auth/auth-helpers';
 
 /**
  * Toggle Form Status API
@@ -8,12 +9,16 @@ import { supabaseServer as supabase } from '@/lib/supabase-server';
 
 export async function POST(request: NextRequest) {
   try {
+    // Require owner/admin access
+    const auth = await requireOwner(request);
+    const companyId = auth.companyId;
+    
     const body = await request.json();
-    const { formId, companyId, isActive } = body;
+    const { formId, isActive } = body;
 
-    if (!formId || !companyId || typeof isActive !== 'boolean') {
+    if (!formId || typeof isActive !== 'boolean') {
       return NextResponse.json(
-        { error: 'Form ID, Company ID, and isActive status are required' },
+        { error: 'Form ID and isActive status are required' },
         { status: 400 }
       );
     }

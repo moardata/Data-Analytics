@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabaseServer as supabase } from '@/lib/supabase-server';
-import { simpleAuth } from '@/lib/auth/simple-auth';
+import { authenticateRequest } from '@/lib/auth/auth-helpers';
 
 /**
  * Sync existing students from Whop to the app
@@ -10,7 +10,7 @@ import { simpleAuth } from '@/lib/auth/simple-auth';
 export async function POST(request: NextRequest) {
   try {
     // Use simple auth (never hangs)
-    const auth = await simpleAuth(request);
+    const auth = await authenticateRequest(request);
     const { companyId } = auth;
     
 

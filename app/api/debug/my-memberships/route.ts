@@ -7,6 +7,13 @@ import { NextRequest, NextResponse } from 'next/server';
 import whopClient from '@/lib/whop-client';
 
 export async function GET(request: NextRequest) {
+  // Only allow in development
+  if (process.env.NODE_ENV === 'production') {
+    return NextResponse.json(
+      { error: 'Debug endpoints are not available in production' },
+      { status: 404 }
+    );
+  }
   try {
     // Get user token from headers
     const userToken = request.headers.get('x-whop-user-token');

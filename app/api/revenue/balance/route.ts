@@ -4,11 +4,11 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { simpleAuth } from '@/lib/auth/simple-auth';
+import { authenticateRequest } from '@/lib/auth/auth-helpers';
 
 export async function GET(request: NextRequest) {
   try {
-    const auth = await simpleAuth(request);
+    const auth = await authenticateRequest(request);
     const companyId = auth.companyId;
 
     const whopApiKey = process.env.WHOP_API_KEY;
