@@ -41,7 +41,6 @@ export async function GET(request: NextRequest) {
       };
       
       actualCompanyId = routeToCompanyMap[companyId] || companyId;
-    } else {
     }
     
     // Create a new request with the correct company ID
@@ -123,6 +122,10 @@ export async function GET(request: NextRequest) {
     const elapsed = Date.now() - startTime;
     console.error(`❌ [Permissions API GET] Failed in ${elapsed}ms:`, error);
     
+    // Get companyId from URL for fallback
+    const { searchParams } = new URL(request.url);
+    const companyId = searchParams.get('companyId') || '';
+    
     // SECURITY: Fail-closed - deny access on error
     // In development only: Allow fallback for testing
     if (process.env.NODE_ENV === 'development' && error.message.includes('No user ID')) {
@@ -134,7 +137,7 @@ export async function GET(request: NextRequest) {
         isAdmin: true,
         accessLevel: 'owner',
         userId: 'dev_user',
-        companyId: actualCompanyId || '',
+        companyId: companyId,
         isTestMode: true,
         temporary: true,
         reason: 'development_fallback'
