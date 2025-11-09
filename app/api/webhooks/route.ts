@@ -247,12 +247,46 @@ async function handleSpecificEventType(webhookData: any, entityId: string, clien
 			if (action === 'membership.created' || action === 'membership.renewed') {
 				// Create or update subscription
 				await upsertSubscription(clientId, entityId, subscriptionData);
+				
+				// Track member activity
+				await supabase.from('events').insert({
+					client_id: clientId,
+					entity_id: entityId,
+					event_type: 'activity',
+					event_data: {
+						action: action === 'membership.created' ? 'member_joined' : 'membership_renewed',
+						membership_id: data.id,
+						plan_id: data.plan_id,
+					},
+				});
 			} else if (action === 'membership.cancelled') {
 				// Update subscription status to cancelled
 				await updateSubscriptionStatus(subscriptionData.whopSubscriptionId, 'cancelled');
+				
+				// Track cancellation
+				await supabase.from('events').insert({
+					client_id: clientId,
+					entity_id: entityId,
+					event_type: 'activity',
+					event_data: {
+						action: 'membership_cancelled',
+						membership_id: data.id,
+					},
+				});
 			} else if (action === 'membership.expired') {
 				// Update subscription status to expired
 				await updateSubscriptionStatus(subscriptionData.whopSubscriptionId, 'expired');
+				
+				// Track expiration
+				await supabase.from('events').insert({
+					client_id: clientId,
+					entity_id: entityId,
+					event_type: 'activity',
+					event_data: {
+						action: 'membership_expired',
+						membership_id: data.id,
+					},
+				});
 			} else if (action === 'membership.experienced_claimed') {
 				// Handle experience claim - create or update subscription
 				await upsertSubscription(clientId, entityId, subscriptionData);
@@ -269,6 +303,41 @@ async function handleSpecificEventType(webhookData: any, entityId: string, clien
 					},
 				});
 			}
+		}
+	}
+	
+	// Handle member-specific events (if Whop sends them)
+	if (action === 'member.created' || action === 'member.joined' || action === 'member.updated') {
+		// Ensure entity exists and is up-to-date
+		const whopUserId = data.user_id || data.user?.id || data.id;
+		if (whopUserId && entityId) {
+			// Update entity with latest member data
+			const updateData: any = {};
+			if (data.name || data.username) updateData.name = data.name || data.username;
+			if (data.email) updateData.email = data.email;
+			if (data.avatar || data.avatar_url || data.profile_picture_url) {
+				updateData.metadata = {
+					avatar_url: data.avatar || data.avatar_url || data.profile_picture_url,
+				};
+			}
+			
+			if (Object.keys(updateData).length > 0) {
+				await supabase
+					.from('entities')
+					.update(updateData)
+					.eq('id', entityId);
+			}
+			
+			// Track member activity
+			await supabase.from('events').insert({
+				client_id: clientId,
+				entity_id: entityId,
+				event_type: 'activity',
+				event_data: {
+					action: action.replace('member.', 'member_'),
+					member_id: whopUserId,
+				},
+			});
 		}
 	}
 

@@ -1,14 +1,16 @@
 'use client';
 
 import { useState } from 'react';
-import { Bell, Users, Settings, Info, X, ChevronRight, Sparkles, Database, Shield, HelpCircle, Book, ExternalLink, UserPlus, Mail, Crown, Activity } from 'lucide-react';
+import { Bell, Users, Settings, Info, X, ChevronRight, Sparkles, Database, Shield, HelpCircle, Book, ExternalLink, UserPlus, Mail, Crown, Activity, Menu } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { OnboardingFlow } from './OnboardingFlow';
 import { PaywallModal } from './PaywallModal';
+import { useSidebar } from '@/contexts/sidebar-context';
 
 export function TopBar() {
+  const { setIsMobileOpen, isMobileOpen } = useSidebar();
   const [showInfo, setShowInfo] = useState(false);
   const [showUsers, setShowUsers] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
@@ -77,23 +79,31 @@ export function TopBar() {
         reason="Start your 7-day free trial to unlock all features"
       />
       
-      <div className="fixed top-0 right-0 left-0 z-40 bg-[#0a0a0a] border-b border-[#1a1a1a] h-16 flex items-center justify-between px-6">
-        {/* Left side - CreatorIQ Logo */}
-        <div className="flex items-center">
-          <span className="text-white font-bold text-4xl">
-            <span className="text-white">Creator</span>
-            <span className="text-[#10B981]">IQ</span>
+      <div className="fixed top-0 right-0 left-0 z-40 bg-card border-b border-border h-16 flex items-center justify-between px-4 md:px-6">
+        {/* Left side - Mobile menu button + Logo */}
+        <div className="flex items-center gap-3">
+          {/* Mobile menu button */}
+          <button
+            onClick={() => setIsMobileOpen(!isMobileOpen)}
+            className="md:hidden p-2 rounded-lg hover:bg-muted transition-colors"
+            aria-label="Toggle menu"
+          >
+            <Menu className="h-5 w-5 text-muted-foreground" />
+          </button>
+          <span className="text-foreground font-bold text-2xl md:text-4xl">
+            <span className="text-foreground">Creator</span>
+            <span className="text-primary">IQ</span>
           </span>
         </div>
         
         {/* Right side - Icons */}
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2 md:gap-3">
           <button 
             onClick={() => setShowInfo(!showInfo)}
-            className="p-2 rounded-lg hover:bg-[#1a1a1a] transition-colors relative" 
+            className="p-2 rounded-lg hover:bg-muted transition-colors relative" 
             title="Information"
           >
-            <Info className="h-4 w-4 text-[#A1A1AA] hover:text-[#10B981]" />
+            <Info className="h-4 w-4 text-muted-foreground hover:text-primary" />
           </button>
         </div>
       </div>

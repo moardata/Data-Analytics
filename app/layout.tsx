@@ -31,7 +31,7 @@ export default function RootLayout({
 	children: React.ReactNode;
 }>) {
 	return (
-		<html lang="en" className="dark">
+		<html lang="en">
 			<body className={`${inter.variable} font-sans antialiased`}>
 				{/* Whop Checkout Loader Script */}
 				<Script
@@ -45,7 +45,8 @@ export default function RootLayout({
 							<ThemeVariantProvider>
 								<ThemeDataAttribute />
 								<SidebarProvider>
-									<div className="flex min-h-screen bg-gradient-to-b from-[#0a0a0a] to-[#0f0f0f]">
+									{/* Use Frosted-UI background classes that respect Whop's theme */}
+									<div className="flex min-h-screen bg-background">
 										<Suspense fallback={<div className="w-16" />}>
 											<Sidebar />
 										</Suspense>

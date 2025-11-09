@@ -65,9 +65,11 @@ export async function POST(request: NextRequest) {
 
     console.log('🆕 [Setup Client] Creating new client...');
 
-    // Create new client WITHOUT any subscription
-    // They MUST go through Whop's purchase flow (trial or paid) to get access
-    // Webhooks will update their tier when they purchase
+    // Create new client with 7-day free trial (REQUIRED by Whop App Store)
+    // All new users get a free trial to explore functionality before paying
+    const trialEndsAt = new Date();
+    trialEndsAt.setDate(trialEndsAt.getDate() + 7); // 7-day trial
+
     const { data: newClient, error } = await supabase
       .from('clients')
       .insert({
@@ -75,11 +77,11 @@ export async function POST(request: NextRequest) {
         company_id: companyId,
         email: companyEmail || `company_${companyId}@whop.com`,
         name: companyName || `Company ${companyId}`,
-        current_tier: null, // NO tier until they purchase
-        subscription_tier: 'free', // Required field (legacy)
-        subscription_status: 'none', // NO subscription
-        trial_ends_at: null, // No trial
-        whop_plan_id: null, // No plan
+        current_tier: 'starter', // Starter tier for trial
+        subscription_tier: 'starter', // Required field
+        subscription_status: 'trialing', // Trial status
+        trial_ends_at: trialEndsAt.toISOString(), // 7-day trial
+        whop_plan_id: null, // No plan yet (trial doesn't require purchase)
       })
       .select('id')
       .single();
