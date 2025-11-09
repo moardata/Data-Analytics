@@ -25,11 +25,18 @@ export async function requireOwner(request: NextRequest): Promise<{
   try {
     const auth = await requireOwnerAuth(request);
     
+    // Map accessLevel to role (requireOwner ensures it's owner/admin, never 'none')
+    // In whop-auth, 'admin' from Whop maps to 'owner' in our system
+    const role: 'owner' | 'admin' | 'member' | 'test' = 
+      auth.accessLevel === 'owner' || auth.accessLevel === 'admin' 
+        ? 'owner' 
+        : 'member'; // Fallback (shouldn't happen with requireOwner)
+    
     return {
       auth: {
         userId: auth.userId,
         companyId: auth.companyId,
-        role: auth.accessLevel,
+        role,
         isOwner: auth.isOwner,
         isAdmin: auth.isAdmin,
       },
